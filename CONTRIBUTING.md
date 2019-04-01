@@ -1,8 +1,10 @@
 # Contributing
 
-We are happy to receive contributions to ViSTA in the form of merge requests via Github. Feel free to fork the repository, implement your changes and create a merge request to the `develop` branch.
+We are happy to receive contributions to ViSTA in the form of **merge requests** via Github. Feel free to fork the repository, implement your changes and create a merge request to the `develop` branch.
 
-Bugs should be reported via Github issues.
+**Bugs** should be reported via Github issues.
+
+The `master` branch should always contain stable code. New features and bug fixes are implemented in `feature/*` branches and are merged to `develop` once they are finished. When a new milestone is reached, the content of `develop` will be merged to `master`.
 
 ## Style guide
 
