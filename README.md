@@ -1,4 +1,4 @@
-#ViSTA VR Toolkit
+# ViSTA VR Toolkit
 
 This is a fork of the ViSTA VR Toolkit specifically tailored to be used as a dependency of [CosmoScout VR](https://github.com/cosmoscout/cosmoscout-vr).
 Originally, ViSTA has been developed at the RWTH Aachen. This fork is is based on the `feature/IMAGES_AND_VIEWPORTS` branch of the [original repository](https://devhub.vr.rwth-aachen.de/VR-Group/ViSTA).
