@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<module>
+	<nodespace/>
+	<graph>
+		<node name="device-source" type="DriverSensor">
+			<param name="driver" value="SpaceNav0@localhost"/>
+			<param name="sensor" value="0"/>
+			<param name="type" value="ANALOG"/>
+		</node>
+		<node name="navigator" type="HistoryProject">
+			<param name="project">
+				VALUE,VALUES,VRPN_TIMECODE
+			</param>
+		</node>
+		<node name="conv2String" type="TypeConvert[double,string]"/>
+		<node name="analog_print" type="print"/>
+		<node name="convNavTc2String" type="TypeConvert[double,string]"/>
+		<node name="printNavTc" type="print"/>
+		<node name="convValues2String" type="TypeConvert[vector[double],string]"/>
+		<node name="printValues" type="print"/>
+	</graph>
+	<edges>
+		<edge fromnode="device-source" fromport="history" tonode="navigator" toport="history"/>
+		<edge fromnode="navigator" fromport="VALUE_1" tonode="conv2String" toport="in"/>
+		<edge fromnode="conv2String" fromport="out" tonode="analog_print" toport="in"/>
+		<edge fromnode="convNavTc2String" fromport="out" tonode="printNavTc" toport="in"/>
+		<edge fromnode="navigator" fromport="VRPN_TIMECODE" tonode="convNavTc2String" toport="in"/>
+		<edge fromnode="navigator" fromport="VALUES" tonode="convValues2String" toport="in"/>
+		<edge fromnode="convValues2String" fromport="out" tonode="printValues" toport="in"/>
+	</edges>
+</module>

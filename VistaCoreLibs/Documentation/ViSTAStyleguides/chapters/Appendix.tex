@@ -1,0 +1,89 @@
+%% $Id$
+
+%% Copyright (c)  1998-2016
+%% by  RWTH-Aachen, Germany
+%% Some rights reserved.
+
+%% This work is licensed under the Creative Commons Attribution-Share
+%% Alike 3.0 License. To view a copy of this license, visit
+%% http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to
+%% Creative Commons, 171 Second Street, Suite 300, San Francisco,
+%% California, 94105, USA.
+
+\section{Appendix}
+%\section{Document physical rules}
+This section describes the physical layout for this specific document (the Styleguides themselves).
+It comprises of topics dealing with files and resources that are of importance to this document.
+You should respect the styles as depicted when applying changes to these Styleguides.
+
+\subsection{Physical document layout}
+
+The following subsections will deal with the topic of evolving the physical structure, e.g., file layout and the nomenclature within the passages.
+
+\subsubsection{File layout}
+Each \TeX\ file needs a proper preamble containing the license header.
+A skeleton file is given in the file {\ttfamily template-for\-new-chapters.tex} file in this directory.
+Note that it is mandatory to provide a proper SVN revision (Id) tag, this helps in identifying different versions of this document.
+
+Each chapter lives in its own file in the subfolder \code{chapters}.
+The name of this file should be related to the name of the chapter, but try to avoid whitespaces or irregular characters that might confuse a file system or \TeX.
+For example, a file might be called {\ttfamily About.tex} while this chapter's heading is ''About this document''.
+
+The language for this documentation is english.
+Try to spellcheck as much as you can and try to avoid complicated sentences.
+
+\subsubsection{Directory layout}
+Graphics are to be placed in a subdirectory called {\ttfamily graphics}.
+Any graphics for this document should be in moderate to high resolution and be placed in the directory {\ttfamily graphics}.
+The format of the graphics has to be {\ttfamily eps}.
+
+When checking new graphics into the repository, please keep in mind that {\ttfamily eps} figures have to be checked in as \textbf{binary} formatted.
+See section \ref{sec:tools} for a reference on the tools that are to be used for the graphics output generation.
+
+It is desired that any original graphics that was used to create an {\ttfamily eps} resource is kept in the revision control as well, just in case anybody wants to change it.
+Those files should be kept in the subfolder {\ttfamily resources}.
+Here it is valid to store the original file, e.g., PhotoShop {\ttfamily psd} or Visio sketches.
+When in doubt, add a {\ttfamily README} for each or several file(s), including the extension, which describes the proper version to use when the resource is to be edited.
+
+\subsection{\TeX coding}
+In order to make the \TeX\ sources more diffable, do only use a newline command after every dot.
+Especially, do not use automatic word wrap features of your favourite \TeX\ editor.
+\begin{figure}
+\begin{verbatim}
+% right way to place endlines <edl>
+This is an example sentence.<edl>
+Newlines are always after a dot that ends the sentence.<edl>
+
+% wrong way to place endlines
+And this is another example sentence, that shows<edl>
+a violation of this rule.<edl>
+\end{verbatim}
+\caption{\label{fig:texlines}
+Example of the \TeX\ source formating (including a wrong way to do it).
+Endlines do always end a sentence, even in captions.
+See the source of this figure for a reference.}
+\end{figure}
+
+Please mark unfinished or work in progress sections with a proper, visually perceptible marking.
+A \TeX\ macro called {\ttfamily todo} is provided with this document.
+\todo{This is an example of the {\ttfamily todo} macro.}
+
+It is used with the following code.
+\begin{verbatim}
+\todo{This is an example of the {\ttfamily todo} macro.}
+\end{verbatim}
+
+For figures that are not yet finished, use the {\ttfamily todo.eps} which is stored in the {\ttfamily graphics} directory.
+
+
+\subsection{Tools}\label{sec:tools}
+
+\subsubsection{\TeX nicscenter}
+For \TeX\ editing, we recommend that you have the \TeX nicscenter available.
+Project files for this editing environment are checked in to the repository for this document.
+See http://www.toolscenter.org for more information.
+Note that any text-editor with which you are comfortable will also be sufficient.
+
+\subsubsection{JabRef}
+For BibTeX editing, the JabRef tool is very nice.
+See http://jabref.sourceforge.net for more information.

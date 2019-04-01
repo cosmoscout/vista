@@ -1,0 +1,21 @@
+<!-- $Id: mouse.xml,v 1.1 2008/10/31 18:10:07 dr165799 Exp $ -->
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!-- data sourcee -->
+		<node name="dtrack_sensor" type="DriverSensor">
+			<param name="driver" value="DTRACK"/>
+			<param name="sensor_name" value="HEAD_SENSOR"/>
+			<param name="type" value="BODY"/>
+		</node>
+		
+		<node name="DeviceDebug" type="DeviceDebug"/>
+
+		
+	</graph>
+	<edges>
+		<edge fromnode="dtrack_sensor" tonode="DeviceDebug" fromport="history" toport="history"/>
+		
+	</edges>
+</module>

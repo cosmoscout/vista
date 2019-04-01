@@ -1,0 +1,117 @@
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!-- driver -->
+		<node name="flystick_source" type="DriverSensor">
+			<param name="sensor_name" value="STICK_SENSOR"/>
+			<param name="type" value="STICK"/>
+			<param name="driver" value="DTRACK"/>
+		</node>
+
+		<node name="flystick" type="HistoryProject">
+			<param name="project">ORIENTATION, DSCALAR</param>
+		</node>
+
+		<!-- constants -->
+		<node name="minus_one" type="ConstantValue[float]">
+			<param name="value" value="-1.0"/>
+		</node>
+
+		<!-- get linear and angular speed from local base and app-controlled factor -->
+		<node name="linear_velocity" type="ConstantValue[float]">
+			<param name="value" value="2.0"/>
+		</node>
+		<node name="angular_velocity" type="ConstantValue[float]">
+			<param name="value" value="6.28318"/>
+		</node>
+
+		<node name="forward_dir" type="ConstantValue[VistaVector3D]">
+			<param name="value" value="0,0,-1"/>
+		</node>
+
+		<!-- Button converts -->
+		<node name="fwd_trigger" type="TypeConvert[double,float]"/>
+		<node name="bwd_trigger" type="TypeConvert[double,float]"/>
+		<node name="right_trigger" type="TypeConvert[double,float]"/>
+		<node name="left_trigger" type="TypeConvert[double,float]"/>
+
+		<!-- Translation -->
+		<node name="rotation_matrix" type="TypeConvert[VistaQuaternion,VistaTransformMatrix]"/>
+		<node name="move_direction" type="Multiply[VistaTransformMatrix,VistaVector3D]"/>
+
+
+		<node name="negate_trans_factor" type="Multiply[float]"/>
+		<node name="add_trans_factors" type="Add[float]"/>
+		<node name="mult_linear_velocity" type="Multiply[float]"/>
+
+		<!-- Rotation -->
+		<node name="rotate_quat" type="ConstantValue[VistaQuaternion]">
+			<param name="value" value="0,0.7071067811865476,0,-0.7071067811865476"/>
+		</node>
+
+		<node name="negate_rotate_factor" type="Multiply[float]"/>
+		<node name="add_rotate_factors" type="Add[float]"/>
+		<node name="mult_angular_velocity" type="Multiply[float]"/>
+
+		<!-- Application -->
+		<node name="get_transform" type="GetTransform">
+			<param name="object" value="CAM:MAIN"/>
+		</node>
+
+		<node name="set_transform" type="SetTransform">
+			<param name="object" value="CAM:MAIN"/>
+		</node>
+	
+		<node name="navigator" type="Navigation">
+			<param name="default_linear_velocity" value="5.0" />
+			<param name="default_angular_velocity" value="8.0" />
+			<param name="default_navigation_mode" value="0" />
+		</node>
+
+		<node name="timer" type="Timer"/>
+
+	</graph>
+	<edges>
+		<edge fromnode="flystick_source" tonode="flystick" fromport="history" toport="history" />
+
+		<edge fromnode="flystick" tonode="fwd_trigger" fromport="DSCALAR_6" toport="in" />
+		<edge fromnode="flystick" tonode="bwd_trigger" fromport="DSCALAR_4" toport="in" />
+		<edge fromnode="flystick" tonode="right_trigger" fromport="DSCALAR_7" toport="in" />
+		<edge fromnode="flystick" tonode="left_trigger" fromport="DSCALAR_5" toport="in" />
+		
+		<!-- Translation -->
+		<edge fromnode="flystick" tonode="rotation_matrix" fromport="ORIENTATION" toport="in" />
+		<edge fromnode="rotation_matrix" tonode="move_direction" fromport="out" toport="first" />
+		<edge fromnode="forward_dir" tonode="move_direction" fromport="value" toport="second" />
+		<edge fromnode="move_direction" tonode="navigator" fromport="out" toport="translation" />
+
+		<edge fromnode="bwd_trigger" tonode="negate_trans_factor" fromport="out" toport="first" />
+		<edge fromnode="minus_one" tonode="negate_trans_factor" fromport="value" toport="second" />
+		<edge fromnode="negate_trans_factor" tonode="add_trans_factors" fromport="out" toport="first" />
+		<edge fromnode="fwd_trigger" tonode="add_trans_factors" fromport="out" toport="second" />
+		<edge fromnode="add_trans_factors" tonode="mult_linear_velocity" fromport="out" toport="first" />
+		<edge fromnode="linear_velocity" tonode="mult_linear_velocity" fromport="value" toport="second" />
+
+		<edge fromnode="mult_linear_velocity" tonode="navigator" fromport="out" toport="linear_velocity" />
+
+		<!-- Rotation -->
+		<edge fromnode="rotate_quat" tonode="navigator" fromport="value" toport="rotation" />
+
+		<edge fromnode="left_trigger" tonode="negate_rotate_factor" fromport="out" toport="first" />
+		<edge fromnode="minus_one" tonode="negate_rotate_factor" fromport="value" toport="second" />
+		<edge fromnode="negate_rotate_factor" tonode="add_rotate_factors" fromport="out" toport="first" />
+		<edge fromnode="right_trigger" tonode="add_rotate_factors" fromport="out" toport="second" />
+		<edge fromnode="add_rotate_factors" tonode="mult_angular_velocity" fromport="out" toport="first" />
+		<edge fromnode="angular_velocity" tonode="mult_angular_velocity" fromport="value" toport="second" />
+
+		<edge fromnode="mult_angular_velocity" tonode="navigator" fromport="out" toport="angular_velocity" />
+
+		<!-- Navigation edges-->
+		<edge fromnode="timer" tonode="navigator" fromport="dt" toport="dt"/>
+		<edge fromnode="get_transform" tonode="navigator" fromport="transform" toport="transform"/>
+		<edge fromnode="navigator" tonode="set_transform" fromport="transform" toport="in"/>
+		
+	</edges>
+</module>

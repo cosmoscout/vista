@@ -1,0 +1,52 @@
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!-- data source... a mouse -->
+		<node name="mouse" type="DriverSensor">
+			<param name="sensor_index" value="0"/>
+			<param name="driver" value="MOUSE"/>
+		</node>
+		
+		<!-- project the necessary information from the mouse history -->
+		<node name="project_mouse" type="HistoryProject">
+			<param name="project">POSITION, LEFT_BUTTON, RIGHT_BUTTON, X_POS, Y_POS</param>
+		</node>
+
+		<node name="project_mode" type="ConstantValue[int]">
+			<param name="mode" value="0"/>
+		</node>	
+
+		<node name="intention_transform" type="SetTransform">
+			<param name="object" value="INTENTION_NODE"/>
+		</node>
+		
+		<node name="3dmouse_matrix" type="MatrixCompose"/>
+		
+		<node name="3dmouse" type="3DMouseTransform">
+			<param name="displaysystem" value="MAIN"/>
+			<param name="viewport" value="MAIN_VIEWPORT"/>
+			<param name="in_world_coordinates" value="TRUE"/>
+			<param name="origin_offset_along_ray" value="1"/>
+		</node>
+		
+		<node name="debug_pos" type="TextOverlay[VistaVector3D]"/>
+		<node name="debug_quat" type="TextOverlay[VistaQuaternion]"/>
+		<node name="debug_mat" type="TextOverlay[VistaTransformMatrix]"/>
+		
+	</graph>
+	<edges>
+		<edge fromnode="mouse" tonode="project_mouse" fromport="history" toport="history"/>
+		<edge fromnode="project_mode" tonode="project_mouse" fromport="value" toport="sampling_mode"/>
+	
+		<edge fromnode="project_mouse" tonode="3dmouse" fromport="X_POS" toport="x_pos"/>
+		<edge fromnode="project_mouse" tonode="3dmouse" fromport="Y_POS" toport="y_pos"/>
+		
+		<edge fromnode="3dmouse" tonode="3dmouse_matrix" fromport="position" toport="translation"/>
+		<edge fromnode="3dmouse" tonode="3dmouse_matrix" fromport="orientation" toport="orientation"/>
+				
+		<edge fromnode="3dmouse_matrix" tonode="intention_transform" fromport="out" toport="in"/>
+		
+		<edge fromnode="3dmouse_matrix" tonode="debug_mat" fromport="out" toport="value"/>
+	</edges>
+</module>

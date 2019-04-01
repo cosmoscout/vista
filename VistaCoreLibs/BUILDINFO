@@ -1,0 +1,21 @@
+Vista uses CMake (www.cmake.org/) with version 2.8.5 or greater.
+Furthermore, it requires custom cmake extensions called VistaCMakeCommon, which can be checked out from the svn or downloaded from sourceforge.
+To ensure cmake finds the VistaCMakeCommon, either define the VISTA_CMAKE_COMMON environment variable, set the CMakeModulePath appropriately, or place it as a subfolder under the VistaCoreLibs main directory, or the ViSTA directory if building together with VistaDemo.
+
+External dependencies:
+The main external dependencies are OpenSG 1.8 and glut (recommended: freeglut), which are needed for the Kernel and KernelOpenSGExt.
+Additional dependencies are used by optional device driver packages, which can be enabled or disabled in the cmake gui.
+Furthermore, the Kernel can be built with ZeroMQ support for reliable multicasting.
+CMake will try to find these dependencies automatically. For this, the depdendencies should be located in the CMakeModulePath or a path defined in the VISTA_EXTERNAL_LIBS environment variable.
+To find the dependencies, they should follow a special deployment rule. They are searched for in all folders of type
+  */NAME
+  */NAME/HWARCH
+  */NAME-VERSION
+  */NAME-VERSION/HWARCH
+  */NAME/NAME-VERSION
+  */NAME/NAME-VERSION/HWARCH
+where NAME is the name version of the package (either all-upper, all-lower, or as in dependency), VERSION is the version (e.g. 1.4, 2.8.5).
+The HWARCH subdir is important to differenciate different build types for different architecures, e.g. win32, win32.vc9, win32-x64.vc10, LINUX, LINUX.X86_64.
+
+Configure Vista with cmake and build it using the generated project files. If you want to install it, choose an appropriate CMAKE_INSTALL_PREFIX in cmake, and the install using 'make install' or by building the INSTALL project in msvc.
+  

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioUserFile
+	ProjectType="Visual C++"
+	Version="@_VERSION_STRING@"
+	ShowAllFiles="false"
+	>
+	<Configurations>
+		<Configuration
+			Name="Debug|@_CONFIG_NAME@"
+			>
+			<DebugSettings
+				Command="$(TargetPath)"
+				WorkingDirectory="@_WORK_DIR@"
+				Environment="@_ENVIRONMENT@"
+				CommandArguments="@_COMMANDARGS@"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|@_CONFIG_NAME@"
+			>
+			<DebugSettings
+				Command="$(TargetPath)"
+				WorkingDirectory="@_WORK_DIR@"
+				Environment="@_ENVIRONMENT@"
+				CommandArguments="@_COMMANDARGS@"
+			/>
+		</Configuration>
+		<Configuration
+			Name="MinSizeRel|@_CONFIG_NAME@"
+			>
+			<DebugSettings
+				Command="$(TargetPath)"
+				WorkingDirectory="@_WORK_DIR@"
+				Environment="@_ENVIRONMENT@"
+				CommandArguments="@_COMMANDARGS@"
+			/>
+		</Configuration>
+		<Configuration
+			Name="RelWithDebInfo|@_CONFIG_NAME@"
+			>
+			<DebugSettings
+				Command="$(TargetPath)"
+				WorkingDirectory="@_WORK_DIR@"
+				Environment="@_ENVIRONMENT@"
+				CommandArguments="@_COMMANDARGS@"
+			/>
+		</Configuration>
+	</Configurations>
+</VisualStudioUserFile>

@@ -1,0 +1,41 @@
+<!-- $Id: flystick.xml,v 1.3 2008/12/09 16:15:14 dr165799 Exp $ -->
+<module>
+  <nodespace>
+  </nodespace>
+  <graph>
+    <!-- data source... a flystick -->
+    <node name="timedpos" type="TimedPosition">
+      <param name="period" value="4"/>
+      <param name="radius" value="0.5"/>
+    </node>
+   
+    <node name="spatialhandler" type="Action">
+      <param name="object" value="spatial_handler1"/>
+    </node>
+
+    <node name="pos-to-string" type="TypeConvert[VistaVector3D,string]"/>
+
+    <node name="logger" type="Logger">
+      <param name="prefix" value="timed"/>
+      <param name="writeheader" value="true"/>
+      <param name="logtoconsole" value="false"/>
+      <param name="writetime" value="true"/>
+      <param name="writediff" value="true"/>
+    </node>
+
+    <node name="filename" type="ConstantValue[string]">
+      <param name="value" value="out.log"/>
+    </node>
+    
+   
+  </graph>
+	<edges>
+    <!-- connect stick to project -->
+    <edge fromnode="timedpos" tonode="spatialhandler" fromport="position" toport="position"/>
+
+    <edge fromnode="timedpos" tonode="pos-to-string" fromport="position" toport="in"/>
+    <edge fromnode="pos-to-string" tonode="logger" fromport="out" toport="pos"/>
+    <edge fromnode="filename" tonode="logger" fromport="value" toport="__filename"/>
+   
+	</edges>
+</module>

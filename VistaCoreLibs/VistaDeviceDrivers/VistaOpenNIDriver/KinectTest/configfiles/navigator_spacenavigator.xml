@@ -1,0 +1,73 @@
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<node name="spacenav_source" type="DriverSensor">
+			<param name="sensor" value="0"/>
+			<param name="driver" value="6DMOUSE"/>
+		</node>
+
+		<node name="spacenav" type="HistoryProject">
+			<param name="project">POSITION, ORIENTATION, BUTTON_1</param>
+		</node>
+
+
+		<node name="timer" type="Timer"/>
+
+		<node name="linear_velocity" type="ConstantValue[float]">
+			<param name="value" value="2.0"/>
+		</node>
+
+		<node name="angular_velocity" type="ConstantValue[float]">
+			<param name="value" value="6.28318"/>
+		</node>		
+
+		<node name="vector_scale" type="ConstantValue[float]">
+			<param name="value" value="0.025"/>
+		</node>
+
+		<node name="normalize" type="Multiply[float,VistaVector3D]"/>
+
+
+		<node name="get_transform" type="GetTransform">
+			<param name="object" value="CAM:MAIN"/>
+		</node>
+
+		<node name="set_transform" type="SetTransform">
+			<param name="object" value="CAM:MAIN"/>
+		</node>
+
+		<node name="navigator" type="Navigation"/>
+
+		<node name="button1_change_detect" type="ChangeDetect[bool]"/>
+		<node name="button1_convert" type="TypeConvert[bool,int]"/>
+		<node name="navmode_counter" type="ModuloCounter[int]">
+			<param name="initial_value" value="2"/>
+			<param name="modulo" value="3"/>
+		</node>
+	</graph>
+	<edges>
+		<edge fromnode="spacenav_source" tonode="spacenav" fromport="history" toport="history"/>
+		<!--<edge fromnode="spacenav_source" tonode="dd" fromport="history" toport="history"/>-->
+
+		<edge fromnode="vector_scale" tonode="normalize" fromport="value" toport="first"/>
+		<edge fromnode="spacenav" tonode="normalize" fromport="POSITION" toport="second"/>
+
+		<!-- calculate and set velocities -->
+		<edge fromnode="linear_velocity" tonode="navigator" fromport="value" toport="linear_velocity"/>
+		<edge fromnode="angular_velocity" tonode="navigator" fromport="value" toport="angular_velocity"/>
+
+		<edge fromnode="normalize" tonode="navigator" fromport="out" toport="translation"/>
+		<edge fromnode="spacenav"  tonode="navigator" fromport="ORIENTATION" toport="rotation"/>
+		<edge fromnode="get_transform" tonode="navigator" fromport="transform" toport="transform"/>
+		<edge fromnode="timer" tonode="navigator" fromport="dt" toport="dt"/>
+
+		<edge fromnode="navigator" tonode="set_transform" fromport="transform" toport="in"/>		
+
+		<edge fromnode="spacenav" tonode="button1_change_detect" fromport="BUTTON_1" toport="in" />
+		<edge fromnode="button1_change_detect" tonode="button1_convert" fromport="out" toport="in" />
+		<edge fromnode="button1_convert" tonode="navmode_counter" fromport="out" toport="delta" />
+		<edge fromnode="navmode_counter" tonode="navigator" fromport="out" toport="navigation_mode"/>
+	</edges>
+</module>

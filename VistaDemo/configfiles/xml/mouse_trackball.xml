@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--=========================================================================-->
+<!-- This nodes implements the default mouse navigation with trackball,      -->
+<!-- panning and zooming. The behavior is continous. You can scale the speed -->
+<!-- by changing the transform matrices.                                     -->
+<!--=========================================================================-->
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!--=========================================================================-->
+		<!-- hardware stuff                                                          -->
+		<!--=========================================================================-->
+		<!-- data source... a mouse -->
+		<node name="mouse" type="DriverSensor">
+			<param name="sensor_index" value="0"/>
+			<param name="driver" value="MOUSE"/>
+		</node>
+		<!-- project the necessary information from the mouse history -->
+		<!-- in this demo, we are not interested in the mouse history,
+				 but only in the last value (LAZYSAMPLING), but for demonstration
+				 purposes, we simply extract every attribute we can get from
+				 the mouse driver -->
+		<node name="project_mouse" type="HistoryProject">
+			<param name="project">POSITION, LEFT_BUTTON, RIGHT_BUTTON, MIDDLE_BUTTON</param>
+		</node>
+		<!-- this will give the sampling mode to the history project
+				 node, a value of "0" means "LAZY" while a value of "1"
+				 means "HOT". There is no other sampling value currently -->
+		<node name="project_mode" type="ConstantValue[int]">
+			<param name="value" value="0"/>
+		</node>
+		<!-- DONE -->
+
+		<!--=========================================================================-->
+		<!-- timer node                                                              -->
+		<!--=========================================================================-->
+
+		<!-- we need the timer for the time-delta between graph evaluations, to make
+		 the movement frame-rate independant.
+		-->
+		<node name="timer" type="Timer" />
+
+		<!--=========================================================================-->
+		<!-- normalize mouse position                                                -->
+		<!--=========================================================================-->
+		<!-- get normalize source -->
+		<node name="normwindow" type="WindowSource">
+			<param name="value" value="MAIN_WINDOW"/>
+		</node>
+		<!-- the window spits out ints as attribs, we need floats for the normalize node -->
+		<node name="conv_w" type="TypeConvert[int,float]"/>
+		<node name="conv_h" type="TypeConvert[int,float]"/>
+		<!-- all these params are optional and can also be set by an inport -->
+		<node name="normalize" type="3DNormalize">
+			<param name="min_x" value="-1"/>
+			<param name="min_y" value="-1"/>
+			<param name="min_z" value="0"/>
+			<param name="target_w" value="2"/>
+			<param name="target_h" value="2"/>
+			<param name="target_d" value="0"/>
+			<param name="flip_y" value="1"/>
+		</node>
+		<!-- setup the operations of the graph -->
+		<node name="position_to_norm" type="Multiply[VistaTransformMatrix,VistaVector3D]"/>
+
+		<!--=========================================================================-->
+		<!-- ConstantValue nodes                                                     -->
+		<!--=========================================================================-->
+		<node name="value-0" type="ConstantValue[float]">
+			<param name="value" value="0.0"/>
+		</node>
+		<node name="value-minus-1" type="ConstantValue[float]">
+			<param name="value" value="-1.0"/>
+		</node>
+
+		<!-- set your desired panning/zooming factor here. -->
+		<node name="value-scale" type="ConstantValue[float]">
+			<param name="value" value="8.0"/>
+		</node>
+
+		<node name="true" type="ConstantValue[bool]">
+			<param name="value" value="true"/>
+		</node>
+		<node name="rotation_center" type="ConstantValue[VistaVector3D]">
+			<param name="value" value="0,0,0,1"/>
+		</node>
+
+		<!--=========================================================================-->
+		<!-- rotation nodes                                                          -->
+		<!--=========================================================================-->
+
+		<!-- this node holds the value when the button was first pressed at its
+		 outport, thus enabling to retrieve the grab point for the trackball from the
+		 moment the button was first pressed.
+		-->
+		<node name="rot_grab_condition" type="ConditionalRoute"/>
+
+		<!-- introduces a delay of 1 graph evaluation so we can in each frame calculate
+		 the difference to the last position.
+		-->
+		<node name="coord_delay" type="Delay[VistaVector3D]"/>
+
+		<!-- this node does the substraction of the and the current position with the
+		 position in the last graph evaluation.
+		-->
+		<node name="rot_diff_coords" type="Substract[VistaVector3D]"/>
+
+		<!-- a gate which opens if the button is pressed, to make the rotation offset
+		 (which is calculated as the coord difference between graph iterations)
+		 active for the time the button is pressed.
+		-->
+		<node name="rot_offset_condition" type="ConditionalRoute"/>
+
+		<!-- inverts the value of the button press, since we want the conditionalroute
+		 to route (_not_ keep the old value) when the button is _not_ pressed, i.e.
+		 to keep the old value as long as the button is pressed.
+		-->
+		<node name="rot_button_invert" type="Invert[bool]"/>
+
+		<!-- the latestupdate node functions realizes a default value for the trigger inport
+		 of the conditionalroute node. since the default value we get from the
+		 historyproject (as long as there are no measures) is false, but we want an
+		 initial true, we connect a constantvalue true (which fires once on initialization)
+		 and the button outport, which overrides the default as soon as there are
+		 driver measures. 
+		-->
+		<node name="rot_condition_la" type="LatestUpdate[bool]"/>
+
+		<!-- inverts the coordinates for the trackball, to get a non-inverted mouse
+		 behavior. this is of course a matter of taste as well of wether the resulting
+		 transformation is applied to the camera or an object. tune this as you like.
+		-->
+		<node name="rot_invert_offset" type="Multiply[float,VistaVector3D]"/>
+
+		<!-- calculates the actual (incremental) transformation from the normalized, 
+		 time-scaled input coordinates, the initial "grab point" and the center
+		 of rotation.
+		-->
+		<node name="trackball_trans" type="Trackball" />
+
+		<!-- the result is a transform that has to be applied to an object, in this
+		 case, the camera.
+		-->
+		<node name="apply_rotation" type="ApplyTransform">
+			<param name="object" value="CAM:MAIN"/>
+			<param name="local" value="true"/>
+		</node>
+
+		<!--=========================================================================-->
+		<!-- Pan nodes                                                               -->
+		<!--=========================================================================-->
+
+		<!-- the nodes' function is analog to the rotation case, see above -->
+
+		<node name="pan_condition" type="ConditionalRoute"/>
+
+		<node name="pan_diff_coords" type="Substract[VistaVector3D]"/>
+
+		<!-- multiplication with the time-delta for frame-rate independent movement.
+		-->
+		<node name="pan_diff_timed" type="Multiply[double,VistaVector3D]"/>
+
+		<!-- multiplication with a custom multiplier for different movement speeds.
+		 this depends on the application and the scale of your scene.
+		-->
+		<node name="pan_diff_scaled" type="Multiply[float,VistaVector3D]"/>
+
+		<node name="pan_button_invert" type="Invert[bool]"/>
+		<node name="pan_condition_la" type="LatestUpdate[bool]"/>
+
+		<!-- instead of using the trackball node, here we just compose a matrix from
+		 our screen coordinate offet, which is then applied to the camera as a
+		 local transformation to realize panning parallel to the screen surface.
+		 -->
+		<node name="pan_matrix" type="MatrixCompose"/>
+
+		<node name="apply_panning" type="ApplyTransform">
+			<param name="object" value="CAM:MAIN"/>
+			<param name="local" value="true"/>
+		</node>
+
+		<!--=========================================================================-->
+		<!-- Zoom nodes                                                              -->
+		<!--=========================================================================-->
+
+		<!-- the nodes' function is analog to the panning case, see above -->
+
+		<node name="zoom_condition" type="ConditionalRoute"/>
+
+		<node name="zoom_diff_coords" type="Substract[VistaVector3D]"/>
+		<node name="zoom_diff_timed" type="Multiply[double,VistaVector3D]"/>
+
+		<node name="zoom_diff_scaled" type="Multiply[float,VistaVector3D]"/>
+
+		<node name="zoom_button_invert" type="Invert[bool]"/>
+		<node name="zoom_condition_la" type="LatestUpdate[bool]"/>
+
+		<!-- for zooming, we additionally multiply the following matrix to map the
+		 y coordinate to -z for panning (actually it's not a zoom) in the viewer
+		 direction, i.e. orthogonal to the screen surface.
+		 -->
+		<node name="zoom_y_to_z" type="Multiply[VistaTransformMatrix,VistaVector3D]"/>
+		<node name="zoom_y_to_z_matrix" type="ConstantValue[VistaTransformMatrix]">
+			<param name="value" value="0, 0,0,0,
+								 0, 0,0,0,
+								 0,-1,0,0,
+								 0, 0,0,1"/>
+		</node>
+
+
+		<node name="zoom_matrix" type="MatrixCompose"/>
+
+		<node name="apply_zoom" type="ApplyTransform">
+			<param name="object" value="CAM:MAIN"/>
+			<param name="local" value="true"/>
+		</node>
+
+		<!--=========================================================================-->
+		<!-- DEBUG                                                                   -->
+		<!--=========================================================================-->
+		<!--
+		 <node name="debug" type="DeviceDebug"/>
+		 <node name="debugv3d" type="TextOverlay[VistaVector3D]"/>
+		 <node name="debugButton" type="TextOverlay[bool]"/>
+		 -->
+
+		<!--
+		 <node name="debugv3d" type="TextOverlay[VistaVector3D]">
+		 <param name="red" value="255" />
+		 <param name="size" value="40" />
+		 </node>
+		 -->
+	</graph>
+	<edges>
+
+		<!--=========================================================================-->
+		<!-- hardware stuff                                                          -->
+		<!--=========================================================================-->
+		<edge fromnode="mouse" tonode="project_mouse" fromport="history" toport="history"/>
+		<edge fromnode="project_mode" tonode="project_mouse" fromport="value" toport="sampling_mode"/>
+
+		<!--=========================================================================-->
+		<!-- normalize mouse position                                                -->
+		<!--=========================================================================-->
+		<edge fromnode="normwindow" tonode="conv_w" fromport="win_w" toport="in"/>
+		<edge fromnode="normwindow" tonode="conv_h" fromport="win_h" toport="in"/>
+		<edge fromnode="conv_w" tonode="normalize" fromport="out" toport="source_w"/>
+		<edge fromnode="conv_h" tonode="normalize" fromport="out" toport="source_h"/>
+		<edge fromnode="value-0" tonode="normalize" fromport="value" toport="source_d"/>
+		<edge fromnode="normalize"     tonode="position_to_norm" fromport="transform" toport="first"/>
+		<edge fromnode="project_mouse" tonode="position_to_norm" fromport="POSITION"  toport="second"/>
+
+		<!--=========================================================================-->
+		<!-- rotation                                                                -->
+		<!--=========================================================================-->
+		<edge fromnode="project_mouse" tonode="rot_button_invert" fromport="LEFT_BUTTON" toport="in"/>
+
+		<edge fromnode="true"              tonode="rot_condition_la" fromport="value" toport="in_0"/>
+		<edge fromnode="rot_button_invert" tonode="rot_condition_la" fromport="out"   toport="in_1"/>
+
+		<edge fromnode="rot_condition_la" tonode="rot_grab_condition" fromport="out" toport="trigger"/>
+		<edge fromnode="position_to_norm" tonode="rot_grab_condition" fromport="out" toport="coords"/>
+
+		<edge fromnode="position_to_norm" tonode="coord_delay" fromport="out" toport="in"/>
+
+		<edge fromnode="position_to_norm" tonode="rot_diff_coords" fromport="out" toport="first"/>
+		<edge fromnode="coord_delay"      tonode="rot_diff_coords" fromport="out" toport="second"/>
+
+		<edge fromnode="rot_diff_coords" tonode="rot_offset_condition" fromport="out"         toport="offset"/>
+		<edge fromnode="project_mouse"   tonode="rot_offset_condition" fromport="LEFT_BUTTON" toport="trigger"/>
+
+		<edge fromnode="value-minus-1"        tonode="rot_invert_offset" fromport="value"  toport="first"/>
+		<edge fromnode="rot_offset_condition" tonode="rot_invert_offset" fromport="offset" toport="second"/>
+
+		<edge fromnode="rot_invert_offset"  tonode="trackball_trans" fromport="out"    toport="offset"/>
+		<edge fromnode="rotation_center"    tonode="trackball_trans" fromport="value"  toport="center"/>
+		<edge fromnode="rot_grab_condition" tonode="trackball_trans" fromport="coords" toport="grab"/>
+
+		<edge fromnode="trackball_trans" tonode="apply_rotation" fromport="transform" toport="in"/>
+
+		<!--=========================================================================-->
+		<!-- panning                                                                 -->
+		<!--=========================================================================-->
+		<edge fromnode="project_mouse" tonode="pan_button_invert" fromport="RIGHT_BUTTON" toport="in"/>
+
+		<edge fromnode="true"              tonode="pan_condition_la" fromport="value" toport="in_0"/>
+		<edge fromnode="pan_button_invert" tonode="pan_condition_la" fromport="out" toport="in_1"/>
+
+		<edge fromnode="pan_condition_la" tonode="pan_condition" fromport="out" toport="trigger"/>
+		<edge fromnode="position_to_norm" tonode="pan_condition" fromport="out" toport="coords"/>
+
+		<edge fromnode="position_to_norm" tonode="pan_diff_coords" fromport="out" toport="first"/>
+		<edge fromnode="pan_condition"    tonode="pan_diff_coords" fromport="coords" toport="second"/>
+
+		<edge fromnode="pan_diff_coords" tonode="pan_diff_timed" fromport="out" toport="second"/>
+		<edge fromnode="timer"           tonode="pan_diff_timed" fromport="dt"  toport="first"/>
+
+		<edge fromnode="value-scale"    tonode="pan_diff_scaled" fromport="value" toport="first"/>
+		<edge fromnode="pan_diff_timed" tonode="pan_diff_scaled" fromport="out"   toport="second"/>
+
+		<edge fromnode="pan_diff_scaled" tonode="pan_matrix" fromport="out" toport="translation"/>
+
+		<edge fromnode="pan_matrix" tonode="apply_panning" fromport="out" toport="in"/>
+
+		<!--=========================================================================-->
+		<!-- zooming                                                                 -->
+		<!--=========================================================================-->
+		<edge fromnode="project_mouse" tonode="zoom_button_invert" fromport="MIDDLE_BUTTON" toport="in"/>
+
+		<edge fromnode="true"               tonode="zoom_condition_la" fromport="value" toport="in_0"/>
+		<edge fromnode="zoom_button_invert" tonode="zoom_condition_la" fromport="out" toport="in_1"/>
+
+		<edge fromnode="zoom_condition_la" tonode="zoom_condition" fromport="out" toport="trigger"/>
+		<edge fromnode="position_to_norm"  tonode="zoom_condition" fromport="out" toport="coords"/>
+
+		<edge fromnode="position_to_norm" tonode="zoom_diff_coords" fromport="out" toport="first"/>
+		<edge fromnode="zoom_condition"   tonode="zoom_diff_coords" fromport="coords" toport="second"/>
+
+		<edge fromnode="zoom_diff_coords" tonode="zoom_diff_timed" fromport="out" toport="second"/>
+		<edge fromnode="timer"            tonode="zoom_diff_timed" fromport="dt"  toport="first"/>
+
+		<edge fromnode="value-scale"     tonode="zoom_diff_scaled" fromport="value" toport="first"/>
+		<edge fromnode="zoom_diff_timed" tonode="zoom_diff_scaled" fromport="out" toport="second"/>
+
+		<edge fromnode="zoom_diff_scaled"   tonode="zoom_y_to_z" fromport="out" toport="second"/>
+		<edge fromnode="zoom_y_to_z_matrix" tonode="zoom_y_to_z" fromport="value" toport="first"/>
+
+		<edge fromnode="zoom_y_to_z" tonode="zoom_matrix" fromport="out" toport="translation"/>
+
+		<edge fromnode="zoom_matrix" tonode="apply_zoom" fromport="out" toport="in"/>
+
+		<!--=========================================================================-->
+		<!-- DEBUG                                                                   -->
+		<!--=========================================================================-->
+
+		<!--   <edge fromnode="mouse" tonode="debug" fromport="history" toport="history"/>-->
+		<!--   <edge fromnode="camera_source" tonode="debugv3d" fromport="position" toport="value"/>-->
+		<!--   <edge fromnode="timer" tonode="debugDouble" fromport="dt" toport="value"/> -->
+
+	</edges>
+</module>

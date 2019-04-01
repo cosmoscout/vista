@@ -1,0 +1,25 @@
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		 <node name="head_source" type="DriverSensor">
+			<param name="sensor_name" value="TRACKER" />
+			<param name="type" value="TRACKER" />		
+			<param name="driver" value="OCULUS"/>
+		</node>
+		<node name="head" type="HistoryProject">
+			<param name="project">PREDICTED_ORIENTATION</param>
+		</node>
+
+		<node name="ucp" type="ViewerSink">
+			<param name="displaysystem" value="MAIN"/>
+		</node>
+	</graph>
+
+	<edges>
+		<edge fromnode="head_source" tonode="head" fromport="history" toport="history"/>
+
+        <edge fromnode="head" tonode="ucp" fromport="PREDICTED_ORIENTATION" toport="orientation"/>
+	</edges>
+
+</module>

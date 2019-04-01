@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<module>
+	<graph>
+		<node name="source" type="DriverSensor">
+			<param name="driver" value="WIIMOTE"/>
+			<param name="type" value="WIIMOTE"/>
+			<param name="sensor" value="0"/>
+		</node>
+		<node name="wiimote" type="HistoryProject">
+			<param name="project">
+				BUTTON, ACCELERATION
+			</param>
+		</node>
+		<node name="cdt_0" type="ChangeDetect[double]"/>
+		<node name="d2s" type="TypeConvert[double,string]"/>
+		<node name="p_btn0" type="print"/>
+		<node name="cdt_q" type="ChangeDetect[double]"/>
+		<node name="quitter" type="quitter"/>
+		<node name="a2s" type="TypeConvert[VistaVector3D,string]"/>
+		<node name="a_print" type="print"/>
+		<node name="state-source" type="DriverSensor">
+			<param name="driver" value="WIIMOTE"/>
+			<param name="type" value="STATUS"/>
+			<param name="sensor" value="0"/>
+		</node>
+		<node name="status" type="HistoryProject">
+			<param name="project">
+				EXPANSIONSTATE,BATTERY
+			</param>
+		</node>
+		<node name="s2s" type="TypeConvert[int,string]"/>
+		<node name="st_print" type="print"/>
+		<node name="bt2s" type="TypeConvert[float,string]"/>
+		<node name="bt_print" type="print"/>
+	</graph>
+	<edges>
+		<edge fromnode="source" fromport="history" tonode="wiimote" toport="history"/>
+		<edge fromnode="wiimote" fromport="BUTTON_0" tonode="cdt_0" toport="in"/>
+		<edge fromnode="cdt_0" fromport="out" tonode="d2s" toport="in"/>
+		<edge fromnode="d2s" fromport="out" tonode="p_btn0" toport="in"/>
+		<edge fromnode="wiimote" fromport="BUTTON_6" tonode="cdt_q" toport="in"/>
+		<edge fromnode="cdt_q" fromport="out" tonode="quitter" toport="in"/>
+		<edge fromnode="wiimote" fromport="ACCELERATION" tonode="a2s" toport="in"/>
+		<edge fromnode="a2s" fromport="out" tonode="a_print" toport="in"/>
+		<edge fromnode="state-source" fromport="history" tonode="status" toport="history"/>
+		<edge fromnode="status" fromport="EXPANSIONSTATE" tonode="s2s" toport="in"/>
+		<edge fromnode="s2s" fromport="out" tonode="st_print" toport="in"/>
+		<edge fromnode="status" fromport="BATTERY" tonode="bt2s" toport="in"/>
+		<edge fromnode="bt2s" fromport="out" tonode="bt_print" toport="in"/>
+	</edges>
+</module>

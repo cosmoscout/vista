@@ -1,0 +1,23 @@
+<!-- $Id: mouse.xml,v 1.1 2008/10/31 18:10:07 dr165799 Exp $ -->
+<module>
+  <nodespace>
+  </nodespace>
+  <graph>
+    <!-- data sourcee -->
+    <node name="driver" type="DriverSensor">
+		<param name="sensor_name" value="INFO" />
+		<param name="type" value="HMDINFO" />		
+		<param name="driver" value="OCULUS"/>
+    </node>
+	<node name="dd" type="DeviceDebug">
+		<param name="viewport" value="VIEWPORT_OCULUS"/>
+	</node>
+  
+  </graph>
+  <edges>
+
+    
+    <edge fromnode="driver" tonode="dd" fromport="history" toport="history"/>
+
+  </edges>
+</module>

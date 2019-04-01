@@ -1,0 +1,42 @@
+VistaCHAI3DHapticDevicesDriver
+-------------
+
+
+GENERAL INFO
+
+This is a abstract driver which uses the CHAI3D framework to connect
+various haptic devices with the ViSTA software library for virtual
+reality applications. 
+
+
+DEPENDENCIES
+
+You need version 2.0.0 of CHAI3D to build this driver module. You
+can grab it on the author's site (http://www.chai3d.org/). Other versions of the
+library are not tested yet and may or may not work as well. 
+
+
+LICENSING
+
+This plugin employs the CHAI3D library (http://www.chai3d.org/) to
+interface with different hardware via Firewire or Parallelport,
+against which it links dynamically.
+
+USAGE
+
+As already mentionend you need the CHAI3D library version 2.0.0. Additionally you have to add 
+"%CHAI3D_ROOT%\lib\msvc9" and "%CHAI3D_ROOT%\bin" to your additional-link-directories and path-environment-variable.
+If you use the driver in combination with a Phantom device, you additionally have to add %OPENHAPTICS_ROOT%\lib to your path-environment-variable.
+The driver is only tested under windows 32 bit and with the following devices: 
+- Virtual Device (Should start automatically if no other device is connected)
+- PHANTOM omni
+- PHANTOM Premium 1.5 6DOF
+- Novint Falcon
+
+
+
+
+
+
+
+

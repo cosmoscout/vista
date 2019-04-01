@@ -1,0 +1,119 @@
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+	
+	<!-- Getting the data from the device -->
+	<node name="phantom-source" type="DriverSensor">
+		<param name="sensor_index" value="0"/>
+		<param name="driver" value="PHANTOM"/>
+	</node>
+
+	<!-- sample the data to the history -->
+	<node name="phantom" type="HistoryProject">
+    	<param name="project">POSITION,ORIENTATION</param>
+	</node>
+	
+	<!-- Read workspace in phantom coords -->
+	<node name="PhantomWorkspace" type="ReadWorkspace">
+		<param name="device_id" value="PHANTOM"/>
+		<param name="workspace" value="USABLEWORKSPACE"/>
+	</node>
+	
+    <node name="wao" type="Action">
+      <param name="object" value="WorkspaceActionObject" />
+    </node>
+	
+	<node name="scale" type="ConstantValue[float]">
+		<param name="value" value="0.01"/>
+	</node>
+	
+	<node name="one" type="ConstantValue[float]">
+		<param name="value" value="1"/>
+	</node>
+	
+	<!-- C O N S T R A I N T -->
+	<node name="constraint" type="planeconstraint">
+		<param name="device_id" value="PHANTOM"/>
+	</node>
+	
+	<node name="transformCam" type="GetTransform">
+		<param name="object" value="CAM:MAIN"/>
+	</node>
+	
+	<node name="multO" type="Multiply[VistaTransformMatrix,VistaVector3D]"/>
+	<node name="divO" type="Divide[float]"/>
+	<node name="multN" type="Multiply[VistaTransformMatrix,VistaVector3D]"/>
+	<node name="scaleO" type="Multiply[float,VistaVector3D]"/>
+	
+	<node name="invert" type="Invert[VistaTransformMatrix]"/>
+	
+	<node name="force-control" type="ForceFeedback">
+		<param name="device_id" value="PHANTOM"/>
+	</node>
+	
+	<!-- point -->
+	<node name="planeO" type="ConstantValue[VistaVector3D]">
+		<param name="value" value="0,0,0,1"/>
+	</node>
+	
+	<!-- vector => last component must be set explicit to zero -->
+	<node name="planeN" type="ConstantValue[VistaVector3D]">
+		<param name="value" value="0,1,0,0"/>
+	</node>
+	
+	<node name="stiffness" type="ConstantValue[float]">
+		<param name="value" value="0.75"/>
+	</node>
+	
+	<node name="damping" type="ConstantValue[float]">
+		<param name="value" value="0.0"/>
+	</node>
+	
+	<!-- D E B U G -->
+	<node name="phantom_debug" type="DeviceDebug">
+		<param name="showlist" value="POSITION,ORIENTATION,FORCE,BUTTON_1,BUTTON_2,INKWELLSWITCH"/>
+	</node>
+	
+	</graph>
+
+	<edges>
+
+		<edge fromnode="phantom-source" tonode="phantom" fromport="history" toport="history"/>
+	
+		<edge fromnode="phantom" tonode="wao" fromport="POSITION" toport="handle_position"/>
+		<edge fromnode="phantom" tonode="wao" fromport="ORIENTATION" toport="handle_orientation"/>
+		
+		<edge fromnode="PhantomWorkspace" tonode="wao" fromport="min_x" toport="min_x"/>
+		<edge fromnode="PhantomWorkspace" tonode="wao" fromport="min_y" toport="min_y"/>
+		<edge fromnode="PhantomWorkspace" tonode="wao" fromport="min_z" toport="min_z"/>
+		<edge fromnode="PhantomWorkspace" tonode="wao" fromport="max_x" toport="max_x"/>
+		<edge fromnode="PhantomWorkspace" tonode="wao" fromport="max_y" toport="max_y"/>
+		<edge fromnode="PhantomWorkspace" tonode="wao" fromport="max_z" toport="max_z"/>
+		<edge fromnode="scale" tonode="wao" fromport="value" toport="scale"/>
+		
+		<!-- constraints -->
+		<!-- total efficiency ;) -->
+		<!-- Muliply with the cam's inverse to get the correct vector -->
+		<edge fromnode="transformCam" tonode="invert" fromport="transform" toport="in"/>
+		<edge fromnode="invert" tonode="multO" fromport="out" toport="first"/>
+		<edge fromnode="planeO" tonode="multO" fromport="value" toport="second"/>
+		<edge fromnode="invert" tonode="multN" fromport="out" toport="first"/>
+		<edge fromnode="planeN" tonode="multN" fromport="value" toport="second"/>
+		<!-- Divide origin by scale to correct the scale -->
+		<edge fromnode="one" tonode="divO" fromport="value" toport="first"/>
+		<edge fromnode="scale" tonode="divO" fromport="value" toport="second"/>
+		
+		<edge fromnode="divO" tonode="scaleO" fromport="out" toport="first"/>
+		<edge fromnode="multO" tonode="scaleO" fromport="out" toport="second"/>
+		<edge fromnode="scaleO" tonode="constraint" fromport="out" toport="origin"/>
+		<edge fromnode="multN" tonode="constraint" fromport="out" toport="normal"/>
+		
+		<edge fromnode="stiffness" tonode="constraint" fromport="value" toport="stiffness"/>
+		<edge fromnode="damping" tonode="constraint" fromport="value" toport="damping"/>
+		
+		<!-- D E B U G -->
+		<edge fromnode="phantom-source" tonode="phantom_debug" fromport="history" toport="history"/>
+	</edges>
+</module>
+		 

@@ -1,0 +1,67 @@
+/*============================================================================*/
+/*                              ViSTA VR toolkit                              */
+/*               Copyright (c) 1997-2010 RWTH Aachen University               */
+/*============================================================================*/
+/*                                  License                                   */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU Lesser General Public License as published  */
+/*  by the Free Software Foundation, either version 3 of the License, or      */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU Lesser General Public License for more details.                       */
+/*                                                                            */
+/*  You should have received a copy of the GNU Lesser General Public License  */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*============================================================================*/
+
+The VistaDemos are developed to show you how to work with ViSTA VR Toolkit.
+All Demos should work with the release. If they do not work correctly wih the
+tagged version please contact vistavrtoolkit-general@lists.sourceforge.net.
+
+To get an idea of where you can start use the following list.
+
+ * 01KeyboardDemo			Demonstrates the use of the keyboard.
+ * 02GeometryDemo			Demonstrate creation of primitive geometries.
+ * 03TextDemo				Shows how to add 2D and 3D text.
+ * 04LoadDemo				Shows you how to load a 3D model from a file.
+ * 05InteractionDemo		Demonstrates interaction with a trackball metaphor.
+ * 06CameraControlDemo		Demonstrates how to manipulate the camera.
+ * 07OverlayDemo			Shows different overlays drawn onto the viewport
+ * 09EventDemo				Demonstrates registering and usage of events and
+							event handlers
+ * 10DisplayDemo			Shows how to open several displays and viewports.
+ * VistaGeometryDemo		This demo explains the usage of VistaGeomFactory
+ * 11OGLDemo				Direct use of OpenGL in a ViSTA Application.
+ * VistaEventDemo			Introduction into the ViSTA event system
+ * 12IntentionSelectDemo	This demo shows how to work with IntentionSelect
+ * 13KernelOpenSGExtDemo	Includes different Demos for OpenSG-specific 
+							extensions: shadows and particles
+ * 14DataFlowNetDemo		Demonstrates the usage of DataFlowNet graphs for
+							interaction modeling.
+ * 15VtkDemo				Demonstrates a simple vtk integration
+ * 16PhantomDemo			Demo using a phantom ForceFeedback device
+ * 17MsgPortDemo			Uses MessagePort for network-based communication
+							between two processes.
+ * 18DebuggingToolsDemo		Demonstrates several tools supporting debugging:
+							VistaStreams, VistaBasicProfiler, VistaStackWalker
+ * 19TimeDemo				Shows the usage of time data types, measurement,
+							averaging, conversion and formatting, as well
+							as different time-based events
+ * 20PythonDFNDemo			Provides an example for a python integration
+							with the DataFlowNet
+ * 21ClusterModeDemo		Demo showing clustered (master+slaves) execution
+							of ViSTA applications, how it works and what to
+							look out for.
+							Also shows cluster communication using
+							ExternalMessageEvent, ClusterDataSync, and
+							ClusterBarrier
+ * 22RecordReplayDemo		Demo of ViSTA's record feature that allows the
+							recording of cluster sessions, and replaying it 
+							afterwards.
+ * VistaVrmlVisualizer		This App can show *.wrl files and generate an 
+							animation from a folder.
+

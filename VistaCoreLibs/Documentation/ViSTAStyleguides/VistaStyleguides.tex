@@ -1,0 +1,89 @@
+%% $Id$
+
+%% Copyright (c)  1998-2016
+%% by  RWTH-Aachen, Germany
+%% Some rights reserved.
+
+%% This work is licensed under the Creative Commons Attribution-Share
+%% Alike 3.0 License. To view a copy of this license, visit
+%% http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to
+%% Creative Commons, 171 Second Street, Suite 300, San Francisco,
+%% California, 94105, USA.
+
+\documentclass[fleqn,12pt,a4paper,titlepage,parskip]{scrartcl}
+
+\usepackage[dvips]{graphicx}    % support eps-files
+\usepackage{longtable}          % support for long tables
+\usepackage{fancyhdr}           % support nice page-headers
+\usepackage[ps2pdf]{hyperref}   % support navigation in the document
+
+%% packages which were included in the old document template.
+%% only for reference, may be removed if no longer needed.
+%% \usepackage[fleqn]{amsmath}     % math-symbols
+%% \usepackage{amssymb} 			% math-symbols
+%% \usepackage{ifthen}             % enable if .. then .. else structures in
+%% \usepackage{calc}               % enable primitive calculations in class
+%% \usepackage[scaled=.92]{helvet}
+%% \usepackage{courier}
+%% \usepackage{array}              % better table support
+%% \usepackage{longtable}          % support for long tables
+%% \usepackage{hangcaption}
+%% \usepackage{makeidx}            % support index
+%% %\usepackage[small,hang]{caption} % modifie default caption layout
+%% \usepackage{caption}[2003/12/20] %enforce most current version of caption
+%% \usepackage{varwidth}
+%% \usepackage{color}
+%% \usepackage{psfrag}
+%% \usepackage{amsthm}            % math-theorems
+%% %\usepackage{verbatim}
+%% \usepackage{listings}
+%% %\usepackage{footnote}
+%% %\usepackage{picins}
+%% \usepackage{fancyref}
+
+%% include graphics from the following directories
+\graphicspath{{./}{graphics/}}
+
+%% set title, author, date
+\title{ViSTA Coding and \\
+      Deployment Styleguides}
+\author{Virtual Reality Group RWTH Aachen}
+\date{\today}                 
+
+%% macros
+\def\todo#1{\par\noindent\fbox{\parbox{\linewidth}{\textbf{TODO:}\texttt{ #1}}}}
+\def\code#1{{\ttfamily #1}}
+
+%% page header/footer
+\pagestyle{fancy}
+\fancyhf{}
+%\fancyhead[L]{\leftmark}
+%\fancyhead[R]{\rightmark}
+\fancyfoot[L]{\includegraphics[height=1.4em]{cc-by-sa}}
+%\fancyfoot[C]{ViSTA Styleguide}
+\fancyfoot[R]{\pagemark}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrulewidth}{0pt}
+
+\begin{document} 
+
+\maketitle
+
+\tableofcontents
+
+\include{chapters/About}
+
+\include{chapters/DevelopmentPolicies}
+
+\include{chapters/CodingStyles}
+
+% remove deployment section for now.
+% this has to be moved to the vrgroup internal documentation.
+% parts of, like the makefile structure, might stay in the developers guide.
+%\include{chapters/Deployment}
+
+\include{chapters/DevelopmentTools}
+
+\include{chapters/Appendix}
+
+\end{document} 

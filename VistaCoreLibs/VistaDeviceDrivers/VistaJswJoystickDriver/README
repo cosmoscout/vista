@@ -1,0 +1,37 @@
+JswJoystickDriver
+-----------------
+
+You need version 1.5.7 of the libjsw. A copy can be found in the resources
+subdirectory.
+
+This is a joystick driver using the Linux/Bsd Joystick wrapper library
+jsw.  See http://www.battlefieldlinux.com/wolfpack/libjsw.  This URL
+seems to be down as of May 2010. The 1.5.8 source can however still be
+downloaded from freshmeat at http://freshmeat.net/projects/libjsw/.
+Since there were no changes to the project since 2004, we might
+consider switching to another joystick wrapper library (see
+e.g. http://plib.sourceforge.net/js/index.html).
+
+The jsw library is covered by the GPL
+
+The code was developed on the basis of the linux kernel support for joysticks
+and the jsw library version 1.5.7, tested on Ubuntu 8.04.
+
+NOTES
+-----
+
+* the jscalibrator utility of libjsw needs gtk-1.2 to run, it will not compile
+  when using gtk-2.0 and above. As newer distros of ubuntu (for example) do not
+  ship the old version anymore and gtk-1.2 can not really be built on 64bit
+  machines (am I wrong here?) the calibration process for this library is as
+  good as dead.
+* the libjsw can be compiled on modern linux distros, however, you might switch:
+  
+  CC=gcc
+  CPP=g++
+  
+  and add the option -fPIC to the CFLAGS in the makefiles distributed.
+  
+* the libjsw default location of the joystick is /dev/js0, however, modern
+  linux distros use /dev/input/js0. Either create a symlink or pass the
+  device name to the Vista driver using the protocol aspect.

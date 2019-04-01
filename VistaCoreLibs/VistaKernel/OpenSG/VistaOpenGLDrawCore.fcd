@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="VistaOpenGLDrawCore"
+	parent="MaterialDrawable"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+A NodeCore that references a Vista::IVistaOpenGLDraw Object to draw some plain OpenGL.
+As the referenced object is no OpenSG FieldContainer, we don't name it here but 
+manually add it in the implementation!
+<!--
+<Field
+		name="OpenGLDraw"
+		type="SField<IVistaOpenGLDraw*>" // we would have to define this FieldContainer first...
+		cardinality="single"
+		visibility="external"
+		header="VistaKernel/GraphicsManager/VistaOpenGLDraw.h"
+		access="public"
+	>
+	The Object called for drawing / volume Update
+	</Field>
+-->
+</FieldContainer>

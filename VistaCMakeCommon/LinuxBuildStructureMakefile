@@ -1,0 +1,62 @@
+RELEASE_DIR=@RELEASE_DIR@
+DEBUG_DIR=@DEBUG_DIR@
+
+COLOR_BUILD=@COLOR_BUILD@
+COLOR_SUCCEED=@COLOR_SUCCEED@
+COLOR_FAILED=@COLOR_FAILED@
+COLOR_RESET=@COLOR_RESET@
+
+all: release debug
+.PHONY : all
+.NOTPARALLEL : all
+
+release:
+	@( \
+		cd ${RELEASE_DIR} \
+		&& echo -e "\n${COLOR_BUILD}##### Building RELEASE #####${COLOR_RESET}"  \
+		&& $(MAKE) \
+		&& echo -e "${COLOR_SUCCEED}##### Successfully built RELEASE #####${COLOR_RESET}"  \
+	) || ( echo -e "${COLOR_FAILED}##### Failed building RELEASE #####${COLOR_RESET}" && exit 1 )
+.PHONY : release
+
+debug:
+	@( \
+		cd ${DEBUG_DIR} \
+		&& echo -e "\n${COLOR_BUILD}##### Building DEBUG   #####${COLOR_RESET}"  \
+		&& $(MAKE) \
+		&& echo -e "${COLOR_SUCCEED}##### Successfully built DEBUG   #####${COLOR_RESET}"  \
+	) || ( echo -e "${COLOR_FAILED}##### Failed building DEBUG   #####${COLOR_RESET}" && exit 1 )
+.PHONY : debug
+
+clean:
+	@( \
+		cd ${RELEASE_DIR} \
+		&& echo -e "\n${COLOR_BUILD}##### Cleaning RELEASE #####${COLOR_RESET}"  \
+		&& $(MAKE) clean \
+	) || exit 1
+	@( \
+		cd ${DEBUG_DIR} \
+		&& echo -e "\n${COLOR_BUILD}##### Cleaning DEBUG   #####${COLOR_RESET}"  \
+		&& $(MAKE) clean \
+	) || exit 1
+.PHONY : clean
+
+# maps any non-specified call to the subdirs, to allow building specific targets
+.DEFAULT default:
+	( \
+		cd ${RELEASE_DIR} \
+		&& echo -e "\n${COLOR_BUILD}##### Building RELEASE #####${COLOR_RESET}"  \
+		&& $(MAKE) $@ \
+		&& echo -e "${COLOR_SUCCEED}##### Successfully built RELEASE #####${COLOR_RESET}"  \
+	) || ( echo -e "${COLOR_FAILED}##### Failed building RELEASE #####${COLOR_RESET}" && exit 1 )
+	( \
+		cd ${DEBUG_DIR} \
+		&& echo -e "\n${COLOR_BUILD}##### Building DEBUG   #####${COLOR_RESET}"  \
+		&& $(MAKE) $@ \
+		&& echo -e "${COLOR_SUCCEED}##### Successfully built DEBUG   #####${COLOR_RESET}"  \
+	) || ( echo -e "${COLOR_FAILED}##### Failed building DEBUG   #####${COLOR_RESET}" && exit 1 )
+NOTPARALLEL : default
+
+
+
+

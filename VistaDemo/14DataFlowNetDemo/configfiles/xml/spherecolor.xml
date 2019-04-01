@@ -1,0 +1,64 @@
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!-- 
+			We first create three RandomNumber node we registered ourselves
+			we also specify the parameters min and max. By changing the range
+			of the random numbers, we can influence the rate of change of the
+			respective color. Try high values for psychedelic color flashing :)
+		-->
+		<node name="random_red" type="RandomNumber">
+			<param name="min" value="-0.006"/>
+			<param name="max" value="0.006"/>
+		</node>
+		<node name="random_green" type="RandomNumber">
+			<param name="min" value="-0.008"/>
+			<param name="max" value="0.008"/>
+		</node>
+		<node name="random_blue" type="RandomNumber">
+			<param name="min" value="-0.01"/>
+			<param name="max" value="0.01"/>
+		</node>
+		
+		<!--
+			We then create a color changer node
+		-->
+		<node name="color_changer" type="ColorChanger" />
+		
+		<!--
+			To apply the color, we reference the corresponding AcionObject
+		-->
+		<node name="sphereposition" type="Action">
+			<param name="object" value="SphereColor"/>
+		</node>		
+		
+		<!--
+			Finally, we want to print out the current color, using the
+			generic TextOverlay node
+		-->
+		<node name="colortext" type="TextOverlay[VistaVector3D]">
+			<param name="x_pos" value="0.05"/>
+			<param name="y_pos" value="0.8"/>
+			<param name="red" value="0"/>
+			<param name="green" value="255"/>
+			<param name="blue" value="255"/>
+			<param name="prefix" value="Color: "/>
+			<param name="viewport" value="MAIN_VIEWPORT"/>
+		</node>
+	</graph>
+	<edges>
+		<!-- 
+			We now create edges that connect the nodes. In this simple example,
+			it is a linear chain random_*** -> color_changer -> sphereposition -> colortext
+		-->
+		<edge fromnode="random_red" tonode="color_changer" fromport="out" toport="change_red"/>
+		<edge fromnode="random_green" tonode="color_changer" fromport="out" toport="change_green"/>
+		<edge fromnode="random_blue" tonode="color_changer" fromport="out" toport="change_blue"/>
+		
+		<edge fromnode="color_changer" tonode="sphereposition" fromport="color" toport="color"/>
+		
+		<edge fromnode="sphereposition" tonode="colortext" fromport="color" toport="value"/>
+	</edges>
+</module>

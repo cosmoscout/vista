@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<node name="skeleton_source" type="DriverSensor">
+			<param name="sensor" value="0"/>
+			<param name="type" value="SKELETON"/>
+			<param name="driver" value="OPENNI"/>
+		</node>
+		<node name="skeleton" type="HistoryProject">
+			<param name="project">POSITION</param>
+		</node>
+		
+		<node name="head" type="GetElement[vector<VistaVector3D>]" >
+			<param name="index" value="0"/>
+		</node>		
+				
+		<node name="scale" type="ConstantValue[VistaVector3D]">
+			<param name="value" value="0.001, 0.001, 0.001"/>
+		</node>
+		
+		<node name="translation" type="ConstantValue[VistaVector3D]">
+			<param name="value" value="-1.0, 0.0, -0.2"/>
+		</node>
+		
+		<node name="rotation" type="ConstantValue[VistaQuaternion]">
+			<param name="value" value="0.0, 0.3826834323650897, 0.0, 0.923879"/>
+			<!--<param name="value" value="0,0,0,1"/>-->
+		</node>
+		
+		<node name="compose" type="MatrixCompose" />
+		
+		<node name="multiply" type="Multiply[VistaTransformMatrix,VistaVector3D]" />
+
+		
+		<node name="ucp" type="ViewerSink">
+			<param name="displaysystem" value="MAIN"/>
+		</node>
+	</graph>
+
+	<edges>
+		<edge fromnode="skeleton_source" tonode="skeleton" fromport="history" toport="history"/>
+		
+		<edge fromnode="scale" tonode="compose" fromport="value" toport="scale" />
+		<edge fromnode="rotation" tonode="compose" fromport="value" toport="orientation" />
+		<edge fromnode="translation" tonode="compose" fromport="value" toport="translation" />
+		<edge fromnode="compose" tonode="multiply" fromport="out" toport="first" />
+		
+		<edge fromnode="skeleton" tonode="head" fromport="POSITION" toport="in" />
+		<edge fromnode="head" tonode="multiply" fromport="out" toport="second" />
+
+		<edge fromnode="multiply" tonode="ucp" fromport="out" toport="position"/>
+	</edges>
+
+</module>

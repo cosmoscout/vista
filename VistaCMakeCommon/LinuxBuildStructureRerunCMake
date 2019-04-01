@@ -1,0 +1,32 @@
+#!/bin/bash
+
+CMAKE_BINARY=@CMAKE_CONFIG_BINARY@
+RELEASE_DIR=@RELEASE_DIR@
+DEBUG_DIR=@DEBUG_DIR@
+TO_SOURCE_DIR=@TO_SOURCE_DIR@
+
+CMAKE_PARAMS=
+while [ "$1" != "" ]; do
+	case $1 in
+        cmake-gui | cmake | ccmake )
+            CMAKE_BINARY=$1
+            ;;
+        *)
+            CMAKE_PARAMS="$CMAKE_PARAMS $1"
+            ;;
+    esac
+	shift
+done
+
+cd $RELEASE_DIR
+
+$CMAKE_BINARY $CMAKE_PARAMS $TO_SOURCE_DIR
+
+cp -R $RELEASE_DIR/CMakeFiles $DEBUG_DIR
+sed "s|$RELEASE_DIR|$DEBUG_DIR|g" $RELEASE_DIR/CMakeCache.txt > $DEBUG_DIR/CMakeCache.txt
+
+cd $DEBUG_DIR
+
+cmake -DCMAKE_BUILD_TYPE=Debug $TO_SOURCE_DIR
+
+cd ..

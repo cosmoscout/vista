@@ -1,0 +1,49 @@
+set( @_PACKAGE_NAME_UPPER@_RELATIVE_INCLUDE_DIRS "@_PACKAGE_RELATIVE_INCLUDE_DIRS@" )
+set( @_PACKAGE_NAME_UPPER@_RELATIVE_LIBRARY_DIRS "@_PACKAGE_RELATIVE_LIBRARY_DIRS@" )
+set( @_PACKAGE_NAME_UPPER@_RELATIVE_SHADER_DIRS "@_PACKAGE_RELATIVE_SHADER_DIRS@" )
+set( @_PACKAGE_NAME_UPPER@_DEFINITIONS "@_PACKAGE_DEFINITIONS@" )
+set( @_PACKAGE_NAME_UPPER@_HWARCH "@VISTA_HWARCH@" )
+set( @_PACKAGE_NAME_UPPER@_LIBRARIES
+		optimized @_PACKAGE_LIBRARY_NAME@
+		debug @_PACKAGE_LIBRARY_NAME@@CMAKE_DEBUG_POSTFIX@ )
+set( @_PACKAGE_NAME_UPPER@_DEPENDENCIES @VISTA_TARGET_DEPENDENCIES@ )
+
+# msvc-project for inclusion in other solutions - always empty for installations
+set( @_PACKAGE_NAME_UPPER@_MSVC_PROJECT )
+
+# we're getting installed to ROOT_DIR/cmake, so to get our root dir, we have to take the current dir
+# and look for the lib dir, which can be one, two, or three steps up
+# we check if the folder is correct by testing if the first library dir exists there
+set( _TEST_DIR "${@_PACKAGE_NAME@_DIR}" )
+list( GET @_PACKAGE_NAME_UPPER@_RELATIVE_LIBRARY_DIRS 0 _TEST_SUBDIR )
+foreach( _STEP RANGE 3 )
+	get_filename_component( _TEST_DIR "${_TEST_DIR}" PATH ) # one dir up
+	if( EXISTS "${_TEST_DIR}/${_TEST_SUBDIR}" )
+		set( @_PACKAGE_NAME_UPPER@_ROOT_DIR "${_TEST_DIR}" )
+		break()
+	endif( EXISTS "${_TEST_DIR}/${_TEST_SUBDIR}" )
+endforeach( _STEP RANGE 3 )
+
+if( NOT @_PACKAGE_NAME_UPPER@_ROOT_DIR )
+	message( SEND_ERROR "Package configfile for \"@_PACKAGE_NAME@\" found in \"${@_PACKAGE_NAME@_DIR}\", "
+                       "but matching library directory is missing" )
+endif( NOT @_PACKAGE_NAME_UPPER@_ROOT_DIR )
+
+
+# set include/lib dirs relative to root dir
+set( @_PACKAGE_NAME_UPPER@_INCLUDE_DIRS  )
+foreach( _DIR ${@_PACKAGE_NAME_UPPER@_RELATIVE_INCLUDE_DIRS} )
+	list( APPEND @_PACKAGE_NAME_UPPER@_INCLUDE_DIRS "${@_PACKAGE_NAME_UPPER@_ROOT_DIR}/${_DIR}" )
+endforeach( _DIR ${@_PACKAGE_NAME_UPPER@_RELATIVE_INCLUDE_DIRS} )
+
+set( @_PACKAGE_NAME_UPPER@_LIBRARY_DIRS  )
+foreach( _DIR ${@_PACKAGE_NAME_UPPER@_RELATIVE_LIBRARY_DIRS} )
+	list( APPEND @_PACKAGE_NAME_UPPER@_LIBRARY_DIRS "${@_PACKAGE_NAME_UPPER@_ROOT_DIR}/${_DIR}" )
+endforeach( _DIR ${@_PACKAGE_NAME_UPPER@_RELATIVE_LIBRARY_DIRS} )
+
+set( @_PACKAGE_NAME_UPPER@_SHADER_DIRS  )
+foreach( _DIR ${@_PACKAGE_NAME_UPPER@_RELATIVE_SHADER_DIRS} )
+	list( APPEND @_PACKAGE_NAME_UPPER@_SHADER_DIRS "${@_PACKAGE_NAME_UPPER@_ROOT_DIR}/${_DIR}" )
+endforeach( _DIR ${@_PACKAGE_NAME_UPPER@_RELATIVE_SHADER_DIRS} )
+
+set( @_PACKAGE_NAME_UPPER@_FOUND TRUE )

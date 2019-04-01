@@ -1,0 +1,54 @@
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<node name="head_source" type="DriverSensor">
+			<param name="sensor_index" value="2"/>
+			<param name="type" value="BODY"/>
+			<param name="driver" value="DTRACK"/>
+		</node>
+		<node name="head" type="HistoryProject">
+			<param name="project">POSITION, ORIENTATION</param>
+		</node>
+		
+		<node name="project_mode" type="ConstantValue[int]">
+			<param name="value" value="1"/> 
+		</node>
+
+		<!-- tracker conversion -->
+		<node name="1_to_1000" type="ConstantValue[float]">
+			<param name="value" value="0.001"/>
+		</node>
+
+		<node name="scale_pos" type="Multiply[float,VistaVector3D]"/>
+		<node name="translate_pos" type="Add[VistaVector3D]"/>
+
+		<node name="to_dtrack_origin" type="ConstantValue[VistaVector3D]">
+			<param name="value" value="0,43,0"/>
+		</node>
+
+		<!-- SINK NODES -->
+		<node name="ucp" type="ViewerSink">
+			<param name="displaysystem" value="MAIN"/>
+		</node>
+
+	</graph>
+
+	<edges>
+		<!-- history projection -->
+		<edge fromnode="project_mode" tonode="head" fromport="value"   toport="sampling_mode"/>
+		<edge fromnode="head_source"  tonode="head" fromport="history" toport="history"/>
+
+		<edge fromnode="head" tonode="translate_pos" fromport="POSITION" toport="first"/>
+		<edge fromnode="to_dtrack_origin" tonode="translate_pos" fromport="value" toport="second"/>
+
+		<edge fromnode="translate_pos" tonode="scale_pos" fromport="out" toport="second"/>
+		<edge fromnode="1_to_1000" tonode="scale_pos" fromport="value" toport="first"/>
+
+		<edge fromnode="scale_pos" tonode="ucp" fromport="out" toport="position"/>
+		<edge fromnode="head" tonode="ucp" fromport="ORIENTATION" toport="orientation"/>
+
+	</edges>
+
+</module>

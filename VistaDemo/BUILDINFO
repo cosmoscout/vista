@@ -1,0 +1,7 @@
+VistaDemo uses CMake (www.cmake.org/) with version 2.8.5 or greater.
+Furthermore, it requires custom cmake extensions called VistaCMakeCommon, which can be checked out from the svn or downloaded from sourceforge.
+To ensure cmake finds the VistaCMakeCommon, either define the VISTA_CMAKE_COMMON environment variable.
+On more information about external dependencies, blease refer to the BUILDINFO file of VistaCoreLibs.
+
+Configure VistaDemo with cmake, either from the VistaDemo folder, or from the toplevel ViSTA forlder to build it together with the VistaCoreLibs.
+Afterwards, build it, and run the desired demo app.

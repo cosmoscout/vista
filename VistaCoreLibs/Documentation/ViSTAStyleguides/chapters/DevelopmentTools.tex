@@ -1,0 +1,74 @@
+%% $Id$
+
+%% Copyright (c)  1998-2016
+%% by  RWTH-Aachen, Germany
+%% Some rights reserved.
+
+%% This work is licensed under the Creative Commons Attribution-Share
+%% Alike 3.0 License. To view a copy of this license, visit
+%% http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to
+%% Creative Commons, 171 Second Street, Suite 300, San Francisco,
+%% California, 94105, USA.
+
+\section{Development Tools}
+
+\subsection{Mailing Lists}
+There are currently two Mailing Lists:
+\begin{itemize}
+	\item The public SourceForge mailing list (vistavrtoolkit-general@lists.sourceforge.net) is the best way to ask questions, report bugs, etc.
+	\item The internal developer mailing list (vista-dev@lists.rwth-aachen.de) is used to discuss upcoming developments.
+\end{itemize}
+
+\subsection{SourceForge.net}
+The development of the ViSTA core libraries is coordinated through the \code{vistavrtoolkit} project hosted at SourceForge.net:
+
+\code{http://www.sourceforge.net/projects/vistavrtoolkit}
+
+\subsubsection{Mailing List}
+General user support as well as developer discussion happens via a dedicated mailing list hosted at SourceForge.net, the \code{vistavrtoolkit-general} list.
+For details on how to register with the list, visit the \code{ViSTA} project page at the SourceForge.net project URL mentioned above.
+
+\subsubsection{Bug Tracker}
+We also host a bug tracker at SourceForge.net. 
+It should be used by users and developers alike to report bugs and request features (as wishlist items).
+You can find the bug tracker via the project site mentioned above, by navigating to Develop $\rightarrow$ Tracker $\rightarrow$ Bugs.
+
+\subsection{Subversion}
+Currently we use the open source software Subversion (http://subversion.apache.org/) for revision control.
+There are several open clients available.
+We recommend using either the CollabNet command-line client which comes with most linux distributions or the TortoiseSVN client on MS Windows.
+Please refer to the documentation of the respective tools.
+If you still have trouble accessing the SourceForge repository, you can drop a mail to the public mailing list (\code{vistavrtoolkit-general}) and get someone to help you.
+
+\subsubsection{Subversion FAQ}
+
+\begin{itemize}
+
+\item[\textbf{Q}] Where do I find the Subversion repository?
+\item[\textbf{A}] The subversion repository is hosted on an internal server of the VR Group at RWTH Aachen University which is not accessible from the outside.
+
+\item[\textbf{Q}] Can I get access to the development repository?
+\item[\textbf{A}] Depending on your relation with the core developers and your contributions, it is possible to create an external user account for you to help out with development of new features in trunk. Please write to the mailing list if you want to do so.
+
+\item[\textbf{Q}] I have bugfixes or enhancements which I'd like to commit. How to do so?
+\item[\textbf{A}] We are always happy to accept patches against the last released stable version, for which you can find the sourcecode archive on the SourceForge project page. Just send your patches to the mailing list.
+
+\item[\textbf{Q}] I am working on a release branch of the ViSTA Core libs and detected an error/want to make a change.
+  How do I accomplish this?
+\item[\textbf{A}] There are several situations possible.
+
+  \begin{itemize}
+  \item In case of a simple bug which can be fixed without an API-change:
+	Check the status of the \code{trunk} version of the source file (use your most favorite SVN tool for that task and diff against your version).
+
+	There is more than one possibility now:
+	\begin{itemize}
+	\item The bug was already fixed in \code{trunk}:
+      Feel free to backport the bugfix to the release branch you're working on.
+    \item The bug is not fixed in \code{trunk}.
+	  Preferrably fix the bug in \code{trunk} first, then apply the same/similar fix to the release branch.
+	\end{itemize}
+	
+  \item If fixing the error requires a change in the API or the way in which any given method operates (from the user's view), it \emph{must not} be commited to a release branch. Such changes always have to go into the current development version (\code{trunk}), and will probably make it into the next stable release. For the time being, you can use the development version of the library with the fix included. If you don't want that or it isn't possible due to whatever circumstances, you have to wait for the next official release to get the bugfix/feature.
+  \end{itemize}
+\end{itemize}

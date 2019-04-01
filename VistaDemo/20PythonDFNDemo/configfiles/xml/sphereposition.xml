@@ -1,0 +1,61 @@
+
+<!-- 
+	We want to create a graph that reads sensor data from the mouse, converts it
+	to a 3D position, and feeds it to the SetPositionActionObject we created in
+	our own code and registered under the name "SpherePosition".
+	For this, we construct a directed acyclic graph from nodes and edges.
+-->
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!-- 
+			The driver sensor retrieves the data from the sensor MOUSE,
+			which is defined in the interaction.ini
+		-->
+		<node name="mouse_source" type="DriverSensor">
+			<param name="sensor_index" value="0"/>
+			<param name="driver" value="MOUSE"/>
+		</node>
+		<!--
+			The HistoryProject Node reads the values X-POS and Y_POS from
+			the latest sensor reading
+		-->
+		<node name="mouse" type="HistoryProject">
+			<param name="project">X_POS, Y_POS</param>
+		</node>
+		
+		<!-- 
+			The 3DMouseTransform is a generic node that transforms
+			2D mouse coordinates into a 3D position
+		-->
+		<node name="3dmouse" type="3DMouseTransform">
+			<param name="displaysystem" value="MAIN"/>
+			<param name="viewport" value="MAIN_VIEWPORT"/>
+			<param name="origin_offset_along_ray" value="1"/>
+			<param name="in_world_coordinates" value="true"/>
+		</node>
+
+		<!--
+			Here, we create an ActionNode for the ActionObject instance
+			we created and named "SpherePosition"
+		-->
+		<node name="sphereposition" type="Action">
+			<param name="object" value="SpherePosition"/>
+		</node>		
+	</graph>
+	<edges>
+		<!-- 
+			We now create edges that connect the nodes. In this simple example,
+			it is a linear chain mouse_source -> mouse -> 3dmouse - sphereposition.
+			For this, we specify the names of the from- and to-node, and the
+			respective port names.
+		-->
+		<edge fromnode="mouse_source" tonode="mouse" fromport="history" toport="history"/>
+		
+		<edge fromnode="mouse" tonode="3dmouse" fromport="X_POS" toport="x_pos"/>
+		<edge fromnode="mouse" tonode="3dmouse" fromport="Y_POS" toport="y_pos"/>
+		
+		<edge fromnode="3dmouse" tonode="sphereposition" fromport="position" toport="position"/>
+	</edges>
+</module>

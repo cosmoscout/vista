@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<module>
+	<nodespace></nodespace>
+	<graph>
+		<node name="spacenavigator" type="DriverSensor">
+			<param name="sensor_index" value="0" />
+			<param name="driver" value="SPACENAVIGATOR" />
+		</node>
+		<node name="project_spacenav" type="HistoryProject">
+			<param name="project">POSITION, ORIENTATION, BUTTON_1, BUTTON_2</param>
+		</node>
+		<node name="sampling_mode" type="ConstantValue[int]">
+			<param name="value" value="0" />
+		</node>
+		<node name="navigation_mode" type="ConstantValue[int]">
+			<param name="value" value="1" />
+		</node>
+		<node name="null_vector" type="ConstantValue[VistaVector3D]">
+			<param name="value">
+				0, 0, 0, 0
+			</param>
+		</node>
+		<node name="scale_measure" type="Multiply[float,VistaVector3D]" />
+		
+		<!--
+			Beware of very small values here cause there might some
+			strange behavior when panning left/right in far distance
+		-->
+		<node name="scale_factor" type="ConstantValue[float]">
+			<param name="value" value="0.005" />
+		</node>
+		<node name="camera_transform" type="GetTransform">
+			<param name="object" value="CAM:MAIN" />
+		</node>
+		<node name="set_transform" type="SetTransform">
+			<param name="object" value="CAM:MAIN" />
+		</node>
+		<node name="timer" type="Timer">
+			<param name="reset_on_activate" value="true" />
+		</node>
+		<node name="navigation" type="Navigation" />
+
+		<!-- Button Handling -->
+		<node name="change_left" type="ChangeDetect[bool]"/>
+		<node name="change_right" type="ChangeDetect[bool]"/>
+
+		<node name="spatialhandler" type="Action">
+			<param name="object" value="spatial_handler"/>
+		</node>
+
+	</graph>
+	<edges>
+		<edge fromnode="spacenavigator" tonode="project_spacenav" fromport="history" toport="history" />
+		<edge fromnode="sampling_mode" tonode="project_spacenav" fromport="value" toport="sampling_mode" />
+		<edge fromnode="project_spacenav" tonode="scale_measure" fromport="POSITION" toport="second" />
+		<edge fromnode="scale_factor" tonode="scale_measure" fromport="value" toport="first" />
+		<edge fromnode="scale_measure" tonode="navigation" fromport="out" toport="translation" />
+		<edge fromnode="project_spacenav" tonode="navigation" fromport="ORIENTATION" toport="rotation" />
+		<edge fromnode="navigation_mode" tonode="navigation" fromport="value" toport="navigation_mode" />
+		<edge fromnode="camera_transform" tonode="navigation" fromport="transform" toport="transform" />
+		<edge fromnode="timer" tonode="navigation" fromport="dt" toport="dt" />
+		<edge fromnode="navigation" tonode="set_transform" fromport="transform" toport="in" />
+
+		<edge fromnode="project_spacenav" tonode="change_left" fromport="BUTTON_1" toport="in"/>
+		<edge fromnode="project_spacenav" tonode="change_right" fromport="BUTTON_2" toport="in"/>
+
+		<edge fromnode="change_left" tonode="spatialhandler" fromport="out" toport="command0"/>
+		<edge fromnode="change_right" tonode="spatialhandler" fromport="out" toport="command1"/>
+	</edges>
+</module>

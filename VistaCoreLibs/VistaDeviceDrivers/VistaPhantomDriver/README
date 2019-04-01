@@ -1,0 +1,37 @@
+PHANToMDriver
+-------------
+
+
+GENERAL INFO
+
+This is a device driver for use of Sensable's family of PHANToM input
+devices with the ViSTA software library for virtual reality
+applications. 
+
+
+DEPENDENCIES
+
+You need version 3.0 of OpenHaptics to build this driver module. You
+can grab it on the author's site (http://www.sensable.com) or from the
+resources subdirectory of this driver module. Other versions of the
+library are not tested yet and may or may not work as well.
+
+
+LICENSING
+
+This plugin employs the OpenHaptics library (http://www.sensable.com) to
+interface with the hardware via Firewire or Parallelport,
+against which it links dynamically.
+
+
+USAGE
+
+To use input devices under Linux, the OpenHaptics libs must be installed
+and also the PHANToM driver. Make sure that the kernel module raw1394 is
+loaded and /dev/raw1394 has write permissions to all users who want to
+use the PHANToM device. This can be done by this udev rule e.g.:
+KERNEL=="raw1394", MODE="0666"
+
+REMARKS
+
+PHANToM is a trademark of SensAble Technologies, Inc.

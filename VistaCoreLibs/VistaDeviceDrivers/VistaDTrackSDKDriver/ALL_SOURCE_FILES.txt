@@ -1,0 +1,5 @@
+VistaDTrackSDKDriver.cpp
+VistaDTrackSDKDriverPlugin.cpp
+VistaDTrackSDKDriverConfig.h
+VistaDTrackSDKDriver.h
+VistaDTrackSDKDriverPlugin.h

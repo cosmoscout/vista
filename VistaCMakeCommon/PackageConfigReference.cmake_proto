@@ -1,0 +1,16 @@
+set( @_PACKAGE_NAME_UPPER@_REFERENCED_FILE "@_REFERENCED_FILE@" )
+
+if( EXISTS "${@_PACKAGE_NAME_UPPER@_REFERENCED_FILE}" )
+	if( NOT PACKAGE_REFERENCE_EXISTS_TEST )
+		# we let the variable XYZ_DIR to the actual config file
+		get_filename_component( @_PACKAGE_NAME@_DIR  "${@_PACKAGE_NAME_UPPER@_REFERENCED_FILE}" PATH )
+		set( @_PACKAGE_NAME@_ACTUAL_DIR "${@_PACKAGE_NAME@_DIR}" )
+		include( ${@_PACKAGE_NAME_UPPER@_REFERENCED_FILE} )
+	endif( NOT PACKAGE_REFERENCE_EXISTS_TEST )
+else( EXISTS "${@_PACKAGE_NAME_UPPER@_REFERENCED_FILE}" )
+	set( PACKAGE_REFERENCE_OUTDATED TRUE )
+	# if case a version is searched, we output an unsuitable error (but should not happen)
+	set( PACKAGE_VERSION_UNSUITABLE TRUE )
+	set( PACKAGE_VERSION "Outdated - Referenced file \"@_REFERENCED_FILE@\" does not exist anymore" )
+endif( EXISTS "${@_PACKAGE_NAME_UPPER@_REFERENCED_FILE}" )
+

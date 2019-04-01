@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<!-- data source... a keyboard -->
+		<node name="keyboard" type="DriverSensor">
+			<param name="sensor" value="0"/>
+			<param name="driver" value="KEYBOARD"/>
+		</node>
+
+		<node name="triggerlist" type="Aggregate[int]">
+			<param name="in" value="KEY"/>
+		</node>
+		<node name="modderlist" type="Aggregate[int]">
+			<param name="in" value="MODIFIER"/>
+		</node>
+
+		<node name="apply" type="SystemTriggerControl"/>
+	</graph>
+	<edges>
+		<!-- connect hid -> overlay -->
+		<edge fromnode="keyboard" tonode="triggerlist" fromport="history" toport="history"/>
+		<edge fromnode="keyboard" tonode="modderlist" fromport="history" toport="history"/>
+		<edge fromnode="triggerlist" tonode="apply" fromport="values" toport="triggerlist"/>
+		<edge fromnode="modderlist" tonode="apply" fromport="values" toport="modlist"/>
+	</edges>
+</module>

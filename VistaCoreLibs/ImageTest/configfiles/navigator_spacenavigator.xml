@@ -1,0 +1,83 @@
+<!-- $Id: navigator_spacenavigator.xml 31467 2012-08-07 09:38:46Z dr165799 $ -->
+<module>
+	<nodespace>
+	</nodespace>
+	<graph>
+		<node name="spacenav_source" type="DriverSensor">
+			<param name="sensor_index" value="0"/>
+			<param name="driver" value="SPACENAV"/>
+		</node>
+
+		<node name="spacenav" type="HistoryProject">
+			<param name="project">POSITION, ORIENTATION, BUTTON_1</param>
+		</node>
+
+		<!--<node name="dd" type ="DeviceDebug"/>-->
+		
+		
+		<node name="timer" type="Timer"/>
+
+		<node name="linear_speed" type="ConstantValue[float]">
+			<param name="value" value="2.0"/>
+		</node>
+
+		<!-- corretion factor because max rotation in spacenav is only 80degree -->
+		<node name="angular_speed" type="ConstantValue[float]">
+			<param name="value" value="0.714"/>
+		</node>
+
+		<node name="vector_scale" type="ConstantValue[float]">
+			<param name="value" value="0.0125"/>
+		</node>
+
+		<node name="normalize" type="Multiply[float,VistaVector3D]"/>
+
+
+		<node name="get_transform" type="GetTransform">
+			<param name="object" value="CAM:MAIN"/>
+		</node>
+
+		
+		<node name="set_transform" type="SetTransform">
+			<param name="object" value="CAM:MAIN"/>
+		</node>
+		
+		<node name="navigator" type="Navigation">
+			<param name="linear_acceleration" value="0" />
+			<param name="linear_deceleration" value="0" />
+			<param name="angular_acceleration" value="0" />
+			<param name="angular_deceleration" value="0" />
+		</node>
+
+		<node name="button1_change_detect" type="ChangeDetect[bool]"/>
+		<node name="button1_convert" type="TypeConvert[bool,int]"/>
+		<node name="navmode_counter" type="ModuloCounter[int]">
+			<param name="initial_value" value="0"/>
+			<param name="modulo" value="3"/>
+		</node>
+	</graph>
+	<edges>
+		<edge fromnode="spacenav_source" tonode="spacenav" fromport="history" toport="history"/>
+		<!--<edge fromnode="spacenav_source" tonode="dd" fromport="history" toport="history"/>-->
+
+		<edge fromnode="vector_scale" tonode="normalize" fromport="value" toport="first"/>
+		<edge fromnode="spacenav" tonode="normalize" fromport="POSITION" toport="second"/>
+
+		<!-- calculate and set velocities -->
+		<edge fromnode="linear_speed" tonode="navigator" fromport="value" toport="linear_speed"/>
+		<edge fromnode="angular_speed" tonode="navigator" fromport="value" toport="angular_speed"/>
+
+		<edge fromnode="normalize" tonode="navigator" fromport="out" toport="translation"/>
+		<edge fromnode="spacenav"  tonode="navigator" fromport="ORIENTATION" toport="rotation"/>
+		<edge fromnode="get_transform" tonode="navigator" fromport="transform" toport="transform"/>
+		<edge fromnode="timer" tonode="navigator" fromport="dt" toport="dt"/>
+
+		<!--<edge fromnode="navigator" tonode="set_transform" fromport="transform" toport="in"/>-->
+		<edge fromnode="navigator" tonode="set_transform" fromport="transform" toport="in"/>
+
+		<edge fromnode="spacenav" tonode="button1_change_detect" fromport="BUTTON_1" toport="in" />
+		<edge fromnode="button1_change_detect" tonode="button1_convert" fromport="out" toport="in" />
+		<edge fromnode="button1_convert" tonode="navmode_counter" fromport="out" toport="delta" />
+		<edge fromnode="navmode_counter" tonode="navigator" fromport="out" toport="navigation_mode"/>
+	</edges>
+</module>

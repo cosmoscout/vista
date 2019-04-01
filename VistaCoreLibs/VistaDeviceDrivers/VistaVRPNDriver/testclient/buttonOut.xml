@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<module>
+	<nodespace/>
+	<graph>
+		<node name="device-buttons" type="DriverSensor">
+			<param name="type" value="BUTTON"/>
+			<param name="sensor" value="0"/>
+			<param name="driver" value="SpaceNav0@localhost"/>
+		</node>
+		<node name="navigator-bt" type="HistoryProject">
+			<param name="project">
+				BTMASK,VRPN_TIMECODE
+			</param>
+		</node>
+		<node name="convBtMask2String" type="TypeConvert[unsigned int,string]"/>
+		<node name="cdBt" type="ChangeDetect[unsigned int]"/>
+		<node name="conv2Double" type="TypeConvert[unsigned int,double]"/>
+		<node name="quitter" type="quitter"/>
+		<node name="button_print" type="print"/>
+		<node name="convBtTc2String" type="TypeConvert[double,string]"/>
+		<node name="printBtTc" type="print"/>
+	</graph>
+	<edges>
+		<edge fromnode="device-buttons" fromport="history" tonode="navigator-bt" toport="history"/>
+		<edge fromnode="navigator-bt" fromport="BTMASK" tonode="cdBt" toport="in"/>
+		<edge fromnode="cdBt" fromport="out" tonode="conv2Double" toport="in"/>
+		<edge fromnode="cdBt" fromport="out" tonode="convBtMask2String" toport="in"/>
+		<edge fromnode="conv2Double" fromport="out" tonode="quitter" toport="in"/>
+		<edge fromnode="convBtMask2String" fromport="out" tonode="button_print" toport="in"/>
+		<edge fromnode="convBtTc2String" fromport="out" tonode="printBtTc" toport="in"/>
+		<edge fromnode="navigator-bt" fromport="VRPN_TIMECODE" tonode="convBtTc2String" toport="in"/>
+	</edges>
+</module>

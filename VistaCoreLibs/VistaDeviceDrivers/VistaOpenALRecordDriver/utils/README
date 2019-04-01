@@ -1,0 +1,10 @@
+a little tool to convert the raw output of the driver to a wav file format.
+uses libsndfile in a recent version.
+needs two files:
+
+* format file (ASCII), with two strings in the first line
+  [format] [samplerate]
+  where format is [MONO8|MONO16|STEREO8|STEREO16] and samplerate is a non-null/non-negative samples per second integer
+  
+* raw file containing just the samples and nothing else
+

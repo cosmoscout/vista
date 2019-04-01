@@ -1,0 +1,62 @@
+<!-- $Id: mouse.xml,v 1.1 2008/10/31 18:10:07 dr165799 Exp $ -->
+<module>
+  <nodespace>
+  </nodespace>
+  <graph>
+    <!-- data sourcee -->
+    <node name="mouse" type="DriverSensor">
+		<param name="sensor_index" value="0" />
+		<param name="driver" value="MOUSE"/>
+    </node>
+    <!-- project the necessary information from the mouse history -->
+    <!-- in this demo, we are not interested in the mouse history,
+             but only in the last value (LAZYSAMPLING), but for demonstration
+             purposes, we simply extract every attribute we can get from
+             the mouse driver -->
+    <node name="project_mouse" type="HistoryProject">
+      <param name="project">X_POS, Y_POS, LEFT_BUTTON, RIGHT_BUTTON</param>
+    </node>
+    <!-- this will give the sampling mode to the history project
+             node, a value of "0" means "LAZY" while a value of "1"
+             means "HOT". There is no other sampling value currently -->
+    <node name="project_mode" type="ConstantValue[int]">
+      <param name="value" value="0"/>
+    </node>
+
+    <!-- convert mouse to virtual 3d coordinates -->
+    <node name="3dmouse" type="3DMouseTransform">
+      <param name="displaysystem" value="MAIN"/>
+      <param name="viewport" value="MAIN_VIEWPORT"/>
+      <param name="in_world_coordinates" value="true"/>
+      <param name="origin_offset_along_Ray" value="1"/>
+    </node>
+
+    <!-- Button Handling -->
+    <node name="change_left" type="ChangeDetect[bool]"/>
+    <node name="change_right" type="ChangeDetect[bool]"/>
+
+    <node name="spatialhandler" type="Action">
+      <param name="object" value="spatial_handler"/>
+    </node>
+
+  </graph>
+  <edges>
+
+    <!-- MOUSE COORDS TO 3D -->
+    <edge fromnode="mouse" tonode="project_mouse" fromport="history" toport="history"/>
+    <edge fromnode="project_mode" tonode="project_mouse" fromport="value" toport="sampling_mode"/>
+
+    <edge fromnode="project_mouse" tonode="3dmouse" fromport="X_POS" toport="x_pos"/>
+    <edge fromnode="project_mouse" tonode="3dmouse" fromport="Y_POS" toport="y_pos"/>
+
+    <edge fromnode="3dmouse" tonode="spatialhandler" fromport="position" toport="position"/>
+    <edge fromnode="3dmouse" tonode="spatialhandler" fromport="orientation" toport="orientation"/>
+    <!-- MOUSE BUTTONS -->
+    <edge fromnode="project_mouse" tonode="change_left" fromport="LEFT_BUTTON" toport="in"/>
+    <edge fromnode="project_mouse" tonode="change_right" fromport="RIGHT_BUTTON" toport="in"/>
+
+    <edge fromnode="change_left" tonode="spatialhandler" fromport="out" toport="command0"/>
+    <edge fromnode="change_right" tonode="spatialhandler" fromport="out" toport="command1"/>
+
+  </edges>
+</module>
