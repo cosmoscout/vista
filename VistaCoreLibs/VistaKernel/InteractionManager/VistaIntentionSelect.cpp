@@ -244,10 +244,18 @@ void VistaIntentionSelect::Update( std::vector<IVistaIntentionSelectAdapter*>& v
 	std::sort(
 		m_vecScores.begin(),
 		m_vecScores.end(),
-		[]
+		[this]
 		(IVistaIntentionSelectAdapter* pLeft, IVistaIntentionSelectAdapter* pRight)
-		{ return pLeft->GetScore() > pRight->GetScore(); }
-		);
+		{
+			if (std::abs(pLeft->GetScore() - pRight->GetScore()) < 0.0001) {
+				VistaVector3D leftPos, rightPos;
+				pLeft->GetPosition(leftPos, m_ConeRef);
+				pRight->GetPosition(rightPos, m_ConeRef);
+				return leftPos.GetLength() < rightPos.GetLength();
+			}
+			return pLeft->GetScore() > pRight->GetScore();
+		}
+	);
 
 	// Might be little bit faster to allocate memory before loop
 	if( vecObj.size() != m_vecScores.size() )
@@ -362,7 +370,7 @@ float VistaIntentionSelect::CalculateContribution( float fPerp, float fProj )
 
 	if( fProj > 0 )
 	{
-		fContrib = 1 - ( ::atanf( fPerp / ::powf( fProj, 4.0f/5.0f ) ) / m_oCone.GetOpeningAngle() );
+		fContrib = 1 - ((fPerp / fProj) / (m_oCone.GetRadius() / m_oCone.GetHeight()));
 
 		if ( m_nScalingDistance > 0.f )
 		{
