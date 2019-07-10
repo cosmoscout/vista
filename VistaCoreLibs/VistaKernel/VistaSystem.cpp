@@ -2668,7 +2668,7 @@ void VistaSystem::SetRandomSeed(int iSeed)
 	VistaRandomNumberGenerator::GetStandardRNG()->SetSeed( iSeed );
 }
 
-bool VistaSystem::PrintMsg( const char* pMsg, std::ostream* pStream) const
+bool VistaSystem::PrintMsg( const char* pMsg, std::ostream* pStream)
 {
 	if( pMsg == NULL )
 		pMsg = ""; // lets be tolerant :)
@@ -2676,7 +2676,7 @@ bool VistaSystem::PrintMsg( const char* pMsg, std::ostream* pStream) const
 	return PrintMsg( std::string( pMsg ), pStream );
 }
 
-bool VistaSystem::PrintMsg( const std::string& strMsg, std::ostream* pStream ) const
+bool VistaSystem::PrintMsg( const std::string& strMsg, std::ostream* pStream )
 {
 	if( pStream == NULL )
 	{
@@ -2693,7 +2693,7 @@ bool VistaSystem::PrintMsg( const std::string& strMsg, std::ostream* pStream ) c
 /*                                                                            */
 /*============================================================================*/
 
-bool VistaSystem::IntroMsg (std::ostream *pStream) const
+bool VistaSystem::IntroMsg (std::ostream *pStream)
 {
 	PrintMsg( "\n******************************************************************************\n", pStream );
 	PrintMsg( "*                                                                            *\n", pStream );
@@ -2721,7 +2721,7 @@ bool VistaSystem::IntroMsg (std::ostream *pStream) const
 /*  NAME      :   ArgHelpMsg                                                  */
 /*                                                                            */
 /*============================================================================*/
-bool VistaSystem::ArgHelpMsg (const std::string& sAppName, std::ostream *pStream) const
+bool VistaSystem::ArgHelpMsg (const std::string& sAppName, std::ostream *pStream)
 {
 	/**
 	 * @todo add registry for command-line options? (boost::program_options or alike?)

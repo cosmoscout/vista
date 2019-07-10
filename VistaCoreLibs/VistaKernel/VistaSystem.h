@@ -132,7 +132,11 @@ public:
 	// ############################################################################
 	// RUN-TIME USER API
 	// ############################################################################
-	bool IntroMsg( std::ostream* pStream = NULL ) const;
+	static bool PrintMsg( const std::string& strMsg, std::ostream* pStream = 0 );
+	static bool PrintMsg( const char* pMsg, std::ostream* pStream = 0 );
+	static bool IntroMsg( std::ostream* pStream = NULL );
+	static bool ArgHelpMsg( const std::string& sAppName, std::ostream * pStream = NULL );
+
 	bool Init( int argc, char *argv[] );
 	bool Run();
 	bool Quit();
@@ -218,12 +222,9 @@ public:
 	virtual void HandleEvent(VistaEvent *pEvent);
 
 	virtual void Debug( std::ostream & out ) const;
-	bool PrintMsg( const std::string& strMsg, std::ostream* pStream = 0 ) const;
-	bool PrintMsg( const char* pMsg, std::ostream* pStream = 0 ) const;
-	
+
 private:
 	bool ArgParser( int argc, char *argv[] );
-	bool ArgHelpMsg( const std::string& sAppName, std::ostream * pStream = NULL ) const;
 
 	bool DoInit( int argc, char** argv );
 
