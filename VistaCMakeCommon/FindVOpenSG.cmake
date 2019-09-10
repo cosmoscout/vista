@@ -10,8 +10,10 @@ if( NOT VOPENSG_FOUND )
 		if( UNIX )
 			set( OPENSG_LIBRARY_DIRS ${OPENSG_ROOT_DIR}/lib )
 			set( OPENSG_LIBRARIES
-				OSGSystem
-				OSGBase
+				optimized OSGSystem
+				optimized OSGBase
+				debug OSGSystemD
+				debug OSGBaseD
 			)
 		elseif( WIN32 )
 			set( OPENSG_LIBRARY_DIRS ${OPENSG_ROOT_DIR}/lib )
