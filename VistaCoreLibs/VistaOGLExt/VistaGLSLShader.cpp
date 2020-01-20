@@ -202,7 +202,7 @@ bool VistaGLSLShader::InitShaderFromString(
 	}
 
 	// If geometry shaders are to be used check for them
-	if( GL_GEOMETRY_SHADER == uiShaderTyp && !GLEW_ARB_geometry_shader4 )
+	if( GL_GEOMETRY_SHADER == uiShaderTyp && !GLEW_VERSION_3_2 && !GLEW_ARB_geometry_shader4 )
 	{
 		vstr::errp() << "[VistaGLSLShader] Geometry shaders not supported." << std::endl;
 		return false;
