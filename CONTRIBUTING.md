@@ -10,10 +10,6 @@ The `master` branch should always contain stable code. New features and bug fixe
 
 Your contributions should follow the ViSTA style guide (latex source is located in VistaCoreLibs/Documentation) as closely as possible.
 
-## DLR Individual Contributor License Agreement
-
-Before we can accept your merge request, you have to print, sign, scan and send the [DLR Individual Contributor License Agreement](CLA.md) via e-mail to cosmoscout@dlr.de.
-
 ## Git Commit Messages
 
 Commits should start with a Capital letter and should be written in present tense (e.g. __:tada: Add cool new feature__ instead of __:tada: Added cool new feature__).
