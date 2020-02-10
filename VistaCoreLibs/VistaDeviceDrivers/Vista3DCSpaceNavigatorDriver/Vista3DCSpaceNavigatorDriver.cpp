@@ -90,6 +90,9 @@ using namespace ATL;
 #define _isnan(A) (A != A)
 #endif
 
+#include <set>
+#include <map>
+
 #include <VistaBase/VistaTimerImp.h>
 #include <VistaBase/VistaUtilityMacros.h>
 #include <VistaBase/VistaStreamUtils.h>
@@ -116,7 +119,7 @@ struct Vista3DCSpaceNavigator::_sPrivate
 		, m_pWorkspace(NULL)
 	{
 		m_nOldKeys[0] = 0;
-		m_nOldKeys[1] = 0;	
+		m_nOldKeys[1] = 0;
 	}
 
 	CComPtr<ISimpleDevice> m_3DxDevice;
@@ -125,7 +128,7 @@ struct Vista3DCSpaceNavigator::_sPrivate
 	__int64            m_nKeyStates;
 	_sMeasure          m_measure;
 	bool               m_bLastZero;
-	
+
 	long m_nOldKeys[2];
 	VistaDriverWorkspaceAspect *m_pWorkspace;
 };
@@ -141,7 +144,7 @@ struct Vista3DCSpaceNavigator::_sPrivate
 		  , m_pWorkspace(NULL)
 	{
 		m_nOldKeys[0] = 0;
-		m_nOldKeys[1] = 0;	
+		m_nOldKeys[1] = 0;
 	}
 
 	int  m_iFD;
@@ -149,7 +152,7 @@ struct Vista3DCSpaceNavigator::_sPrivate
 	int  m_rx, m_ry, m_rz;
 	double m_dTs;
 	_sMeasure m_measure;
-	
+
 	long m_nOldKeys[2];
 	VistaDriverWorkspaceAspect *m_pWorkspace;
 };
@@ -196,8 +199,8 @@ Vista3DCSpaceNavigator::~Vista3DCSpaceNavigator()
 
 	UnregisterAspect( m_pPrivate->m_pWorkspace, IVistaDeviceDriver::DO_NOT_DELETE_ASPECT );
 	delete m_pPrivate->m_pWorkspace;
-	
-	delete m_pPrivate;	
+
+	delete m_pPrivate;
 }
 
 
@@ -209,6 +212,39 @@ Vista3DCSpaceNavigator::~Vista3DCSpaceNavigator()
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
+// Possible supported 3D mouses: https://www.3dconnexion.de/nc/service/faq/faq/how-can-i-check-if-my-usb-3d-mouse-is-recognized-by-windows.html
+// NOT TESTED WITH EVERY DEVICE.
+std::map<uint16_t, std::set<uint16_t> > supportedDevices() {
+  std::map<uint16_t, std::set<uint16_t> > devices;
+  devices[0x046D] = std::set<uint16_t>();
+  devices[0x046D].insert(0xC62B);
+  devices[0x046D].insert(0xC629);
+  devices[0x046D].insert(0xC627);
+  devices[0x046D].insert(0xC626);
+  devices[0x046D].insert(0xC628);
+  devices[0x046D].insert(0xC623);
+  devices[0x046D].insert(0xC625);
+  devices[0x046D].insert(0xC621);
+  devices[0x046D].insert(0xC603);
+  devices[0x046D].insert(0xC603);
+  devices[0x046D].insert(0xC606);
+  devices[0x046D].insert(0xC605);
+
+  devices[0x256F] = std::set<uint16_t>();
+  devices[0x256F].insert(0xC654);
+  devices[0x256F].insert(0xC657);
+  devices[0x256F].insert(0xC633);
+  devices[0x256F].insert(0xC650);
+  devices[0x256F].insert(0xC651);
+  devices[0x256F].insert(0xC652);
+  devices[0x256F].insert(0xC635);
+  devices[0x256F].insert(0xC632);
+  devices[0x256F].insert(0xC631);
+  devices[0x256F].insert(0xC62F);
+  devices[0x256F].insert(0xC62E);
+
+  return devices;
+}
 
 bool Vista3DCSpaceNavigator::DoConnect()
 {
@@ -270,12 +306,13 @@ bool Vista3DCSpaceNavigator::DoConnect()
 				continue;
 			}
 
-			// check specifically for
-			// Logitech (0x046d)
-			// 3DConnexion Space Navigator 3D Mouse (0xc626)
-			if( device_info.vendor == 0x046d &&
-				(device_info.product == 0xc626 || /* SpaceNavigator */
-				 device_info.product == 0xc628 )) /* SpaceNavigator for Notebooks */
+                        std::map<uint16_t, std::set<uint16_t> > devices = supportedDevices();
+
+			const uint16_t vendor = device_info.vendor;
+			const uint16_t product = device_info.product;
+
+			if(devices.find(vendor) != devices.end() &&
+			   devices[vendor].find(product) != devices[vendor].end())
 			{
 				std::cout << "[3DCSpaceNav] SpaceNavigator device detected on event interface "
 					<< sDir + entry->d_name << ". keeping fileconnection open."
