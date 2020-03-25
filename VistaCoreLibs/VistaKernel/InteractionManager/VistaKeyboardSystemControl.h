@@ -263,7 +263,7 @@ public:
 	 * state, which is not passed to the IVistaExplicitCallback Interface for
 	 * normal keystroke dispatching.
 	 */
-	class IVistaDirectKeySink
+	class VISTAKERNELAPI IVistaDirectKeySink
 	{
 	public:
 		virtual ~IVistaDirectKeySink() {}
