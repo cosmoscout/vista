@@ -45,6 +45,7 @@
 #pragma warning(disable: 4267)
 #endif
 
+#include <GL/glew.h>
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGRenderAction.h>
 

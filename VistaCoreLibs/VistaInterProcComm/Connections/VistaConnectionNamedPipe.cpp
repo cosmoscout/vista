@@ -121,7 +121,7 @@ namespace
 	}
 }
 #else
-namespace
+namespace vcnamedpipe
 {
 	std::string GetErrorText( int nCode = -1 )
 	{
@@ -156,7 +156,7 @@ VistaConnectionNamedPipe::VistaConnectionNamedPipe( const std::string& sPipeName
 		if( m_oPipe == INVALID_HANDLE_VALUE )
 		{
 			vstr::warnp() << "[VistaConnectionNamedPipe]: Could not create event ["
-						<< m_sPipeName << "] - Error: " << GetErrorText() << std::endl;
+						<< m_sPipeName << "] - Error: " << vcnamedpipe::GetErrorText() << std::endl;
 			m_oPipe = NULL;
 		}
 	}

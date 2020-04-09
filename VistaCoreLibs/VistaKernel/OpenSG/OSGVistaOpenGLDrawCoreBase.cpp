@@ -226,26 +226,5 @@ DataType FieldDataTraits<VistaOpenGLDrawCorePtr>::_type("VistaOpenGLDrawCorePtr"
 OSG_DLLEXPORT_SFIELD_DEF1(VistaOpenGLDrawCorePtr, );
 OSG_DLLEXPORT_MFIELD_DEF1(VistaOpenGLDrawCorePtr, );
 
-
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-namespace
-{
-    static Char8 cvsid_cpp       [] = "@(#)$Id$";
-    static Char8 cvsid_hpp       [] = OSGVistaOpenGLDrawCoreBASE_HEADER_CVSID;
-    static Char8 cvsid_inl       [] = OSGVistaOpenGLDrawCoreBASE_INLINE_CVSID;
-
-    static Char8 cvsid_fields_hpp[] = OSGVistaOpenGLDrawCoreFIELDS_HEADER_CVSID;
-}
-
 OSG_END_NAMESPACE
 

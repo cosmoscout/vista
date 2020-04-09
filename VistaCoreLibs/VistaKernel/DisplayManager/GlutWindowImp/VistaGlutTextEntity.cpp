@@ -26,6 +26,8 @@
 
 #include <VistaAspects/VistaAspectsUtils.h>
 
+#include <GL/glew.h>
+
 #ifdef WIN32
 // disable warnings from unreferenced functions in glut.h
 // sadly, C4505 cannot be disabled locally with push/pop

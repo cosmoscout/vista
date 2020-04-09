@@ -167,29 +167,29 @@ VistaDisplay::VistaDisplayProperties *VistaDisplay::GetDisplayProperties() const
 
 
 namespace {
-	const std::string sSReflectionType("VistaDisplay");
+	const std::string sSReflectionTypeVD("VistaDisplay");
 
-	IVistaPropertyGetFunctor *aCgFunctors[] =
+	IVistaPropertyGetFunctor *aCgFunctorsVD[] =
 	{
 		new TVistaPropertyGet<std::string, VistaDisplay::VistaDisplayProperties, VistaProperty::PROPT_STRING>
-		("DISPLAY_STRING", sSReflectionType,
+		("DISPLAY_STRING", sSReflectionTypeVD,
 		 &VistaDisplay::VistaDisplayProperties::GetDisplayString),
 		new TVistaDisplayEntityParentPropertyGet<unsigned int, VistaDisplay, VistaProperty::PROPT_INT>
-		("NUMBER_OF_WINDOWS", sSReflectionType,
+		("NUMBER_OF_WINDOWS", sSReflectionTypeVD,
 		 &VistaDisplay::GetNumberOfWindows),
 		new TVistaDisplayEntityParentPropertyGet<std::list<std::string>, VistaDisplay, VistaProperty::PROPT_LIST>
-		("WINDOW_NAMES", sSReflectionType,
+		("WINDOW_NAMES", sSReflectionTypeVD,
 		 &VistaDisplay::GetWindowNames),
 		NULL
 	};
 
-	IVistaPropertySetFunctor *aCsFunctors[] =
+	IVistaPropertySetFunctor *aCsFunctorsVD[] =
 	{
 		new TVistaPropertySet<const string &, string,VistaDisplay::VistaDisplayProperties>
-		("NAME", sSReflectionType,
+		("NAME", sSReflectionTypeVD,
 		 &VistaDisplay::VistaDisplayProperties::SetName ),
 		new TVistaPropertySet<const std::string &, std::string, VistaDisplay::VistaDisplayProperties>
-		("DISPLAY_STRING", sSReflectionType,
+		("DISPLAY_STRING", sSReflectionTypeVD,
 		 &VistaDisplay::VistaDisplayProperties::SetDisplayString ),
 		NULL
 	};
@@ -242,7 +242,7 @@ bool VistaDisplay::VistaDisplayProperties::SetDisplayString(const std::string &s
 /*============================================================================*/
 string VistaDisplay::VistaDisplayProperties::GetReflectionableType() const
 {
-	return sSReflectionType;
+	return sSReflectionTypeVD;
 }
 
 /*============================================================================*/
@@ -253,7 +253,7 @@ string VistaDisplay::VistaDisplayProperties::GetReflectionableType() const
 int VistaDisplay::VistaDisplayProperties::AddToBaseTypeList(list<string> &rBtList) const
 {
 	int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionType);
+	rBtList.push_back(sSReflectionTypeVD);
 
 	return nSize + 1;
 }

@@ -31,6 +31,7 @@
 #pragma warning(disable: 4275)
 #endif
 
+#include <GL/glew.h>
 
 #include "VistaOpenSGGeometryTools.h"
 

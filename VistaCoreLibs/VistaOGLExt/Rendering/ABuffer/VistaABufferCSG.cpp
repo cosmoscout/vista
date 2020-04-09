@@ -37,12 +37,12 @@
 /*============================================================================*/
 /* GLOBAL VARIABLES                                                           */
 /*============================================================================*/
-const std::string g_strShader_Display_Frag    = "VistaABufferCSG_Display_frag.glsl";
-const std::string g_strShader_Display_Aux     = "VistaABufferCSG_Display_aux.glsl";
-const std::string g_strShader_Default_Vert    = "VistaABufferOIT_Default_vert.glsl";
-const std::string g_strShader_Default_Frag    = "VistaABufferCSG_Default_frag.glsl";
-const std::string g_strShader_StoreFrag_Aux	  = "VistaABufferCSG_StoreFragment_aux.glsl";
-const std::string g_strShader_Lighting_Aux    = "Vista_PhongLighting_aux.glsl";
+const std::string g_strShader_CSG_Display_Frag    = "VistaABufferCSG_Display_frag.glsl";
+const std::string g_strShader_CSG_Display_Aux     = "VistaABufferCSG_Display_aux.glsl";
+const std::string g_strShader_CSG_Default_Vert    = "VistaABufferOIT_Default_vert.glsl";
+const std::string g_strShader_CSG_Default_Frag    = "VistaABufferCSG_Default_frag.glsl";
+const std::string g_strShader_CSG_StoreFrag_Aux	  = "VistaABufferCSG_StoreFragment_aux.glsl";
+const std::string g_strShader_CSG_Lighting_Aux    = "Vista_PhongLighting_aux.glsl";
 
 
 /*============================================================================*/
@@ -53,7 +53,7 @@ const std::string g_strShader_Lighting_Aux    = "Vista_PhongLighting_aux.glsl";
 /******************************************************************************/
 VistaABufferCSG::VistaABufferCSG()
 	:	VistaABufferOIT( )
-	,	m_strDisplayShaderExt( g_strShader_Display_Aux )
+	,	m_strDisplayShaderExt( g_strShader_CSG_Display_Aux )
 { }
 
 VistaABufferCSG::~VistaABufferCSG()
@@ -71,7 +71,7 @@ VistaGLSLShader* VistaABufferCSG::CreateShaderPrototype()
 {
 	VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
 
-	std::string strShaderSource = rShaderReg.RetrieveShader( g_strShader_StoreFrag_Aux );
+	std::string strShaderSource = rShaderReg.RetrieveShader( g_strShader_CSG_StoreFrag_Aux );
 
 	if( strShaderSource.empty() ) return NULL;
 
@@ -115,10 +115,10 @@ bool VistaABufferCSG::InitDefaultShader()
 	VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
 
 	std::string strShader[4];
-	strShader[0] = rShaderReg.RetrieveShader( g_strShader_Default_Vert );
-	strShader[1] = rShaderReg.RetrieveShader( g_strShader_Default_Frag );
-	strShader[2] = rShaderReg.RetrieveShader( g_strShader_StoreFrag_Aux );
-	strShader[3] = rShaderReg.RetrieveShader( g_strShader_Lighting_Aux );
+	strShader[0] = rShaderReg.RetrieveShader( g_strShader_CSG_Default_Vert );
+	strShader[1] = rShaderReg.RetrieveShader( g_strShader_CSG_Default_Frag );
+	strShader[2] = rShaderReg.RetrieveShader( g_strShader_CSG_StoreFrag_Aux );
+	strShader[3] = rShaderReg.RetrieveShader( g_strShader_CSG_Lighting_Aux );
 
 
 	if( strShader[0].empty() || 
@@ -128,10 +128,10 @@ bool VistaABufferCSG::InitDefaultShader()
 	{
 		vstr::errp() << "[VistaABufferOIT] - required shader not found."  << std::endl;
 		vstr::IndentObject oIndent;
-		if( strShader[0].empty() ) vstr::erri() << "Can't find " << g_strShader_Default_Vert  << std::endl;
-		if( strShader[1].empty() ) vstr::erri() << "Can't find " << g_strShader_Default_Frag  << std::endl;
-		if( strShader[2].empty() ) vstr::erri() << "Can't find " << g_strShader_StoreFrag_Aux << std::endl;
-		if( strShader[3].empty() ) vstr::erri() << "Can't find " << g_strShader_Lighting_Aux  << std::endl;
+		if( strShader[0].empty() ) vstr::erri() << "Can't find " << g_strShader_CSG_Default_Vert  << std::endl;
+		if( strShader[1].empty() ) vstr::erri() << "Can't find " << g_strShader_CSG_Default_Frag  << std::endl;
+		if( strShader[2].empty() ) vstr::erri() << "Can't find " << g_strShader_CSG_StoreFrag_Aux << std::endl;
+		if( strShader[3].empty() ) vstr::erri() << "Can't find " << g_strShader_CSG_Lighting_Aux  << std::endl;
 		return false;
 	}
 
@@ -173,7 +173,7 @@ bool VistaABufferCSG::InitDisplayShader()
 	VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
 
 	std::string strShader[2];
-	strShader[0] = rShaderReg.RetrieveShader( g_strShader_Display_Frag );
+	strShader[0] = rShaderReg.RetrieveShader( g_strShader_CSG_Display_Frag );
 	strShader[1] = rShaderReg.RetrieveShader( m_strDisplayShaderExt );
 
 
@@ -182,7 +182,7 @@ bool VistaABufferCSG::InitDisplayShader()
 	{
 		vstr::errp() << "[VistaABufferOIT] - required shader not found."  << std::endl;
 		vstr::IndentObject oIndent;
-		if( strShader[0].empty() ) vstr::erri() << "Can't find " << g_strShader_Display_Frag << std::endl;
+		if( strShader[0].empty() ) vstr::erri() << "Can't find " << g_strShader_CSG_Display_Frag << std::endl;
 		if( strShader[1].empty() ) vstr::erri() << "Can't find " << m_strDisplayShaderExt    << std::endl;
 		return false;
 	}

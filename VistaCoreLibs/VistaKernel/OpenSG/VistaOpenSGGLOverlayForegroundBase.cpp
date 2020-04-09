@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
+#include <gl/glew.h>
 
 #include "VistaOpenSGGLOverlayForegroundBase.h"
 #include "VistaOpenSGGLOverlayForeground.h"

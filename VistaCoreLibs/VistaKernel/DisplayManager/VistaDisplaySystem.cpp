@@ -322,67 +322,67 @@ VistaDisplaySystem::VistaDisplaySystemProperties *VistaDisplaySystem::GetDisplay
 }
 
 namespace {
-	const std::string sSReflectionType("VistaDisplaySystem");
+	const std::string sSReflectionTypeVDS("VistaDisplaySystem");
 
-	IVistaPropertyGetFunctor *aCgFunctors[] =
+	IVistaPropertyGetFunctor *aCgFunctorsVDS[] =
 	{
 		new TVistaProperty3RefGet<float, VistaDisplaySystem::VistaDisplaySystemProperties, VistaProperty::PROPT_DOUBLE>
-		("VIEWER_POSITION", sSReflectionType,
+		("VIEWER_POSITION", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::VistaDisplaySystemProperties::GetViewerPosition),	
 		new TVistaProperty4RefGet<float, VistaDisplaySystem::VistaDisplaySystemProperties, VistaProperty::PROPT_DOUBLE>
-		("VIEWER_ORIENTATION", sSReflectionType,
+		("VIEWER_ORIENTATION", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::VistaDisplaySystemProperties::GetViewerOrientation),	
 		new TVistaProperty3RefGet<float, VistaDisplaySystem::VistaDisplaySystemProperties, VistaProperty::PROPT_DOUBLE>
-		("LEFT_EYE_OFFSET", sSReflectionType,
+		("LEFT_EYE_OFFSET", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::VistaDisplaySystemProperties::GetLeftEyeOffset),	
 		new TVistaProperty3RefGet<float, VistaDisplaySystem::VistaDisplaySystemProperties, VistaProperty::PROPT_DOUBLE>
-		("RIGHT_EYE_OFFSET", sSReflectionType,
+		("RIGHT_EYE_OFFSET", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::VistaDisplaySystemProperties::GetRightEyeOffset),	
 		new TVistaPropertyGet<bool, VistaDisplaySystem::VistaDisplaySystemProperties, VistaProperty::PROPT_BOOL>
-		("LOCAL_VIEWER", sSReflectionType,
+		("LOCAL_VIEWER", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::VistaDisplaySystemProperties::GetLocalViewer),
 		new TVistaPropertyGet<bool, VistaDisplaySystem::VistaDisplaySystemProperties, VistaProperty::PROPT_BOOL>
-		("HMD_MODE", sSReflectionType,
+		("HMD_MODE", sSReflectionTypeVDS,
 		&VistaDisplaySystem::VistaDisplaySystemProperties::GetHMDModeActive),
 		new TVistaDisplayEntityParentPropertyGet<std::string, VistaDisplaySystem, VistaProperty::PROPT_STRING>
-		("REFERENCE_FRAME_NAME", sSReflectionType,
+		("REFERENCE_FRAME_NAME", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::GetReferenceFrameName),
 		new TVistaDisplayEntityParentPropertyGet<unsigned int, VistaDisplaySystem, VistaProperty::PROPT_DOUBLE>
-		("NUMBER_OF_VIEWPORTS", sSReflectionType,
+		("NUMBER_OF_VIEWPORTS", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::GetNumberOfViewports),	
 		new TVistaDisplayEntityParentPropertyGet<std::list<std::string>, VistaDisplaySystem, VistaProperty::PROPT_LIST>
-		("VIEWPORT_NAMES", sSReflectionType,
+		("VIEWPORT_NAMES", sSReflectionTypeVDS,
 		 &VistaDisplaySystem::GetViewportNames),
 		NULL
 	};
 
-	IVistaPropertySetFunctor *aCsFunctors[] =
+	IVistaPropertySetFunctor *aCsFunctorsVDS[] =
 	{
 		new TVistaPropertySet<const VistaVector3D&, VistaVector3D, 
 				VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"VIEWER_POSITION", sSReflectionType,
+						"VIEWER_POSITION", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetViewerPosition ),
 		new TVistaPropertySet<const VistaQuaternion&, VistaQuaternion,
 				VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"VIEWER_ORIENTATION", sSReflectionType,
+						"VIEWER_ORIENTATION", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetViewerOrientation ),
 		new TVistaProperty3ValSet<float, VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"LEFT_EYE_OFFSET", sSReflectionType,
+						"LEFT_EYE_OFFSET", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetLeftEyeOffset),
 		new TVistaProperty3ValSet<float, VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"RIGHT_EYE_OFFSET", sSReflectionType,
+						"RIGHT_EYE_OFFSET", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetRightEyeOffset ),
 		new TVistaPropertySet<bool, bool, 
 				VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"LOCAL_VIEWER", sSReflectionType,
+						"LOCAL_VIEWER", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetLocalViewer ),
 		new TVistaPropertySet<bool, bool, 
 				VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"HMD_MODE", sSReflectionType,
+						"HMD_MODE", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetHMDModeActive ),
 		new TVistaPropertySet<const string &, string,
 				VistaDisplaySystem::VistaDisplaySystemProperties>(
-						"NAME", sSReflectionType,
+						"NAME", sSReflectionTypeVDS,
 						&VistaDisplaySystem::VistaDisplaySystemProperties::SetName ),
 		NULL
 	};
@@ -731,13 +731,13 @@ void VistaDisplaySystem::VistaDisplaySystemProperties::SetEyeOffsets(const Vista
 
 string VistaDisplaySystem::VistaDisplaySystemProperties::GetReflectionableType() const
 {
-	return sSReflectionType;
+	return sSReflectionTypeVDS;
 }
 
 int VistaDisplaySystem::VistaDisplaySystemProperties::AddToBaseTypeList(list<string> &rBtList) const
 {
 	int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionType);
+	rBtList.push_back(sSReflectionTypeVDS);
 	return nSize + 1;
 }
 
