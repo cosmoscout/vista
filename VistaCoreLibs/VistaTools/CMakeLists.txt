@@ -28,6 +28,10 @@ target_link_libraries( VistaTools
 	${LIBRARIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaTools REUSE_FROM VistaBase)
+endif()
+
 vista_configure_lib( VistaTools )
 vista_install( VistaTools VistaTools )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

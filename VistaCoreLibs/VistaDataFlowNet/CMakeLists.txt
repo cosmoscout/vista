@@ -23,6 +23,10 @@ target_link_libraries( VistaDataFlowNet
 	${VISTADATAFLOWNET_INTERNAL_DEPENDENCIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaDataFlowNet REUSE_FROM VistaBase)
+endif()
+
 vista_configure_lib( VistaDataFlowNet )
 vista_install( VistaDataFlowNet VistaDataFlowNet )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

@@ -26,6 +26,10 @@ target_link_libraries( VistaKernelOpenSGExt
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaKernelOpenSGExt REUSE_FROM VistaBase)
+endif()
+
 vista_configure_lib( VistaKernelOpenSGExt )
 vista_install( VistaKernelOpenSGExt VistaKernelOpenSGExt )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

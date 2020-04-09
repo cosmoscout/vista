@@ -1,0 +1,12 @@
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>

@@ -27,6 +27,10 @@ target_link_libraries( VistaInterProcComm
 	${LIBRARIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaInterProcComm REUSE_FROM VistaBase)
+endif()
+
 vista_configure_lib( VistaInterProcComm )
 vista_install( VistaInterProcComm VistaInterProcComm )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

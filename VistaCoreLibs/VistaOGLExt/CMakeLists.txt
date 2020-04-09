@@ -29,6 +29,10 @@ target_link_libraries( VistaOGLExt
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaOGLExt REUSE_FROM VistaBase)
+endif()
+
 vista_find_shader_dirs( VistaOGLExt )
 
 set( VISTACORELIBS_SHADER_DIRS ${VISTAOGLEXT_SHADER_DIRS} PARENT_SCOPE )

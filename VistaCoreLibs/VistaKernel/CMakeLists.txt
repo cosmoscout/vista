@@ -68,6 +68,10 @@ target_link_libraries( VistaKernel
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaKernel REUSE_FROM VistaBase)
+endif()
+
 vista_configure_lib( VistaKernel )
 vista_install( VistaKernel VistaKernel )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

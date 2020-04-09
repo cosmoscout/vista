@@ -19,6 +19,10 @@ target_link_libraries( VistaAspects
 	${LIBRARIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaAspects REUSE_FROM VistaBase)
+endif()
+
 vista_configure_lib( VistaAspects )
 vista_install( VistaAspects VistaAspects )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
