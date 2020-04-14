@@ -24,7 +24,7 @@ target_link_libraries( VistaDataFlowNet
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaDataFlowNet REUSE_FROM VistaBase)
+	target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaDataFlowNet )

@@ -30,7 +30,7 @@ target_link_libraries( VistaOGLExt
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaOGLExt REUSE_FROM VistaBase)
+	target_precompile_headers(VistaOGLExt PRIVATE precompiled.pch)
 endif()
 
 vista_find_shader_dirs( VistaOGLExt )

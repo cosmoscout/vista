@@ -1,0 +1,25 @@
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+#include <GL/glew.h>
+#include <GL/gl.h>
+
+#include <string>
+
+#include <OpenSG/OSGChunkMaterial.h>
+#include <OpenSG/OSGMaterialChunk.h>
+#include <OpenSG/OSGNode.h>
+#include <OpenSG/OSGSimpleTexturedMaterial.h>
+#include <OpenSG/OSGSHLChunk.h>
+#include <OpenSG/OSGTextureChunk.h>
+
+#include <VistaBase/VistaStreamUtils.h>
+#include <VistaBase/VistaVersion.h>
+
+#include <VistaKernel/GraphicsManager/VistaGroupNode.h>
+#include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
+#include <VistaKernel/GraphicsManager/VistaNode.h>
+
+#include <VistaKernel/OpenSG/VistaOpenSGGraphicsBridge.h>
+#include <VistaKernel/OpenSG/VistaOpenSGNodeBridge.h>

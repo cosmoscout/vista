@@ -69,7 +69,7 @@ target_link_libraries( VistaKernel
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaKernel REUSE_FROM VistaBase)
+	target_precompile_headers(VistaKernel PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaKernel )

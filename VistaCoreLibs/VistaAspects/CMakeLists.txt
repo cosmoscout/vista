@@ -20,7 +20,7 @@ target_link_libraries( VistaAspects
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaAspects REUSE_FROM VistaBase)
+	target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaAspects )

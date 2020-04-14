@@ -28,7 +28,7 @@ target_link_libraries( VistaInterProcComm
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaInterProcComm REUSE_FROM VistaBase)
+	target_precompile_headers(VistaInterProcComm PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaInterProcComm )

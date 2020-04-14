@@ -27,7 +27,7 @@ target_link_libraries( VistaKernelOpenSGExt
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaKernelOpenSGExt REUSE_FROM VistaBase)
+	target_precompile_headers(VistaKernelOpenSGExt PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaKernelOpenSGExt )

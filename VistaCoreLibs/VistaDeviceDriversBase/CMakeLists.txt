@@ -30,7 +30,7 @@ target_link_libraries( VistaDeviceDriversBase
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaDeviceDriversBase REUSE_FROM VistaBase)
+	target_precompile_headers(VistaDeviceDriversBase PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaDeviceDriversBase )

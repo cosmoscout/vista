@@ -21,6 +21,10 @@ target_link_libraries( VistaMath
 	${VISTAMATH_INTERNAL_DEPENDENCIES}
 )
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	target_precompile_headers(VistaMath PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaMath )
 vista_install( VistaMath VistaMath )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

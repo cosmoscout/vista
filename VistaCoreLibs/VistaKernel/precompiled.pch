@@ -1,0 +1,28 @@
+#ifdef _WIN32
+#include <winsock2.h>
+#include <Windows.h>
+#else
+
+#endif
+
+#include <GL/glew.h>
+#include <GL/gl.h>
+
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>
+
+#include <OpenSG/OSGConfig.h>
+
+#include <VistaBase/VistaBaseTypes.h>
+#include <VistaBase/VistaExceptionBase.h>
+#include <VistaBase/VistaStreamUtils.h>
+#include <VistaBase/VistaVectorMath.h>
+
+#include <VistaDataFlowNet/VdfnNode.h>
+#include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>

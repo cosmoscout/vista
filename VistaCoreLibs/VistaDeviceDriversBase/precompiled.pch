@@ -1,0 +1,15 @@
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>
+
+#include <VistaBase/VistaBaseTypes.h>
+#include <VistaBase/VistaTimeUtils.h>
+#include <VistaBase/VistaStreamUtils.h>

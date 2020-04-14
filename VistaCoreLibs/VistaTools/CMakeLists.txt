@@ -29,7 +29,7 @@ target_link_libraries( VistaTools
 )
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	target_precompile_headers(VistaTools REUSE_FROM VistaBase)
+	target_precompile_headers(VistaTools PRIVATE precompiled.pch)
 endif()
 
 vista_configure_lib( VistaTools )
