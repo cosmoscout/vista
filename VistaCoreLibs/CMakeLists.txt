@@ -100,6 +100,10 @@ if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
 		-D_WINSOCKAPI_
 		-DNOMINMAX
 	)
+
+	if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		set(VISTA_ENABLE_PCH true)
+	endif()
 endif()
 
 # Standard package config

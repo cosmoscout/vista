@@ -23,7 +23,7 @@ target_link_libraries( VistaDataFlowNet
 	${VISTADATAFLOWNET_INTERNAL_DEPENDENCIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
 endif()
 

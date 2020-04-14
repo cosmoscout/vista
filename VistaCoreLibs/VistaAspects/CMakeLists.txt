@@ -19,7 +19,7 @@ target_link_libraries( VistaAspects
 	${LIBRARIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
 endif()
 

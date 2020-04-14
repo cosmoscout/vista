@@ -21,7 +21,7 @@ target_link_libraries( VistaMath
 	${VISTAMATH_INTERNAL_DEPENDENCIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaMath PRIVATE precompiled.pch)
 endif()
 

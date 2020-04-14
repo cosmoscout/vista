@@ -29,7 +29,7 @@ target_link_libraries( VistaDeviceDriversBase
 	${LIBRARIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaDeviceDriversBase PRIVATE precompiled.pch)
 endif()
 

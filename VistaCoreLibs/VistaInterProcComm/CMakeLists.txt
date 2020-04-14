@@ -27,7 +27,7 @@ target_link_libraries( VistaInterProcComm
 	${LIBRARIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaInterProcComm PRIVATE precompiled.pch)
 endif()
 

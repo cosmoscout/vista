@@ -28,7 +28,7 @@ target_link_libraries( VistaTools
 	${LIBRARIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaTools PRIVATE precompiled.pch)
 endif()
 

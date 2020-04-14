@@ -29,7 +29,7 @@ target_link_libraries( VistaOGLExt
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
-if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+if (${VISTA_ENABLE_PCH})
 	target_precompile_headers(VistaOGLExt PRIVATE precompiled.pch)
 endif()
 
