@@ -497,7 +497,7 @@ void VistaReferencePlane::VfaReferencePlaneProperties::SetOrientation(
 /******************************************************************************/
 /*  Get/SetOrientation()                                                      */
 /******************************************************************************/
-static IVistaPropertyGetFunctor *aCgFunctors[] =
+static IVistaPropertyGetFunctor *aCgFunctorsVSD[] =
 {
 	new TVistaPropertyGet<bool, VistaReferencePlane::VfaReferencePlaneProperties, VistaProperty::PROPT_BOOL>
 	( "VISIBLE", SsReflectionType,

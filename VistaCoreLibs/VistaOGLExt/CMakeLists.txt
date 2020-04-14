@@ -29,6 +29,10 @@ target_link_libraries( VistaOGLExt
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaOGLExt PRIVATE precompiled.pch)
+endif()
+
 vista_find_shader_dirs( VistaOGLExt )
 
 set( VISTACORELIBS_SHADER_DIRS ${VISTAOGLEXT_SHADER_DIRS} PARENT_SCOPE )

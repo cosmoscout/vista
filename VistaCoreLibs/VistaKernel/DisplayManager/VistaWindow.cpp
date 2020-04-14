@@ -209,63 +209,63 @@ bool VistaWindow::Render()
 
 
 namespace {
-	const std::string sSReflectionType("VistaWindow");
+	const std::string sSReflectionTypeVSD("VistaWindow");
 	
-	IVistaPropertyGetFunctor *aCgFunctors[] =
+	IVistaPropertyGetFunctor *aCgFunctorsVSD[] =
 	{
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("STEREO", sSReflectionType,
+							("STEREO", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetStereo),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("USE_ACCUM_BUFFER", sSReflectionType,
+							("USE_ACCUM_BUFFER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetUseAccumBuffer),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("USE_STENCIL_BUFFER", sSReflectionType,
+							("USE_STENCIL_BUFFER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetUseStencilBuffer),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("DRAW_BORDER", sSReflectionType,
+							("DRAW_BORDER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetDrawBorder),
 		new TVistaProperty2RefGet<int, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_INT>
-							("CONTEXT_VERSION", sSReflectionType,
+							("CONTEXT_VERSION", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetContextVersion),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("DEBUG_CONTEXT", sSReflectionType,
+							("DEBUG_CONTEXT", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetIsDebugContext),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("FORWARD_COMPATIBLE", sSReflectionType,
+							("FORWARD_COMPATIBLE", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetIsForwardCompatible),
 		new TVistaProperty2RefGet<int, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_INT>
-							("POSITION", sSReflectionType,
+							("POSITION", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetPosition),	
 		new TVistaProperty2RefGet<int, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_INT>
-							("SIZE", sSReflectionType,
+							("SIZE", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetSize),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("FULLSCREEN", sSReflectionType,
+							("FULLSCREEN", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetFullScreen),
 		new TVistaPropertyGet<bool, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_BOOL>
-							("OFFSCREEN_BUFFER", sSReflectionType,
+							("OFFSCREEN_BUFFER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetIsOffscreenBuffer),
 		new TVistaPropertyGet<int, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_INT>
-							("MULTISAMPLES", sSReflectionType,
+							("MULTISAMPLES", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetMultiSamples),
 		new TVistaPropertyGet<std::string, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_STRING>
-							("TITLE", sSReflectionType,
+							("TITLE", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetTitle),
 		new TVistaPropertyGet<int, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_INT>(
-							"VSYNC", sSReflectionType,
+							"VSYNC", sSReflectionTypeVSD,
 							&VistaWindow::VistaWindowProperties::GetVSyncEnabled),
 		new TVistaDisplayEntityParentPropertyGet<std::string, VistaWindow, VistaProperty::PROPT_STRING>
-							("DISPLAY_NAME", sSReflectionType,
+							("DISPLAY_NAME", sSReflectionTypeVSD,
 							 &VistaWindow::GetDisplayName),
 		new TVistaDisplayEntityParentPropertyGet<unsigned int, VistaWindow, VistaProperty::PROPT_DOUBLE>
-							("NUMBER_OF_VIEWPORTS", sSReflectionType,
+							("NUMBER_OF_VIEWPORTS", sSReflectionTypeVSD,
 							 &VistaWindow::GetNumberOfViewports),	
 		new TVistaDisplayEntityParentPropertyGet<std::list<std::string>, VistaWindow, VistaProperty::PROPT_LIST>
-							("VIEWPORT_NAMES", sSReflectionType,
+							("VIEWPORT_NAMES", sSReflectionTypeVSD,
 							 &VistaWindow::GetViewportNames),
 		new TVistaPropertyGet<int, VistaWindow::VistaWindowProperties, VistaProperty::PROPT_INT>
-							("WINDOW_ID", sSReflectionType,
+							("WINDOW_ID", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::GetWindowId),
 		NULL
 
@@ -274,49 +274,49 @@ namespace {
 	IVistaPropertySetFunctor *aCsFunctors[] =
 	{
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("STEREO", sSReflectionType,
+							("STEREO", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetStereo),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("USE_ACCUM_BUFFER", sSReflectionType,
+							("USE_ACCUM_BUFFER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetUseAccumBuffer),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("USE_STENCIL_BUFFER", sSReflectionType,
+							("USE_STENCIL_BUFFER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetUseStencilBuffer),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("DRAW_BORDER", sSReflectionType,
+							("DRAW_BORDER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetDrawBorder),
 		new TVistaProperty2ValSet<int, VistaWindow::VistaWindowProperties>
-							("CONTEXT_VERSION", sSReflectionType,
+							("CONTEXT_VERSION", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetContextVersion),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("DEBUG_CONTEXT", sSReflectionType,
+							("DEBUG_CONTEXT", sSReflectionTypeVSD,
 							&VistaWindow::VistaWindowProperties::SetIsDebugContext),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("FORWARD_COMPATIBLE", sSReflectionType,
+							("FORWARD_COMPATIBLE", sSReflectionTypeVSD,
 							&VistaWindow::VistaWindowProperties::SetIsForwardCompatible),
 		new TVistaProperty2ValSet<int, VistaWindow::VistaWindowProperties>
-							("POSITION", sSReflectionType,
+							("POSITION", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetPosition),
 		new TVistaProperty2ValSet<int, VistaWindow::VistaWindowProperties>
-							("SIZE", sSReflectionType,
+							("SIZE", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetSize),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("FULLSCREEN", sSReflectionType,
+							("FULLSCREEN", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetFullScreen),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>
-							("OFFSCREEN_BUFFER", sSReflectionType,
+							("OFFSCREEN_BUFFER", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetIsOffscreenBuffer),
 		new TVistaPropertySet<const int, int, VistaWindow::VistaWindowProperties>
-							("MULTISAMPLES", sSReflectionType,
+							("MULTISAMPLES", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetMultiSamples),
 		new TVistaPropertySet<const std::string &, std::string, VistaWindow::VistaWindowProperties>
-							("TITLE", sSReflectionType,
+							("TITLE", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetTitle),
 		new TVistaPropertySet<bool, bool, VistaWindow::VistaWindowProperties>(
-							"VSYNC", sSReflectionType,
+							"VSYNC", sSReflectionTypeVSD,
 							&VistaWindow::VistaWindowProperties::SetVSyncEnabled),
 		new TVistaPropertySet<const string &, string,VistaWindow::VistaWindowProperties>
-							("NAME", sSReflectionType,
+							("NAME", sSReflectionTypeVSD,
 							 &VistaWindow::VistaWindowProperties::SetName),
 
 		NULL
@@ -573,7 +573,7 @@ bool VistaWindow::VistaWindowProperties::SetTitle(const std::string& sTitle)
 /*============================================================================*/
 string VistaWindow::VistaWindowProperties::GetReflectionableType() const
 {
-	return sSReflectionType;
+	return sSReflectionTypeVSD;
 }
 
 /*============================================================================*/
@@ -595,7 +595,7 @@ int VistaWindow::VistaWindowProperties::GetWindowId() const
 int VistaWindow::VistaWindowProperties::AddToBaseTypeList(list<string> &rBtList) const
 {
 	int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionType);
+	rBtList.push_back(sSReflectionTypeVSD);
 	return nSize + 1;
 }
 

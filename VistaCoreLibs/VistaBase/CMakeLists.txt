@@ -18,6 +18,10 @@ target_link_libraries( VistaBase
 	${LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaBase PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaBase )
 vista_install( VistaBase VistaBase )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

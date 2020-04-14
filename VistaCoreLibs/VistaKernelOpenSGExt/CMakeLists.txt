@@ -26,6 +26,10 @@ target_link_libraries( VistaKernelOpenSGExt
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaKernelOpenSGExt PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaKernelOpenSGExt )
 vista_install( VistaKernelOpenSGExt VistaKernelOpenSGExt )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

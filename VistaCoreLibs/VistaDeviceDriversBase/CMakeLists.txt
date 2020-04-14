@@ -29,6 +29,10 @@ target_link_libraries( VistaDeviceDriversBase
 	${LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaDeviceDriversBase PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaDeviceDriversBase )
 vista_install( VistaDeviceDriversBase VistaDeviceDriversBase )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

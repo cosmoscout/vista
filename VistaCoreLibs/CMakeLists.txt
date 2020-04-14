@@ -92,6 +92,20 @@ endif( NOT VISTACORELIBS_SUPPORT_NATIVE_64BIT_ATOMICS )
 	# unix_require_c11()
 # endif()
 
+if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
+	set(CMAKE_UNITY_BUILD On)
+	set(CMAKE_UNITY_BUILD_BATCH_SIZE 20)
+	add_definitions(
+		-D_WINSOCK_DEPRECATED_NO_WARNINGS
+		-D_WINSOCKAPI_
+		-DNOMINMAX
+	)
+
+	if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		set(VISTA_ENABLE_PCH true)
+	endif()
+endif()
+
 # Standard package config
 vista_configure_cpack( VistaCoreLibs )
 

@@ -33,7 +33,7 @@
 /*============================================================================*/
 static const std::string SsReflectionType("IVistaReflectionable");
 
-static IVistaPropertyGetFunctor *aCgFunctors[] =
+static IVistaPropertyGetFunctor *aCgFunctorsVSD[] =
 {
 	new TVistaPropertyGet<std::string, IVistaReflectionable>
 		  ("NAME", SsReflectionType,
@@ -62,7 +62,7 @@ namespace VistaReflectionableUtil
 {
 	void ReleaseProperties()
 	{
-		IVistaPropertyGetFunctor **git = aCgFunctors;
+		IVistaPropertyGetFunctor **git = aCgFunctorsVSD;
 		IVistaPropertySetFunctor **sit = aCsFunctors;
 
 		while( *git )

@@ -28,6 +28,10 @@ target_link_libraries( VistaTools
 	${LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaTools PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaTools )
 vista_install( VistaTools VistaTools )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

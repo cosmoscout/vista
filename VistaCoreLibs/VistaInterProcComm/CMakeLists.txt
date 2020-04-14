@@ -27,6 +27,10 @@ target_link_libraries( VistaInterProcComm
 	${LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaInterProcComm PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaInterProcComm )
 vista_install( VistaInterProcComm VistaInterProcComm )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

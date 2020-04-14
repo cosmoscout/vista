@@ -31,6 +31,8 @@
 #pragma warning(disable: 4275)
 #endif
 
+#include <GL/glew.h>
+
 #include "VistaOpenSGPhongShader.h"
 
 #include "VistaOpenSGPerMaterialShader.h"

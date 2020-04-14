@@ -154,7 +154,6 @@ typedef struct Material_t
 static Prototype ACObject *ac3d_load_ac3d(const char *filename, ACMaterial *pPalette, int &iNumPalette);
 static Prototype void ac3d_object_free(ACObject *ob);
 
-#define Private static
 #define Boolean int
 
 #ifndef TRUE

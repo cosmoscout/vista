@@ -241,61 +241,61 @@ void VistaViewport::SetCustomRenderAction( CustomRenderAction* pAction )
 }
 
 namespace {
-	const std::string sSReflectionType("VistaViewport");
+	const std::string sSReflectionTypeVV("VistaViewport");
 
 
-	IVistaPropertyGetFunctor *aCgFunctors[] =
+	IVistaPropertyGetFunctor *aCgFunctorsVV[] =
 	{
 
 		new TVistaProperty2RefGet<int, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_INT>(
-				"POSITION", sSReflectionType, &VistaViewport::VistaViewportProperties::GetPosition ),	
+				"POSITION", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetPosition ),
 		new TVistaProperty2RefGet<int, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_INT>(
-				"SIZE", sSReflectionType, &VistaViewport::VistaViewportProperties::GetSize ),	
+				"SIZE", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetSize ),
 		new TVistaProperty2RefGet<int, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_INT>(
-				"TEXTURE_SIZE", sSReflectionType, &VistaViewport::VistaViewportProperties::GetTextureSize ),	
+				"TEXTURE_SIZE", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetTextureSize ),
 		new TVistaPropertyGet<bool, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_BOOL>(
-				"ENABLED", sSReflectionType, &VistaViewport::VistaViewportProperties::GetIsEnabled ),
+				"ENABLED", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetIsEnabled ),
 		new TVistaPropertyGet<int, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_INT>(
-				"PRIORITY", sSReflectionType, &VistaViewport::VistaViewportProperties::GetPriority ),
+				"PRIORITY", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetPriority ),
 		new TVistaPropertyGet<std::string, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_STRING>(
-				"TYPE", sSReflectionType, &VistaViewport::VistaViewportProperties::GetTypeString ),
+				"TYPE", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetTypeString ),
 		new TVistaPropertyGet<std::string, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_STRING>(
-				"POSTPROCESS_SHADER", sSReflectionType, &VistaViewport::VistaViewportProperties::GetPostProcessShaderFile ),
+				"POSTPROCESS_SHADER", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetPostProcessShaderFile ),
 		new TVistaPropertyGet<bool, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_BOOL>
-				("RESIZE_WITH_WINDOW", sSReflectionType, &VistaViewport::VistaViewportProperties::GetResizeWithWindow),
+				("RESIZE_WITH_WINDOW", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetResizeWithWindow),
 		new TVistaPropertyGet<bool, VistaViewport::VistaViewportProperties, VistaProperty::PROPT_BOOL>
-				("REPOSITION_WITH_WINDOW", sSReflectionType, &VistaViewport::VistaViewportProperties::GetRepositionWithWindow),
+				("REPOSITION_WITH_WINDOW", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::GetRepositionWithWindow),
 		new TVistaDisplayEntityParentPropertyGet<std::string, VistaViewport, VistaProperty::PROPT_STRING>(
-				"DISPLAY_SYSTEM_NAME", sSReflectionType, &VistaViewport::GetDisplaySystemName ),
+				"DISPLAY_SYSTEM_NAME", sSReflectionTypeVV, &VistaViewport::GetDisplaySystemName ),
 		new TVistaDisplayEntityParentPropertyGet<std::string, VistaViewport, VistaProperty::PROPT_STRING>(
-				"WINDOW_NAME", sSReflectionType, &VistaViewport::GetWindowName ),
+				"WINDOW_NAME", sSReflectionTypeVV, &VistaViewport::GetWindowName ),
 		new TVistaDisplayEntityParentPropertyGet<std::string, VistaViewport, VistaProperty::PROPT_STRING>(
-				"PROJECTION_NAME", sSReflectionType, &VistaViewport::GetProjectionName ),
+				"PROJECTION_NAME", sSReflectionTypeVV, &VistaViewport::GetProjectionName ),
 		NULL
 	};
 
-	IVistaPropertySetFunctor *aCsFunctors[] =
+	IVistaPropertySetFunctor *aCsFunctorsVV[] =
 	{	
 		new TVistaProperty2ValSet<int, VistaViewport::VistaViewportProperties>(
-				"POSITION", sSReflectionType, &VistaViewport::VistaViewportProperties::SetPosition ),
+				"POSITION", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetPosition ),
 		new TVistaProperty2ValSet<int, VistaViewport::VistaViewportProperties>(
-				"SIZE", sSReflectionType, &VistaViewport::VistaViewportProperties::SetSize ),
+				"SIZE", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetSize ),
 		new TVistaProperty2ValSet<int, VistaViewport::VistaViewportProperties>(
-				"TEXTURE_SIZE", sSReflectionType, &VistaViewport::VistaViewportProperties::SetTextureSize ),
+				"TEXTURE_SIZE", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetTextureSize ),
 		new TVistaPropertySet<const string &, string,VistaViewport::VistaViewportProperties>(
-				"NAME", sSReflectionType, &VistaViewport::VistaViewportProperties::SetName ),
+				"NAME", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetName ),
 		new TVistaPropertySet<const string &, string,VistaViewport::VistaViewportProperties>(
-				"TYPE", sSReflectionType, &VistaViewport::VistaViewportProperties::SetTypeByString ),
+				"TYPE", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetTypeByString ),
 		new TVistaPropertySet<const string &, string,VistaViewport::VistaViewportProperties>(
-				"POSTPROCESS_SHADER", sSReflectionType, &VistaViewport::VistaViewportProperties::SetPostProcessShaderFile ),
+				"POSTPROCESS_SHADER", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetPostProcessShaderFile ),
 		new TVistaPropertySet<bool, bool, VistaViewport::VistaViewportProperties>
-				("RESIZE_WITH_WINDOW", sSReflectionType,  &VistaViewport::VistaViewportProperties::SetResizeWithWindow),
+				("RESIZE_WITH_WINDOW", sSReflectionTypeVV,  &VistaViewport::VistaViewportProperties::SetResizeWithWindow),
 		new TVistaPropertySet<bool, bool, VistaViewport::VistaViewportProperties>
-				("REPOSITION_WITH_WINDOW", sSReflectionType, &VistaViewport::VistaViewportProperties::SetRepositionWithWindow),
+				("REPOSITION_WITH_WINDOW", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetRepositionWithWindow),
 		new TVistaPropertySet<const bool, bool,VistaViewport::VistaViewportProperties>(
-				"ENABLED", sSReflectionType, &VistaViewport::VistaViewportProperties::SetIsEnabled ),
+				"ENABLED", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetIsEnabled ),
 		new TVistaPropertySet<const int, int,VistaViewport::VistaViewportProperties>(
-				"PRIORITY", sSReflectionType, &VistaViewport::VistaViewportProperties::SetPriority ),
+				"PRIORITY", sSReflectionTypeVV, &VistaViewport::VistaViewportProperties::SetPriority ),
 		NULL
 	};
 }
@@ -500,13 +500,13 @@ bool VistaViewport::VistaViewportProperties::SetRepositionWithWindow( const bool
 
 string VistaViewport::VistaViewportProperties::GetReflectionableType() const
 {
-	return sSReflectionType;
+	return sSReflectionTypeVV;
 }
 
 int VistaViewport::VistaViewportProperties::AddToBaseTypeList(list<string> &rBtList) const
 {
 	int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionType);
+	rBtList.push_back(sSReflectionTypeVV);
 	return nSize + 1;
 }
 

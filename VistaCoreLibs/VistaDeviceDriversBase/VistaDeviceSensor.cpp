@@ -645,14 +645,13 @@ std::set<std::string> IVistaMeasureTranscode::GetMeasureProperties() const
 
 namespace
 {
-	const std::string sSReflectionType("IVistaMeasureTranscode");
+	const std::string sSReflectionTypeVSD("IVistaMeasureTranscode");
 
 	class VistaMeasureIndexTranscode : public IVistaMeasureTranscode::TTranscodeValueGet<VistaType::uint32>
 	{
 	public:
 		VistaMeasureIndexTranscode()
-			: IVistaMeasureTranscode::TTranscodeValueGet<unsigned int>("MEASUREINDEX",
-			sSReflectionType, "absolute index of measurement")
+			: IVistaMeasureTranscode::TTranscodeValueGet<unsigned int>("MEASUREINDEX", sSReflectionTypeVSD, "absolute index of measurement")
 		{
 		}
 
@@ -673,8 +672,7 @@ namespace
 	{
 	public:
 		VistaMeasureTimeStampTranscode()
-			: IVistaMeasureTranscode::TTranscodeValueGet<VistaType::microtime>("TIMESTAMP",
-			sSReflectionType, "timestamp of raw measurement")
+			: IVistaMeasureTranscode::TTranscodeValueGet<VistaType::microtime>("TIMESTAMP", sSReflectionTypeVSD, "timestamp of raw measurement")
 		{
 		}
 
@@ -695,8 +693,7 @@ namespace
 	{
 	public:
 		VistaMeasureTimeStampSecTranscode()
-			: IVistaMeasureTranscode::TTranscodeValueGet<double>("TIMESTAMP",
-			sSReflectionType, "timestamp of raw measurement"),
+			: IVistaMeasureTranscode::TTranscodeValueGet<double>("TIMESTAMP", sSReflectionTypeVSD, "timestamp of raw measurement"),
 			m_nSpeed(1)
 		{
 			VistaCPUInfo info;
@@ -722,8 +719,7 @@ namespace
 	{
 	public:
 		VistaMeasureDeliveryTranscode()
-			: IVistaMeasureTranscode::TTranscodeValueGet<double>("DELIVERY_TIMESTAMP",
-			sSReflectionType, "the timestamp of delivery to the history")
+			: IVistaMeasureTranscode::TTranscodeValueGet<double>("DELIVERY_TIMESTAMP", sSReflectionTypeVSD, "the timestamp of delivery to the history")
 		{
 		}
 		virtual double GetValue(const VistaSensorMeasure *pMeasure ) const
@@ -743,8 +739,7 @@ namespace
 	{
 	public:
 		VistaMeasureSwapTimeTranscode()
-			: IVistaMeasureTranscode::TTranscodeValueGet<double>("SWAPTIME",
-			sSReflectionType, "time in between locks (lock latency)")
+			: IVistaMeasureTranscode::TTranscodeValueGet<double>("SWAPTIME", sSReflectionTypeVSD, "time in between locks (lock latency)")
 		{
 		}
 

@@ -68,6 +68,10 @@ target_link_libraries( VistaKernel
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaKernel PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaKernel )
 vista_install( VistaKernel VistaKernel )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

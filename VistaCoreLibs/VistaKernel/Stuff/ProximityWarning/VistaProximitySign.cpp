@@ -54,7 +54,7 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-namespace
+namespace vpsign
 {
 	VistaType::uint32 S_nTransparent = 0X00000000;
 	VistaType::uint32 S_nBackground = 0xFF0000FF;
@@ -199,7 +199,7 @@ bool VistaProximitySign::SetTexture( const std::string sTexture ) const
 bool VistaProximitySign::SetDefaultTexture() const
 {
 	const int nRes = 256;
-	VistaType::uint32* pData = CreateTexture( nRes );
+	VistaType::uint32* pData = vpsign::CreateTexture( nRes );
 	bool bRes = m_pGeometry->SetTexture( nRes, nRes, 8, true, (VistaType::byte*)pData );
 	delete [] pData;
 	return bRes;

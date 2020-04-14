@@ -1,0 +1,21 @@
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
+#include <algorithm>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <string>
+#include <sstream>
+#include <vector>
+
+#include <VistaBase/VistaStreamUtils.h>

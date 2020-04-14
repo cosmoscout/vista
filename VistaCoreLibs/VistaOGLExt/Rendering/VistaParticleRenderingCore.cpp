@@ -38,23 +38,23 @@
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
-#define SHADER_POINTS_VERT	       "VflParticleRenderingCore_Points_vert.glsl"
-#define SHADER_POINTS_FRAG	       "VflParticleRenderingCore_Points_frag.glsl"
-#define SHADER_SMOKE_VERT	       "VflParticleRenderingCore_Smoke_vert.glsl"
-#define SHADER_SMOKE_FRAG	       "VflParticleRenderingCore_Smoke_frag.glsl"
-#define SHADER_BILLBOARDS_VERT	   "VflParticleRenderingCore_Billboards_vert.glsl"
-#define SHADER_BILLBOARDS_FRAG	   "VflParticleRenderingCore_Billboards_frag.glsl"
-#define SHADER_LIT_BILLBOARDS_VERT "VflParticleRenderingCore_LitBillboards_vert.glsl"
-#define SHADER_LIT_BILLBOARDS_FRAG "VflParticleRenderingCore_LitBillboards_frag.glsl"
-#define SHADER_DEPTH_SPRITES_VERT  "VflParticleRenderingCore_DepthSprites_vert.glsl"
-#define SHADER_DEPTH_SPRITES_FRAG  "VflParticleRenderingCore_DepthSprites_frag.glsl"
+const char* VPRC_SHADER_POINTS_VERT	       = "VflParticleRenderingCore_Points_vert.glsl";
+const char* VPRC_SHADER_POINTS_FRAG	       = "VflParticleRenderingCore_Points_frag.glsl";
+const char* VPRC_SHADER_SMOKE_VERT	       = "VflParticleRenderingCore_Smoke_vert.glsl";
+const char* VPRC_SHADER_SMOKE_FRAG	       = "VflParticleRenderingCore_Smoke_frag.glsl";
+const char* VPRC_SHADER_BILLBOARDS_VERT     = "VflParticleRenderingCore_Billboards_vert.glsl";
+const char* VPRC_SHADER_BILLBOARDS_FRAG     = "VflParticleRenderingCore_Billboards_frag.glsl";
+const char* VPRC_SHADER_LIT_BILLBOARDS_VERT = "VflParticleRenderingCore_LitBillboards_vert.glsl";
+const char* VPRC_SHADER_LIT_BILLBOARDS_FRAG = "VflParticleRenderingCore_LitBillboards_frag.glsl";
+const char* VPRC_SHADER_DEPTH_SPRITES_VERT  = "VflParticleRenderingCore_DepthSprites_vert.glsl";
+const char* VPRC_SHADER_DEPTH_SPRITES_FRAG  = "VflParticleRenderingCore_DepthSprites_frag.glsl";
 
-#define SHADER_HALO_VERT "VflParticleRenderingCore_Halo_vert.glsl"
-#define SHADER_HALO_FRAG "VflParticleRenderingCore_Halo_frag.glsl"
+const char* VPRC_SHADER_HALO_VERT = "VflParticleRenderingCore_Halo_vert.glsl";
+const char* VPRC_SHADER_HALO_FRAG = "VflParticleRenderingCore_Halo_frag.glsl";
 
-#define SHADER_DIFFUSE_LIGHTING "VflParticleRenderingCore_Lighting_Diffuse_aux.glsl"
-#define SHADER_PHONG_LIGHTING   "VflParticleRenderingCore_Lighting_Phong_aux.glsl"
-#define SHADER_GOOCH_LIGHTING   "VflParticleRenderingCore_Lighting_Gooch_aux.glsl"
+const char* VPRC_SHADER_DIFFUSE_LIGHTING = "VflParticleRenderingCore_Lighting_Diffuse_aux.glsl";
+const char* VPRC_SHADER_PHONG_LIGHTING   = "VflParticleRenderingCore_Lighting_Phong_aux.glsl";
+const char* VPRC_SHADER_GOOCH_LIGHTING   = "VflParticleRenderingCore_Lighting_Gooch_aux.glsl";
 
 using namespace std;
 /*============================================================================*/
@@ -387,24 +387,24 @@ bool VistaParticleRenderingCore::InitShaders()
 
 	VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
 
-	string strPointVert = rShaderReg.RetrieveShader( SHADER_POINTS_VERT );
-	string strPointFrag = rShaderReg.RetrieveShader( SHADER_POINTS_FRAG );
-	string strSmokeVert = rShaderReg.RetrieveShader( SHADER_SMOKE_VERT );
-	string strSmokeFrag = rShaderReg.RetrieveShader( SHADER_SMOKE_FRAG );
-	string strBBVert    = rShaderReg.RetrieveShader( SHADER_BILLBOARDS_VERT );
-	string strBBFrag    = rShaderReg.RetrieveShader( SHADER_BILLBOARDS_FRAG );
-	string strLitVert   = rShaderReg.RetrieveShader( SHADER_LIT_BILLBOARDS_VERT );
-	string strLitFrag   = rShaderReg.RetrieveShader( SHADER_LIT_BILLBOARDS_FRAG );
-	string strDepthVert = rShaderReg.RetrieveShader( SHADER_DEPTH_SPRITES_VERT );
-	string strDepthFrag = rShaderReg.RetrieveShader( SHADER_DEPTH_SPRITES_FRAG );
+	string strPointVert = rShaderReg.RetrieveShader( VPRC_SHADER_POINTS_VERT );
+	string strPointFrag = rShaderReg.RetrieveShader( VPRC_SHADER_POINTS_FRAG );
+	string strSmokeVert = rShaderReg.RetrieveShader( VPRC_SHADER_SMOKE_VERT );
+	string strSmokeFrag = rShaderReg.RetrieveShader( VPRC_SHADER_SMOKE_FRAG );
+	string strBBVert    = rShaderReg.RetrieveShader( VPRC_SHADER_BILLBOARDS_VERT );
+	string strBBFrag    = rShaderReg.RetrieveShader( VPRC_SHADER_BILLBOARDS_FRAG );
+	string strLitVert   = rShaderReg.RetrieveShader( VPRC_SHADER_LIT_BILLBOARDS_VERT );
+	string strLitFrag   = rShaderReg.RetrieveShader( VPRC_SHADER_LIT_BILLBOARDS_FRAG );
+	string strDepthVert = rShaderReg.RetrieveShader( VPRC_SHADER_DEPTH_SPRITES_VERT );
+	string strDepthFrag = rShaderReg.RetrieveShader( VPRC_SHADER_DEPTH_SPRITES_FRAG );
 
-	string strHaloVert = rShaderReg.RetrieveShader( SHADER_HALO_VERT );
-	string strHaloFrag = rShaderReg.RetrieveShader( SHADER_HALO_FRAG );
+	string strHaloVert = rShaderReg.RetrieveShader( VPRC_SHADER_HALO_VERT );
+	string strHaloFrag = rShaderReg.RetrieveShader( VPRC_SHADER_HALO_FRAG );
 
 	string strLighting[3] = {
-		rShaderReg.RetrieveShader( SHADER_DIFFUSE_LIGHTING ),
-		rShaderReg.RetrieveShader( SHADER_PHONG_LIGHTING ),
-		rShaderReg.RetrieveShader( SHADER_GOOCH_LIGHTING )	};
+		rShaderReg.RetrieveShader( VPRC_SHADER_DIFFUSE_LIGHTING ),
+		rShaderReg.RetrieveShader( VPRC_SHADER_PHONG_LIGHTING ),
+		rShaderReg.RetrieveShader( VPRC_SHADER_GOOCH_LIGHTING )	};
 
 	if( strPointVert.empty() || strPointFrag.empty() || 
 		strSmokeVert.empty() || strSmokeFrag.empty() ||
@@ -417,23 +417,23 @@ bool VistaParticleRenderingCore::InitShaders()
 		vstr::errp() << "[VflParticleRendereringCore] can't find required shaders" << endl;
 		vstr::IndentObject oIndent;
 
-		if( strPointVert.empty() ) vstr::erri() << "can't find " << SHADER_POINTS_VERT         << endl;
-		if( strPointFrag.empty() ) vstr::erri() << "can't find " << SHADER_POINTS_FRAG         << endl;
-		if( strSmokeVert.empty() ) vstr::erri() << "can't find " << SHADER_SMOKE_VERT          << endl;
-		if( strSmokeFrag.empty() ) vstr::erri() << "can't find " << SHADER_SMOKE_FRAG          << endl;
-		if( strBBVert.empty() )    vstr::erri() << "can't find " << SHADER_BILLBOARDS_VERT     << endl;
-		if( strBBFrag.empty() )    vstr::erri() << "can't find " << SHADER_BILLBOARDS_FRAG     << endl;
-		if( strLitVert.empty() )   vstr::erri() << "can't find " << SHADER_LIT_BILLBOARDS_VERT << endl;
-		if( strLitFrag.empty() )   vstr::erri() << "can't find " << SHADER_LIT_BILLBOARDS_FRAG << endl;
-		if( strDepthVert.empty() ) vstr::erri() << "can't find " << SHADER_DEPTH_SPRITES_VERT  << endl;
-		if( strDepthFrag.empty() ) vstr::erri() << "can't find " << SHADER_DEPTH_SPRITES_FRAG  << endl;
+		if( strPointVert.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_POINTS_VERT         << endl;
+		if( strPointFrag.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_POINTS_FRAG         << endl;
+		if( strSmokeVert.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_SMOKE_VERT          << endl;
+		if( strSmokeFrag.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_SMOKE_FRAG          << endl;
+		if( strBBVert.empty() )    vstr::erri() << "can't find " << VPRC_SHADER_BILLBOARDS_VERT     << endl;
+		if( strBBFrag.empty() )    vstr::erri() << "can't find " << VPRC_SHADER_BILLBOARDS_FRAG     << endl;
+		if( strLitVert.empty() )   vstr::erri() << "can't find " << VPRC_SHADER_LIT_BILLBOARDS_VERT << endl;
+		if( strLitFrag.empty() )   vstr::erri() << "can't find " << VPRC_SHADER_LIT_BILLBOARDS_FRAG << endl;
+		if( strDepthVert.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_DEPTH_SPRITES_VERT  << endl;
+		if( strDepthFrag.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_DEPTH_SPRITES_FRAG  << endl;
 		
-		if( strHaloVert.empty() ) vstr::erri() << "can't find " << SHADER_HALO_VERT  << endl;
-		if( strHaloFrag.empty() ) vstr::erri() << "can't find " << SHADER_HALO_FRAG  << endl;
+		if( strHaloVert.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_HALO_VERT  << endl;
+		if( strHaloFrag.empty() ) vstr::erri() << "can't find " << VPRC_SHADER_HALO_FRAG  << endl;
 
-		if( strLighting[0].empty() ) vstr::erri() << "can't find " << SHADER_DIFFUSE_LIGHTING << endl;
-		if( strLighting[1].empty() ) vstr::erri() << "can't find " << SHADER_PHONG_LIGHTING   << endl;
-		if( strLighting[2].empty() ) vstr::erri() << "can't find " << SHADER_GOOCH_LIGHTING   << endl;
+		if( strLighting[0].empty() ) vstr::erri() << "can't find " << VPRC_SHADER_DIFFUSE_LIGHTING << endl;
+		if( strLighting[1].empty() ) vstr::erri() << "can't find " << VPRC_SHADER_PHONG_LIGHTING   << endl;
+		if( strLighting[2].empty() ) vstr::erri() << "can't find " << VPRC_SHADER_GOOCH_LIGHTING   << endl;
 		return false;
 	}
 	bool bSucsess = true;

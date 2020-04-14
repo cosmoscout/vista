@@ -153,56 +153,56 @@ VistaProjection::VistaProjectionProperties *VistaProjection::GetProjectionProper
 
 
 namespace {
-	const std::string sSReflectionType("VistaProjection");
+	const std::string sSReflectionTypeVP("VistaProjection");
 
-	IVistaPropertyGetFunctor *aCgFunctors[] =
+	IVistaPropertyGetFunctor *aCgFunctorsVP[] =
 	{
 		new TVistaProperty3RefGet<float, VistaProjection::VistaProjectionProperties, VistaProperty::PROPT_DOUBLE>
-		("PROJ_PLANE_MIDPOINT", sSReflectionType,
+		("PROJ_PLANE_MIDPOINT", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::GetProjPlaneMidpoint),	
 		new TVistaProperty3RefGet<float, VistaProjection::VistaProjectionProperties, VistaProperty::PROPT_DOUBLE>
-		("PROJ_PLANE_NORMAL", sSReflectionType,
+		("PROJ_PLANE_NORMAL", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::GetProjPlaneNormal),	
 		new TVistaProperty3RefGet<float, VistaProjection::VistaProjectionProperties, VistaProperty::PROPT_DOUBLE>
-		("PROJ_PLANE_UP", sSReflectionType,
+		("PROJ_PLANE_UP", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::GetProjPlaneUp),	
 		new TVistaProperty4RefGet<double, VistaProjection::VistaProjectionProperties, VistaProperty::PROPT_DOUBLE>
-		("PROJ_PLANE_EXTENTS", sSReflectionType,
+		("PROJ_PLANE_EXTENTS", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::GetProjPlaneExtents),	
 		new TVistaProperty2RefGet<double, VistaProjection::VistaProjectionProperties, VistaProperty::PROPT_DOUBLE>
-		("CLIPPING_RANGE", sSReflectionType,
+		("CLIPPING_RANGE", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::GetClippingRange),	
 		new TVistaPropertyGet<std::string, VistaProjection::VistaProjectionProperties, VistaProperty::PROPT_STRING>
-		("STEREO_MODE", sSReflectionType,
+		("STEREO_MODE", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::GetStereoModeString),
 		new TVistaDisplayEntityParentPropertyGet<std::string, VistaProjection, VistaProperty::PROPT_STRING>
-		("VIEWPORT_NAME", sSReflectionType,
+		("VIEWPORT_NAME", sSReflectionTypeVP,
 		 &VistaProjection::GetViewportName),
 		NULL
 	};
 
-	IVistaPropertySetFunctor *aCsFunctors[] =
+	IVistaPropertySetFunctor *aCsFunctorsVP[] =
 	{
 		new TVistaProperty3ValSet<float, VistaProjection::VistaProjectionProperties>
-		("PROJ_PLANE_MIDPOINT", sSReflectionType,
+		("PROJ_PLANE_MIDPOINT", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetProjPlaneMidpoint ),
 		new TVistaProperty3ValSet<float, VistaProjection::VistaProjectionProperties>
-		("PROJ_PLANE_NORMAL", sSReflectionType,
+		("PROJ_PLANE_NORMAL", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetProjPlaneNormal ),
 		new TVistaProperty3ValSet<float, VistaProjection::VistaProjectionProperties>
-		("PROJ_PLANE_UP", sSReflectionType,
+		("PROJ_PLANE_UP", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetProjPlaneUp ),
 		new TVistaProperty4ValSet<double, VistaProjection::VistaProjectionProperties>
-		("PROJ_PLANE_EXTENTS", sSReflectionType,
+		("PROJ_PLANE_EXTENTS", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetProjPlaneExtents ),
 		new TVistaProperty2ValSet<double, VistaProjection::VistaProjectionProperties>
-		("CLIPPING_RANGE", sSReflectionType,
+		("CLIPPING_RANGE", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetClippingRange ),
 		new TVistaPropertySet<const std::string &, std::string, VistaProjection::VistaProjectionProperties>
-		("STEREO_MODE", sSReflectionType,
+		("STEREO_MODE", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetStereoModeString ),
 		new TVistaPropertySet<const string &, string,VistaProjection::VistaProjectionProperties>
-		("NAME", sSReflectionType,
+		("NAME", sSReflectionTypeVP,
 		 &VistaProjection::VistaProjectionProperties::SetName ),
 		NULL
 	};
@@ -514,13 +514,13 @@ void VistaProjection::VistaProjectionProperties::GetProjectionPlane(
 
 string VistaProjection::VistaProjectionProperties::GetReflectionableType() const
 {
-	return sSReflectionType;
+	return sSReflectionTypeVP;
 }
 
 int VistaProjection::VistaProjectionProperties::AddToBaseTypeList(list<string> &rBtList) const
 {
 	int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionType);
+	rBtList.push_back(sSReflectionTypeVP);
 	return nSize + 1;
 }
 

@@ -19,6 +19,10 @@ target_link_libraries( VistaAspects
 	${LIBRARIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaAspects )
 vista_install( VistaAspects VistaAspects )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

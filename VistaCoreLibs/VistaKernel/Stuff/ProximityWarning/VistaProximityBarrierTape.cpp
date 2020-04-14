@@ -67,7 +67,7 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-namespace
+namespace vpbarriertape
 {
 	// creates an array containing 32bit-RGBA-data of a BarrierTape
 	// nYSlope specifies the relative slope dy/dx, i.e. 1 is 45degree
@@ -118,7 +118,7 @@ public:
 		glBindTexture( GL_TEXTURE_2D, m_nTextureId );
 
 		const int nRes = 256;
-		VistaType::byte* pData = CreateTexture( nRes, 2.5f, 0.45f );
+		VistaType::byte* pData = vpbarriertape::CreateTexture( nRes, 2.5f, 0.45f );
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, nRes, nRes, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pData );
 		delete[] pData;
 

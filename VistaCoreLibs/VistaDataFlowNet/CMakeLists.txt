@@ -23,6 +23,10 @@ target_link_libraries( VistaDataFlowNet
 	${VISTADATAFLOWNET_INTERNAL_DEPENDENCIES}
 )
 
+if (${VISTA_ENABLE_PCH})
+	target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
+endif()
+
 vista_configure_lib( VistaDataFlowNet )
 vista_install( VistaDataFlowNet VistaDataFlowNet )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

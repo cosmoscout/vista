@@ -1,0 +1,8 @@
+#include <iostream>
+#include <map>
+#include <string>
+
+#include <VistaBase/VistaExceptionBase.h>
+#include <VistaBase/VistaVectorMath.h>
+
+#include <VistaAspects/VistaPropertyAwareable.h>

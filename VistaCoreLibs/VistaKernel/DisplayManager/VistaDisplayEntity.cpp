@@ -142,12 +142,12 @@ void VistaDisplayEntity::InitProperties()
 // ############################################################################
 
 namespace {
-	std::string sSReflectionType("VistaDisplayEntity");
+	std::string sSReflectionTypeVSE("VistaDisplayEntity");
 
-	IVistaPropertyGetFunctor *aCgFunctors[] =
+	IVistaPropertyGetFunctor *aCgFunctorsVSE[] =
 	{
 		new TVistaPropertyGet<string, VistaDisplayEntity::IVistaDisplayEntityProperties>
-		("NAME", sSReflectionType,
+		("NAME", sSReflectionTypeVSE,
 		 &VistaDisplayEntity::IVistaDisplayEntityProperties::GetName),
 		NULL
 	};
@@ -206,13 +206,13 @@ VistaDisplayEntity::IVistaDisplayEntityProperties::~IVistaDisplayEntityPropertie
 
 string VistaDisplayEntity::IVistaDisplayEntityProperties::GetReflectionableType() const
 {
-	return sSReflectionType;
+	return sSReflectionTypeVSE;
 }
 
 int VistaDisplayEntity::IVistaDisplayEntityProperties::AddToBaseTypeList(list<string> &rBtList) const
 {
 	int nSize = IVistaReflectionable::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionType);
+	rBtList.push_back(sSReflectionTypeVSE);
 	return nSize + 1;
 }
 

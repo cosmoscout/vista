@@ -41,27 +41,27 @@
 /*============================================================================*/
 using namespace std;
 
-#define SHADER_LINES_VERT "VistaParticleTraceRenderingCore_Lines_vert.glsl"
-#define SHADER_LINES_FRAG "VistaParticleTraceRenderingCore_Lines_frag.glsl"
+const char* VPTRC_SHADER_LINES_VERT = "VistaParticleTraceRenderingCore_Lines_vert.glsl";
+const char* VPTRC_SHADER_LINES_FRAG = "VistaParticleTraceRenderingCore_Lines_frag.glsl";
 
-#define SHADER_SMOKE_VERT "VistaParticleTraceRenderingCore_Smoke_vert.glsl"
-#define SHADER_SMOKE_FRAG "VistaParticleTraceRenderingCore_Smoke_frag.glsl"
+const char* VPTRC_SHADER_SMOKE_VERT = "VistaParticleTraceRenderingCore_Smoke_vert.glsl";
+const char* VPTRC_SHADER_SMOKE_FRAG = "VistaParticleTraceRenderingCore_Smoke_frag.glsl";
 
-#define SHADER_BILLBOARD_VERT "VistaParticleTraceRenderingCore_Billboard_vert.glsl"
-#define SHADER_BILLBOARD_FRAG "VistaParticleTraceRenderingCore_Billboard_frag.glsl"
+const char* VPTRC_SHADER_BILLBOARD_VERT = "VistaParticleTraceRenderingCore_Billboard_vert.glsl";
+const char* VPTRC_SHADER_BILLBOARD_FRAG = "VistaParticleTraceRenderingCore_Billboard_frag.glsl";
 
-#define SHADER_BUMPED_VERT "VistaParticleTraceRenderingCore_Bumped_vert.glsl"
-#define SHADER_BUMPED_FRAG "VistaParticleTraceRenderingCore_Bumped_frag.glsl"
+const char* VPTRC_SHADER_BUMPED_VERT = "VistaParticleTraceRenderingCore_Bumped_vert.glsl";
+const char* VPTRC_SHADER_BUMPED_FRAG = "VistaParticleTraceRenderingCore_Bumped_frag.glsl";
 
-#define SHADER_DEPTH_VERT "VistaParticleTraceRenderingCore_Depth_vert.glsl"
-#define SHADER_DEPTH_FRAG "VistaParticleTraceRenderingCore_Depth_frag.glsl"
+const char* VPTRC_SHADER_DEPTH_VERT = "VistaParticleTraceRenderingCore_Depth_vert.glsl";
+const char* VPTRC_SHADER_DEPTH_FRAG = "VistaParticleTraceRenderingCore_Depth_frag.glsl";
 
-#define SHADER_HALO_VERT "VistaParticleTraceRenderingCore_Halos_vert.glsl"
-#define SHADER_HALO_FRAG "VistaParticleTraceRenderingCore_Halos_frag.glsl"
+const char* VPTRC_SHADER_HALO_VERT = "VistaParticleTraceRenderingCore_Halos_vert.glsl";
+const char* VPTRC_SHADER_HALO_FRAG = "VistaParticleTraceRenderingCore_Halos_frag.glsl";
 
-#define SHADER_DIFFUSE_LIGHTING "VflParticleRenderingCore_Lighting_Diffuse_aux.glsl"
-#define SHADER_PHONG_LIGHTING   "VflParticleRenderingCore_Lighting_Phong_aux.glsl"
-#define SHADER_GOOCH_LIGHTING   "VflParticleRenderingCore_Lighting_Gooch_aux.glsl"
+const char* VPTRC_SHADER_DIFFUSE_LIGHTING = "VflParticleRenderingCore_Lighting_Diffuse_aux.glsl";
+const char* VPTRC_SHADER_PHONG_LIGHTING   = "VflParticleRenderingCore_Lighting_Phong_aux.glsl";
+const char* VPTRC_SHADER_GOOCH_LIGHTING   = "VflParticleRenderingCore_Lighting_Gooch_aux.glsl";
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
@@ -380,19 +380,19 @@ bool VistaParticleTraceRenderingCore::InitShaders()
 	if( m_pLineShader )
 		return false;
 
-	m_pLineShader      = CreateShader( SHADER_LINES_VERT, SHADER_LINES_FRAG );
-	m_pSmokeShader     = CreateShader( SHADER_SMOKE_VERT, SHADER_SMOKE_FRAG );
-	m_pBillboardShader = CreateShader( SHADER_BILLBOARD_VERT, SHADER_BILLBOARD_FRAG );
+	m_pLineShader      = CreateShader( VPTRC_SHADER_LINES_VERT, VPTRC_SHADER_LINES_FRAG );
+	m_pSmokeShader     = CreateShader( VPTRC_SHADER_SMOKE_VERT, VPTRC_SHADER_SMOKE_FRAG );
+	m_pBillboardShader = CreateShader( VPTRC_SHADER_BILLBOARD_VERT, VPTRC_SHADER_BILLBOARD_FRAG );
 
-	m_pBumpedShaders[0] = CreateShader( SHADER_BUMPED_VERT, SHADER_BUMPED_FRAG, SHADER_DIFFUSE_LIGHTING );
-	m_pBumpedShaders[1] = CreateShader( SHADER_BUMPED_VERT, SHADER_BUMPED_FRAG, SHADER_PHONG_LIGHTING );
-	m_pBumpedShaders[2] = CreateShader( SHADER_BUMPED_VERT, SHADER_BUMPED_FRAG, SHADER_GOOCH_LIGHTING );
+	m_pBumpedShaders[0] = CreateShader( VPTRC_SHADER_BUMPED_VERT, VPTRC_SHADER_BUMPED_FRAG, VPTRC_SHADER_DIFFUSE_LIGHTING );
+	m_pBumpedShaders[1] = CreateShader( VPTRC_SHADER_BUMPED_VERT, VPTRC_SHADER_BUMPED_FRAG, VPTRC_SHADER_PHONG_LIGHTING );
+	m_pBumpedShaders[2] = CreateShader( VPTRC_SHADER_BUMPED_VERT, VPTRC_SHADER_BUMPED_FRAG, VPTRC_SHADER_GOOCH_LIGHTING );
 
-	m_pDepthShaders[0] = CreateShader( SHADER_DEPTH_VERT, SHADER_DEPTH_FRAG, SHADER_DIFFUSE_LIGHTING );
-	m_pDepthShaders[1] = CreateShader( SHADER_DEPTH_VERT, SHADER_DEPTH_FRAG, SHADER_PHONG_LIGHTING );
-	m_pDepthShaders[2] = CreateShader( SHADER_DEPTH_VERT, SHADER_DEPTH_FRAG, SHADER_GOOCH_LIGHTING );
+	m_pDepthShaders[0] = CreateShader( VPTRC_SHADER_DEPTH_VERT, VPTRC_SHADER_DEPTH_FRAG, VPTRC_SHADER_DIFFUSE_LIGHTING );
+	m_pDepthShaders[1] = CreateShader( VPTRC_SHADER_DEPTH_VERT, VPTRC_SHADER_DEPTH_FRAG, VPTRC_SHADER_PHONG_LIGHTING );
+	m_pDepthShaders[2] = CreateShader( VPTRC_SHADER_DEPTH_VERT, VPTRC_SHADER_DEPTH_FRAG, VPTRC_SHADER_GOOCH_LIGHTING );
 
-	m_pHaloShader = CreateShader( SHADER_HALO_VERT, SHADER_HALO_FRAG );
+	m_pHaloShader = CreateShader( VPTRC_SHADER_HALO_VERT, VPTRC_SHADER_HALO_FRAG );
 
 	if( !m_pLineShader || !m_pSmokeShader || !m_pBillboardShader ||
 		!m_pBumpedShaders[0] || !m_pBumpedShaders[1] || !m_pBumpedShaders[2] ||
