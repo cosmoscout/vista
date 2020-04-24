@@ -93,17 +93,14 @@ endif( NOT VISTACORELIBS_SUPPORT_NATIVE_64BIT_ATOMICS )
 # endif()
 
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
-	set(CMAKE_UNITY_BUILD On)
+	option(VISTA_USE_PRECOMPILED_HEADERS "Turn on generation of precompiled headers" OFF)
+
 	set(CMAKE_UNITY_BUILD_BATCH_SIZE 20)
 	add_definitions(
 		-D_WINSOCK_DEPRECATED_NO_WARNINGS
 		-D_WINSOCKAPI_
 		-DNOMINMAX
 	)
-
-	if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		set(VISTA_ENABLE_PCH true)
-	endif()
 endif()
 
 # Standard package config

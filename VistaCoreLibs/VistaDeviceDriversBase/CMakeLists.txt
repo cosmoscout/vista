@@ -29,7 +29,7 @@ target_link_libraries( VistaDeviceDriversBase
 	${LIBRARIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaDeviceDriversBase PRIVATE precompiled.pch)
 endif()
 

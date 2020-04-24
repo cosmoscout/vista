@@ -68,7 +68,7 @@ target_link_libraries( VistaKernel
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaKernel PRIVATE precompiled.pch)
 endif()
 

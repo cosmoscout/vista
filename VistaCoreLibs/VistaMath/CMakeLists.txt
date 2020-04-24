@@ -21,7 +21,7 @@ target_link_libraries( VistaMath
 	${VISTAMATH_INTERNAL_DEPENDENCIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaMath PRIVATE precompiled.pch)
 endif()
 

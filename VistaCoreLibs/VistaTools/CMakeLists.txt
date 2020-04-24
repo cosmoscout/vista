@@ -28,7 +28,7 @@ target_link_libraries( VistaTools
 	${LIBRARIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaTools PRIVATE precompiled.pch)
 endif()
 

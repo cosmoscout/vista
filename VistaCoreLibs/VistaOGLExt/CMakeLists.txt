@@ -29,7 +29,7 @@ target_link_libraries( VistaOGLExt
 	${VISTA_USE_PACKAGE_LIBRARIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaOGLExt PRIVATE precompiled.pch)
 endif()
 

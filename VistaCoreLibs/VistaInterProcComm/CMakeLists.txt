@@ -27,7 +27,7 @@ target_link_libraries( VistaInterProcComm
 	${LIBRARIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaInterProcComm PRIVATE precompiled.pch)
 endif()
 
