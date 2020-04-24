@@ -23,7 +23,7 @@ target_link_libraries( VistaDataFlowNet
 	${VISTADATAFLOWNET_INTERNAL_DEPENDENCIES}
 )
 
-if (${VISTA_ENABLE_PCH})
+if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
 endif()
 
