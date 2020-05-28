@@ -216,7 +216,7 @@ bool VistaConnectionNamedPipe::Open()
 		if( ConnectNamedPipe( m_oPipe, NULL ) == false )
 		{
 			vstr::warnp() << "[VistaConnectionNamedPipe]: pipe client did not connect to pipe ["
-						<< m_sPipeName << "] - Error: " << GetErrorText() << std::endl;
+						<< m_sPipeName << "] - Error: " << vcnamedpipe::GetErrorText() << std::endl;
 			SetIsOpen( false );
 			return false;
 		}
@@ -227,7 +227,7 @@ bool VistaConnectionNamedPipe::Open()
 		if( WaitNamedPipe( sActualName.c_str(), 60000 ) == 0 )
 		{
 			vstr::warnp() << "[VistaConnectionNamedPipe]: Could not find server's pipe ["
-						<< m_sPipeName << "] - Error: " << GetErrorText() << std::endl;
+						<< m_sPipeName << "] - Error: " << vcnamedpipe::GetErrorText() << std::endl;
 			SetIsOpen( false );
 			return false;
 		}
@@ -235,7 +235,7 @@ bool VistaConnectionNamedPipe::Open()
 		if( m_oPipe == INVALID_HANDLE_VALUE )
 		{
 			vstr::warnp() << "[VistaConnectionNamedPipe]: Could not create event ["
-						<< m_sPipeName << "] - Error: " << GetErrorText() << std::endl;
+						<< m_sPipeName << "] - Error: " << vcnamedpipe::GetErrorText() << std::endl;
 			SetIsOpen( false );
 			return false;
 		}
@@ -304,7 +304,7 @@ int VistaConnectionNamedPipe::Receive( void* pBuffer, const int nLength, int nTi
 	if( ReadFile( m_oPipe, pBuffer, nLength, &nReadbytes, NULL ) == false )
 	{
 		vstr::warnp() << "VistaConnectionNamedPipe::Receive() -- error during read call: "
-						<< GetErrorText() << std::endl;
+						<< vcnamedpipe::GetErrorText() << std::endl;
 #ifdef VISTA_IPC_USE_EXCEPTIONS
 		VISTA_THROW( "VistaConnectionNamedPipe::Receive -- Exception", -1 )
 #endif
@@ -334,7 +334,7 @@ int VistaConnectionNamedPipe::Send( const void* pBuffer, const int nLength )
 	if( WriteFile( m_oPipe, pBuffer, nLength, &nWrittenbytes, NULL ) == false )
 	{
 		vstr::warnp() << "VistaConnectionNamedPipe::send() -- error during write call: "
-						<< GetErrorText() << std::endl;
+						<< vcnamedpipe::GetErrorText() << std::endl;
 #ifdef VISTA_IPC_USE_EXCEPTIONS
 		VISTA_THROW( "VistaConnectionNamedPipe::Send -- Exception", -1 )
 #endif
