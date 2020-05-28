@@ -96,11 +96,15 @@ if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
 	option(VISTA_USE_PRECOMPILED_HEADERS "Turn on generation of precompiled headers" OFF)
 
 	set(CMAKE_UNITY_BUILD_BATCH_SIZE 20)
-	add_definitions(
-		-D_WINSOCK_DEPRECATED_NO_WARNINGS
-		-D_WINSOCKAPI_
-		-DNOMINMAX
-	)
+
+	if (WIN32)
+		add_definitions(
+			-D_WINSOCK_DEPRECATED_NO_WARNINGS
+			-D_WINSOCKAPI_
+			-DNOMINMAX
+			/bigobj
+		)
+	endif()
 endif()
 
 # Standard package config
