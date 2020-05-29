@@ -99,13 +99,15 @@ if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
 
 	if (WIN32)
 		add_definitions(
-			-D_WINSOCK_DEPRECATED_NO_WARNINGS
-			-D_WINSOCKAPI_
-			-DNOMINMAX
-			/bigobj
+				/bigobj
 		)
 	endif()
 endif()
+
+
+add_definitions(
+		-DNOMINMAX
+)
 
 # Standard package config
 vista_configure_cpack( VistaCoreLibs )
