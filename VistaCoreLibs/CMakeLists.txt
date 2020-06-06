@@ -95,6 +95,11 @@ endif( NOT VISTACORELIBS_SUPPORT_NATIVE_64BIT_ATOMICS )
 if (${CMAKE_VERSION} GREATER_EQUAL 3.16)
 	option(VISTA_USE_PRECOMPILED_HEADERS "Turn on generation of precompiled headers" OFF)
 	set(CMAKE_UNITY_BUILD_BATCH_SIZE 20)
+	if (WIN32)
+		add_definitions(
+				/bigobj
+		)
+	endif()
 endif()
 
 add_definitions(
