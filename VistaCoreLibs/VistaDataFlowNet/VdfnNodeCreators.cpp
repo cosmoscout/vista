@@ -933,6 +933,7 @@ VISTADFNAPI bool VdfnNodeCreators::RegisterNodeCreators( VdfnNodeFactory* pFac, 
 
 	pFac->SetNodeCreator( "LatestUpdate[VistaVector3D]", new TVdfnDefaultNodeCreate<TVdfnLatestUpdateNode<VistaVector3D> > );
 	pFac->SetNodeCreator( "LatestUpdate[bool]", new TVdfnDefaultNodeCreate<TVdfnLatestUpdateNode<bool> > );
+	pFac->SetNodeCreator( "LatestUpdate[int]", new TVdfnDefaultNodeCreate<TVdfnLatestUpdateNode<int> > );
 
 	pFac->SetNodeCreator( "AxisRotate", new TVdfnDefaultNodeCreate<VdfnAxisRotateNode> );
 	pFac->SetNodeCreator( "MatrixCompose", new TVdfnDefaultNodeCreate<VdfnMatrixComposeNode> );
