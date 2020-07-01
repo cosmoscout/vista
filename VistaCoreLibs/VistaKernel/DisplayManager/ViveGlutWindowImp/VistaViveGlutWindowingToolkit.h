@@ -33,8 +33,8 @@
 
 #include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
     
-#include <openvr.h>
-#include <openvr_capi.h>
+#include <openvr/openvr.h>
+#include <openvr/openvr_capi.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
