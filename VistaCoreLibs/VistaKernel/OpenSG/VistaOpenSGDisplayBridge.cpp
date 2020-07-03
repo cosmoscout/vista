@@ -93,8 +93,8 @@
 #include "VistaKernel/DisplayManager/OculusGlutWindowImp/VistaOculusGlutWindowingToolkit.h"
 #endif
 #ifdef VISTA_WITH_VIVE
-#include <openvr.h>
-#include <openvr_capi.h>
+#include <openvr/openvr.h>
+#include <openvr/openvr_capi.h>
 #include "VistaKernel/DisplayManager/ViveGlutWindowImp/VistaViveGlutWindowingToolkit.h"
 #endif
 #include "VistaAspects/VistaObserver.h"
@@ -756,7 +756,7 @@ void VistaOpenSGDisplayBridge::ViewportData::SetupRenderTargets( const int nWidt
 			m_pReadTextureTarget[i]->SetMagFilter( GL_LINEAR );
 		}
 		m_pWriteTextureTarget[i] = new VistaGLTexture();
-		m_pWriteTextureTarget[i]->Set2DData( nWidth, nHeight, NULL, false );
+		m_pWriteTextureTarget[i]->Set2DData( nWidth, nHeight, NULL, false, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE );
 		m_pWriteTextureTarget[i]->SetMinFilter( GL_LINEAR );
 		m_pWriteTextureTarget[i]->SetMagFilter( GL_LINEAR );
 
@@ -827,7 +827,7 @@ void VistaOpenSGDisplayBridge::ViewportData::UpdateRenderTargetSize( const int n
 
 		if( m_bUseTextureSwapping )
 			m_pReadTextureTarget[i]->Set2DData( nWidth, nHeight, NULL, false, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE );
-		m_pWriteTextureTarget[i]->Set2DData( nWidth, nHeight, NULL, false, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE );
+		m_pWriteTextureTarget[i]->Set2DData( nWidth, nHeight, NULL, false, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE );
 		//glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_pWriteTextureTarget[i]->GetGLId(), 0 );
 		
 		if( m_bStencilBufferEnabled )
@@ -1932,8 +1932,12 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.w );
 			vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
 		    vr::HmdMatrix34_t pose;
-		    vr::VRCompositor()->WaitGetPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
-		    for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
+		    auto posesError = vr::VRCompositor()->WaitGetPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+                    if (posesError != vr::VRCompositorError_None) {
+                      vstr::errp()<<"Error while trying to get poses: " << posesError << std::endl;
+                    }
+
+                    for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
 		        if (devices[i].bPoseIsValid) {
 		            if (pViveData->m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_HMD) {
 		                pose = devices[i].mDeviceToAbsoluteTracking;
@@ -2047,11 +2051,17 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 
 			// ovrHmd_EndFrame( pViveData->m_pHmd, a2EyeRenderPose, &pViveData->m_aTextures[0].Texture );
 
-			vr::Texture_t leftEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[0]->GetGLId()), vr::API_OpenGL, vr::ColorSpace_Gamma };
-        	vr::VRCompositor()->Submit(vr::Eye_Left,&leftEyeTexture);
+			vr::Texture_t leftEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[0]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
+			auto submitError = vr::VRCompositor()->Submit(vr::Eye_Left,&leftEyeTexture);
+			if (submitError != vr::VRCompositorError_None) {
+				vstr::errp()<<"Error while submitting left eye texture: " << submitError << std::endl;
+			}
 
-        	vr::Texture_t rightEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[1]->GetGLId()), vr::API_OpenGL, vr::ColorSpace_Gamma };
-        	vr::VRCompositor()->Submit(vr::Eye_Right,&rightEyeTexture);
+			vr::Texture_t rightEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[1]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
+			submitError = vr::VRCompositor()->Submit(vr::Eye_Right,&rightEyeTexture);
+			if (submitError != vr::VRCompositorError_None) {
+				vstr::errp()<<"Error while submitting right eye texture: " << submitError << std::endl;
+                	}
 
 			glFinish();
 

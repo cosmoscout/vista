@@ -34,13 +34,13 @@
 
 #if defined(WIN32)
 #include <Windows.h>
+#include <WinSock2.h>
 #else
 #include <unistd.h>
 #endif
 #include <errno.h>
 
 #include <VistaBase/VistaAtomicCounter.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */

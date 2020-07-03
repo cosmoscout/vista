@@ -29,7 +29,7 @@ set( dirFiles_driver
 	VistaViveDriver.cpp
 )
 
-include_directories( ${OPENVR_ROOT_DIR}/headers)
+include_directories( ${OPENVR_INCLUDE_DIRS})
 
 source_group( "Source Files" FILES ${dirFiles_driver} )
 add_library( VistaViveDriver
