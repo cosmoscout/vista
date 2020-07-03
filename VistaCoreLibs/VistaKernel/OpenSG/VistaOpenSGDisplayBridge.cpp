@@ -2052,16 +2052,16 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 			// ovrHmd_EndFrame( pViveData->m_pHmd, a2EyeRenderPose, &pViveData->m_aTextures[0].Texture );
 
 			vr::Texture_t leftEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[0]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
-        	auto submitError = vr::VRCompositor()->Submit(vr::Eye_Left,&leftEyeTexture);
-                if (submitError != vr::VRCompositorError_None) {
-                  vstr::errp()<<"Error while submitting left eye texture: " << submitError << std::endl;
-                }
+			auto submitError = vr::VRCompositor()->Submit(vr::Eye_Left,&leftEyeTexture);
+			if (submitError != vr::VRCompositorError_None) {
+				vstr::errp()<<"Error while submitting left eye texture: " << submitError << std::endl;
+			}
 
-        	vr::Texture_t rightEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[1]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
-        	submitError = vr::VRCompositor()->Submit(vr::Eye_Right,&rightEyeTexture);
-                  if (submitError != vr::VRCompositorError_None) {
-                    vstr::errp()<<"Error while submitting right eye texture: " << submitError << std::endl;
-                  }
+			vr::Texture_t rightEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[1]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
+			submitError = vr::VRCompositor()->Submit(vr::Eye_Right,&rightEyeTexture);
+			if (submitError != vr::VRCompositorError_None) {
+				vstr::errp()<<"Error while submitting right eye texture: " << submitError << std::endl;
+                	}
 
 			glFinish();
 
