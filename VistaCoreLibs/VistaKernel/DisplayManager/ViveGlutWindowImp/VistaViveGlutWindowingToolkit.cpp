@@ -29,10 +29,6 @@
 
 #include "VistaViveGlutWindowingToolkit.h"
 
-#include "VistaBase/VistaStreamUtils.h"
-#include "VistaBase/VistaUtilityMacros.h"
-#include "VistaKernel/DisplayManager//VistaWindow.h"
-
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -75,19 +71,19 @@ VistaViveGlutWindowingToolkit::VistaViveGlutWindowingToolkit()
 {
 	// ovr_Initialize();
 	if(!vr::VR_IsHmdPresent()){
-		std::cout<<"Error: No Vive HMD present while constructing VistaViveGlutWindowingToolkit!\n";
+		vstr::errp()<<"Error: No Vive HMD present while constructing VistaViveGlutWindowingToolkit!\n";
 	}
 
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
 
 	if(eError!=0){
-		std::cout<<"Error while connecting to Vive API in VistaViveGlutWindowingToolkit ctor: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
+		vstr::errp()<<"Error while connecting to Vive API in VistaViveGlutWindowingToolkit ctor: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
 	}
 
 	if ( !vr::VRCompositor() )
 	{
-		std::cout<<"Error: Vive compositor initialization failed in VistaViveGlutWindowingToolkit ctor!\n";
+		vstr::errp()<<"Error: Vive compositor initialization failed in VistaViveGlutWindowingToolkit ctor!\n";
 	}
 
 	// TODO: LOG ERROR
@@ -174,8 +170,10 @@ bool VistaViveGlutWindowingToolkit::UnregisterWindow( VistaWindow* pWindow )
 
 bool VistaViveGlutWindowingToolkit::InitWindow( VistaWindow* pWindow )
 {
-	if( VistaGlutWindowingToolkit::InitWindow( pWindow ) == false )
+	if(!VistaGlutWindowingToolkit::InitWindow(pWindow)) {
+		vstr::errp()<<"Couldn't initialize Window for a Vive application." << std::endl;
 		return false;
+        }
 	BindWindow( pWindow );
 	// std::map< const VistaWindow*, Internal::WindowDataExt >::const_iterator itEntry = m_pData->m_mapWindowData.find( pWindow );
 	// if( itEntry == m_pData->m_mapWindowData.end() )

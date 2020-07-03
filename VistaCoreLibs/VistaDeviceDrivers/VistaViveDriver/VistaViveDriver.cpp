@@ -23,8 +23,8 @@
 /*============================================================================*/
 
 
-#include <openvr.h>
-#include <openvr_capi.h>
+#include <openvr/openvr.h>
+#include <openvr/openvr_capi.h>
 
 #include "VistaViveDriver.h"
 #include "VistaViveDriverConfig.h"
@@ -106,7 +106,7 @@ bool VistaViveDriver::DoConnect()
 		return false; // do not connect on state connected
 
 	if(!vr::VR_IsHmdPresent()){
-		std::cout<<"Error: No Vive HMD present while connecting VistaViveDriver!\n";
+		vstr::errp()<<"Error: No Vive HMD present while connecting VistaViveDriver!\n";
 		return false;
 	}
 
@@ -114,13 +114,13 @@ bool VistaViveDriver::DoConnect()
 	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
 	
 	if(eError!=0){
-		std::cout<<"Error while connecting to Vive API in VistaViveDriver: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
+		vstr::errp()<<"Error while connecting to Vive API in VistaViveDriver: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
 		return false;
 	}
 
 	if ( !vr::VRCompositor() )
 	{
-		std::cout<<"Error: Vive compositor initialization failed in VistaViveDriver!\n";
+		vstr::errp()<<"Error: Vive compositor initialization failed in VistaViveDriver!\n";
 	}
 
 	return true;
@@ -188,7 +188,7 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 	for( vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++ )
 	{
 		vr::VRControllerState_t state;
-		if( m_pVRSystem->GetControllerState( unDevice, &state ) )
+		if( m_pVRSystem->GetControllerState( unDevice, &state, sizeof(vr::VRControllerState_t) ) )
 		{
 			uint64_t grip_mask = vr::ButtonMaskFromId(
 				static_cast<vr::EVRButtonId>(vr::k_EButton_Grip));
