@@ -240,7 +240,7 @@ namespace
 		{
 			// ovrMatrix4f matLeftProjection = ovrMatrix4f_Projection( m_apRenderDescs[0].Fov, fNear, fFar, true );
 	        auto const& matLeftProjection = m_pVRSystem->GetProjectionMatrix(
-	            vr::EVREye::Eye_Left, fNear, fFar, vr::EGraphicsAPIConvention::API_OpenGL
+	            vr::EVREye::Eye_Left, fNear, fFar
 	        );
 			osg::Matrix matOSGProjection;
 			for( int i = 0; i < 4; ++i )
@@ -256,7 +256,7 @@ namespace
 			
 			// ovrMatrix4f matRightProjection = ovrMatrix4f_Projection( m_apRenderDescs[1].Fov, fNear, fFar, true );
 	        auto const& matRightProjection = m_pVRSystem->GetProjectionMatrix(
-	            vr::EVREye::Eye_Right, fNear, fFar, vr::EGraphicsAPIConvention::API_OpenGL
+	            vr::EVREye::Eye_Right, fNear, fFar
 	        );
 			for( int i = 0; i < 4; ++i )
 			{
