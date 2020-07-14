@@ -151,16 +151,16 @@ bool VistaGLSLShader::InitFragmentShaderFromString(
 }
 
 bool VistaGLSLShader::InitComputeShaderFromFile(
-    const std::string& strComputeShaderFile, 
-    const std::string& strPrefix) 
+		const std::string& strComputeShaderFile, 
+		const std::string& strPrefix) 
 {
-  return InitShaderFromFile( GL_COMPUTE_SHADER, strComputeShaderFile, strPrefix);
+	return InitShaderFromFile( GL_COMPUTE_SHADER, strComputeShaderFile, strPrefix);
 }
 
 bool VistaGLSLShader::InitComputeShaderFromString(
-    const std::string& strComputeShaderString) 
+		const std::string& strComputeShaderString) 
 {
-  return InitShaderFromString( GL_COMPUTE_SHADER, strComputeShaderString);
+	return InitShaderFromString( GL_COMPUTE_SHADER, strComputeShaderString);
 }
 
 
