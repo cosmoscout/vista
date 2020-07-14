@@ -568,8 +568,8 @@ GLuint VistaGLSLShader::GetFragmentShader( const std::size_t nIdx ) const
 
 GLuint VistaGLSLShader::GetComputeShader( const std::size_t nIdx ) const 
 {
-  return (nIdx >= m_vecComputeShader.size() ? 
-       0 : m_vecComputeShader[ nIdx ] );
+	return (nIdx >= m_vecComputeShader.size() ? 
+			 0 : m_vecComputeShader[ nIdx ] );
 }
 
 int VistaGLSLShader::GetUniformLocation( const std::string &strParameterName ) const
