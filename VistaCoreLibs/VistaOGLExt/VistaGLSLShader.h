@@ -86,10 +86,9 @@ public:
 									const std::string &strPrefix = "");
 	bool InitFragmentShaderFromString(
 									const std::string &strFragmentShaderString);
-
-    bool InitComputeShaderFromFile(const std::string& strComputeShaderFile,
+	bool InitComputeShaderFromFile(const std::string& strComputeShaderFile,
                                    const std::string& strPrefix = "");
-    bool InitComputeShaderFromString(
+	bool InitComputeShaderFromString(
                                     const std::string& strComputeShaderString);
 
 	bool InitShaderFromFile(	const unsigned int uiShaderTyp,
@@ -215,7 +214,7 @@ private:
 	bool m_bIsReadyForUse;
 
 	GLuint m_uiProgram;
-    std::vector<GLuint> m_vecComputeShader;
+	std::vector<GLuint> m_vecComputeShader;
 	std::vector<GLuint>	m_vecVertexShader;
 	std::vector<GLuint> m_vecTessControlShader;
 	std::vector<GLuint> m_vecTessEvalShader;
