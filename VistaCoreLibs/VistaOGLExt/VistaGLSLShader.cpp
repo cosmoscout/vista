@@ -249,9 +249,9 @@ bool VistaGLSLShader::InitShaderFromString(
 		case  GL_FRAGMENT_SHADER:
 			m_vecFragmentShader.push_back( uiShader );
 			break;
-    case GL_COMPUTE_SHADER:
-      m_vecComputeShader.push_back( uiShader );
-      break;
+		case GL_COMPUTE_SHADER:
+			m_vecComputeShader.push_back( uiShader );
+			break;
 		default:
 			vstr::errp() << "[VistaGLSLShader] Unknown shader type "
 				         << uiShaderTyp << " ..." << std::endl;
@@ -500,8 +500,8 @@ void VistaGLSLShader::Destroy()
 		glDeleteShader( m_vecGeometryShader[i] );
 	for( size_t i=0; i<m_vecFragmentShader.size(); ++i )
 		glDeleteShader( m_vecFragmentShader[i] );
-  for (size_t i = 0; i<m_vecComputeShader.size(); ++i)
-    glDeleteShader( m_vecComputeShader[i] );
+	for (size_t i = 0; i<m_vecComputeShader.size(); ++i)
+		glDeleteShader( m_vecComputeShader[i] );
 	if( m_uiProgram )
 		glDeleteProgram( m_uiProgram );
 	m_bIsReadyForUse = false;
