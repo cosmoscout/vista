@@ -500,8 +500,8 @@ void VistaGLSLShader::Destroy()
 		glDeleteShader( m_vecGeometryShader[i] );
 	for( size_t i=0; i<m_vecFragmentShader.size(); ++i )
 		glDeleteShader( m_vecFragmentShader[i] );
-  for (size_t i = 0; i<m_vecComputeShader.size(); ++i)
-    glDeleteShader( m_vecComputeShader[i] );
+	for (size_t i = 0; i<m_vecComputeShader.size(); ++i)
+		glDeleteShader( m_vecComputeShader[i] );
 	if( m_uiProgram )
 		glDeleteProgram( m_uiProgram );
 	m_bIsReadyForUse = false;
