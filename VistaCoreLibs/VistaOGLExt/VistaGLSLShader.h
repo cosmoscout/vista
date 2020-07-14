@@ -215,10 +215,10 @@ private:
 
 	GLuint m_uiProgram;
 	std::vector<GLuint> m_vecComputeShader;
-	std::vector<GLuint>	m_vecVertexShader;
+	std::vector<GLuint> m_vecVertexShader;
 	std::vector<GLuint> m_vecTessControlShader;
 	std::vector<GLuint> m_vecTessEvalShader;
-	std::vector<GLuint>	m_vecGeometryShader;
+	std::vector<GLuint> m_vecGeometryShader;
 	std::vector<GLuint> m_vecFragmentShader;	
 
 	typedef std::map<std::string, GLint> UniformC;
