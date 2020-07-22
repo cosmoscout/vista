@@ -86,6 +86,10 @@ public:
 									const std::string &strPrefix = "");
 	bool InitFragmentShaderFromString(
 									const std::string &strFragmentShaderString);
+	bool InitComputeShaderFromFile(const std::string& strComputeShaderFile,
+                                   const std::string& strPrefix = "");
+	bool InitComputeShaderFromString(
+                                    const std::string& strComputeShaderString);
 
 	bool InitShaderFromFile(	const unsigned int uiShaderTyp,
 								const std::string &strShaderFile,
@@ -119,7 +123,8 @@ public:
 	GLuint GetTessEvalShader( const std::size_t nIdx = 0 ) const;
 	GLuint GetGeometryShader( const std::size_t nIdx = 0 ) const;
 	GLuint GetFragmentShader( const std::size_t nIdx = 0 ) const;
-	
+	GLuint GetComputeShader( const std::size_t nIdx = 0 ) const;
+
 	/**
 	 * Retrieves the location index of the specified uniform variable.
 	 * 
@@ -209,10 +214,11 @@ private:
 	bool m_bIsReadyForUse;
 
 	GLuint m_uiProgram;
-	std::vector<GLuint>	m_vecVertexShader;
+	std::vector<GLuint> m_vecComputeShader;
+	std::vector<GLuint> m_vecVertexShader;
 	std::vector<GLuint> m_vecTessControlShader;
 	std::vector<GLuint> m_vecTessEvalShader;
-	std::vector<GLuint>	m_vecGeometryShader;
+	std::vector<GLuint> m_vecGeometryShader;
 	std::vector<GLuint> m_vecFragmentShader;	
 
 	typedef std::map<std::string, GLint> UniformC;

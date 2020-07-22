@@ -150,6 +150,19 @@ bool VistaGLSLShader::InitFragmentShaderFromString(
 	return InitShaderFromString( GL_FRAGMENT_SHADER, strFragmentShaderString );
 }
 
+bool VistaGLSLShader::InitComputeShaderFromFile(
+		const std::string& strComputeShaderFile, 
+		const std::string& strPrefix) 
+{
+	return InitShaderFromFile( GL_COMPUTE_SHADER, strComputeShaderFile, strPrefix);
+}
+
+bool VistaGLSLShader::InitComputeShaderFromString(
+		const std::string& strComputeShaderString) 
+{
+	return InitShaderFromString( GL_COMPUTE_SHADER, strComputeShaderString);
+}
+
 
 bool VistaGLSLShader::InitShaderFromFile( 
 		const unsigned int uiShaderTyp,
@@ -235,6 +248,9 @@ bool VistaGLSLShader::InitShaderFromString(
 			break;
 		case  GL_FRAGMENT_SHADER:
 			m_vecFragmentShader.push_back( uiShader );
+			break;
+		case GL_COMPUTE_SHADER:
+			m_vecComputeShader.push_back( uiShader );
 			break;
 		default:
 			vstr::errp() << "[VistaGLSLShader] Unknown shader type "
@@ -390,6 +406,13 @@ bool VistaGLSLShader::Link()
 					<< " info log: " << std::endl;
 			vstr::out() << buf << std::endl;
 		}
+
+    for (size_t i = 0; i < m_vecComputeShader.size(); ++i) {
+      glGetShaderInfoLog( m_vecComputeShader[i], 4096, &iSize, buf );
+      vstr::erri() << "[VistaGLSLShader] Compute shader #" << i 
+          << " info log: " << std::endl;
+      vstr::out() << buf << std::endl;
+    }
 	}
 	else
 	{
@@ -477,6 +500,8 @@ void VistaGLSLShader::Destroy()
 		glDeleteShader( m_vecGeometryShader[i] );
 	for( size_t i=0; i<m_vecFragmentShader.size(); ++i )
 		glDeleteShader( m_vecFragmentShader[i] );
+	for( size_t i=0; i<m_vecComputeShader.size(); ++i )
+		glDeleteShader( m_vecComputeShader[i] );
 	if( m_uiProgram )
 		glDeleteProgram( m_uiProgram );
 	m_bIsReadyForUse = false;
@@ -541,6 +566,11 @@ GLuint VistaGLSLShader::GetFragmentShader( const std::size_t nIdx ) const
 			 0 : m_vecFragmentShader[ nIdx ] );
 }
 
+GLuint VistaGLSLShader::GetComputeShader( const std::size_t nIdx ) const 
+{
+	return (nIdx >= m_vecComputeShader.size() ? 
+			 0 : m_vecComputeShader[ nIdx ] );
+}
 
 int VistaGLSLShader::GetUniformLocation( const std::string &strParameterName ) const
 {
