@@ -56,11 +56,6 @@ namespace
 											"VistaOptitrackRigidBodyTranscoder",
 											"mean error of the rigid body matching",
 											&VistaOptitrackMeasures::RigidBodyMeasure::m_fMeanError ),
-		new IVistaMeasureTranscode::TTranscodeMemberGet< VistaOptitrackMeasures::RigidBodyMeasure, int >(
-											"MARKER_COUNT",
-											"VistaOptitrackRigidBodyTranscoder",
-											"number of makers on the rigid body",
-											&VistaOptitrackMeasures::RigidBodyMeasure::m_nNumMarkers ),
 		new IVistaMeasureTranscode::TTranscodeMemberGet< VistaOptitrackMeasures::RigidBodyMeasure, VistaVector3D >(
 											"POSITION",
 											"VistaOptitrackRigidBodyTranscoder",
