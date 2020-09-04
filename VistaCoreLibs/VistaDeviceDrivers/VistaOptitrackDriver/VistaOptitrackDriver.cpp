@@ -311,7 +311,7 @@ bool VistaOptitrackDriver::DoConnect()
 	bool bHasMulticastAddress = ( pParams->m_sMulticastAddress.empty() == false );
 
 	sNatNetClientConnectParams params;
-	params.connectionType = ConnectionType_Unicast;
+	params.connectionType = ConnectionType_Multicast;
 	params.serverAddress = &pParams->m_sServerHostName[0];
 	params.localAddress = &pParams->m_sOwnHostName[0];
 
