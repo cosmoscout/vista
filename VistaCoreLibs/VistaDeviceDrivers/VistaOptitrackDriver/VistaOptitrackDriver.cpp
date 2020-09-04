@@ -63,7 +63,7 @@ namespace
 
 	void MessageCallback( Verbosity nVerbosity, const char* sMessage )
 	{
-		vstr::outi() << "[OptitrackDriver]: message from server: \""	<< sMessage << "\"" << std::endl;
+		vstr::outi() << "[Optitrack]: \"" << sMessage << "\"" << std::endl;
 	}
 }
 
@@ -292,12 +292,12 @@ bool VistaOptitrackDriver::DoConnect()
 	
 	if( pParams->m_sOwnHostName.empty() )
 	{
-		vstr::errp() << "[VistaOptitrackDriver]: no OWN_ADDRESS given" << std::endl;
+		vstr::errp() << "[VistaOptitrackDriver]: no OWN_HOSTNAME given" << std::endl;
 		return false;
 	}
 	if( pParams->m_sOwnHostName.empty() )
 	{
-		vstr::errp() << "[VistaOptitrackDriver]: no OWN_ADDRESS given" << std::endl;
+		vstr::errp() << "[VistaOptitrackDriver]: no OWN_HOSTNAME given" << std::endl;
 		return false;
 	}
 	
