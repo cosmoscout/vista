@@ -6,7 +6,7 @@ include( VistaFindUtils )
 
 if( NOT VNATNETSDK_FOUND )
 
-	vista_find_package_root( NatNetSDK "include/NatNetServer.h" )
+	vista_find_package_root( NatNetSDK "include/NatNetTypes.h" )
 	
 	if( NATNETSDK_ROOT_DIR )
 		
@@ -16,7 +16,7 @@ if( NOT VNATNETSDK_FOUND )
 		else()
 			set( NATNETSDK_LIBRARY_DIRS "${NATNETSDK_ROOT_DIR}/lib" )
 		endif()
-		set( NATNETSDK_LIBRARIES NatNetLib )
+		find_library( NATNETSDK_LIBRARIES NatNetLib ${NATNETSDK_LIBRARY_DIRS} )
 	
 	endif()
 	

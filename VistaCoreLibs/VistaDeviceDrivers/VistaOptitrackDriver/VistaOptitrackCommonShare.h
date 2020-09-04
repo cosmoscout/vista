@@ -39,7 +39,6 @@ namespace VistaOptitrackMeasures
 		int m_nIndex;
 		VistaVector3D m_v3Position;
 		VistaQuaternion m_qOrientation;
-		int m_nNumMarkers;
 		float m_fMeanError;
 	};
 

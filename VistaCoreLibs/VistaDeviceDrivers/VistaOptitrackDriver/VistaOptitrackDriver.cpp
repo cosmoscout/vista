@@ -44,6 +44,7 @@
 
 #include <NatNetTypes.h>
 #include <NatNetClient.h>
+#include <NatNetCAPI.h>
 
 
 /*============================================================================*/
@@ -60,9 +61,9 @@ namespace
 		pDriver->Update();
 	}
 
-	void MessageCallback( int nMessageType, char* sMessage )
+	void MessageCallback( Verbosity nVerbosity, const char* sMessage )
 	{
-		vstr::outi() << "[OptitrackDriver]: message from server: \""	<< sMessage << "\"" << std::endl;
+		vstr::outi() << "[Optitrack]: \"" << sMessage << "\"" << std::endl;
 	}
 }
 
@@ -211,7 +212,7 @@ VistaOptitrackDriver::~VistaOptitrackDriver()
 {
 	if( m_pClient )
 	{
-		m_pClient->Uninitialize();
+		m_pClient->Disconnect();
 		delete m_pClient;
 	}
 
@@ -245,7 +246,6 @@ bool VistaOptitrackDriver::DoSensorUpdate( VistaType::microtime dTimestamp )
 			VistaOptitrackMeasures::RigidBodyMeasure* pData = pMeasure->getWrite< VistaOptitrackMeasures::RigidBodyMeasure >();
 			pData->m_nIndex       = oRigidBody.ID;
 			pData->m_fMeanError   = oRigidBody.MeanError;
-			pData->m_nNumMarkers  = oRigidBody.nMarkers;
 			pData->m_v3Position   = VistaVector3D( oRigidBody.x, oRigidBody.y, oRigidBody.z );
 			pData->m_qOrientation = VistaQuaternion( oRigidBody.qx, oRigidBody.qy, oRigidBody.qz, oRigidBody.qw );
 
@@ -260,11 +260,11 @@ bool VistaOptitrackDriver::PhysicalEnable(bool bEnable)
 {
 	if( bEnable )
 	{
-		m_pClient->SetDataCallback( &DataCallback, this );
+		m_pClient->SetFrameReceivedCallback( &DataCallback, this );
 	}
 	else
 	{
-		m_pClient->SetDataCallback( NULL );
+		m_pClient->SetFrameReceivedCallback( NULL );
 	}
 	return true;
 }
@@ -283,7 +283,7 @@ bool VistaOptitrackDriver::DoConnect()
 {
 	if( m_pClient )
 	{
-		m_pClient->Uninitialize();
+		m_pClient->Disconnect();
 		delete m_pClient;
 		m_pClient = NULL;
 	}
@@ -292,43 +292,49 @@ bool VistaOptitrackDriver::DoConnect()
 	
 	if( pParams->m_sOwnHostName.empty() )
 	{
-		vstr::errp() << "[VistaOptitrackDriver]: no OWN_ADDRESS given" << std::endl;
+		vstr::errp() << "[VistaOptitrackDriver]: no OWN_HOSTNAME given" << std::endl;
 		return false;
 	}
 	if( pParams->m_sOwnHostName.empty() )
 	{
-		vstr::errp() << "[VistaOptitrackDriver]: no OWN_ADDRESS given" << std::endl;
+		vstr::errp() << "[VistaOptitrackDriver]: no OWN_HOSTNAME given" << std::endl;
 		return false;
 	}
 	
-	int nConnectionType = ( pParams->m_bServerUsesMulticast ? ConnectionType_Multicast : ConnectionType_Unicast );
-	m_pClient = new NatNetClient( nConnectionType );
+	m_pClient = new NatNetClient();
 
 	if( pParams->m_bReportMessages )
-		m_pClient->SetMessageCallback( MessageCallback );
-
-	if( pParams->m_sMulticastAddress.empty() == false )
-		m_pClient->SetMulticastAddress( &pParams->m_sMulticastAddress[0] );
+		NatNet_SetLogCallback( MessageCallback );
 
 	bool bHasDataPort = ( pParams->m_nServerDataPort > 0 );
 	bool bHasCommandPort = ( pParams->m_nServerCommandPort > 0 );
+	bool bHasMulticastAddress = ( pParams->m_sMulticastAddress.empty() == false );
 
-	char* sOwnHost = &pParams->m_sOwnHostName[0];
-	char* sServerHost = &pParams->m_sServerHostName[0];
+	sNatNetClientConnectParams params;
+	params.connectionType = ConnectionType_Multicast;
+	params.serverAddress = &pParams->m_sServerHostName[0];
+	params.localAddress = &pParams->m_sOwnHostName[0];
 
-	int nReturnValue;
+	if ( bHasMulticastAddress )
+	{
+		params.multicastAddress = &pParams->m_sMulticastAddress[0];
+	}
+	else 
+	{
+		params.connectionType = ConnectionType_Unicast;
+	}
+
 	if( bHasDataPort && bHasCommandPort )
 	{
-		nReturnValue = m_pClient->Initialize( sOwnHost, sServerHost, pParams->m_nServerCommandPort, pParams->m_nServerDataPort );
+		params.serverDataPort = pParams->m_nServerDataPort;
+		params.serverCommandPort = pParams->m_nServerCommandPort;
 	}
 	else if( bHasCommandPort )
 	{
-		nReturnValue = m_pClient->Initialize( sOwnHost, sServerHost, pParams->m_nServerCommandPort );
+		params.serverCommandPort = pParams->m_nServerCommandPort;
 	}
-	else
-	{
-		nReturnValue = m_pClient->Initialize( sOwnHost, sServerHost );
-	}
+
+	int nReturnValue = m_pClient->Connect( params );
 
 	if( nReturnValue != ErrorCode_OK )
 	{
@@ -344,7 +350,7 @@ bool VistaOptitrackDriver::DoDisconnect()
 {
 	if( m_pClient )
 	{
-		m_pClient->Uninitialize();
+		m_pClient->Disconnect();
 		delete m_pClient;
 		m_pClient = NULL;
 	}
