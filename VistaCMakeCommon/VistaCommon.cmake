@@ -250,6 +250,8 @@ function( local_clean_old_config_references _PACKAGE_NAME _PACKAGE_TARGET_FILE _
 				set( PACKAGE_REFERENCE_OUTDATED FALSE )
 				include( "${_FILE}" )				
 				if( PACKAGE_REFERENCE_OUTDATED OR "${_PACKAGE_TARGET_FILE}" STREQUAL "${${_PACKAGE_NAME_UPPER}_REFERENCED_FILE}" )
+					# After CMake language processing, \\\\\\1 becomes \\\1.  The first \\ places a literal \ in the output.  
+					# The second \1 is the placeholder that gets replaced by the match.
 					string(REGEX REPLACE "([][+.*()^])" "\\\\\\1" VISTA_CMAKE_COMMON_ESCAPED "${VISTA_CMAKE_COMMON}")
 					string( REGEX MATCH "(${VISTA_CMAKE_COMMON_ESCAPED}/share/.+)/.*" _MATCHED ${_FILE} )
 					if( _MATCHED )
