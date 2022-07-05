@@ -931,8 +931,9 @@ void VistaOpenSGDisplayBridge::ViewportData::DrawViewportQuad( const bool bSplit
 	glOrtho( 0, 1, 0, 1, 0, 1 );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-	glPushAttrib( GL_ALL_ATTRIB_BITS );
+	glPushAttrib( GL_ENABLE_BIT );
 	glDisable( GL_DEPTH_TEST );
+	glDisable( GL_CULL_FACE );
 	glBegin( GL_QUADS );
 	glTexCoord2f( 0, 0 );
 	glVertex2f( 0, 0 );
