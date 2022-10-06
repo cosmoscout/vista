@@ -24,3 +24,6 @@ This fork of ViSTA contains several changes which have been made before the init
 * Add support for the HTC Vive on windows.
 * Add possibility to change cursor type with glut windowing toollkit.
 * Remove all inheritances from std::unitary_function.
+
+## Architecture
+![VistaModuleTree](https://user-images.githubusercontent.com/9581540/194340299-8772fa0a-cc7f-4e03-b473-1e200cd8deb1.svg)
