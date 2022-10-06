@@ -6,8 +6,6 @@ set( RelativeSourceGroup "Source Files\\GraphicsManager" )
 set( DirFiles
 	Vista3DText.cpp
 	Vista3DText.h
-	VistaAxes.cpp
-	VistaAxes.h
 	VistaExtensionNode.cpp
 	VistaExtensionNode.h
 	VistaGeomNode.cpp
@@ -41,16 +39,10 @@ set( DirFiles
 	VistaNodeBridge.cpp
 	VistaNodeBridge.h
 	VistaNodeInterface.h
-	VistaOpenGLDebug.cpp
-	VistaOpenGLDebug.h
 	VistaOpenGLDraw.cpp
 	VistaOpenGLDraw.h
 	VistaOpenGLNode.cpp
 	VistaOpenGLNode.h
-	VistaOpenGLPolyLine.cpp
-	VistaOpenGLPolyLine.h
-	VistaOpenGLPrimitiveList.cpp
-	VistaOpenGLPrimitiveList.h
 	VistaSceneGraph.cpp
 	VistaSceneGraph.h
 	VistaSwitchNode.cpp

@@ -22,12 +22,6 @@ set( DirFiles
 	VistaShaderRegistry.h
 	VistaTexture.cpp
 	VistaTexture.h
-	VistaTransformableTexture.cpp
-	VistaTransformableTexture.h
-	VistaGLLine.cpp
-	VistaGLLine.h
-	VistaGLPoints.cpp
-	VistaGLPoints.h
 	VistaVertexArrayObject.cpp
 	VistaVertexArrayObject.h	
 	_SourceFiles.cmake

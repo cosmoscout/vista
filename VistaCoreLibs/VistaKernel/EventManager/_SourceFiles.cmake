@@ -4,8 +4,6 @@ set( RelativeDir "./EventManager" )
 set( RelativeSourceGroup "Source Files\\EventManager" )
 
 set( DirFiles
-	VistaCentralEventHandler.cpp
-	VistaCentralEventHandler.h
 	VistaCommandEvent.cpp
 	VistaCommandEvent.h
 	VistaEvent.cpp
@@ -19,14 +17,6 @@ set( DirFiles
 	VistaExternalMsgEvent.h
 	VistaSystemEvent.cpp
 	VistaSystemEvent.h
-	VistaTickTimer.cpp
-	VistaTickTimer.h
-	VistaTickTimerEvent.cpp
-	VistaTickTimerEvent.h
-	VistaTimeoutHandler.cpp
-	VistaTimeoutHandler.h
-	VistaTimeoutRouter.cpp
-	VistaTimeoutRouter.h
 	_SourceFiles.cmake
 )
 set( DirFiles_SourceGroup "${RelativeSourceGroup}" )

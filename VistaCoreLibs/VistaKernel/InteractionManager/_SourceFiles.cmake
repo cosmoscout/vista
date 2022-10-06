@@ -15,8 +15,6 @@ set( DirFiles
 	VistaInteractionManager.h
 	VistaKeyboardSystemControl.cpp
 	VistaKeyboardSystemControl.h
-	VistaObjectSetMove.cpp
-	VistaObjectSetMove.h
 	VistaUserPlatform.cpp
 	VistaUserPlatform.h
 	VistaVirtualPlatformAdapter.cpp

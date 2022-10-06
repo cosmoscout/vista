@@ -17,8 +17,6 @@ set( DirFiles
 	VistaClusterSlave.h
 	VistaClusterStandalone.cpp
 	VistaClusterStandalone.h
-	VistaClusterSyncedTimerImp.cpp
-	VistaClusterSyncedTimerImp.h
 	VistaDataTunnel.cpp
 	VistaDataTunnel.h
 	VistaNewClusterMaster.cpp

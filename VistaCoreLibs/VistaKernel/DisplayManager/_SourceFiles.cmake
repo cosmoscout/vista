@@ -20,8 +20,6 @@ endif()
 set( DirFiles	
 	Vista2DDrawingObjects.cpp
 	Vista2DDrawingObjects.h
-	Vista3DTextOverlay.cpp
-	Vista3DTextOverlay.h
 	VistaDisplay.cpp
 	VistaDisplay.h
 	VistaDisplayBridge.cpp
