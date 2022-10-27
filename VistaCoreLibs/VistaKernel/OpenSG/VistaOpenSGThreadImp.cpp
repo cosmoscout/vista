@@ -69,7 +69,7 @@ static void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
    info.dwThreadID = dwThreadID;
    info.dwFlags = 0;
 
-   __try
+   try
    {
 	#if defined (_MSC_VER)
 		#if ( _MSC_VER >= 1400 )
@@ -79,7 +79,7 @@ static void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
 		#endif
 	#endif
    }
-   __except(EXCEPTION_CONTINUE_EXECUTION)
+   catch(...)
    {
    }
 }

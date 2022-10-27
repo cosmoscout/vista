@@ -326,7 +326,7 @@ string VistaAspectsConversionStuff::ConvertToString(unsigned int iVal)
 string VistaAspectsConversionStuff::ConvertToString(VistaType::sint64  pVal)
 {
 	char buffer[4096];
-#ifdef WIN32
+#if defined(WIN32) && defined(_MSC_VER)
 	_i64toa_s((_int64) pVal, buffer, 4096, 10);
 #else
    	sprintf(buffer, "%lld", (unsigned long long) pVal);
@@ -353,7 +353,7 @@ string VistaAspectsConversionStuff::ConvertToString(bool bVal)
 string VistaAspectsConversionStuff::ConvertToString(void *pVal)
 {
 	char buffer[4096];
-#ifdef WIN32
+#if defined(WIN32) && defined(_MSC_VER)
 	_i64toa_s((_int64) pVal, buffer, 4096, 10);
 #else
 	sprintf(buffer, "%lld", (long long) pVal);

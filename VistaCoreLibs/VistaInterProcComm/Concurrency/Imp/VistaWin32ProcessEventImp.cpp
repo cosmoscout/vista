@@ -125,7 +125,7 @@ bool VistaWin32ProcessEventImp::WaitForEvent( int nBlockTime )
 			return true; // succes
 		case WAIT_TIMEOUT:
 			return false; // timeout
-		case WAIT_FAILED:
+		case static_cast<int>(WAIT_FAILED):
 			vstr::errp() << "[InterProcEmittingBarrier]: Waiting for event failed - "
 						<< GetErrorText() << std::endl;
 		case WAIT_ABANDONED: // should only happen for mutexes!
@@ -146,7 +146,7 @@ bool VistaWin32ProcessEventImp::WaitForEvent(bool bBlock)
 			return true; // succes
 		case WAIT_TIMEOUT:
 			return false; // timeout
-		case WAIT_FAILED:
+		case static_cast<int>(WAIT_FAILED):
 			vstr::errp() << "[InterProcEmittingBarrier]: Waiting for event failed - "
 						<< GetErrorText() << std::endl;
 		case WAIT_ABANDONED: // should only happen for mutexes!

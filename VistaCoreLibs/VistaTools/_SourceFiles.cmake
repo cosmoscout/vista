@@ -45,9 +45,7 @@ set( DirFiles
 	VistaRandomNumberGenerator.cpp
 	VistaRandomNumberGenerator.h
 	VistaRingBuffer.h
-	VistaStackWalker.cpp
-	VistaStackWalker.h
-	VistaStreams.cpp
+		VistaStreams.cpp
 	VistaStreams.h
 	VistaToolsConfig.h
 	VistaToolsStd.h

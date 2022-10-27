@@ -27,6 +27,11 @@ set( dirFiles_plugin
 	VistaHIDPlugin.cpp
 )
 source_group( "Source Files" FILES ${dirFiles_plugin} )
+
+if(WIN32 AND NOT MSVC)
+	add_definitions(-fpermissive)
+endif()
+
 add_library( VistaHIDPlugin
 	${dirFiles_plugin}
 ) 

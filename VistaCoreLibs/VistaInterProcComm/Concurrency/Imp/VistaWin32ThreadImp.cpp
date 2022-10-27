@@ -55,7 +55,7 @@ static void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
    info.dwThreadID = dwThreadID;
    info.dwFlags = 0;
 
-   __try
+   try
    {
 #ifdef WIN32
 	#if defined (_MSC_VER)
@@ -67,7 +67,7 @@ static void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
 	#endif
 #endif
    }
-   __except(EXCEPTION_CONTINUE_EXECUTION)
+   catch(...)
    {
    }
 }

@@ -988,7 +988,7 @@ bool VistaKernelMsgPort::DispatchSystemMsg(int iMsgType, VistaMsg *pMsg, VistaBy
 	case SETINIFILE:
 		{
 			vector<VistaType::byte> vecMsg = pMsg->GetThisMsg();
-#if defined(LINUX) || (defined(WIN32) && (_MSC_VER>=1300)) || defined(DARWIN)
+#if defined(LINUX) || defined(WIN32) || defined(DARWIN)
 			string sIniFile(vecMsg.begin(), vecMsg.begin()+vecMsg.size());
 #else
 			string sIniFile((char*)vecMsg.begin(), (char*)vecMsg.begin()+vecMsg.size());

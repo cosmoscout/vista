@@ -10,9 +10,13 @@ set( VISTAINTERPROCCOMM_INTERNAL_DEPENDENCIES ${VISTAINTERPROCCOMM_INTERNAL_DEPE
 if( WIN32 )
 	add_definitions( -D_USE_WIN32_MUTEX )
 	set( LIBRARIES winmm ws2_32 )
-elseif( UNIX )
+
+	if (NOT MSVC)
+		add_definitions(-fpermissive)
+	endif()
+else()
 	set( LIBRARIES pthread )
-endif( WIN32 )
+endif()
 
 set( VISTACORELIBS_IPC_USE_EXCEPTIONS ON CACHE BOOL "Specifies wether or nor the IPC throws exceptions when errors occur" )
 if( VISTACORELIBS_IPC_USE_EXCEPTIONS )

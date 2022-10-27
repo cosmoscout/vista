@@ -195,7 +195,7 @@ int VistaMsg::AssignMsgByString(const string &sString, MSG &rMsg)
 int VistaMsg::AssignStringByMsg(const MSG &rMsg, string &sStorage)
 {
 	string sRet;
-        #if defined(LINUX) || defined(DARWIN) || (defined(WIN32) && _MSC_VER>=1300)
+        #if defined(LINUX) || defined(DARWIN) || defined(WIN32)
 	sRet = string(rMsg.begin(), rMsg.begin()+rMsg.size());
 	#else
 	sRet = string((char*)rMsg.begin(), (char*)rMsg.begin()+rMsg.size());

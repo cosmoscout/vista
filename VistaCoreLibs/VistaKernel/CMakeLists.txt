@@ -60,6 +60,10 @@ endif()
 
 add_definitions( -DVISTA_SYS_OPENSG -DVISTAKERNEL_USE_PROFILING )
 
+if(WIN32 AND NOT MSVC)
+	add_definitions(-fpermissive)
+endif()
+
 include( "./_SourceFiles.cmake" )
 
 add_library( VistaKernel ${ProjectSources} )

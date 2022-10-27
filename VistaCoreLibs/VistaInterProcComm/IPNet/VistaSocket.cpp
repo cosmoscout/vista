@@ -167,7 +167,7 @@ bool IVistaSocket::OpenSocket()
 {
 	if( m_iSocketID != HANDLE( ~0 ) )
 		return false;
-	if((m_iSocketID = HANDLE(socket (m_iDomain, m_iType, m_iProtocol))) <= 0)
+	if(reinterpret_cast<int>(m_iSocketID = HANDLE(socket (m_iDomain, m_iType, m_iProtocol))) <= 0)
 	{
 		// error
 		m_iSocketID = HANDLE(~0);

@@ -113,7 +113,7 @@ std::string VistaConversion::StringToLower( const std::string& oSource )
 
 std::string VistaConversion::CleanOSTypeName( const std::string& sName )
 {
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(WIN32)
 	int nState;
 	char* acCleaned = abi::__cxa_demangle( sName.c_str(), NULL, NULL, &nState );
 	if( nState == 0 && acCleaned )

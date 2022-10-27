@@ -52,7 +52,7 @@ VistaWin32ProcessImp::~VistaWin32ProcessImp()
 /// start a process
 bool     VistaWin32ProcessImp::Run( const string & inCommand )
 {
-	if(win32Handle>0)
+	if(win32Handle != nullptr)
 		return false;
 
 	STARTUPINFO          si;
@@ -84,7 +84,7 @@ bool     VistaWin32ProcessImp::Run( const string & inCommand )
 
 bool     VistaWin32ProcessImp::Suspend()
 {
-	if (win32Handle <= 0)
+	if (win32Handle == nullptr)
 		return false;
 
 		SuspendThread(win32Handle);
@@ -95,7 +95,7 @@ bool     VistaWin32ProcessImp::Suspend()
 
 bool     VistaWin32ProcessImp::Resume()
 {
-	if (win32Handle <= 0)
+	if (win32Handle == nullptr)
 		return false;
 
 		ResumeThread(win32Handle);
@@ -106,7 +106,7 @@ bool     VistaWin32ProcessImp::Resume()
 
 bool     VistaWin32ProcessImp::Join()
 {
-	if (win32Handle <= 0)
+	if (win32Handle == nullptr)
 		return false;
 
 	// Wait until child process exits.
@@ -125,7 +125,7 @@ bool     VistaWin32ProcessImp::Join()
 bool     VistaWin32ProcessImp::Abort()
 {
 //    unsigned long exitCode  = 0;
-	if (win32Handle <= 0)
+	if (win32Handle == nullptr)
 		return false;
 
 	if (TerminateProcess(win32Handle,0))
@@ -137,7 +137,7 @@ bool     VistaWin32ProcessImp::Abort()
 
 bool     VistaWin32ProcessImp::SetPriority( const VistaPriority & )
 {
-	if (win32Handle <= 0)
+	if (win32Handle == nullptr)
 		return false;
 
 	SetThreadPriority(win32Handle,THREAD_PRIORITY_IDLE);
@@ -154,7 +154,7 @@ void VistaWin32ProcessImp::GetPriority( VistaPriority & ) const
 
 void VistaWin32ProcessImp::CleanupProcess()
 {
-	if(win32Handle<=0)
+	if(win32Handle==nullptr)
 		return;
 	// Close process and thread handles. 
 	CloseHandle( win32Handle );
