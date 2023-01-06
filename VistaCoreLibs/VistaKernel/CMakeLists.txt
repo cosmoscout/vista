@@ -54,6 +54,11 @@ if( VISTACORELIBS_USE_VIVE )
 	add_definitions( -DVISTA_WITH_VIVE )
 endif()
 
+set( VISTACORELIBS_USE_INFINITE_REVERSE_PROJECTION OFF CACHE BOOL "if activated, matrices will be modified to use infinite reverse projection" )
+if( VISTACORELIBS_USE_INFINITE_REVERSE_PROJECTION )
+	add_definitions( -DVISTA_VIVE_INFINITE_REVERSE_PROJECTION )
+endif()
+
 if( NOT VISTACORELIBS_BUILD_WINDOWIMP_GLUT AND NOT VISTACORELIBS_BUILD_WINDOWIMP_OSG )
 	message( WARNING "No Windowing Toolkit will be built!" )
 endif()

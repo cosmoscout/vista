@@ -239,6 +239,7 @@ namespace
 		void UpdateViveProjection( float fNear, float fFar )
 		{
 			// ovrMatrix4f matLeftProjection = ovrMatrix4f_Projection( m_apRenderDescs[0].Fov, fNear, fFar, true );
+
 	        auto const& matLeftProjection = m_pVRSystem->GetProjectionMatrix(
 	            vr::EVREye::Eye_Left, fNear, fFar
 	        );
@@ -250,6 +251,15 @@ namespace
 					matOSGProjection[j][i] = matLeftProjection.m[i][j]; // !!!!!!!TEST: row or column major?????
 				}
 			}
+
+#ifdef VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+                        // If a reverse infinite projection is used, we have to modify the projection matrix.
+                        // See Equation (4) in https://dx.doi.org/10.18420/vrar2021_12
+                        float n2 = 2.f * fNear;
+                        matOSGProjection[2][2] = 1.f;
+                        matOSGProjection[3][2] = n2;
+#endif // VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+
 			beginEditCP( m_pLeftCamera );
 			m_pLeftCamera->setProjectionMatrix( matOSGProjection );
 			endEditCP( m_pLeftCamera );
@@ -265,6 +275,14 @@ namespace
 					matOSGProjection[j][i] = matRightProjection.m[i][j];// !!!!!!!TEST: row or column major?????
 				}
 			}
+
+#ifdef VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+                        // If a reverse infinite projection is used, we have to modify the projection matrix.
+                        // See Equation (4) in https://dx.doi.org/10.18420/vrar2021_12
+                        matOSGProjection[2][2] = 1.f;
+                        matOSGProjection[3][2] = n2;
+#endif // VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+
 			beginEditCP( m_pRightCamera );
 			m_pRightCamera->setProjectionMatrix( matOSGProjection );
 			endEditCP( m_pRightCamera );
