@@ -1942,7 +1942,7 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 		        }
 		    }
 
-		    VistaTransformMatrix orientation( // column or row major????
+		    VistaTransformMatrix orientation(
 		    	pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0,
 		        pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
 		        pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0,
@@ -1958,8 +1958,8 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 
 			pProps->SetViewerPosition(v3HeadPosition);
 			pProps->SetViewerOrientation(qHeadOrientation);
-			pProps->SetLeftEyeOffset(left_eye.m[0][3],left_eye.m[1][3],left_eye.m[2][3]); // ????
-			pProps->SetRightEyeOffset(right_eye.m[0][3],right_eye.m[1][3],right_eye.m[2][3]); // ???
+			pProps->SetLeftEyeOffset(left_eye.m[0][3],left_eye.m[1][3],left_eye.m[2][3]);
+			pProps->SetRightEyeOffset(right_eye.m[0][3],right_eye.m[1][3],right_eye.m[2][3]);
 
 			// matrix cameras ignore beacons, so we have to set the modelview explicitely
 			osg::NodePtr pLeftBeacon = pViveData->m_pLeftCamera->getBeacon();
