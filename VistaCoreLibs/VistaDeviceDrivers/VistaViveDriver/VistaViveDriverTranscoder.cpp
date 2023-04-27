@@ -451,6 +451,28 @@ namespace
 		}
 	};
 
+	class VistaViveStickButtonAPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	{
+	public:
+		VistaViveStickButtonAPressedTranscode()
+			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("BUTTON_A_PRESSED",
+				VistaViveStickTranscode::GetTypeString(),
+				"Vive stick's A button") {}
+
+		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
+		{
+			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+
+			return m->button_a_pressed;
+		}
+
+		virtual bool GetValue(const VistaSensorMeasure *pMeasure, bool &bButton) const
+		{
+			bButton = GetValue(pMeasure);
+			return true;
+		}
+	};
+
 	IVistaPropertyGetFunctor *SapGetter[] =
 	{
 		new VistaViveHeadOrientationTranscode,
@@ -470,6 +492,7 @@ namespace
 		new VistaViveStickTrackpadYTranscode,
 		new VistaViveStickSystemButtonPressedTranscode,
 		new VistaViveStickMenuButtonPressedTranscode,
+		new VistaViveStickButtonAPressedTranscode,
 		NULL
 	};
 

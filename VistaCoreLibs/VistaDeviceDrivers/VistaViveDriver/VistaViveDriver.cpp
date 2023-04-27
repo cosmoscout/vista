@@ -184,6 +184,7 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 	auto trackpad_touched = false;
 	auto button_system_pressed = false;
 	auto button_menu_pressed = false;
+	auto button_a_pressed = false;
 
 	for( vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++ )
 	{
@@ -198,6 +199,9 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 			
 			uint64_t button_menu_mask = vr::ButtonMaskFromId(
 				static_cast<vr::EVRButtonId>(vr::k_EButton_ApplicationMenu));
+
+			uint64_t button_a_mask = vr::ButtonMaskFromId(
+				static_cast<vr::EVRButtonId>(vr::k_EButton_A));
 
 			for (int j = 0; j < vr::k_unControllerStateAxisCount; ++j) {
 	        	int32_t axis_type = m_pVRSystem->GetInt32TrackedDeviceProperty(
@@ -231,6 +235,10 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 							button_menu_pressed = true;
 						}
 
+						if ((state.ulButtonPressed & button_a_mask) != 0) {
+							button_a_pressed = true;
+						}
+
 	        			break;
 
 	        		case vr::k_eControllerAxis_TrackPad:
@@ -256,6 +264,7 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 	m->trackpad_touched = trackpad_touched;
 	m->button_system_pressed = button_system_pressed;
 	m->button_menu_pressed = button_menu_pressed;
+	m->button_a_pressed = button_a_pressed;
 
 	MeasureStop(0);
 	return true;

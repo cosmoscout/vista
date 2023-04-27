@@ -71,6 +71,7 @@ namespace VistaViveConfig
 		
 		bool button_system_pressed;
 		bool button_menu_pressed;
+		bool button_a_pressed;
 	};
 
 	struct VISTA_vive_head_type{
