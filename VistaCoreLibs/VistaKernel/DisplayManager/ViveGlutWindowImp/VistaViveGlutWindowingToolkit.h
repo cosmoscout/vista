@@ -59,15 +59,10 @@ public:
 	virtual void DisplayWindow( const VistaWindow* pWindow );
 
 	virtual bool RegisterWindow( VistaWindow* pWindow );
-	virtual bool UnregisterWindow( VistaWindow* pWindow );
 	
-	// ovrHmd GetHmdForWindow( VistaWindow* pWindow );
 	vr::IVRSystem* GetVRSystem();
 
-
 	virtual bool InitWindow( VistaWindow* pWindow );
-	// bool FillViveRenderConfigForWindow( VistaWindow* pWindow, ovrGLConfig& oOculusConfig );
-
 private:
 
 	vr::IVRSystem* m_pVRSystem;
