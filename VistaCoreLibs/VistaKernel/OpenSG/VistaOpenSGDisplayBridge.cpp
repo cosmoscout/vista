@@ -1924,31 +1924,8 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 			
 			ViveViewportData* pViveData = Vista::assert_cast< ViveViewportData* >( pData );
 
-			// ovrHmd_BeginFrame( pViveData->m_pHmd, 0 );
-
-			// static VistaType::microtime nStartTime = VistaTimeUtils::GetStandardTimer().GetMicroTime();
-			// if( nStartTime > 0 && VistaTimeUtils::GetStandardTimer().GetMicroTime() - nStartTime > .1f )
-			// {
-			// 	nStartTime = 0;
-			// 	// ovrHmd_DismissHSWDisplay( pViveData->m_pHmd );
-			// }
-
-			// ovrVector3f a2v3HmdToEyeViewOffset[2] = { pViveData->m_apRenderDescs[0].HmdToEyeViewOffset,
-			// 											pViveData->m_apRenderDescs[1].HmdToEyeViewOffset };
-			// ovrPosef a2EyeRenderPose[2]; 
-			// ovrHmd_GetEyePoses( pViveData->m_pHmd, 0, a2v3HmdToEyeViewOffset, a2EyeRenderPose, &pViveData->m_oTrackingState );
-			
 			VistaDisplaySystem::VistaDisplaySystemProperties* pProps = pViewport->GetDisplaySystem()->GetDisplaySystemProperties();
 
-			// calculate and set the head pose and eye offset accordingly
-			// @IMGTODO: hack - this is definitely not the right way to do it...
-			// VistaVector3D v3HeadPosition( pViveData->m_oTrackingState.HeadPose.ThePose.Position.x,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Position.y,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Position.z );
-			// VistaQuaternion qHeadOrientation( pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.x,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.y,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.z,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.w );
 			vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
 		    vr::HmdMatrix34_t pose;
 		    auto posesError = vr::VRCompositor()->WaitGetPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
@@ -1976,63 +1953,13 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 
 		    vr::HmdMatrix34_t left_eye = pViveData->m_pVRSystem->GetEyeToHeadTransform(vr::EVREye::Eye_Left);
     		vr::HmdMatrix34_t right_eye = pViveData->m_pVRSystem->GetEyeToHeadTransform(vr::EVREye::Eye_Right);
-    		// float standard_horizontal_eye_offset_left = std::fabs(left_eye.m[0][3]) + std::fabs(right_eye.m[0][3])/-2.0;
-    		// float standard_horizontal_eye_offset_right = std::fabs(left_eye.m[0][3]) + std::fabs(right_eye.m[0][3])/2.0;
-
-
-			// calculate eye offsets
-			// VistaQuaternion qInverseHeadOri = qHeadOrientation.GetInverted();
-			// VistaVector3D v3LeftEyeOffset( a2EyeRenderPose[0].Position.x, a2EyeRenderPose[0].Position.y, a2EyeRenderPose[0].Position.z );
-			// v3LeftEyeOffset -= v3HeadPosition;
-			// v3LeftEyeOffset = qInverseHeadOri.Rotate( v3LeftEyeOffset );
-			// VistaVector3D v3RightEyeOffset( a2EyeRenderPose[1].Position.x, a2EyeRenderPose[1].Position.y, a2EyeRenderPose[1].Position.z );
-			// v3RightEyeOffset -= v3HeadPosition;
-			// v3RightEyeOffset = qInverseHeadOri.Rotate( v3RightEyeOffset );
-
-			// @IMGTODO hacky
-			// static VistaQuaternion qOffset;
-			// static VistaVector3D v3Offset;
-			// if( m_bOculusOffsetPositionRequiresInitialization )
-			// {
-			// 	VistaVirtualPlatform* pPlatform = pViewport->GetDisplaySystem()->GetReferenceFrame();
-			// 	VistaTransformMatrix matInvNavTrans = pPlatform->GetMatrixInverse();
-			// 	v3Offset = matInvNavTrans.Transform( pProps->GetViewerPosition() ); // what we should be
-
-			// }
-			// if( m_bOculusOffsetOrientationRequiresInitialization )
-			// {
-			// 	VistaVirtualPlatform* pPlatform = pViewport->GetDisplaySystem()->GetReferenceFrame();
-			// 	VistaTransformMatrix matInvNavTrans = pPlatform->GetMatrixInverse();
-			// 	qOffset = matInvNavTrans.Transform( pProps->GetViewerOrientation() ); // what we should be
-			// }
-			// qHeadOrientation = qOffset * qHeadOrientation;
-			// v3HeadPosition = qOffset.Rotate( v3HeadPosition ) + v3Offset;
-
-			// pProps->SetViewerPosition( v3HeadPosition );
-			// pProps->SetViewerOrientation( qHeadOrientation );
-			// pProps->SetLeftEyeOffset( v3LeftEyeOffset[0], v3LeftEyeOffset[1], v3LeftEyeOffset[2] );
-			// pProps->SetRightEyeOffset( v3RightEyeOffset[0], v3RightEyeOffset[1], v3RightEyeOffset[2] );
-
-    		VistaVector3D v3HeadPosition(pose.m[0][3], pose.m[1][3], pose.m[2][3]); // ?????
+    		VistaVector3D v3HeadPosition(pose.m[0][3], pose.m[1][3], pose.m[2][3]);
 			VistaQuaternion qHeadOrientation(orientation.GetRotationAsQuaternion());
-			// VistaQuaternion qInverseHeadOri(qHeadOrientation.GetInverted());
-			// VistaVector3D v3LeftEyeOffset( ... );// + vertical offset + eye_to_screen_disctance ????
-			// v3LeftEyeOffset -= v3HeadPosition;
-			// v3LeftEyeOffset = qInverseHeadOri.Rotate( v3LeftEyeOffset );
-			// VistaVector3D v3RightEyeOffset( ... );// + vertical offset + eye_to_screen_disctance ????
-			// v3RightEyeOffset -= v3HeadPosition;
-			// v3RightEyeOffset = qInverseHeadOri.Rotate( v3RightEyeOffset );
 
 			pProps->SetViewerPosition(v3HeadPosition);
 			pProps->SetViewerOrientation(qHeadOrientation);
 			pProps->SetLeftEyeOffset(left_eye.m[0][3],left_eye.m[1][3],left_eye.m[2][3]); // ????
 			pProps->SetRightEyeOffset(right_eye.m[0][3],right_eye.m[1][3],right_eye.m[2][3]); // ???
-
-			// m_bOculusOffsetPositionRequiresInitialization = false;
-			// m_bOculusOffsetOrientationRequiresInitialization = false;
-
-			
-			// what is doing this code?????:
 
 			// matrix cameras ignore beacons, so we have to set the modelview explicitely
 			osg::NodePtr pLeftBeacon = pViveData->m_pLeftCamera->getBeacon();
@@ -2042,7 +1969,6 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 			pViveData->m_pLeftCamera->setModelviewMatrix( matLeftModelview );
 			endEditCP( pViveData->m_pLeftCamera );
 
-			// TODO: SEG FAULT????
 			osg::NodePtr pRightBeacon = pViveData->m_pRightCamera->getBeacon();
 			osg::Matrix matRightModelview( pRightBeacon->getToWorld() );
 			matRightModelview.invert();
@@ -2067,8 +1993,6 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 			else
 				pSecondaryViewport->render( m_pRenderAction );
 			pViveData->UnbindRenderTargets(1);
-
-			// ovrHmd_EndFrame( pViveData->m_pHmd, a2EyeRenderPose, &pViveData->m_aTextures[0].Texture );
 
 			vr::Texture_t leftEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[0]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
 			auto submitError = vr::VRCompositor()->Submit(vr::Eye_Left,&leftEyeTexture);
