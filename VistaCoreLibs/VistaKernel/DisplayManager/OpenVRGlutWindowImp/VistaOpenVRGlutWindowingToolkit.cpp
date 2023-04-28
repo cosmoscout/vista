@@ -43,7 +43,6 @@
 /*============================================================================*/
 VistaOpenVRGlutWindowingToolkit::VistaOpenVRGlutWindowingToolkit()
 : VistaGlutWindowingToolkit()
-// , m_pData( new Internal() )
 , m_pVRSystem(nullptr)
 {
 	if(!vr::VR_IsHmdPresent()){
@@ -93,7 +92,7 @@ bool VistaOpenVRGlutWindowingToolkit::InitWindow( VistaWindow* pWindow )
 void VistaOpenVRGlutWindowingToolkit::DisplayWindow( const VistaWindow* pWindow )
 {
 	VistaGlutWindowingToolkit::DisplayWindow( pWindow );
-	//vr::VRCompositor()->PostPresentHandoff();
+	vr::VRCompositor()->PostPresentHandoff();
 }
 
 vr::IVRSystem* VistaOpenVRGlutWindowingToolkit::GetVRSystem()
