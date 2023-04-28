@@ -2008,6 +2008,17 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 
 			glFlush();
 
+			// Show left eye in mirror window.
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, pOpenVRData->m_nFBOId[0]);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+			int nSizeX, nSizeY, nPosX, nPosY, nWinSizeX, nWinSizeY;
+			pViewport->GetViewportProperties()->GetSize( nSizeX, nSizeY );
+			pViewport->GetViewportProperties()->GetPosition( nPosX, nPosY );
+			pViewport->GetWindow()->GetWindowProperties()->GetSize( nWinSizeX, nWinSizeY );	
+
+			glBlitFramebuffer(nPosX, nPosY, nSizeX, nSizeY, 0, 0, nWinSizeX, nWinSizeY, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
 #else
 			VISTA_THROW( "OpenVR-based rendering requested, but VistaKernel was not build with OculusSDK support", -1 );
 #endif			
