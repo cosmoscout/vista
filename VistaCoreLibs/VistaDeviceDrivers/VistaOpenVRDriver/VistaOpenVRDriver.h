@@ -19,58 +19,104 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 /*                                Contributors                                */
-/*                                                                            */
+/*                                 DLR/utzi_se                                */
 /*============================================================================*/
-// $Id: VistaGlutWindowingToolkit.h 42018 2014-05-16 12:11:52Z dr165799 $
 
-#ifndef _VISTAVIVEGLUTWINDOWINGTOOLKIT_H
-#define _VISTAVIVEGLUTWINDOWINGTOOLKIT_H
+
+#ifndef __VISTAOPENVRDRIVERDRIVER_H
+#define __VISTAOPENVRDRIVERDRIVER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
-
-#include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
-    
-#include <openvr/openvr.h>
-#include <openvr/openvr_capi.h>
+#include "VistaOpenVRDriverConfig.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
+// Shared library support
 
+//Windows DLL build
+#if defined(WIN32) && !defined(VISTAOPENVR_STATIC) 
+#ifdef VISTAOPENVR_EXPORTS
+#define VISTAOPENVRDRIVERAPI __declspec(dllexport)
+#else
+#define VISTAOPENVRDRIVERAPI __declspec(dllimport)
+#endif
+#else // no Windows or static build
+#define VISTAOPENVRDRIVERAPI
+#endif
+
+/*
+#ifdef WIN32
+#define VISTAOPENVRDRIVEREXPORT __declspec(dllexport)
+#define VISTAOPENVRDRIVERIMPORT __declspec(dllimport)
+#define VISTAOPENVRDRIVER_EXPLICIT_TEMPLATE_EXPORT
+#define VISTAOPENVRDRIVER_EXPLICIT_TEMPLATE_IMPORT
+#else
+#define VISTAOPENVRDRIVEREXPORT
+#define VISTAOPENVRDRIVERIMPORT
+#endif
+
+// Define VISTAOPENVRDRIVERAPI for DLL builds
+#ifdef VISTAOPENVRDRIVERDLL
+#ifdef VISTAOPENVRDRIVERDLL_EXPORTS
+#define VISTAOPENVRDRIVERAPI VISTAOPENVRDRIVEREXPORT
+#define VISTAOPENVRDRIVER_EXPLICIT_TEMPLATE
+#else
+#define VISTAOPENVRDRIVERAPI VISTAOPENVRDRIVERIMPORT
+#define VISTAOPENVRDRIVER_EXPLICIT_TEMPLATE extern
+#endif
+#else
+#define VISTAOPENVRDRIVERAPI
+#endif
+*/
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
+namespace vr{
+	class IVRSystem;
+}
+class VistaDriverThreadAspect;
+
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
+
 /**
- * Oculus Window extensions around the Glut windowing toolkit
+ * this is a driver for transmitting OpenVR tracking data provided by openVR.
+ *
  */
-class VISTAKERNELAPI VistaViveGlutWindowingToolkit : public VistaGlutWindowingToolkit
+class VISTAOPENVRDRIVERAPI VistaOpenVRDriver : public IVistaDeviceDriver
 {
 public:
-	VistaViveGlutWindowingToolkit();
-	~VistaViveGlutWindowingToolkit();
+	VistaOpenVRDriver(IVistaDriverCreationMethod *crm);
+	virtual ~VistaOpenVRDriver();
 
-	virtual void DisplayWindow( const VistaWindow* pWindow );
+protected:
+	virtual bool PhysicalEnable(bool bEnabled);
+	virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-	virtual bool RegisterWindow( VistaWindow* pWindow );
-	
-	vr::IVRSystem* GetVRSystem();
-
-	virtual bool InitWindow( VistaWindow* pWindow );
+	bool DoConnect();
+	bool DoDisconnect();
 private:
-
 	vr::IVRSystem* m_pVRSystem;
-	// class Internal;
-	// Internal* m_pData;
+
+	VistaDriverThreadAspect *m_pThread;
+
+	bool UpdateStickSensor( VistaType::microtime dTs);
+	bool UpdateHeadSensor( VistaType::microtime dTs);
+
 };
+
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-#endif // _VISTAOCULUSGLUTWINDOWINGTOOLKIT_H
+
+/*============================================================================*/
+/* END OF FILE                                                                */
+/*============================================================================*/
+#endif //__VISTAOPENVRDRIVERDRIVER_H

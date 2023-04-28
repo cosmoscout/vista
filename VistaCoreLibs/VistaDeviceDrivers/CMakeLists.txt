@@ -39,5 +39,5 @@ if( UNIX )
 elseif( WIN32 )
 	vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_DIRECTXGAMEPAD	VistaDirectXGamepadDriver	 	OFF )
 	
-	vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_VIVE	VistaViveDriver	 	OFF )
+	vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_OPENVR	VistaOpenVRDriver	 	OFF )
 endif( UNIX )

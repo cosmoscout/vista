@@ -21,90 +21,74 @@
 /*                                Contributors                                */
 /*                                                                            */
 /*============================================================================*/
-// $Id: VistaGlutWindowingToolkit.cpp 42600 2014-06-18 19:23:49Z dr165799 $
+
+
+#ifndef __VISTAOPENVRDRIVERCONFIG_H
+#define __VISTAOPENVRDRIVERCONFIG_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include "VistaViveGlutWindowingToolkit.h"
+#include <VistaBase/VistaQuaternion.h>
+#include <VistaBase/VistaTransformMatrix.h>
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
+
+#if defined(WIN32)
+#pragma warning (disable: 4786)
 #endif
-#include "VistaBase/VistaTimeUtils.h"
-#include "GL/glut.h"
-#include "../VistaViewport.h"
-
-/*============================================================================*/
-/* CONSTRUCTORS / DESTRUCTOR                                                  */
-/*============================================================================*/
-VistaViveGlutWindowingToolkit::VistaViveGlutWindowingToolkit()
-: VistaGlutWindowingToolkit()
-// , m_pData( new Internal() )
-, m_pVRSystem(nullptr)
-{
-	if(!vr::VR_IsHmdPresent()){
-		vstr::errp()<<"Error: No Vive HMD present while constructing VistaViveGlutWindowingToolkit!\n";
-	}
-
-	vr::EVRInitError eError = vr::VRInitError_None;
-	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
-
-	if(eError!=0){
-		vstr::errp()<<"Error while connecting to Vive API in VistaViveGlutWindowingToolkit ctor: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
-	}
-
-	if ( !vr::VRCompositor() )
-	{
-		vstr::errp()<<"Error: Vive compositor initialization failed in VistaViveGlutWindowingToolkit ctor!\n";
-	}
-}
-
-VistaViveGlutWindowingToolkit::~VistaViveGlutWindowingToolkit()
-{
-	vr::VR_Shutdown();
-}
-
-bool VistaViveGlutWindowingToolkit::RegisterWindow( VistaWindow* pWindow )
-{
-	bool bSuccess = VistaGlutWindowingToolkit::RegisterWindow( pWindow );
-
-	uint32_t width, height;
-	m_pVRSystem->GetRecommendedRenderTargetSize(&width, &height);
-	pWindow->GetWindowProperties()->SetSize( width, height );	
-
-	return bSuccess;
-}
-
-bool VistaViveGlutWindowingToolkit::InitWindow( VistaWindow* pWindow )
-{
-	if(!VistaGlutWindowingToolkit::InitWindow(pWindow)) {
-		vstr::errp()<<"Couldn't initialize Window for a Vive application." << std::endl;
-		return false;
-    }
-
-	BindWindow( pWindow );
-
-	return true;
-}
-void VistaViveGlutWindowingToolkit::DisplayWindow( const VistaWindow* pWindow )
-{
-	VistaGlutWindowingToolkit::DisplayWindow( pWindow );
-	//vr::VRCompositor()->PostPresentHandoff();
-}
-
-vr::IVRSystem* VistaViveGlutWindowingToolkit::GetVRSystem()
-{
-	return m_pVRSystem;
-}
-
 
 
 /*============================================================================*/
-/* IMPLEMENTATION                                                             */
+/* MACROS AND DEFINES                                                         */
 /*============================================================================*/
+
+/*============================================================================*/
+/* LOCAL VARS AND FUNCS                                                       */
+/*============================================================================*/
+
+
+// Single marker data (3DOF):
+namespace VistaOpenVRConfig
+{
+	struct VISTA_openvr_stick_type{
+
+		float loc[3];
+		float rot[9];
+		VistaQuaternion orientation;
+		VistaTransformMatrix pose;
+		
+		bool grip_pressed;
+		
+		bool trackpad_pressed;
+		bool trackpad_touched;
+		float trackpad_x;
+		float trackpad_y;
+		
+		bool trigger_pressed;
+		bool trigger_touched;
+		float trigger_x;
+		
+		bool button_system_pressed;
+		bool button_menu_pressed;
+		bool button_a_pressed;
+	};
+
+	struct VISTA_openvr_head_type{
+
+		float loc[3];
+		float rot[9];
+		VistaQuaternion orientation;
+		VistaTransformMatrix pose;
+	};
+}
+
+/*============================================================================*/
+/* END OF FILE                                                                */
+/*============================================================================*/
+#endif //__VISTAOPENVRDRIVERCONFIG_H
+
+
+
 
 
