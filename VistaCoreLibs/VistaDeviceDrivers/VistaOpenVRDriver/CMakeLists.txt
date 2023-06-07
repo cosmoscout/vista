@@ -1,5 +1,5 @@
-
-vista_find_package( OPENVR QUIET )
+vista_use_package( OpenVR REQUIRED 0.5  )
+add_definitions( -DVISTA_WITH_OPENVR )
 	 
 #Transcoder
 SET (dirFiles_transcoder

@@ -571,7 +571,7 @@ namespace
 }
 
 
-#ifdef VistaOpenVRDriverTranscoder_EXPORTS
+#ifdef VISTAOPENVRDRIVERTRANSCODER_EXPORTS
 DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaOpenVRDriverTranscoderFactoryFactory )
 #else
 DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaOpenVRDriverTranscoderFactoryFactory )
