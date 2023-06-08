@@ -21,73 +21,89 @@
 /*                                Contributors                                */
 /*                                                                            */
 /*============================================================================*/
-
-
-#ifndef __VISTAVIVEDRIVERCONFIG_H
-#define __VISTAVIVEDRIVERCONFIG_H
+// $Id: VistaGlutWindowingToolkit.cpp 42600 2014-06-18 19:23:49Z dr165799 $
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaBase/VistaQuaternion.h>
-#include <VistaBase/VistaTransformMatrix.h>
+#include "VistaOpenVRGlutWindowingToolkit.h"
 
-
-#if defined(WIN32)
-#pragma warning (disable: 4786)
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
 #endif
-
-
-/*============================================================================*/
-/* MACROS AND DEFINES                                                         */
-/*============================================================================*/
+#include "VistaBase/VistaTimeUtils.h"
+#include "GL/glut.h"
+#include "../VistaViewport.h"
 
 /*============================================================================*/
-/* LOCAL VARS AND FUNCS                                                       */
+/* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-
-
-// Single marker data (3DOF):
-namespace VistaViveConfig
+VistaOpenVRGlutWindowingToolkit::VistaOpenVRGlutWindowingToolkit()
+: VistaGlutWindowingToolkit()
+, m_pVRSystem(nullptr)
 {
-	struct VISTA_vive_stick_type{
+	if(!vr::VR_IsHmdPresent()){
+		vstr::errp()<<"Error: No OpenVR HMD present while constructing VistaOpenVRGlutWindowingToolkit!\n";
+	}
 
-		float loc[3];
-		float rot[9];
-		VistaQuaternion orientation;
-		VistaTransformMatrix pose;
-		
-		bool grip_pressed;
-		
-		bool trackpad_pressed;
-		bool trackpad_touched;
-		float trackpad_x;
-		float trackpad_y;
-		
-		bool trigger_pressed;
-		bool trigger_touched;
-		float trigger_x;
-		
-		bool button_system_pressed;
-		bool button_menu_pressed;
-	};
+	vr::EVRInitError eError = vr::VRInitError_None;
+	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
 
-	struct VISTA_vive_head_type{
+	if(eError!=0){
+		vstr::errp()<<"Error while connecting to OpenVR API in VistaOpenVRGlutWindowingToolkit ctor: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
+	}
 
-		float loc[3];
-		float rot[9];
-		VistaQuaternion orientation;
-		VistaTransformMatrix pose;
-	};
+	if ( !vr::VRCompositor() )
+	{
+		vstr::errp()<<"Error: OpenVR compositor initialization failed in VistaOpenVRGlutWindowingToolkit ctor!\n";
+	}
 }
 
+VistaOpenVRGlutWindowingToolkit::~VistaOpenVRGlutWindowingToolkit()
+{
+	vr::VR_Shutdown();
+}
+
+bool VistaOpenVRGlutWindowingToolkit::RegisterWindow( VistaWindow* pWindow )
+{
+	bool bSuccess = VistaGlutWindowingToolkit::RegisterWindow( pWindow );
+
+	uint32_t width, height;
+	m_pVRSystem->GetRecommendedRenderTargetSize(&width, &height);
+	pWindow->GetWindowProperties()->SetSize( width, height );	
+
+	return bSuccess;
+}
+
+bool VistaOpenVRGlutWindowingToolkit::InitWindow( VistaWindow* pWindow )
+{
+	if(!VistaGlutWindowingToolkit::InitWindow(pWindow)) {
+		vstr::errp()<<"Couldn't initialize Window for a OpenVR application." << std::endl;
+		return false;
+    }
+
+	BindWindow( pWindow );
+
+	return true;
+}
+void VistaOpenVRGlutWindowingToolkit::DisplayWindow( const VistaWindow* pWindow )
+{
+	VistaGlutWindowingToolkit::DisplayWindow( pWindow );
+	vr::VRCompositor()->PostPresentHandoff();
+}
+
+vr::IVRSystem* VistaOpenVRGlutWindowingToolkit::GetVRSystem()
+{
+	return m_pVRSystem;
+}
+
+
+
 /*============================================================================*/
-/* END OF FILE                                                                */
+/* IMPLEMENTATION                                                             */
 /*============================================================================*/
-#endif //__VISTAVIVEDRIVERCONFIG_H
-
-
-
 
 

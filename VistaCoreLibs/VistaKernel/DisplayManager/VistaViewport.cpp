@@ -544,8 +544,8 @@ std::string VistaViewport::VistaViewportProperties::GetStringForViewportType( co
 			return "OCULUS_RIFT";
 		case VT_OCULUS_RIFT_CLONE:
 			return "OCULUS_RIFT_CLONE";
-		case VT_VIVE:
-			return "VIVE";
+		case VT_OPENVR:
+			return "OPENVR";
 		case VT_ANAGLYPH:
 			return "VT_ANAGLYPH";
 		case VT_ANAGLYPH_MONOCHROME:
@@ -594,9 +594,9 @@ VistaViewport::VistaViewportProperties::ViewportType VistaViewport::VistaViewpor
 	{
 		return VT_OCULUS_RIFT_CLONE;
 	}
-	else if( oCompare( sType, "VIVE" ))
+	else if( oCompare( sType, "OPENVR" ))
 	{
-		return VT_VIVE;
+		return VT_OPENVR;
 	}
 	else if( oCompare( sType, "ANAGLYPH" ) || oCompare( sType, "ANAGLYPHIC"  ) )
 	{

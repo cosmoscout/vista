@@ -19,104 +19,58 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 /*                                Contributors                                */
-/*                                 DLR/utzi_se                                */
+/*                                                                            */
 /*============================================================================*/
+// $Id: VistaGlutWindowingToolkit.h 42018 2014-05-16 12:11:52Z dr165799 $
 
-
-#ifndef __VISTAVIVEDRIVERDRIVER_H
-#define __VISTAVIVEDRIVERDRIVER_H
+#ifndef _VISTAOPENVRGLUTWINDOWINGTOOLKIT_H
+#define _VISTAOPENVRGLUTWINDOWINGTOOLKIT_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include "VistaViveDriverConfig.h"
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaKernel/VistaKernelConfig.h>
+
+#include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
+    
+#include <openvr/openvr.h>
+#include <openvr/openvr_capi.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-// Shared library support
 
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTAVIVE_STATIC) 
-#ifdef VISTAVIVE_EXPORTS
-#define VISTAVIVEDRIVERAPI __declspec(dllexport)
-#else
-#define VISTAVIVEDRIVERAPI __declspec(dllimport)
-#endif
-#else // no Windows or static build
-#define VISTAVIVEDRIVERAPI
-#endif
-
-/*
-#ifdef WIN32
-#define VISTAVIVEDRIVEREXPORT __declspec(dllexport)
-#define VISTAVIVEDRIVERIMPORT __declspec(dllimport)
-#define VISTAVIVEDRIVER_EXPLICIT_TEMPLATE_EXPORT
-#define VISTAVIVEDRIVER_EXPLICIT_TEMPLATE_IMPORT
-#else
-#define VISTAVIVEDRIVEREXPORT
-#define VISTAVIVEDRIVERIMPORT
-#endif
-
-// Define VISTAVIVEDRIVERAPI for DLL builds
-#ifdef VISTAVIVEDRIVERDLL
-#ifdef VISTAVIVEDRIVERDLL_EXPORTS
-#define VISTAVIVEDRIVERAPI VISTAVIVEDRIVEREXPORT
-#define VISTAVIVEDRIVER_EXPLICIT_TEMPLATE
-#else
-#define VISTAVIVEDRIVERAPI VISTAVIVEDRIVERIMPORT
-#define VISTAVIVEDRIVER_EXPLICIT_TEMPLATE extern
-#endif
-#else
-#define VISTAVIVEDRIVERAPI
-#endif
-*/
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-namespace vr{
-	class IVRSystem;
-}
-class VistaDriverThreadAspect;
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-
 /**
- * this is a driver for transmitting Vive tracking data provided by openVR.
- *
+ * OpenVR Window extensions around the Glut windowing toolkit
  */
-class VISTAVIVEDRIVERAPI VistaViveDriver : public IVistaDeviceDriver
+class VISTAKERNELAPI VistaOpenVRGlutWindowingToolkit : public VistaGlutWindowingToolkit
 {
 public:
-	VistaViveDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaViveDriver();
+	VistaOpenVRGlutWindowingToolkit();
+	~VistaOpenVRGlutWindowingToolkit();
 
-protected:
-	virtual bool PhysicalEnable(bool bEnabled);
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
+	virtual void DisplayWindow( const VistaWindow* pWindow );
 
-	bool DoConnect();
-	bool DoDisconnect();
+	virtual bool RegisterWindow( VistaWindow* pWindow );
+	
+	vr::IVRSystem* GetVRSystem();
+
+	virtual bool InitWindow( VistaWindow* pWindow );
 private:
+
 	vr::IVRSystem* m_pVRSystem;
-
-	VistaDriverThreadAspect *m_pThread;
-
-	bool UpdateStickSensor( VistaType::microtime dTs);
-	bool UpdateHeadSensor( VistaType::microtime dTs);
-
+	// class Internal;
+	// Internal* m_pData;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-/*============================================================================*/
-/* END OF FILE                                                                */
-/*============================================================================*/
-#endif //__VISTAVIVEDRIVERDRIVER_H
+#endif // _VISTAOCULUSGLUTWINDOWINGTOOLKIT_H

@@ -29,34 +29,34 @@
 
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include "VistaViveDriverConfig.h"
+#include "VistaOpenVRDriverConfig.h"
 
 namespace
 {
 
-	class VistaViveHeadTranscode : public IVistaMeasureTranscode
+	class VistaOpenVRHeadTranscode : public IVistaMeasureTranscode
 	{
 	public:
-		VistaViveHeadTranscode()
+		VistaOpenVRHeadTranscode()
 		{
 			m_nNumberOfScalars = 0;
 		}
 
-		static std::string GetTypeString() { return "VistaViveHeadTranscode"; }
-		REFL_INLINEIMP(VistaViveHeadTranscode, IVistaMeasureTranscode);
+		static std::string GetTypeString() { return "VistaOpenVRHeadTranscode"; }
+		REFL_INLINEIMP(VistaOpenVRHeadTranscode, IVistaMeasureTranscode);
 	};
 
-	class VistaViveHeadOrientationTranscode : public IVistaMeasureTranscode::QuatGet
+	class VistaOpenVRHeadOrientationTranscode : public IVistaMeasureTranscode::QuatGet
 	{
 	public:
-		VistaViveHeadOrientationTranscode()
+		VistaOpenVRHeadOrientationTranscode()
 			: IVistaMeasureTranscode::QuatGet("ORIENTATION",
-			VistaViveHeadTranscode::GetTypeString(),
-			"Vive head's 3D orientation") {}
+			VistaOpenVRHeadTranscode::GetTypeString(),
+			"OpenVR head's 3D orientation") {}
 
 		virtual VistaQuaternion    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_head_type *m = (VistaViveConfig::VISTA_vive_head_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_head_type *m = (VistaOpenVRConfig::VISTA_openvr_head_type*)&(*pMeasure).m_vecMeasures[0];
 			// VistaTransformMatrix mt (float(m->rot[0]), float(m->rot[3]), float(m->rot[6]), 0,
 			// 	float(m->rot[1]), float(m->rot[4]), float(m->rot[7]), 0,
 			// 	float(m->rot[2]), float(m->rot[5]), float(m->rot[8]), 0,
@@ -74,17 +74,17 @@ namespace
 		}
 	};
 
-	class VistaViveHeadPosTranscode : public IVistaMeasureTranscode::V3Get
+	class VistaOpenVRHeadPosTranscode : public IVistaMeasureTranscode::V3Get
 	{
 	public:
-		VistaViveHeadPosTranscode()
+		VistaOpenVRHeadPosTranscode()
 			: IVistaMeasureTranscode::V3Get("POSITION",
-			VistaViveHeadTranscode::GetTypeString(),
-			"Vive head's 3D position") {}
+			VistaOpenVRHeadTranscode::GetTypeString(),
+			"OpenVR head's 3D position") {}
 
 		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_head_type *m = (VistaViveConfig::VISTA_vive_head_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_head_type *m = (VistaOpenVRConfig::VISTA_openvr_head_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return VistaVector3D(
 				float( m->loc[0]),
@@ -99,17 +99,17 @@ namespace
 		}
 	};
 
-	class VistaViveHeadPoseTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< VistaTransformMatrix >
+	class VistaOpenVRHeadPoseTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< VistaTransformMatrix >
 	{
 	public:
-		VistaViveHeadPoseTranscode()
+		VistaOpenVRHeadPoseTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< VistaTransformMatrix >("POSE",
-			VistaViveHeadTranscode::GetTypeString(),
-			"Vive head's 3D pose") {}
+			VistaOpenVRHeadTranscode::GetTypeString(),
+			"OpenVR head's 3D pose") {}
 
 		virtual VistaTransformMatrix    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_head_type *m = (VistaViveConfig::VISTA_vive_head_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_head_type *m = (VistaOpenVRConfig::VISTA_openvr_head_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->pose;
 		}
@@ -121,29 +121,29 @@ namespace
 		}
 	};
 
-	class VistaViveStickTranscode : public IVistaMeasureTranscode
+	class VistaOpenVRStickTranscode : public IVistaMeasureTranscode
 	{
 	public:
-		VistaViveStickTranscode()
+		VistaOpenVRStickTranscode()
 		{
 			m_nNumberOfScalars = 0;
 		}
 
-		static std::string GetTypeString() { return "VistaViveStickTranscode"; }
-		REFL_INLINEIMP(VistaViveStickTranscode, IVistaMeasureTranscode);
+		static std::string GetTypeString() { return "VistaOpenVRStickTranscode"; }
+		REFL_INLINEIMP(VistaOpenVRStickTranscode, IVistaMeasureTranscode);
 	};
 
-	class VistaViveStickOrientationTranscode : public IVistaMeasureTranscode::QuatGet
+	class VistaOpenVRStickOrientationTranscode : public IVistaMeasureTranscode::QuatGet
 	{
 	public:
-		VistaViveStickOrientationTranscode()
+		VistaOpenVRStickOrientationTranscode()
 			: IVistaMeasureTranscode::QuatGet("ORIENTATION",
-			VistaViveStickTranscode::GetTypeString(),
-			"Vive stick's 3D orientation") {}
+			VistaOpenVRStickTranscode::GetTypeString(),
+			"OpenVR stick's 3D orientation") {}
 
 		virtual VistaQuaternion    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 			// VistaTransformMatrix mt (float(m->rot[0]), float(m->rot[3]), float(m->rot[6]), 0,
 			// 	float(m->rot[1]), float(m->rot[4]), float(m->rot[7]), 0,
 			// 	float(m->rot[2]), float(m->rot[5]), float(m->rot[8]), 0,
@@ -161,17 +161,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickPosTranscode : public IVistaMeasureTranscode::V3Get
+	class VistaOpenVRStickPosTranscode : public IVistaMeasureTranscode::V3Get
 	{
 	public:
-		VistaViveStickPosTranscode()
+		VistaOpenVRStickPosTranscode()
 			: IVistaMeasureTranscode::V3Get("POSITION",
-			VistaViveStickTranscode::GetTypeString(),
-			"Vive stick's 3D position") {}
+			VistaOpenVRStickTranscode::GetTypeString(),
+			"OpenVR stick's 3D position") {}
 
 		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return VistaVector3D(
 				float( m->loc[0]),
@@ -186,17 +186,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickPoseTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< VistaTransformMatrix >
+	class VistaOpenVRStickPoseTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< VistaTransformMatrix >
 	{
 	public:
-		VistaViveStickPoseTranscode()
+		VistaOpenVRStickPoseTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< VistaTransformMatrix >("POSE",
-			VistaViveStickTranscode::GetTypeString(),
-			"Vive stick's 3D pose") {}
+			VistaOpenVRStickTranscode::GetTypeString(),
+			"OpenVR stick's 3D pose") {}
 
 		virtual VistaTransformMatrix    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->pose;
 		}
@@ -208,17 +208,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickTriggerPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickTriggerPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickTriggerPressedTranscode()
+		VistaOpenVRStickTriggerPressedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("TRIGGER_PRESSED",
-			VistaViveStickTranscode::GetTypeString(),
-			"Vive stick's trigger button") {}
+			VistaOpenVRStickTranscode::GetTypeString(),
+			"OpenVR stick's trigger button") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->trigger_pressed;
 		}
@@ -230,17 +230,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickTriggerTouchedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickTriggerTouchedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickTriggerTouchedTranscode()
+		VistaOpenVRStickTriggerTouchedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("TRIGGER_TOUCHED",
-				VistaViveStickTranscode::GetTypeString(),
-				"Vive stick's trigger button") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"OpenVR stick's trigger button") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 			return m->trigger_touched;
 		}
 
@@ -251,17 +251,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickTriggerXTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< float >
+	class VistaOpenVRStickTriggerXTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< float >
 	{
 	public:
-		VistaViveStickTriggerXTranscode()
+		VistaOpenVRStickTriggerXTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< float >("TRIGGER_X",
-				VistaViveStickTranscode::GetTypeString(),
-				"vive stick trigger's x pos in comp (-1,1)") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"openvr stick trigger's x pos in comp (-1,1)") {}
 
 		virtual float GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->trackpad_x;
 		}
@@ -273,17 +273,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickGripPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickGripPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickGripPressedTranscode()
+		VistaOpenVRStickGripPressedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("GRIP_PRESSED",
-				VistaViveStickTranscode::GetTypeString(),
-				"Vive stick's grip button") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"OpenVR stick's grip button") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->grip_pressed;
 		}
@@ -295,18 +295,18 @@ namespace
 		}
 	};
 
-	class VistaViveStickTrackpadPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickTrackpadPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickTrackpadPressedTranscode()
+		VistaOpenVRStickTrackpadPressedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("TRACKPAD_PRESSED",
-			VistaViveStickTranscode::GetTypeString(),
-			"Vive stick's button trackpad") {}
+			VistaOpenVRStickTranscode::GetTypeString(),
+			"OpenVR stick's button trackpad") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
 			// maker and body structs have the same layout
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->trackpad_pressed;
 		}
@@ -318,18 +318,18 @@ namespace
 		}
 	};
 
-	class VistaViveStickTrackpadTouchedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickTrackpadTouchedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickTrackpadTouchedTranscode()
+		VistaOpenVRStickTrackpadTouchedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("TRACKPAD_TOUCHED",
-				VistaViveStickTranscode::GetTypeString(),
-				"Vive stick's button trackpad") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"OpenVR stick's button trackpad") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
 			// maker and body structs have the same layout
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->trackpad_touched;
 		}
@@ -341,17 +341,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickTrackpadAxesTranscode : public IVistaMeasureTranscode::V3Get
+	class VistaOpenVRStickTrackpadAxesTranscode : public IVistaMeasureTranscode::V3Get
 	{
 	public:
-		VistaViveStickTrackpadAxesTranscode()
+		VistaOpenVRStickTrackpadAxesTranscode()
 			: IVistaMeasureTranscode::V3Get("TRACKPADPAD_AXES",
-				VistaViveStickTranscode::GetTypeString(),
-				"vive stick trackpad's pos in comp (-1,1) -> (x,y)") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"openvr stick trackpad's pos in comp (-1,1) -> (x,y)") {}
 
 		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return VistaVector3D(m->trackpad_x, m->trackpad_y, 0);
 		}
@@ -363,17 +363,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickTrackpadXTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< float >
+	class VistaOpenVRStickTrackpadXTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< float >
 	{
 	public:
-		VistaViveStickTrackpadXTranscode()
+		VistaOpenVRStickTrackpadXTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< float >("TRACKPAD_X",
-				VistaViveStickTranscode::GetTypeString(),
-				"vive stick trackpad's x pos in comp (-1,1)") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"openvr stick trackpad's x pos in comp (-1,1)") {}
 
 		virtual float GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->trackpad_x;
 		}
@@ -385,17 +385,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickTrackpadYTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< float >
+	class VistaOpenVRStickTrackpadYTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< float >
 	{
 	public:
-		VistaViveStickTrackpadYTranscode()
+		VistaOpenVRStickTrackpadYTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< float >("TRACKPAD_Y",
-				VistaViveStickTranscode::GetTypeString(),
-				"vive stick trackpad's y pos in comp (-1,1)") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"openvr stick trackpad's y pos in comp (-1,1)") {}
 
 		virtual float GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->trackpad_y;
 		}
@@ -407,17 +407,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickSystemButtonPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickSystemButtonPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickSystemButtonPressedTranscode()
+		VistaOpenVRStickSystemButtonPressedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("BUTTON_SYSTEM_PRESSED",
-				VistaViveStickTranscode::GetTypeString(),
-				"Vive stick's system button") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"OpenVR stick's system button") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->button_system_pressed;
 		}
@@ -429,17 +429,17 @@ namespace
 		}
 	};
 
-	class VistaViveStickMenuButtonPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	class VistaOpenVRStickMenuButtonPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
 	{
 	public:
-		VistaViveStickMenuButtonPressedTranscode()
+		VistaOpenVRStickMenuButtonPressedTranscode()
 			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("BUTTON_MENU_PRESSED",
-				VistaViveStickTranscode::GetTypeString(),
-				"Vive stick's menu button") {}
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"OpenVR stick's menu button") {}
 
 		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
 		{
-			VistaViveConfig::VISTA_vive_stick_type *m = (VistaViveConfig::VISTA_vive_stick_type*)&(*pMeasure).m_vecMeasures[0];
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
 
 			return m->button_menu_pressed;
 		}
@@ -451,55 +451,78 @@ namespace
 		}
 	};
 
+	class VistaOpenVRStickButtonAPressedTranscode : public IVistaMeasureTranscode::TTranscodeValueGet< bool >
+	{
+	public:
+		VistaOpenVRStickButtonAPressedTranscode()
+			: IVistaMeasureTranscode::TTranscodeValueGet< bool >("BUTTON_A_PRESSED",
+				VistaOpenVRStickTranscode::GetTypeString(),
+				"OpenVR stick's A button") {}
+
+		virtual bool    GetValue(const VistaSensorMeasure *pMeasure)    const
+		{
+			VistaOpenVRConfig::VISTA_openvr_stick_type *m = (VistaOpenVRConfig::VISTA_openvr_stick_type*)&(*pMeasure).m_vecMeasures[0];
+
+			return m->button_a_pressed;
+		}
+
+		virtual bool GetValue(const VistaSensorMeasure *pMeasure, bool &bButton) const
+		{
+			bButton = GetValue(pMeasure);
+			return true;
+		}
+	};
+
 	IVistaPropertyGetFunctor *SapGetter[] =
 	{
-		new VistaViveHeadOrientationTranscode,
-		new VistaViveHeadPosTranscode,
-		new VistaViveHeadPoseTranscode,
-		new VistaViveStickOrientationTranscode,
-		new VistaViveStickPosTranscode,
-		new VistaViveStickPoseTranscode,
-		new VistaViveStickTriggerPressedTranscode,
-		new VistaViveStickTriggerTouchedTranscode,
-		new VistaViveStickTriggerXTranscode,
-		new VistaViveStickGripPressedTranscode,
-		new VistaViveStickTrackpadPressedTranscode,
-		new VistaViveStickTrackpadTouchedTranscode,
-		new VistaViveStickTrackpadAxesTranscode,
-		new VistaViveStickTrackpadXTranscode,
-		new VistaViveStickTrackpadYTranscode,
-		new VistaViveStickSystemButtonPressedTranscode,
-		new VistaViveStickMenuButtonPressedTranscode,
+		new VistaOpenVRHeadOrientationTranscode,
+		new VistaOpenVRHeadPosTranscode,
+		new VistaOpenVRHeadPoseTranscode,
+		new VistaOpenVRStickOrientationTranscode,
+		new VistaOpenVRStickPosTranscode,
+		new VistaOpenVRStickPoseTranscode,
+		new VistaOpenVRStickTriggerPressedTranscode,
+		new VistaOpenVRStickTriggerTouchedTranscode,
+		new VistaOpenVRStickTriggerXTranscode,
+		new VistaOpenVRStickGripPressedTranscode,
+		new VistaOpenVRStickTrackpadPressedTranscode,
+		new VistaOpenVRStickTrackpadTouchedTranscode,
+		new VistaOpenVRStickTrackpadAxesTranscode,
+		new VistaOpenVRStickTrackpadXTranscode,
+		new VistaOpenVRStickTrackpadYTranscode,
+		new VistaOpenVRStickSystemButtonPressedTranscode,
+		new VistaOpenVRStickMenuButtonPressedTranscode,
+		new VistaOpenVRStickButtonAPressedTranscode,
 		NULL
 	};
 
-	class VistaViveStickTranscodeFactory : public IVistaMeasureTranscoderFactory
+	class VistaOpenVRStickTranscodeFactory : public IVistaMeasureTranscoderFactory
 	{
 	public:
 		virtual IVistaMeasureTranscode *CreateTranscoder()
 		{
-			return new VistaViveStickTranscode;
+			return new VistaOpenVRStickTranscode;
 		}
 	};
 
-	class VistaViveHeadTranscodeFactory : public IVistaMeasureTranscoderFactory
+	class VistaOpenVRHeadTranscodeFactory : public IVistaMeasureTranscoderFactory
 	{
 	public:
 		virtual IVistaMeasureTranscode *CreateTranscoder()
 		{
-			return new VistaViveHeadTranscode;
+			return new VistaOpenVRHeadTranscode;
 		}
 	};
 
-	class VistaViveDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory
+	class VistaOpenVRDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory
 	{
 	public:
-		VistaViveDriverTranscoderFactoryFactory()
+		VistaOpenVRDriverTranscoderFactoryFactory()
 		{
 			CreateCreators(m_creators);
 		}
 
-		~VistaViveDriverTranscoderFactoryFactory()
+		~VistaOpenVRDriverTranscoderFactoryFactory()
 		{
 			CleanupCreators(m_creators);
 		}
@@ -510,8 +533,8 @@ namespace
 
 		static void CreateCreators(CRMAP &mp)
 		{
-			mp["STICK"]  = new TCreateTranscoder<VistaViveStickTranscode>;
-			mp["HEAD"]   = new TCreateTranscoder<VistaViveHeadTranscode>;
+			mp["STICK"]  = new TCreateTranscoder<VistaOpenVRStickTranscode>;
+			mp["HEAD"]   = new TCreateTranscoder<VistaOpenVRHeadTranscode>;
 		}
 
 		static void CleanupCreators( CRMAP &mp )
@@ -548,14 +571,14 @@ namespace
 }
 
 
-#ifdef VistaViveDriverTranscoder_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaViveDriverTranscoderFactoryFactory )
+#ifdef VISTAOPENVRDRIVERTRANSCODER_EXPORTS
+DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaOpenVRDriverTranscoderFactoryFactory )
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaViveDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaOpenVRDriverTranscoderFactoryFactory )
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
-IMPTRANSCODERPLUG_CLEANUP(VistaViveDriverTranscoderFactoryFactory)
+IMPTRANSCODERPLUG_CLEANUP(VistaOpenVRDriverTranscoderFactoryFactory)
 
 
 

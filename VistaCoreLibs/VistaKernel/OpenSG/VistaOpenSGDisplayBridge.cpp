@@ -92,10 +92,10 @@
 #include <OVR_CAPI_GL.h>
 #include "VistaKernel/DisplayManager/OculusGlutWindowImp/VistaOculusGlutWindowingToolkit.h"
 #endif
-#ifdef VISTA_WITH_VIVE
+#ifdef VISTA_WITH_OPENVR
 #include <openvr/openvr.h>
 #include <openvr/openvr_capi.h>
-#include "VistaKernel/DisplayManager/ViveGlutWindowImp/VistaViveGlutWindowingToolkit.h"
+#include "VistaKernel/DisplayManager/OpenVRGlutWindowImp/VistaOpenVRGlutWindowingToolkit.h"
 #endif
 #include "VistaAspects/VistaObserver.h"
 
@@ -198,14 +198,14 @@ namespace
 	};
 #endif
 
-#ifdef VISTA_WITH_VIVE
-	class ViveViewportData : public VistaOpenSGDisplayBridge::ViewportData
+#ifdef VISTA_WITH_OPENVR
+	class OpenVRViewportData : public VistaOpenSGDisplayBridge::ViewportData
 	{
 	public:
 		class ProjectionObserver : public IVistaObserver
 		{
 		public:
-			ProjectionObserver( ViveViewportData* pData ) : m_pData( pData ) {}
+			ProjectionObserver( OpenVRViewportData* pData ) : m_pData( pData ) {}
 
 			virtual void ObserverUpdate( IVistaObserveable* pObserveable, int nMsg, int nTicket )
 			{
@@ -217,13 +217,13 @@ namespace
 					double fFar = 0;
 					VistaProjection::VistaProjectionProperties* pProps = Vista::assert_cast< VistaProjection::VistaProjectionProperties* >( pObserveable );
 					pProps->GetClippingRange( fNear, fFar );
-					m_pData->UpdateViveProjection( (float)fNear, (float) fFar );
+					m_pData->UpdateOpenVRProjection( (float)fNear, (float) fFar );
 				}
 			}
-			ViveViewportData* m_pData;
+			OpenVRViewportData* m_pData;
 		};
 
-		ViveViewportData()
+		OpenVRViewportData()
 		: VistaOpenSGDisplayBridge::ViewportData()
 		, m_pVRSystem( NULL )
 		, m_pProjectionObserver( NULL )
@@ -231,12 +231,12 @@ namespace
 			m_pProjectionObserver = new ProjectionObserver( this );
 		}
 
-		~ViveViewportData()
+		~OpenVRViewportData()
 		{
 			delete m_pProjectionObserver;
 		}
 
-		void UpdateViveProjection( float fNear, float fFar )
+		void UpdateOpenVRProjection( float fNear, float fFar )
 		{
 			// ovrMatrix4f matLeftProjection = ovrMatrix4f_Projection( m_apRenderDescs[0].Fov, fNear, fFar, true );
 
@@ -252,13 +252,13 @@ namespace
 				}
 			}
 
-#ifdef VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+#ifdef VISTA_OPENVR_INFINITE_REVERSE_PROJECTION
                         // If a reverse infinite projection is used, we have to modify the projection matrix.
                         // See Equation (4) in https://dx.doi.org/10.18420/vrar2021_12
                         float n2 = 2.f * fNear;
                         matOSGProjection[2][2] = 1.f;
                         matOSGProjection[3][2] = n2;
-#endif // VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+#endif // VISTA_OPENVR_INFINITE_REVERSE_PROJECTION
 
 			beginEditCP( m_pLeftCamera );
 			m_pLeftCamera->setProjectionMatrix( matOSGProjection );
@@ -276,12 +276,12 @@ namespace
 				}
 			}
 
-#ifdef VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+#ifdef VISTA_OPENVR_INFINITE_REVERSE_PROJECTION
                         // If a reverse infinite projection is used, we have to modify the projection matrix.
                         // See Equation (4) in https://dx.doi.org/10.18420/vrar2021_12
                         matOSGProjection[2][2] = 1.f;
                         matOSGProjection[3][2] = n2;
-#endif // VISTA_VIVE_INFINITE_REVERSE_PROJECTION
+#endif // VISTA_OPENVR_INFINITE_REVERSE_PROJECTION
 
 			beginEditCP( m_pRightCamera );
 			m_pRightCamera->setProjectionMatrix( matOSGProjection );
@@ -1918,174 +1918,109 @@ bool VistaOpenSGDisplayBridge::RenderViewport(VistaViewport* pViewport)
 #endif
 		}
 
-		case VistaViewport::VistaViewportProperties::VT_VIVE:
+		case VistaViewport::VistaViewportProperties::VT_OPENVR:
 		{
-#ifdef VISTA_WITH_VIVE
+#ifdef VISTA_WITH_OPENVR
 			
-			ViveViewportData* pViveData = Vista::assert_cast< ViveViewportData* >( pData );
-
-			// ovrHmd_BeginFrame( pViveData->m_pHmd, 0 );
-
-			// static VistaType::microtime nStartTime = VistaTimeUtils::GetStandardTimer().GetMicroTime();
-			// if( nStartTime > 0 && VistaTimeUtils::GetStandardTimer().GetMicroTime() - nStartTime > .1f )
-			// {
-			// 	nStartTime = 0;
-			// 	// ovrHmd_DismissHSWDisplay( pViveData->m_pHmd );
-			// }
-
-			// ovrVector3f a2v3HmdToEyeViewOffset[2] = { pViveData->m_apRenderDescs[0].HmdToEyeViewOffset,
-			// 											pViveData->m_apRenderDescs[1].HmdToEyeViewOffset };
-			// ovrPosef a2EyeRenderPose[2]; 
-			// ovrHmd_GetEyePoses( pViveData->m_pHmd, 0, a2v3HmdToEyeViewOffset, a2EyeRenderPose, &pViveData->m_oTrackingState );
+			OpenVRViewportData* pOpenVRData = Vista::assert_cast< OpenVRViewportData* >( pData );
 			
 			VistaDisplaySystem::VistaDisplaySystemProperties* pProps = pViewport->GetDisplaySystem()->GetDisplaySystemProperties();
 
-			// calculate and set the head pose and eye offset accordingly
-			// @IMGTODO: hack - this is definitely not the right way to do it...
-			// VistaVector3D v3HeadPosition( pViveData->m_oTrackingState.HeadPose.ThePose.Position.x,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Position.y,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Position.z );
-			// VistaQuaternion qHeadOrientation( pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.x,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.y,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.z,
-			// 							pViveData->m_oTrackingState.HeadPose.ThePose.Orientation.w );
 			vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
-		    vr::HmdMatrix34_t pose;
-		    auto posesError = vr::VRCompositor()->WaitGetPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
-                    if (posesError != vr::VRCompositorError_None) {
-                      vstr::errp()<<"Error while trying to get poses: " << posesError << std::endl;
-                    }
+			vr::HmdMatrix34_t pose;
+			auto posesError = vr::VRCompositor()->WaitGetPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+			if (posesError != vr::VRCompositorError_None) {
+				vstr::errp()<<"Error while trying to get poses: " << posesError << std::endl;
+			}
 
-                    for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
-		        if (devices[i].bPoseIsValid) {
-		            if (pViveData->m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_HMD) {
-		                pose = devices[i].mDeviceToAbsoluteTracking;
-		                break;
-		            }
-		        }
-		    }
+			for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
+				if (devices[i].bPoseIsValid) {
+					if (pOpenVRData->m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_HMD) {
+						pose = devices[i].mDeviceToAbsoluteTracking;
+						break;
+					}
+				}
+			}
 
-		    VistaTransformMatrix orientation( // column or row major????
-		    	pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0,
-		        pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
-		        pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0,
-		        pose.m[0][3], pose.m[1][3], pose.m[2][3], 1.0
-		    );
+			VistaTransformMatrix orientation(
+				pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0,
+				pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
+				pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0,
+				pose.m[0][3], pose.m[1][3], pose.m[2][3], 1.0
+			);
 
-		    orientation = orientation.GetInverted();
+			orientation = orientation.GetInverted();
 
-		    vr::HmdMatrix34_t left_eye = pViveData->m_pVRSystem->GetEyeToHeadTransform(vr::EVREye::Eye_Left);
-    		vr::HmdMatrix34_t right_eye = pViveData->m_pVRSystem->GetEyeToHeadTransform(vr::EVREye::Eye_Right);
-    		// float standard_horizontal_eye_offset_left = std::fabs(left_eye.m[0][3]) + std::fabs(right_eye.m[0][3])/-2.0;
-    		// float standard_horizontal_eye_offset_right = std::fabs(left_eye.m[0][3]) + std::fabs(right_eye.m[0][3])/2.0;
-
-
-			// calculate eye offsets
-			// VistaQuaternion qInverseHeadOri = qHeadOrientation.GetInverted();
-			// VistaVector3D v3LeftEyeOffset( a2EyeRenderPose[0].Position.x, a2EyeRenderPose[0].Position.y, a2EyeRenderPose[0].Position.z );
-			// v3LeftEyeOffset -= v3HeadPosition;
-			// v3LeftEyeOffset = qInverseHeadOri.Rotate( v3LeftEyeOffset );
-			// VistaVector3D v3RightEyeOffset( a2EyeRenderPose[1].Position.x, a2EyeRenderPose[1].Position.y, a2EyeRenderPose[1].Position.z );
-			// v3RightEyeOffset -= v3HeadPosition;
-			// v3RightEyeOffset = qInverseHeadOri.Rotate( v3RightEyeOffset );
-
-			// @IMGTODO hacky
-			// static VistaQuaternion qOffset;
-			// static VistaVector3D v3Offset;
-			// if( m_bOculusOffsetPositionRequiresInitialization )
-			// {
-			// 	VistaVirtualPlatform* pPlatform = pViewport->GetDisplaySystem()->GetReferenceFrame();
-			// 	VistaTransformMatrix matInvNavTrans = pPlatform->GetMatrixInverse();
-			// 	v3Offset = matInvNavTrans.Transform( pProps->GetViewerPosition() ); // what we should be
-
-			// }
-			// if( m_bOculusOffsetOrientationRequiresInitialization )
-			// {
-			// 	VistaVirtualPlatform* pPlatform = pViewport->GetDisplaySystem()->GetReferenceFrame();
-			// 	VistaTransformMatrix matInvNavTrans = pPlatform->GetMatrixInverse();
-			// 	qOffset = matInvNavTrans.Transform( pProps->GetViewerOrientation() ); // what we should be
-			// }
-			// qHeadOrientation = qOffset * qHeadOrientation;
-			// v3HeadPosition = qOffset.Rotate( v3HeadPosition ) + v3Offset;
-
-			// pProps->SetViewerPosition( v3HeadPosition );
-			// pProps->SetViewerOrientation( qHeadOrientation );
-			// pProps->SetLeftEyeOffset( v3LeftEyeOffset[0], v3LeftEyeOffset[1], v3LeftEyeOffset[2] );
-			// pProps->SetRightEyeOffset( v3RightEyeOffset[0], v3RightEyeOffset[1], v3RightEyeOffset[2] );
-
-    		VistaVector3D v3HeadPosition(pose.m[0][3], pose.m[1][3], pose.m[2][3]); // ?????
+			vr::HmdMatrix34_t left_eye = pOpenVRData->m_pVRSystem->GetEyeToHeadTransform(vr::EVREye::Eye_Left);
+			vr::HmdMatrix34_t right_eye = pOpenVRData->m_pVRSystem->GetEyeToHeadTransform(vr::EVREye::Eye_Right);
+			VistaVector3D v3HeadPosition(pose.m[0][3], pose.m[1][3], pose.m[2][3]);
 			VistaQuaternion qHeadOrientation(orientation.GetRotationAsQuaternion());
-			// VistaQuaternion qInverseHeadOri(qHeadOrientation.GetInverted());
-			// VistaVector3D v3LeftEyeOffset( ... );// + vertical offset + eye_to_screen_disctance ????
-			// v3LeftEyeOffset -= v3HeadPosition;
-			// v3LeftEyeOffset = qInverseHeadOri.Rotate( v3LeftEyeOffset );
-			// VistaVector3D v3RightEyeOffset( ... );// + vertical offset + eye_to_screen_disctance ????
-			// v3RightEyeOffset -= v3HeadPosition;
-			// v3RightEyeOffset = qInverseHeadOri.Rotate( v3RightEyeOffset );
 
 			pProps->SetViewerPosition(v3HeadPosition);
 			pProps->SetViewerOrientation(qHeadOrientation);
-			pProps->SetLeftEyeOffset(left_eye.m[0][3],left_eye.m[1][3],left_eye.m[2][3]); // ????
-			pProps->SetRightEyeOffset(right_eye.m[0][3],right_eye.m[1][3],right_eye.m[2][3]); // ???
-
-			// m_bOculusOffsetPositionRequiresInitialization = false;
-			// m_bOculusOffsetOrientationRequiresInitialization = false;
-
-			
-			// what is doing this code?????:
+			pProps->SetLeftEyeOffset(left_eye.m[0][3],left_eye.m[1][3],left_eye.m[2][3]);
+			pProps->SetRightEyeOffset(right_eye.m[0][3],right_eye.m[1][3],right_eye.m[2][3]);
 
 			// matrix cameras ignore beacons, so we have to set the modelview explicitely
-			osg::NodePtr pLeftBeacon = pViveData->m_pLeftCamera->getBeacon();
+			osg::NodePtr pLeftBeacon = pOpenVRData->m_pLeftCamera->getBeacon();
 			osg::Matrix matLeftModelview( pLeftBeacon->getToWorld() );
 			matLeftModelview.invert();
-			beginEditCP( pViveData->m_pLeftCamera );
-			pViveData->m_pLeftCamera->setModelviewMatrix( matLeftModelview );
-			endEditCP( pViveData->m_pLeftCamera );
+			beginEditCP( pOpenVRData->m_pLeftCamera );
+			pOpenVRData->m_pLeftCamera->setModelviewMatrix( matLeftModelview );
+			endEditCP( pOpenVRData->m_pLeftCamera );
 
-			// TODO: SEG FAULT????
-			osg::NodePtr pRightBeacon = pViveData->m_pRightCamera->getBeacon();
+			osg::NodePtr pRightBeacon = pOpenVRData->m_pRightCamera->getBeacon();
 			osg::Matrix matRightModelview( pRightBeacon->getToWorld() );
 			matRightModelview.invert();
-			beginEditCP( pViveData->m_pRightCamera );
-			pViveData->m_pRightCamera->setModelviewMatrix( matRightModelview );
-			endEditCP( pViveData->m_pRightCamera );
-		
+			beginEditCP( pOpenVRData->m_pRightCamera );
+			pOpenVRData->m_pRightCamera->setModelviewMatrix( matRightModelview );
+			endEditCP( pOpenVRData->m_pRightCamera );
+
 			assert( pMainViewport );
-			pViveData->BindRenderTargets( 0 );
+			pOpenVRData->BindRenderTargets( 0 );
 			FillRenderInfo( pViewport, pMainViewport, VistaDisplayManager::RenderInfo::ERM_LEFT );
 			if( pCustomRender )
 				pCustomRender->DoRender( pData, false );
 			else
 				pMainViewport->render( m_pRenderAction );
-			pViveData->UnbindRenderTargets( 0 );
+			pOpenVRData->UnbindRenderTargets( 0 );
 
 			assert( pSecondaryViewport );
 			FillRenderInfo( pViewport, pMainViewport, VistaDisplayManager::RenderInfo::ERM_RIGHT );
-			pViveData->BindRenderTargets(1);
+			pOpenVRData->BindRenderTargets(1);
 			if( pCustomRender )
 				pCustomRender->DoRender( pData, true );
 			else
 				pSecondaryViewport->render( m_pRenderAction );
-			pViveData->UnbindRenderTargets(1);
+			pOpenVRData->UnbindRenderTargets(1);
 
-			// ovrHmd_EndFrame( pViveData->m_pHmd, a2EyeRenderPose, &pViveData->m_aTextures[0].Texture );
-
-			vr::Texture_t leftEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[0]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
+			vr::Texture_t leftEyeTexture{ (void*)(pOpenVRData->m_pWriteTextureTarget[0]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
 			auto submitError = vr::VRCompositor()->Submit(vr::Eye_Left,&leftEyeTexture);
 			if (submitError != vr::VRCompositorError_None) {
 				vstr::errp()<<"Error while submitting left eye texture: " << submitError << std::endl;
 			}
 
-			vr::Texture_t rightEyeTexture{ (void*)(pViveData->m_pWriteTextureTarget[1]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
+			vr::Texture_t rightEyeTexture{ (void*)(pOpenVRData->m_pWriteTextureTarget[1]->GetGLId()), vr::ETextureType::TextureType_OpenGL, vr::ColorSpace_Gamma };
 			submitError = vr::VRCompositor()->Submit(vr::Eye_Right,&rightEyeTexture);
 			if (submitError != vr::VRCompositorError_None) {
 				vstr::errp()<<"Error while submitting right eye texture: " << submitError << std::endl;
-                	}
+			}
 
-			glFinish();
+			glFlush();
+
+			// Show left eye in mirror window.
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, pOpenVRData->m_nFBOId[0]);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+			int nSizeX, nSizeY, nPosX, nPosY, nWinSizeX, nWinSizeY;
+			pViewport->GetViewportProperties()->GetSize( nSizeX, nSizeY );
+			pViewport->GetViewportProperties()->GetPosition( nPosX, nPosY );
+			pViewport->GetWindow()->GetWindowProperties()->GetSize( nWinSizeX, nWinSizeY );	
+
+			glBlitFramebuffer(nPosX, nPosY, nSizeX, nSizeY, 0, 0, nWinSizeX, nWinSizeY, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
 #else
-			VISTA_THROW( "Vive-based rendering requested, but VistaKernel was not build with OculusSDK support", -1 );
+			VISTA_THROW( "OpenVR-based rendering requested, but VistaKernel was not build with OculusSDK support", -1 );
 #endif			
 			break;
 		}
@@ -2613,11 +2548,11 @@ IVistaWindowingToolkit* VistaOpenSGDisplayBridge::CreateWindowingToolkit( const 
 		return m_pWindowingToolkit;
 	}
 #endif
-#ifdef VISTA_WITH_VIVE
-	if( VistaAspectsComparisonStuff::StringEquals( sName, "VIVE", false ) )
+#ifdef VISTA_WITH_OPENVR
+	if( VistaAspectsComparisonStuff::StringEquals( sName, "OPENVR", false ) )
 	{
 		// compare the string once and store the result as enum
-		m_pWindowingToolkit = new VistaViveGlutWindowingToolkit();
+		m_pWindowingToolkit = new VistaOpenVRGlutWindowingToolkit();
 		return m_pWindowingToolkit;
 	}
 #endif
@@ -2942,8 +2877,8 @@ VistaViewport * VistaOpenSGDisplayBridge::CreateViewport(
 	// @IMGTODO: hacky... we should use different viewports, really
 #ifdef VISTA_WITH_OCULUSSDK
 	ViewportData* pData = ( eType == VistaViewport::VistaViewportProperties::VT_OCULUS_RIFT ) ? new OculusViewportData() : new ViewportData();
-#elif VISTA_WITH_VIVE
-	ViewportData* pData = ( eType == VistaViewport::VistaViewportProperties::VT_VIVE ) ? new ViveViewportData() : new ViewportData();
+#elif VISTA_WITH_OPENVR
+	ViewportData* pData = ( eType == VistaViewport::VistaViewportProperties::VT_OPENVR ) ? new OpenVRViewportData() : new ViewportData();
 #else
 	ViewportData* pData = new ViewportData();
 #endif
@@ -3369,10 +3304,10 @@ bool VistaOpenSGDisplayBridge::SetViewportType( VistaViewport::VistaViewportProp
 			pData->m_bUseRenderToTexture = false;
 			break;
 		}
-		case VistaViewport::VistaViewportProperties::VT_VIVE:
+		case VistaViewport::VistaViewportProperties::VT_OPENVR:
 		{	
-#ifndef VISTA_WITH_VIVE
-			VISTA_THROW( "Cannot create Vive Viewport - VistaKernel not built with Oculus Support", -1 );
+#ifndef VISTA_WITH_OPENVR
+			VISTA_THROW( "Cannot create OpenVR Viewport - VistaKernel not built with Oculus Support", -1 );
 #else
 
 			pData->m_bStereo = true;
@@ -3545,23 +3480,23 @@ bool VistaOpenSGDisplayBridge::SetViewportType( VistaViewport::VistaViewportProp
 #endif
 	}
 
-	if( eType == VistaViewport::VistaViewportProperties::VT_VIVE )
+	if( eType == VistaViewport::VistaViewportProperties::VT_OPENVR )
 	{
-#ifndef VISTA_WITH_VIVE
-		VISTA_THROW( "Cannot create Vive Viewport - VistaKernel not built with Vive Support", -1 );
+#ifndef VISTA_WITH_OPENVR
+		VISTA_THROW( "Cannot create OpenVR Viewport - VistaKernel not built with OpenVR Support", -1 );
 #else
-		ViveViewportData* pViveData = Vista::assert_cast< ViveViewportData* >( pData );
+		OpenVRViewportData* pOpenVRData = Vista::assert_cast< OpenVRViewportData* >( pData );
 
-		VistaViveGlutWindowingToolkit* pViveWinTK = dynamic_cast< VistaViveGlutWindowingToolkit* >( GetWindowingToolkit() );
-		if( pViveWinTK == NULL )
+		VistaOpenVRGlutWindowingToolkit* pOpenVRWinTK = dynamic_cast< VistaOpenVRGlutWindowingToolkit* >( GetWindowingToolkit() );
+		if( pOpenVRWinTK == NULL )
 		{
-			vstr::errp() << "Trying to create Vive Viewport without using Vive Window Toolkit" << std::endl;
+			vstr::errp() << "Trying to create OpenVR Viewport without using OpenVR Window Toolkit" << std::endl;
 			return false;
 		}
-		pViveData->m_pVRSystem = pViveWinTK->GetVRSystem();
-		if( pViveData->m_pVRSystem == NULL )
+		pOpenVRData->m_pVRSystem = pOpenVRWinTK->GetVRSystem();
+		if( pOpenVRData->m_pVRSystem == NULL )
 		{
-			vstr::errp() << "Trying to create Vive Viewport, but no Hmd connected" << std::endl;
+			vstr::errp() << "Trying to create OpenVR Viewport, but no Hmd connected" << std::endl;
 			return false;
 		}
 
@@ -3572,13 +3507,13 @@ bool VistaOpenSGDisplayBridge::SetViewportType( VistaViewport::VistaViewportProp
 		float fResFactor = 1.f;
 		// ovrSizei nRecommenedTex0Size = ovrHmd_GetFovTextureSize(pOcuData->m_pHmd, ovrEye_Left, pOcuData->m_pHmd->DefaultEyeFov[0], 1.0f);
 		uint32_t width, height;
-    	pViveData->m_pVRSystem->GetRecommendedRenderTargetSize(&width, &height);
+    	pOpenVRData->m_pVRSystem->GetRecommendedRenderTargetSize(&width, &height);
 		// SetViewportTextureSize(fResFactor * nRecommenedTex0Size.w, fResFactor * nRecommenedTex0Size.h, pTarget);
 		SetViewportTextureSize(fResFactor * width, fResFactor * height, pTarget);
 		
 		// setup rendering
 		// ovrGLConfig oOculusConfig;
-		// pViveWinTK->FillOculusRenderConfigForWindow( pTarget->GetWindow(), oOculusConfig );
+		// pOpenVRWinTK->FillOculusRenderConfigForWindow( pTarget->GetWindow(), oOculusConfig );
 	
 		// if( ovrHmd_ConfigureRendering( pOcuData->m_pHmd, &oOculusConfig.Config, ovrDistortionCap_TimeWarp,
 		// 								pOcuData->m_pHmd->DefaultEyeFov, 
@@ -3640,8 +3575,8 @@ bool VistaOpenSGDisplayBridge::SetViewportType( VistaViewport::VistaViewportProp
 
 		// create our Projection
 		VistaPropertyList oProjProps;
-		oProjProps.SetValueInSubList( "NAME", "PROJECTION_VIVE", pTarget->GetNameForNameable() + "PROJECTION_VIVE" );
-		VistaProjection* pProj = GetDisplayManager()->CreateProjection( pTarget, "PROJECTION_VIVE", oProjProps );
+		oProjProps.SetValueInSubList( "NAME", "PROJECTION_OPENVR", pTarget->GetNameForNameable() + "PROJECTION_OPENVR" );
+		VistaProjection* pProj = GetDisplayManager()->CreateProjection( pTarget, "PROJECTION_OPENVR", oProjProps );
 		ProjectionData* pProjData = Vista::assert_cast< ProjectionData* >( pProj->GetData() );
 		VistaProjection::VistaProjectionProperties* pProjProps = pProj->GetProjectionProperties();
 		pProjProps->SetStereoMode( VistaProjection::VistaProjectionProperties::SM_FULL_STEREO );
@@ -3650,28 +3585,28 @@ bool VistaOpenSGDisplayBridge::SetViewportType( VistaViewport::VistaViewportProp
 		pProjProps->SetProjPlaneExtents( -1.6, 1.6, -1, 1 ); // ???
 		pProjProps->SetProjPlaneNormal( 0, 0, 1 );
 
-		pViveData->m_pLeftCamera = osg::MatrixCamera::create();
-		beginEditCP( pViveData->m_pLeftCamera );
-		pViveData->m_pLeftCamera->setBeacon( pProjData->m_ptrEyeBeacon );		
-		endEditCP( pViveData->m_pLeftCamera );
-		beginEditCP( pViveData->m_Viewport );
-		pViveData->m_Viewport->setCamera( pViveData->m_pLeftCamera );
-		endEditCP( pViveData->m_Viewport );
+		pOpenVRData->m_pLeftCamera = osg::MatrixCamera::create();
+		beginEditCP( pOpenVRData->m_pLeftCamera );
+		pOpenVRData->m_pLeftCamera->setBeacon( pProjData->m_ptrEyeBeacon );		
+		endEditCP( pOpenVRData->m_pLeftCamera );
+		beginEditCP( pOpenVRData->m_Viewport );
+		pOpenVRData->m_Viewport->setCamera( pOpenVRData->m_pLeftCamera );
+		endEditCP( pOpenVRData->m_Viewport );
 
-		pViveData->m_pRightCamera = osg::MatrixCamera::create();
-		beginEditCP( pViveData->m_pRightCamera );
-		pViveData->m_pRightCamera->setBeacon( pProjData->m_ptrRightEyeBeacon );		
-		endEditCP( pViveData->m_pRightCamera );
-		beginEditCP( pViveData->m_RightViewport );
-		pViveData->m_RightViewport->setCamera( pViveData->m_pRightCamera );
-		endEditCP( pViveData->m_Viewport );
+		pOpenVRData->m_pRightCamera = osg::MatrixCamera::create();
+		beginEditCP( pOpenVRData->m_pRightCamera );
+		pOpenVRData->m_pRightCamera->setBeacon( pProjData->m_ptrRightEyeBeacon );		
+		endEditCP( pOpenVRData->m_pRightCamera );
+		beginEditCP( pOpenVRData->m_RightViewport );
+		pOpenVRData->m_RightViewport->setCamera( pOpenVRData->m_pRightCamera );
+		endEditCP( pOpenVRData->m_Viewport );
 
 		double dNear = 0.0;
 		double dFar = 0.0;
 		pProjProps->GetClippingRange( dNear, dFar );
 
-		pViveData->m_pProjectionObserver->Observe( pProjProps );
-		pViveData->UpdateViveProjection( (float)dNear, (float)dFar );
+		pOpenVRData->m_pProjectionObserver->Observe( pProjProps );
+		pOpenVRData->UpdateOpenVRProjection( (float)dNear, (float)dFar );
 		
 #endif
 	}

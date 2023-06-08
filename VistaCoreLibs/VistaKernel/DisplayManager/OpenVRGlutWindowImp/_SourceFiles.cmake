@@ -1,11 +1,11 @@
 # $Id: _SourceFiles.cmake 23946 2011-10-29 16:52:36Z dr165799 $
 
-set( RelativeDir "./DisplayManager/ViveGlutWindowImp" )
-set( RelativeSourceGroup "Source Files\\DisplayManager\\ViveGlutWindowImp" )
+set( RelativeDir "./DisplayManager/OpenVRGlutWindowImp" )
+set( RelativeSourceGroup "Source Files\\DisplayManager\\OpenVRGlutWindowImp" )
 
 set( DirFiles
-	VistaViveGlutWindowingToolkit.cpp
-	VistaViveGlutWindowingToolkit.h
+	VistaOpenVRGlutWindowingToolkit.cpp
+	VistaOpenVRGlutWindowingToolkit.h
 	_SourceFiles.cmake
 )
 set( DirFiles_SourceGroup "${RelativeSourceGroup}" )

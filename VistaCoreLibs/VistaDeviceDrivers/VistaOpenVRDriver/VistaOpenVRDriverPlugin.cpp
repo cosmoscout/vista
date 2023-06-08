@@ -27,35 +27,35 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include "VistaViveDriver.h"
-#include "VistaViveDriverConfig.h"
+#include "VistaOpenVRDriver.h"
+#include "VistaOpenVRDriverConfig.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
 #if defined(WIN32)
 #pragma warning (disable: 4786)
 
-#define VISTAVIVEDRIVERPLUGINEXPORT __declspec(dllexport)
-#define VISTAVIVEDRIVERPLUGINIMPORT __declspec(dllimport)
+#define VISTAOPENVRDRIVERPLUGINEXPORT __declspec(dllexport)
+#define VISTAOPENVRDRIVERPLUGINIMPORT __declspec(dllimport)
 
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE_EXPORT
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE_IMPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE_EXPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE_IMPORT
 #else
-#define VISTAVIVEDRIVERPLUGINEXPORT
-#define VISTAVIVEDRIVERPLUGINIMPORT
+#define VISTAOPENVRDRIVERPLUGINEXPORT
+#define VISTAOPENVRDRIVERPLUGINIMPORT
 #endif
 
-// Define VISTAVIVEDRIVERPLUGINAPI for DLL builds
-#ifdef VISTAVIVEDRIVERPLUGINDLL
-#ifdef VISTAVIVEDRIVERPLUGINDLL_EXPORTS
-#define VISTAVIVEDRIVERPLUGINAPI VISTAVIVEDRIVERPLUGINEXPORT
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE
+// Define VISTAOPENVRDRIVERPLUGINAPI for DLL builds
+#ifdef VISTAOPENVRDRIVERPLUGINDLL
+#ifdef VISTAOPENVRDRIVERPLUGINDLL_EXPORTS
+#define VISTAOPENVRDRIVERPLUGINAPI VISTAOPENVRDRIVERPLUGINEXPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE
 #else
-#define VISTAVIVEDRIVERPLUGINAPI VISTAVIVEDRIVERPLUGINIMPORT
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE extern
+#define VISTAOPENVRDRIVERPLUGINAPI VISTAOPENVRDRIVERPLUGINIMPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE extern
 #endif
 #else
-#define VISTAVIVEDRIVERPLUGINAPI
+#define VISTAOPENVRDRIVERPLUGINAPI
 #endif
 
 #if defined(WIN32)
@@ -81,22 +81,22 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #endif
 
 /*
-IVistaDriverCreationMethod *VistaViveDriver::GetDriverFactoryMethod()
+IVistaDriverCreationMethod *VistaOpenVRDriver::GetDriverFactoryMethod()
 {
 	if(SpFactory == NULL)
 	{
-		SpFactory = new VistaViveDriverCreateMethod;
+		SpFactory = new VistaOpenVRDriverCreateMethod;
 
 		// we assume an update rate of 20Hz at max. Devices we inspected reported
 		// an update rate of about 17Hz, which seem reasonable.
 		SpFactory->RegisterSensorType( "BODY", sizeof(dtrack_body_type),
 			                           60,
-									   new VistaViveBodyTranscodeFactory,
-									   VistaViveBodyTranscode::GetTypeString() );
+									   new VistaOpenVRBodyTranscodeFactory,
+									   VistaOpenVRBodyTranscode::GetTypeString() );
 		SpFactory->RegisterSensorType( "MARKER", sizeof(dtrack_marker_type),
 			                           60,
-									   new VistaViveMarkerTranscodeFactory,
-									   VistaViveMarkerTranscode::GetTypeString() );
+									   new VistaOpenVRMarkerTranscodeFactory,
+									   VistaOpenVRMarkerTranscode::GetTypeString() );
 
 	}
 
@@ -105,29 +105,29 @@ IVistaDriverCreationMethod *VistaViveDriver::GetDriverFactoryMethod()
 
 namespace
 {
-	class VistaViveDriverCreateMethod : public IVistaDriverCreationMethod
+	class VistaOpenVRDriverCreateMethod : public IVistaDriverCreationMethod
 	{
 	public:
-		VistaViveDriverCreateMethod(IVistaTranscoderFactoryFactory *metaFac)
+		VistaOpenVRDriverCreateMethod(IVistaTranscoderFactoryFactory *metaFac)
 			: IVistaDriverCreationMethod(metaFac)
 		{
-			RegisterSensorType( "STICK", sizeof(VistaViveConfig::VISTA_vive_stick_type),
+			RegisterSensorType( "STICK", sizeof(VistaOpenVRConfig::VISTA_openvr_stick_type),
 				60,
 				metaFac->CreateFactoryForType("STICK") );
-			RegisterSensorType( "HEAD", sizeof(VistaViveConfig::VISTA_vive_head_type),
+			RegisterSensorType( "HEAD", sizeof(VistaOpenVRConfig::VISTA_openvr_head_type),
 				60,
 				metaFac->CreateFactoryForType("HEAD") );
 		}
 
 		virtual IVistaDeviceDriver *CreateDriver()
 		{
-			return new VistaViveDriver(this);
+			return new VistaOpenVRDriver(this);
 		}
 	};
 
 
 
-	VistaViveDriverCreateMethod *SpFactory = NULL;
+	VistaOpenVRDriverCreateMethod *SpFactory = NULL;
 }
 
 // /* definition to expand macro then apply to pragma message */
@@ -136,28 +136,28 @@ namespace
 // #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
 
 // /* Some example here */
-// #pragma message(VAR_NAME_VALUE(VISTAVIVEDRIVERPLUGINAPI))
+// #pragma message(VAR_NAME_VALUE(VISTAOPENVRDRIVERPLUGINAPI))
 
-extern "C" VISTAVIVEDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
 {
-	return new VistaViveDriver(crm);
+	return new VistaOpenVRDriver(crm);
 }
 
-extern "C" VISTAVIVEDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
 {
 	if( SpFactory == NULL )
-		SpFactory = new VistaViveDriverCreateMethod(fac);
+		SpFactory = new VistaOpenVRDriverCreateMethod(fac);
 
 	IVistaReferenceCountable::refup(SpFactory);
 	return SpFactory;
 }
 
-extern "C" VISTAVIVEDRIVERPLUGINAPI const char *GetDeviceClassName()
+extern "C" VISTAOPENVRDRIVERPLUGINAPI const char *GetDeviceClassName()
 {
-	return "VIVEDRIVER";
+	return "OPENVRDRIVER";
 }
 
-extern "C" VISTAVIVEDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
+extern "C" VISTAOPENVRDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
 {
 	//@TODO: What?
 	if( SpFactory == NULL )

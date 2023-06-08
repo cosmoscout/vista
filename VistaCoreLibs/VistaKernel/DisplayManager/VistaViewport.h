@@ -107,7 +107,7 @@ public:
 	 * TEXTURE_SIZE            -   [list of ints - 2 items] size of texture, if it should be different from viewport size
 	 * PASSIVE_BACKGROUND      -   [bool]
 	 * TYPE                    -	[string][either NORMAL, QUADBUFFERED_STEREO, RENDER_TO_TEXTURE,
-	 *											POSTPROCESS_MONO, POSTPROCESS_STEREO, OCULUS, VIVE
+	 *											POSTPROCESS_MONO, POSTPROCESS_STEREO, OCULUS, OPENVR
 	 *											ANAGLYPH, or ANAGLYPH_MONOCHROME]
 	 * ENABLED                 -   [bool]
 	 * PRIORITY                -   [int]
@@ -152,7 +152,7 @@ public:
 			VT_POSTPROCESS_QUADBUFFERED_STEREO, // renders twice in stereo to two textures, and then executes a shader on both of them to generate new image
 			VT_OCULUS_RIFT,					// special viewport that renders to the oculus rift
 			VT_OCULUS_RIFT_CLONE,			// special viewport that clones the first oculus rift viewport
-			VT_VIVE,					    // special viewport that renders to the htc vive
+			VT_OPENVR,					    // special viewport that renders to an HMD
 			VT_ANAGLYPH,					// renders twice in stereo, and then calculates an anaglyphic image
 			VT_ANAGLYPH_MONOCHROME,			// renders twice in stereo, and then calculates a monochrome anaglyphic image
 		};

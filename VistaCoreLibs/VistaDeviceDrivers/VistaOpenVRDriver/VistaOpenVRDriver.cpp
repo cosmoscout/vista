@@ -26,13 +26,13 @@
 #include <openvr/openvr.h>
 #include <openvr/openvr_capi.h>
 
-#include "VistaViveDriver.h"
-#include "VistaViveDriverConfig.h"
+#include "VistaOpenVRDriver.h"
+#include "VistaOpenVRDriverConfig.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverThreadAspect.h>
 
-/*VistaViveParameterContainerCreate : 
+/*VistaOpenVRParameterContainerCreate : 
 	public VistaDriverGenericParameterAspect::IContainerCreate
 {
 public:
@@ -48,7 +48,7 @@ public:
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaViveDriver::VistaViveDriver(IVistaDriverCreationMethod *crm)
+VistaOpenVRDriver::VistaOpenVRDriver(IVistaDriverCreationMethod *crm)
 	: IVistaDeviceDriver(crm)
 	, m_pVRSystem(NULL)
 	, m_pThread(NULL)
@@ -71,7 +71,7 @@ VistaViveDriver::VistaViveDriver(IVistaDriverCreationMethod *crm)
 	RegisterAspect(m_pThread);
 }
 
-VistaViveDriver::~VistaViveDriver()
+VistaOpenVRDriver::~VistaOpenVRDriver()
 {
 	UnregisterAspect(m_pThread,IVistaDeviceDriver::DO_NOT_DELETE_ASPECT );
 	delete m_pThread;
@@ -93,20 +93,20 @@ VistaViveDriver::~VistaViveDriver()
 /*============================================================================*/
 
 
-bool VistaViveDriver::PhysicalEnable(bool bEnabled)
+bool VistaOpenVRDriver::PhysicalEnable(bool bEnabled)
 {
 	// TODO: ?
 
 	return true;
 }
 
-bool VistaViveDriver::DoConnect()
+bool VistaOpenVRDriver::DoConnect()
 {
 	if(m_pVRSystem)
 		return false; // do not connect on state connected
 
 	if(!vr::VR_IsHmdPresent()){
-		vstr::errp()<<"Error: No Vive HMD present while connecting VistaViveDriver!\n";
+		vstr::errp()<<"Error: No OpenVR HMD present while connecting VistaOpenVRDriver!\n";
 		return false;
 	}
 
@@ -114,19 +114,19 @@ bool VistaViveDriver::DoConnect()
 	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
 	
 	if(eError!=0){
-		vstr::errp()<<"Error while connecting to Vive API in VistaViveDriver: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
+		vstr::errp()<<"Error while connecting to OpenVR API in VistaOpenVRDriver: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
 		return false;
 	}
 
 	if ( !vr::VRCompositor() )
 	{
-		vstr::errp()<<"Error: Vive compositor initialization failed in VistaViveDriver!\n";
+		vstr::errp()<<"Error: OpenVR compositor initialization failed in VistaOpenVRDriver!\n";
 	}
 
 	return true;
 }
 
-bool VistaViveDriver::DoDisconnect()
+bool VistaOpenVRDriver::DoDisconnect()
 {
 	if(m_pVRSystem)
 	{
@@ -138,7 +138,7 @@ bool VistaViveDriver::DoDisconnect()
 	return true;
 }
 
-bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
+bool VistaOpenVRDriver::UpdateStickSensor( VistaType::microtime dTs )
 {
 	VistaSensorMeasure *pM = MeasureStart( 0, dTs, IVistaDeviceDriver::RETURN_CURRENT_SLOT );
 	if(pM == NULL)
@@ -166,7 +166,7 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
     orientation = orientation.GetInverted();
 
 	// write position and orientation of stick:
-	VistaViveConfig::VISTA_vive_stick_type *m = (*pM).getWrite<VistaViveConfig::VISTA_vive_stick_type>();
+	VistaOpenVRConfig::VISTA_openvr_stick_type *m = (*pM).getWrite<VistaOpenVRConfig::VISTA_openvr_stick_type>();
 	m->orientation = orientation.GetRotationAsQuaternion();
 	m->loc[0]=pose.m[0][3];
 	m->loc[1]=pose.m[1][3];
@@ -184,6 +184,7 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 	auto trackpad_touched = false;
 	auto button_system_pressed = false;
 	auto button_menu_pressed = false;
+	auto button_a_pressed = false;
 
 	for( vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++ )
 	{
@@ -198,6 +199,9 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 			
 			uint64_t button_menu_mask = vr::ButtonMaskFromId(
 				static_cast<vr::EVRButtonId>(vr::k_EButton_ApplicationMenu));
+
+			uint64_t button_a_mask = vr::ButtonMaskFromId(
+				static_cast<vr::EVRButtonId>(vr::k_EButton_A));
 
 			for (int j = 0; j < vr::k_unControllerStateAxisCount; ++j) {
 	        	int32_t axis_type = m_pVRSystem->GetInt32TrackedDeviceProperty(
@@ -231,6 +235,10 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 							button_menu_pressed = true;
 						}
 
+						if ((state.ulButtonPressed & button_a_mask) != 0) {
+							button_a_pressed = true;
+						}
+
 	        			break;
 
 	        		case vr::k_eControllerAxis_TrackPad:
@@ -256,13 +264,14 @@ bool VistaViveDriver::UpdateStickSensor( VistaType::microtime dTs )
 	m->trackpad_touched = trackpad_touched;
 	m->button_system_pressed = button_system_pressed;
 	m->button_menu_pressed = button_menu_pressed;
+	m->button_a_pressed = button_a_pressed;
 
 	MeasureStop(0);
 	return true;
 }
 
 
-bool VistaViveDriver::UpdateHeadSensor( VistaType::microtime dTs )
+bool VistaOpenVRDriver::UpdateHeadSensor( VistaType::microtime dTs )
 {
 	VistaSensorMeasure *pM = MeasureStart( 1, dTs, IVistaDeviceDriver::RETURN_CURRENT_SLOT );
 	if(pM == NULL)
@@ -290,7 +299,7 @@ bool VistaViveDriver::UpdateHeadSensor( VistaType::microtime dTs )
     orientation = orientation.GetInverted();
 
 	// write position and orientation of stick:
-	VistaViveConfig::VISTA_vive_head_type *m = (*pM).getWrite<VistaViveConfig::VISTA_vive_head_type>();
+	VistaOpenVRConfig::VISTA_openvr_head_type *m = (*pM).getWrite<VistaOpenVRConfig::VISTA_openvr_head_type>();
 	m->orientation = orientation.GetRotationAsQuaternion();
 	m->loc[0]=pose.m[0][3];
 	m->loc[1]=pose.m[1][3];
@@ -302,7 +311,7 @@ bool VistaViveDriver::UpdateHeadSensor( VistaType::microtime dTs )
 	return true;
 }
 
-bool VistaViveDriver::DoSensorUpdate(VistaType::microtime dTs)
+bool VistaOpenVRDriver::DoSensorUpdate(VistaType::microtime dTs)
 {
 	UpdateStickSensor(dTs);
 	UpdateHeadSensor(dTs);

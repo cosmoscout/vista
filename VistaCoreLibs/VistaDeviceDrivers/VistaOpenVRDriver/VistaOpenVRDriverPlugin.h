@@ -23,8 +23,8 @@
 /*============================================================================*/
 
 
-#ifndef __VISTAVIVEDRIVERPLUGINPLUGIN_H
-#define __VISTAVIVEDRIVERPLUGINPLUGIN_H
+#ifndef __VISTAOPENVRDRIVERPLUGINPLUGIN_H
+#define __VISTAOPENVRDRIVERPLUGINPLUGIN_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -33,27 +33,27 @@
 #if defined(WIN32)
 #pragma warning (disable: 4786)
 
-#define VISTAVIVEDRIVERPLUGINEXPORT __declspec(dllexport)
-#define VISTAVIVEDRIVERPLUGINIMPORT __declspec(dllimport)
+#define VISTAOPENVRDRIVERPLUGINEXPORT __declspec(dllexport)
+#define VISTAOPENVRDRIVERPLUGINIMPORT __declspec(dllimport)
 
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE_EXPORT
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE_IMPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE_EXPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE_IMPORT
 #else
-#define VISTAVIVEDRIVERPLUGINEXPORT
-#define VISTAVIVEDRIVERPLUGINIMPORT
+#define VISTAOPENVRDRIVERPLUGINEXPORT
+#define VISTAOPENVRDRIVERPLUGINIMPORT
 #endif
 
-// Define VISTAVIVEDRIVERPLUGINAPI for DLL builds
-#ifdef VISTAVIVEDRIVERPLUGINDLL
-#ifdef VISTAVIVEDRIVERPLUGINDLL_EXPORTS
-#define VISTAVIVEDRIVERPLUGINAPI VISTAVIVEDRIVERPLUGINEXPORT
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE
+// Define VISTAOPENVRDRIVERPLUGINAPI for DLL builds
+#ifdef VISTAOPENVRDRIVERPLUGINDLL
+#ifdef VISTAOPENVRDRIVERPLUGINDLL_EXPORTS
+#define VISTAOPENVRDRIVERPLUGINAPI VISTAOPENVRDRIVERPLUGINEXPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE
 #else
-#define VISTAVIVEDRIVERPLUGINAPI VISTAVIVEDRIVERPLUGINIMPORT
-#define VISTAVIVEDRIVERPLUGIN_EXPLICIT_TEMPLATE extern
+#define VISTAOPENVRDRIVERPLUGINAPI VISTAOPENVRDRIVERPLUGINIMPORT
+#define VISTAOPENVRDRIVERPLUGIN_EXPLICIT_TEMPLATE extern
 #endif
 #else
-#define VISTAVIVEDRIVERPLUGINAPI
+#define VISTAOPENVRDRIVERPLUGINAPI
 #endif
 
 
@@ -66,10 +66,10 @@ class IVistaDeviceDriver;
 class IVistaDriverCreationMethod;
 
 
-extern "C" VISTAVIVEDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(unsigned int);
-extern "C" VISTAVIVEDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod();
-extern "C" VISTAVIVEDRIVERPLUGINAPI const char *GetDeviceClassName();
-extern "C" VISTAVIVEDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod *);
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(unsigned int);
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod();
+extern "C" VISTAOPENVRDRIVERPLUGINAPI const char *GetDeviceClassName();
+extern "C" VISTAOPENVRDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod *);
 
 
 /*============================================================================*/
@@ -79,7 +79,7 @@ extern "C" VISTAVIVEDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod *);
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-#endif //__VISTAVIVEDRIVERPLUGINPLUGIN_H
+#endif //__VISTAOPENVRDRIVERPLUGINPLUGIN_H
 
 
 
