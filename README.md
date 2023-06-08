@@ -21,7 +21,7 @@ This fork of ViSTA contains several changes which have been made before the init
 * Add optional scaling distance to intention select.
 * Add a bounding box node adapter.
 * Several methods of the volume raycaster are made virtual.
-* Add support for the HTC OpenVR on windows.
+* Add support for OpenVR on Windows and Linux.
 * Add possibility to change cursor type with glut windowing toollkit.
 * Remove all inheritances from std::unitary_function.
 
