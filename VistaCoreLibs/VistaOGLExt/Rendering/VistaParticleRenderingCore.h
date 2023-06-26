@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAPARTICLERENDERERINGCORE_H
 #define __VISTAPARTICLERENDERERINGCORE_H
 
@@ -29,8 +28,8 @@
 
 #include <VistaAspects/VistaObserver.h>
 
-#include <VistaBase/VistaVector3D.h>
 #include <VistaBase/VistaColor.h>
+#include <VistaBase/VistaVector3D.h>
 
 class VistaTexture;
 class VistaGLSLShader;
@@ -39,149 +38,146 @@ class VistaBufferObject;
 class VistaVertexArrayObject;
 class VistaParticleRenderingProperties;
 
-class VISTAOGLEXTAPI VistaParticleRenderingCore : public IVistaObserver
-{
-public:
-	VistaParticleRenderingCore();
-	virtual ~VistaParticleRenderingCore();
+class VISTAOGLEXTAPI VistaParticleRenderingCore : public IVistaObserver {
+ public:
+  VistaParticleRenderingCore();
+  virtual ~VistaParticleRenderingCore();
 
-	bool Init();
+  bool Init();
 
-	void Draw();
+  void Draw();
 
-	VistaParticleRenderingProperties* GetProperties();
+  VistaParticleRenderingProperties* GetProperties();
 
-	void SetPointSize( float fSize );
-	float GetPointSize() const;
+  void  SetPointSize(float fSize);
+  float GetPointSize() const;
 
-	/**
-	 * Sets the scale factor for the Particle Radii.
-	 * If no Particle radii texture is set, this will be 
-	 * the absolute radius of parcels:
-	 */
-	void SetParticleRadiusScale( float fRadius );
-	float GetParticleRadiusScale() const;
+  /**
+   * Sets the scale factor for the Particle Radii.
+   * If no Particle radii texture is set, this will be
+   * the absolute radius of parcels:
+   */
+  void  SetParticleRadiusScale(float fRadius);
+  float GetParticleRadiusScale() const;
 
-	/**
-	 * Sets the particle Color.
-	 * This color will be used if no LUT is used.
-	 */
-	void SetParticleColor( const VistaColor& rColor );
-	const VistaColor& GetParticleColor() const;
+  /**
+   * Sets the particle Color.
+   * This color will be used if no LUT is used.
+   */
+  void              SetParticleColor(const VistaColor& rColor);
+  const VistaColor& GetParticleColor() const;
 
-	/**
-	 * Sets the lookup texture which is used to map scalar values to colors.
-	 */
-	void SetLookupTexture( VistaTexture* pLUT );
-	VistaTexture* GetLookupTexture() const;
+  /**
+   * Sets the lookup texture which is used to map scalar values to colors.
+   */
+  void          SetLookupTexture(VistaTexture* pLUT);
+  VistaTexture* GetLookupTexture() const;
 
-	void SetLookupRange( float fMin, float fMax );
-	void GetLookupRange( float& fMin, float& fMax ) const;
+  void SetLookupRange(float fMin, float fMax);
+  void GetLookupRange(float& fMin, float& fMax) const;
 
-	void SetParticleCount( unsigned int iNumParticles );
-	unsigned int GetParticleCount() const;
+  void         SetParticleCount(unsigned int iNumParticles);
+  unsigned int GetParticleCount() const;
 
-	void SetViewerPosition( const VistaVector3D& v3ViewerPos );
-	const VistaVector3D& GetViewerPosition() const;
+  void                 SetViewerPosition(const VistaVector3D& v3ViewerPos);
+  const VistaVector3D& GetViewerPosition() const;
 
-	void SetLightDirection( const VistaVector3D& v3LightDir );
-	const VistaVector3D& GetLightDirection() const;
-	
-	/**
-	 * Sets the texture which contains the particle data. 
-	 * (rgb-Values = Particle Positions; alpha-Values = Scalar-Values)
-	 * Must be a GL_TEXTURE_2D;
-	 */
-	void SetDataTexture( VistaTexture* pDataTexture );
-	VistaTexture* GetDataTexture() const;
+  void                 SetLightDirection(const VistaVector3D& v3LightDir);
+  const VistaVector3D& GetLightDirection() const;
 
-	/**
-	 * Sets the texture which contains the particle radii in its red channel. 
-	 * These particle radii will be multiplied wit the RadiusScale-Factor.
-	 * If no RadiiTexture is set, all particles will have the same Radius.
-	 * MUST be a GL_TEXTURE_2D;
-	 */
-	void SetRadiiTexture( VistaTexture* pRadiiTexture );
-	VistaTexture* GetRadiiTexture() const;
-	
-	/**
-	 * The mapping texture can be used to render Particle in a specific order.
-	 * Only used if DRAW_MODE == DM_SMOKE && BLEND_MODE == ALPHA_BLENDING;
-	 */
-	void SetMappingTexture( VistaTexture* pMappingTexture );
-	VistaTexture* GetMappingTexture() const;
+  /**
+   * Sets the texture which contains the particle data.
+   * (rgb-Values = Particle Positions; alpha-Values = Scalar-Values)
+   * Must be a GL_TEXTURE_2D;
+   */
+  void          SetDataTexture(VistaTexture* pDataTexture);
+  VistaTexture* GetDataTexture() const;
 
-	/**
-	 * Sets the size of the texture which contains the particle data.
-	 */
-	void SetDataTextureSize( int iWidth, int iHeight );
-	void GetDataTextureSize( int& iWidth, int& iHeight) const;
+  /**
+   * Sets the texture which contains the particle radii in its red channel.
+   * These particle radii will be multiplied wit the RadiusScale-Factor.
+   * If no RadiiTexture is set, all particles will have the same Radius.
+   * MUST be a GL_TEXTURE_2D;
+   */
+  void          SetRadiiTexture(VistaTexture* pRadiiTexture);
+  VistaTexture* GetRadiiTexture() const;
 
-	// observer api
-	virtual bool Observes( IVistaObserveable* pObserveable );
-	virtual void Observe( IVistaObserveable* pObserveable, int nTicket);
-	virtual bool ObserveableDeleteRequest( IVistaObserveable* pObserveable, int nTicket );
-	virtual void ObserveableDelete( IVistaObserveable* pObserveable, int nTicket );
-	virtual void ReleaseObserveable( IVistaObserveable* pObserveable, int nTicket );
+  /**
+   * The mapping texture can be used to render Particle in a specific order.
+   * Only used if DRAW_MODE == DM_SMOKE && BLEND_MODE == ALPHA_BLENDING;
+   */
+  void          SetMappingTexture(VistaTexture* pMappingTexture);
+  VistaTexture* GetMappingTexture() const;
 
-	virtual void ObserverUpdate( IVistaObserveable* pObserveable, int nMsg, int nTicket );
+  /**
+   * Sets the size of the texture which contains the particle data.
+   */
+  void SetDataTextureSize(int iWidth, int iHeight);
+  void GetDataTextureSize(int& iWidth, int& iHeight) const;
 
-protected:
-	virtual bool InitShaders();
-	virtual bool InitTextures();
-	virtual void InitUniformVariables( VistaGLSLShader* pShader );
+  // observer api
+  virtual bool Observes(IVistaObserveable* pObserveable);
+  virtual void Observe(IVistaObserveable* pObserveable, int nTicket);
+  virtual bool ObserveableDeleteRequest(IVistaObserveable* pObserveable, int nTicket);
+  virtual void ObserveableDelete(IVistaObserveable* pObserveable, int nTicket);
+  virtual void ReleaseObserveable(IVistaObserveable* pObserveable, int nTicket);
 
-	virtual void UpdateTextures();
-	virtual void UpdateUniformVariables( VistaGLSLShader* pShader );
+  virtual void ObserverUpdate(IVistaObserveable* pObserveable, int nMsg, int nTicket);
 
-	virtual void RenderPoints();
-	virtual void RenderBillboards( VistaGLSLShader*, VistaTexture* );
-	virtual void RenderTransparentBillboards();
-	virtual void RenderHalos();
+ protected:
+  virtual bool InitShaders();
+  virtual bool InitTextures();
+  virtual void InitUniformVariables(VistaGLSLShader* pShader);
 
-protected:
-	VistaParticleRenderingProperties* m_pProperties;
+  virtual void UpdateTextures();
+  virtual void UpdateUniformVariables(VistaGLSLShader* pShader);
 
-	float	   m_fPointSize;
+  virtual void RenderPoints();
+  virtual void RenderBillboards(VistaGLSLShader*, VistaTexture*);
+  virtual void RenderTransparentBillboards();
+  virtual void RenderHalos();
 
-	float      m_fParticleRadius;
-	VistaColor m_oParticleColor;
+ protected:
+  VistaParticleRenderingProperties* m_pProperties;
 
-	VistaTexture* m_pLookUpTexture;
-	float m_aLookupRange[2];
+  float m_fPointSize;
 
-	VistaTexture* m_pParticleDataTexture;
-	VistaTexture* m_pParticleRadiiTexture;
-	VistaTexture* m_pParticleMappingTexture;
-	int m_aParticleDataTextureSize[2];
-	unsigned int m_iParticleCount;
+  float      m_fParticleRadius;
+  VistaColor m_oParticleColor;
 
-	VistaVector3D m_v3ViewerPos;
-	VistaVector3D m_v3LightDir;
+  VistaTexture* m_pLookUpTexture;
+  float         m_aLookupRange[2];
 
-	VistaBufferObject*		m_pVBO;
-	VistaVertexArrayObject*	m_pVAO;
+  VistaTexture* m_pParticleDataTexture;
+  VistaTexture* m_pParticleRadiiTexture;
+  VistaTexture* m_pParticleMappingTexture;
+  int           m_aParticleDataTextureSize[2];
+  unsigned int  m_iParticleCount;
 
-	VistaGLSLShader* m_pPointShader;
-	VistaGLSLShader* m_pSmokeShader;
-	VistaGLSLShader* m_pBillboardShader;
-	VistaGLSLShader* m_pLitBBShaders[3];
-	VistaGLSLShader* m_pDepthShaders[3];
+  VistaVector3D m_v3ViewerPos;
+  VistaVector3D m_v3LightDir;
 
-	VistaGLSLShader* m_pHaloShader;
+  VistaBufferObject*      m_pVBO;
+  VistaVertexArrayObject* m_pVAO;
 
-	VistaTexture* m_pSphereIlluminationTexture;
-	VistaTexture* m_pGaussianBlendingTexture;
-	VistaTexture* m_pSphereNormalsTexture;
+  VistaGLSLShader* m_pPointShader;
+  VistaGLSLShader* m_pSmokeShader;
+  VistaGLSLShader* m_pBillboardShader;
+  VistaGLSLShader* m_pLitBBShaders[3];
+  VistaGLSLShader* m_pDepthShaders[3];
 
-	VistaTexture* m_pDefaultLookUpTexture;
-	VistaTexture* m_pDefaultParticleRadiiTexture;
+  VistaGLSLShader* m_pHaloShader;
+
+  VistaTexture* m_pSphereIlluminationTexture;
+  VistaTexture* m_pGaussianBlendingTexture;
+  VistaTexture* m_pSphereNormalsTexture;
+
+  VistaTexture* m_pDefaultLookUpTexture;
+  VistaTexture* m_pDefaultParticleRadiiTexture;
 };
-
 
 #endif // __VFLGPUPARTICLERENDERER_H
 
 /*============================================================================*/
 /*  END OF FILE                                                               */
 /*============================================================================*/
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 #if defined(VISTA_THREADING_WIN32)
 
@@ -36,29 +35,22 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaWin32PriorityImp::VistaWin32PriorityImp()
-{
-	SetSystemPriorityMin( THREAD_PRIORITY_LOWEST );
-	SetSystemPriorityMax( THREAD_PRIORITY_HIGHEST );
+VistaWin32PriorityImp::VistaWin32PriorityImp() {
+  SetSystemPriorityMin(THREAD_PRIORITY_LOWEST);
+  SetSystemPriorityMax(THREAD_PRIORITY_HIGHEST);
 
-	InitInterval();
+  InitInterval();
 }
 
-
-VistaWin32PriorityImp::~VistaWin32PriorityImp()
-{
+VistaWin32PriorityImp::~VistaWin32PriorityImp() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif // VISTA_THREADING_WIN32
-
-

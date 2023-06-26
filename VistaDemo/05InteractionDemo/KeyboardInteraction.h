@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _KEYBOARDINTERACTION_H
 #define _KEYBOARDINTERACTION_H
 
@@ -30,22 +29,20 @@
 class VistaSystem;
 class IVistaExplicitCallbackInterface;
 
-class SomeButtonCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	SomeButtonCallback();
+class SomeButtonCallback : public IVistaExplicitCallbackInterface {
+ public:
+  SomeButtonCallback();
 
-	// override this method
-	bool Do();
+  // override this method
+  bool Do();
 
-private:
-	int iCount;
+ private:
+  int iCount;
 };
 
-class KeyboardInteraction
-{
-public:
-	static void RegisterSomeButtons( VistaSystem *pSystem );
+class KeyboardInteraction {
+ public:
+  static void RegisterSomeButtons(VistaSystem* pSystem);
 };
 
 #endif /* _KEYBOARDINTERACTION_H */

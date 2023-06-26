@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTimer.h"
 
 #include "VistaTimerImp.h"
@@ -35,27 +34,24 @@
 /*============================================================================*/
 
 #if defined(WIN32)
-#include <windows.h>
 #include <time.h>
+#include <windows.h>
 #else
 #include <sys/time.h>
 #include <time.h>
 #endif
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 // bleh... windows define screws resolution of term std::min
 #ifdef min
 #undef min
 #endif
 
-
-namespace
-{
-	VistaTimer *SSingleton = NULL;
+namespace {
+VistaTimer* SSingleton = NULL;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
@@ -64,216 +60,184 @@ namespace
 /*============================================================================*/
 /* VistaTimer                                                                */
 /*============================================================================*/
-VistaTimer::VistaTimer( IVistaTimerImp *pImp )
-{
-	if( pImp == NULL )
-		m_pImp = IVistaTimerImp::GetSingleton( true );
-	else
-		m_pImp = pImp;
+VistaTimer::VistaTimer(IVistaTimerImp* pImp) {
+  if (pImp == NULL)
+    m_pImp = IVistaTimerImp::GetSingleton(true);
+  else
+    m_pImp = pImp;
 
-	assert( m_pImp != NULL);
+  assert(m_pImp != NULL);
 
-	m_pImp->IncReferenceCount();
+  m_pImp->IncReferenceCount();
 
-	// we assume pImp to be non-NULL and the singleton to be set
-	m_nBirthTime = m_pImp->GetMicroTime();
+  // we assume pImp to be non-NULL and the singleton to be set
+  m_nBirthTime = m_pImp->GetMicroTime();
 }
 
-VistaTimer::~VistaTimer()
-{
-	m_pImp->DecReferenceCount();
+VistaTimer::~VistaTimer() {
+  m_pImp->DecReferenceCount();
 }
 
-VistaType::microtime  VistaTimer::GetMicroTime() const
-{
-	return m_pImp->GetMicroTime();
+VistaType::microtime VistaTimer::GetMicroTime() const {
+  return m_pImp->GetMicroTime();
 }
 
-VistaType::microstamp VistaTimer::GetMicroStamp() const
-{
-	return m_pImp->GetMicroStamp();
+VistaType::microstamp VistaTimer::GetMicroStamp() const {
+  return m_pImp->GetMicroStamp();
 }
 
-double    VistaTimer::GetSystemTime() const
-{
-	return m_pImp->GetSystemTime();
+double VistaTimer::GetSystemTime() const {
+  return m_pImp->GetSystemTime();
 }
 
-VistaType::systemtime VistaTimer::ConvertToSystemTime( const VistaType::microtime mtTime ) const
-{
-	return m_pImp->ConvertToSystemTime( mtTime );
+VistaType::systemtime VistaTimer::ConvertToSystemTime(const VistaType::microtime mtTime) const {
+  return m_pImp->ConvertToSystemTime(mtTime);
 }
 
-VistaType::microtime VistaTimer::GetLifeTime() const
-{
-	// simple: return now - birth time
-	return m_pImp->GetMicroTime() - m_nBirthTime;
+VistaType::microtime VistaTimer::GetLifeTime() const {
+  // simple: return now - birth time
+  return m_pImp->GetMicroTime() - m_nBirthTime;
 }
 
-void VistaTimer::ResetLifeTime()
-{
-	m_nBirthTime = m_pImp->GetMicroTime();
+void VistaTimer::ResetLifeTime() {
+  m_nBirthTime = m_pImp->GetMicroTime();
 }
 
-const VistaTimer& VistaTimer::GetStandardTimer()
-{
-	if( SSingleton == NULL )
-		SSingleton = new VistaTimer;
+const VistaTimer& VistaTimer::GetStandardTimer() {
+  if (SSingleton == NULL)
+    SSingleton = new VistaTimer;
 
-	return *SSingleton;
+  return *SSingleton;
 }
-
 
 /*============================================================================*/
 /* VistaAverageTimer                                                         */
 /*============================================================================*/
 
-VistaAverageTimer::VistaAverageTimer( IVistaTimerImp *pImp )
-: VistaTimer( pImp )
-, m_nRecordStartTime( m_nBirthTime )
-, m_nAccumulatedTime( 0.0 )
-, m_iCount( 0 )
-, m_nAverage( 0 )
-{		
+VistaAverageTimer::VistaAverageTimer(IVistaTimerImp* pImp)
+    : VistaTimer(pImp)
+    , m_nRecordStartTime(m_nBirthTime)
+    , m_nAccumulatedTime(0.0)
+    , m_iCount(0)
+    , m_nAverage(0) {
 }
-VistaAverageTimer::~VistaAverageTimer()
-{
+VistaAverageTimer::~VistaAverageTimer() {
 }
 
-void VistaAverageTimer::StartRecording()
-{
-	m_nRecordStartTime = GetMicroTime();
+void VistaAverageTimer::StartRecording() {
+  m_nRecordStartTime = GetMicroTime();
 }
 
-void VistaAverageTimer::RecordTime()
-{
-	VistaType::microtime nCurrentTime = GetMicroTime();
-	m_nAccumulatedTime += nCurrentTime - m_nRecordStartTime;
-	++m_iCount;
-	m_nRecordStartTime = nCurrentTime;
-	m_nAverage = m_nAccumulatedTime / (double)m_iCount;
+void VistaAverageTimer::RecordTime() {
+  VistaType::microtime nCurrentTime = GetMicroTime();
+  m_nAccumulatedTime += nCurrentTime - m_nRecordStartTime;
+  ++m_iCount;
+  m_nRecordStartTime = nCurrentTime;
+  m_nAverage         = m_nAccumulatedTime / (double)m_iCount;
 }
 
-VistaType::microtime VistaAverageTimer::GetCurrentRecordingTime() const
-{
-	return ( GetMicroTime() - m_nRecordStartTime );
+VistaType::microtime VistaAverageTimer::GetCurrentRecordingTime() const {
+  return (GetMicroTime() - m_nRecordStartTime);
 }
 
-VistaType::microtime VistaAverageTimer::GetAccumulatedTime() const
-{
-	return m_nAccumulatedTime;
+VistaType::microtime VistaAverageTimer::GetAccumulatedTime() const {
+  return m_nAccumulatedTime;
 }
 
-int VistaAverageTimer::GetRecordCount() const
-{
-	return m_iCount;
+int VistaAverageTimer::GetRecordCount() const {
+  return m_iCount;
 }
 
-VistaType::microtime VistaAverageTimer::GetAverageTime() const
-{
-	return m_nAverage;
-}			
+VistaType::microtime VistaAverageTimer::GetAverageTime() const {
+  return m_nAverage;
+}
 
-void VistaAverageTimer::ResetAveraging()
-{
-	m_nRecordStartTime = GetMicroTime();
-	m_iCount = 0;
-	m_nAccumulatedTime = 0.0;
+void VistaAverageTimer::ResetAveraging() {
+  m_nRecordStartTime = GetMicroTime();
+  m_iCount           = 0;
+  m_nAccumulatedTime = 0.0;
 }
 
 /*============================================================================*/
 /* VistaWeightedAverageTimer                                                 */
 /*============================================================================*/
 
-VistaWeightedAverageTimer::VistaWeightedAverageTimer( const float fWeight,
-													IVistaTimerImp *pImp )
-: VistaAverageTimer( pImp )
-, m_fWeight( fWeight )
-, m_fNorm( 1.0f / ( fWeight + 1.0f ) )
-{		
+VistaWeightedAverageTimer::VistaWeightedAverageTimer(const float fWeight, IVistaTimerImp* pImp)
+    : VistaAverageTimer(pImp)
+    , m_fWeight(fWeight)
+    , m_fNorm(1.0f / (fWeight + 1.0f)) {
 }
-VistaWeightedAverageTimer::~VistaWeightedAverageTimer()
-{
+VistaWeightedAverageTimer::~VistaWeightedAverageTimer() {
 }
 
-void VistaWeightedAverageTimer::RecordTime()
-{
-	VistaType::microtime nCurrentTime = GetMicroTime();
-	VistaType::microtime nDelta = nCurrentTime - m_nRecordStartTime;
-	m_nAccumulatedTime += nDelta;
-	++m_iCount;
-	m_nRecordStartTime = nCurrentTime;
+void VistaWeightedAverageTimer::RecordTime() {
+  VistaType::microtime nCurrentTime = GetMicroTime();
+  VistaType::microtime nDelta       = nCurrentTime - m_nRecordStartTime;
+  m_nAccumulatedTime += nDelta;
+  ++m_iCount;
+  m_nRecordStartTime = nCurrentTime;
 
-	if( m_iCount == 1 )
-		m_nAverage = nDelta;
-	else
-		m_nAverage = ( (double)m_fWeight * nDelta + m_nAverage ) * (double)m_fNorm;
+  if (m_iCount == 1)
+    m_nAverage = nDelta;
+  else
+    m_nAverage = ((double)m_fWeight * nDelta + m_nAverage) * (double)m_fNorm;
 }
 
-void VistaWeightedAverageTimer::ResetAveraging()
-{
-	m_nRecordStartTime = GetMicroTime();
-	m_iCount = 0;
-	m_nAccumulatedTime = 0.0;
+void VistaWeightedAverageTimer::ResetAveraging() {
+  m_nRecordStartTime = GetMicroTime();
+  m_iCount           = 0;
+  m_nAccumulatedTime = 0.0;
 }
 
-float VistaWeightedAverageTimer::GetWeight() const
-{
-	return m_fWeight;
+float VistaWeightedAverageTimer::GetWeight() const {
+  return m_fWeight;
 }
-void VistaWeightedAverageTimer::SetWeight( const float fWeight )
-{
-	m_fWeight = fWeight;
-	m_fNorm = 1.0f / ( fWeight + 1.0f );
+void VistaWeightedAverageTimer::SetWeight(const float fWeight) {
+  m_fWeight = fWeight;
+  m_fNorm   = 1.0f / (fWeight + 1.0f);
 }
 
 /*============================================================================*/
 /* VistaWindowAverageTimer                                                 */
 /*============================================================================*/
 
-VistaWindowAverageTimer::VistaWindowAverageTimer( const int iWindowSize,
-													IVistaTimerImp *pImp )
-: VistaAverageTimer( pImp )
-, m_vecRecords( (size_t)iWindowSize, 0.0 )
-, m_iCurrentSlot( 0 )
-{	
+VistaWindowAverageTimer::VistaWindowAverageTimer(const int iWindowSize, IVistaTimerImp* pImp)
+    : VistaAverageTimer(pImp)
+    , m_vecRecords((size_t)iWindowSize, 0.0)
+    , m_iCurrentSlot(0) {
 }
-VistaWindowAverageTimer::~VistaWindowAverageTimer()
-{
+VistaWindowAverageTimer::~VistaWindowAverageTimer() {
 }
 
-void VistaWindowAverageTimer::RecordTime()
-{
-	VistaType::microtime nCurrentTime = GetMicroTime();
-	VistaType::microtime nDelta = nCurrentTime - m_nRecordStartTime;
+void VistaWindowAverageTimer::RecordTime() {
+  VistaType::microtime nCurrentTime = GetMicroTime();
+  VistaType::microtime nDelta       = nCurrentTime - m_nRecordStartTime;
 
-	if( m_iCount < (int)m_vecRecords.size() )
-		m_iCount++;
-		
-	m_nAccumulatedTime += nDelta;
-	m_nAccumulatedTime -= m_vecRecords[m_iCurrentSlot];
-	m_vecRecords[m_iCurrentSlot] = nDelta;
+  if (m_iCount < (int)m_vecRecords.size())
+    m_iCount++;
 
-	++m_iCurrentSlot;
-	if( m_iCurrentSlot == (int)m_vecRecords.size() )
-		m_iCurrentSlot = 0;
-	
-	m_nRecordStartTime = nCurrentTime;
-	m_nAverage = m_nAccumulatedTime / m_iCount;
+  m_nAccumulatedTime += nDelta;
+  m_nAccumulatedTime -= m_vecRecords[m_iCurrentSlot];
+  m_vecRecords[m_iCurrentSlot] = nDelta;
+
+  ++m_iCurrentSlot;
+  if (m_iCurrentSlot == (int)m_vecRecords.size())
+    m_iCurrentSlot = 0;
+
+  m_nRecordStartTime = nCurrentTime;
+  m_nAverage         = m_nAccumulatedTime / m_iCount;
 }
 
-void VistaWindowAverageTimer::ResetAveraging()
-{
-	m_nRecordStartTime = GetMicroTime();
-	m_iCount = 0;
-	m_nAccumulatedTime = 0.0;
-	m_vecRecords.assign( m_vecRecords.size(), 0.0 );
-	m_iCurrentSlot = 0;
+void VistaWindowAverageTimer::ResetAveraging() {
+  m_nRecordStartTime = GetMicroTime();
+  m_iCount           = 0;
+  m_nAccumulatedTime = 0.0;
+  m_vecRecords.assign(m_vecRecords.size(), 0.0);
+  m_iCurrentSlot = 0;
 }
 
-int VistaWindowAverageTimer::GetWindowSize() const
-{
-	return (int)m_vecRecords.size();
+int VistaWindowAverageTimer::GetWindowSize() const {
+  return (int)m_vecRecords.size();
 }
 
 //
@@ -373,4 +337,3 @@ int VistaWindowAverageTimer::GetWindowSize() const
 /*============================================================================*/
 
 /************************** CR / LF nicht vergessen! **************************/
-

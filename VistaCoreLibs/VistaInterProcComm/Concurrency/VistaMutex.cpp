@@ -24,9 +24,8 @@
 #include <string>
 using namespace std;
 
-#include "VistaMutex.h"
 #include "Imp/VistaMutexImp.h"
-
+#include "VistaMutex.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -40,50 +39,34 @@ using namespace std;
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaMutex::VistaMutex ()
-{
-	m_pImp = IVistaMutexImp::CreateMutexImp("", IVistaMutexImp::eIntraProcess);
+VistaMutex::VistaMutex() {
+  m_pImp = IVistaMutexImp::CreateMutexImp("", IVistaMutexImp::eIntraProcess);
 }
 
-VistaMutex::VistaMutex(const string &sName)
-{
-	m_pImp = IVistaMutexImp::CreateMutexImp(sName, IVistaMutexImp::eInterProcess);
+VistaMutex::VistaMutex(const string& sName) {
+  m_pImp = IVistaMutexImp::CreateMutexImp(sName, IVistaMutexImp::eInterProcess);
 }
 
-VistaMutex::VistaMutex ( const VistaMutex & )
-: m_pImp(NULL)
-{
+VistaMutex::VistaMutex(const VistaMutex&)
+    : m_pImp(NULL) {
 }
 
-VistaMutex & VistaMutex::operator=   ( const VistaMutex & )
-{
-	return *this;
+VistaMutex& VistaMutex::operator=(const VistaMutex&) {
+  return *this;
 }
 
-VistaMutex::~VistaMutex ()
-{
-	delete m_pImp;
+VistaMutex::~VistaMutex() {
+  delete m_pImp;
 }
 
-void VistaMutex::Lock ()
-{
-	m_pImp->Lock();
+void VistaMutex::Lock() {
+  m_pImp->Lock();
 }
 
-void VistaMutex::Unlock ()
-{
-	m_pImp->Unlock();
+void VistaMutex::Unlock() {
+  m_pImp->Unlock();
 }
 
-
-bool VistaMutex::TryLock ()
-{
-	return m_pImp->TryLock();
+bool VistaMutex::TryLock() {
+  return m_pImp->TryLock();
 }
-
-
-
-
-
-
-

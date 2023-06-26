@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaInteractionHandlerBase.h" 
+#include "VistaInteractionHandlerBase.h"
 
 #include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/EventManager/VistaSystemEvent.h>
@@ -35,88 +34,73 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaInteractionHandlerBase::IVistaInteractionHandlerBase(VistaEventManager *pEvMgr,
-														   unsigned int nRoleId,
-							 bool bNeedsTime)
-							 : VistaEventHandler(),
-							   m_pEvMgr(pEvMgr),
-							   m_bNeedsTime(bNeedsTime),
-							   m_dTs(0.0),
-							   m_nRoleId(nRoleId)
-{
-	m_pEvMgr->AddEventHandler(this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_GRAPH_UPDATE);
-	m_pEvMgr->AddEventHandler(this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_CHANGE);
+IVistaInteractionHandlerBase::IVistaInteractionHandlerBase(
+    VistaEventManager* pEvMgr, unsigned int nRoleId, bool bNeedsTime)
+    : VistaEventHandler()
+    , m_pEvMgr(pEvMgr)
+    , m_bNeedsTime(bNeedsTime)
+    , m_dTs(0.0)
+    , m_nRoleId(nRoleId) {
+  m_pEvMgr->AddEventHandler(
+      this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_GRAPH_UPDATE);
+  m_pEvMgr->AddEventHandler(
+      this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_CHANGE);
 
-	if(bNeedsTime)
-	{
-		m_pEvMgr->AddEventHandler(this, VistaSystemEvent::GetTypeId(), VistaSystemEvent::VSE_POSTAPPLICATIONLOOP);
-	}
+  if (bNeedsTime) {
+    m_pEvMgr->AddEventHandler(
+        this, VistaSystemEvent::GetTypeId(), VistaSystemEvent::VSE_POSTAPPLICATIONLOOP);
+  }
 }
 
-IVistaInteractionHandlerBase::~IVistaInteractionHandlerBase()
-{
-	m_pEvMgr->RemEventHandler(this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_GRAPH_UPDATE);
-	m_pEvMgr->RemEventHandler(this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_CHANGE);
+IVistaInteractionHandlerBase::~IVistaInteractionHandlerBase() {
+  m_pEvMgr->RemEventHandler(
+      this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_GRAPH_UPDATE);
+  m_pEvMgr->RemEventHandler(
+      this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_CONTEXT_CHANGE);
 
-	if(m_bNeedsTime)
-		m_pEvMgr->RemEventHandler(this, VistaSystemEvent::GetTypeId(), VistaSystemEvent::VSE_POSTAPPLICATIONLOOP);
+  if (m_bNeedsTime)
+    m_pEvMgr->RemEventHandler(
+        this, VistaSystemEvent::GetTypeId(), VistaSystemEvent::VSE_POSTAPPLICATIONLOOP);
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-void IVistaInteractionHandlerBase::HandleEvent(VistaEvent *pEvent)
-{
-	if(pEvent->GetType() == VistaSystemEvent::GetTypeId())
-	{
-		if(m_dTs == 0.0)
-		{
-			m_dTs = pEvent->GetTime();
-		}
-		else
-		{
-			double dTs = pEvent->GetTime();
-			if(dTs - m_dTs > 0.0)
-				HandleTimeUpdate( dTs, m_dTs );
-			m_dTs = dTs;
-		}
+void IVistaInteractionHandlerBase::HandleEvent(VistaEvent* pEvent) {
+  if (pEvent->GetType() == VistaSystemEvent::GetTypeId()) {
+    if (m_dTs == 0.0) {
+      m_dTs = pEvent->GetTime();
+    } else {
+      double dTs = pEvent->GetTime();
+      if (dTs - m_dTs > 0.0)
+        HandleTimeUpdate(dTs, m_dTs);
+      m_dTs = dTs;
+    }
 
-	}
-	else if(pEvent->GetType() == VistaInteractionEvent::GetTypeId())
-	{
-		VistaInteractionEvent *pInEv = static_cast<VistaInteractionEvent*>(pEvent);
-		if(pInEv->GetRoleId() == m_nRoleId)
-		{
-			switch(pInEv->GetId())
-			{
-			case VistaInteractionEvent::VEID_CONTEXT_CHANGE:
-				{
-					HandleContextChange(pInEv);
-					break;
-				}
-			case VistaInteractionEvent::VEID_CONTEXT_GRAPH_UPDATE:
-				{
-					HandleGraphUpdate(pInEv);
-					break;
-				}
-			default:
-				break; // should not happen
-			}
-		}
-	}
+  } else if (pEvent->GetType() == VistaInteractionEvent::GetTypeId()) {
+    VistaInteractionEvent* pInEv = static_cast<VistaInteractionEvent*>(pEvent);
+    if (pInEv->GetRoleId() == m_nRoleId) {
+      switch (pInEv->GetId()) {
+      case VistaInteractionEvent::VEID_CONTEXT_CHANGE: {
+        HandleContextChange(pInEv);
+        break;
+      }
+      case VistaInteractionEvent::VEID_CONTEXT_GRAPH_UPDATE: {
+        HandleGraphUpdate(pInEv);
+        break;
+      }
+      default:
+        break; // should not happen
+      }
+    }
+  }
 }
 
-
-bool IVistaInteractionHandlerBase::HandleTimeUpdate( double dTs, double dLastTs )
-{
-	return true; // default action
+bool IVistaInteractionHandlerBase::HandleTimeUpdate(double dTs, double dLastTs) {
+  return true; // default action
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

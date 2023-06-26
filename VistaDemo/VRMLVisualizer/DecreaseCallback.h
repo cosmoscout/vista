@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _DECREASECALLBACK_H
 #define _DECREASECALLBACK_H
 
@@ -50,35 +49,31 @@ class VrmlVisualizer;
  * This Callback decreases the animation speed if the animation is running.
  * If the animation is not running the previous step is shown.
  */
-class DecreaseCallback : public IVistaExplicitCallbackInterface
-{
-public:
+class DecreaseCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * This one needs the instance of the CVrmlVisualizer
+   */
+  DecreaseCallback(VrmlVisualizer* pVrmlVisualizer);
 
-	/**
-	 * Constructor
-	 * This one needs the instance of the CVrmlVisualizer
-	 */
-	DecreaseCallback( VrmlVisualizer *pVrmlVisualizer );
-	
-	/**
-	 * Destructor 
-	 * Nothing to here, because the m_pVrmlVisualizer is hold by the main.cpp
-	 */
-	virtual ~DecreaseCallback();
+  /**
+   * Destructor
+   * Nothing to here, because the m_pVrmlVisualizer is hold by the main.cpp
+   */
+  virtual ~DecreaseCallback();
 
-	/**
-	 * Do
-	 * The Do method is invoced by the application.
-	 */
-	bool Do();
+  /**
+   * Do
+   * The Do method is invoced by the application.
+   */
+  bool Do();
 
-private:
-	
-	/**
-	 * Instance of CVrmlVisualizer
-	 */
-	VrmlVisualizer *m_pVrmlVisualizer;
-
+ private:
+  /**
+   * Instance of CVrmlVisualizer
+   */
+  VrmlVisualizer* m_pVrmlVisualizer;
 };
 
 /*============================================================================*/

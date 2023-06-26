@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaNameable.h"
 
 /*============================================================================*/
@@ -32,24 +31,20 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaNameable::IVistaNameable()
-{
+IVistaNameable::IVistaNameable() {
 }
 
-IVistaNameable::~IVistaNameable()
-{
+IVistaNameable::~IVistaNameable() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-void* IVistaNameable::GetNameableId() const
-{
-	return reinterpret_cast<void*>(const_cast<IVistaNameable*>(this));
+void* IVistaNameable::GetNameableId() const {
+  return reinterpret_cast<void*>(const_cast<IVistaNameable*>(this));
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

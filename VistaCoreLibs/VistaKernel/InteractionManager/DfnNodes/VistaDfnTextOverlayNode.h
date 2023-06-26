@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNTEXTOVERLAYNODE_H
 #define _VISTADFNTEXTOVERLAYNODE_H
 
@@ -33,12 +32,11 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnUtil.h>
-
+#include <map>
 
 #include <VistaKernel/DisplayManager/Vista2DDrawingObjects.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
@@ -52,84 +50,86 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
  * A very simple text label that is updated when the inport changes.
- * The conversion is done using VistaConversion::ToString() on the input type. 
+ * The conversion is done using VistaConversion::ToString() on the input type.
  *
  *
  * @ingroup VdfnNodes
- * @inport{value, any that can be converted using VistaConversion, mandatory, the value to display as overlay text}
+ * @inport{value, any that can be converted using VistaConversion, mandatory, the value to display
+ * as overlay text}
  */
-template<class T>
-class VistaDfnTextOverlayNode : public IVdfnNode
-{
-public:
-	VistaDfnTextOverlayNode(Vista2DText *pText )
-		: m_pText(pText),
-		  m_pValue(NULL)
-	{
-		RegisterInPortPrototype( "value", new TVdfnPortTypeCompare<TVdfnPort<T> >);
-	}
+template <class T>
+class VistaDfnTextOverlayNode : public IVdfnNode {
+ public:
+  VistaDfnTextOverlayNode(Vista2DText* pText)
+      : m_pText(pText)
+      , m_pValue(NULL) {
+    RegisterInPortPrototype("value", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+  }
 
-	~VistaDfnTextOverlayNode()
-	{
-        m_pText->SetEnabled(false);
-		//delete m_pText;
-	}
+  ~VistaDfnTextOverlayNode() {
+    m_pText->SetEnabled(false);
+    // delete m_pText;
+  }
 
-	virtual void OnActivation( double dTs )
-    {
-        IVdfnNode::OnActivation(dTs);
-        m_pText->SetEnabled(true);
-    }
+  virtual void OnActivation(double dTs) {
+    IVdfnNode::OnActivation(dTs);
+    m_pText->SetEnabled(true);
+  }
 
-	virtual void OnDeactivation( double dTs )
-    {
-        IVdfnNode::OnDeactivation(dTs);
-        m_pText->SetEnabled(false);
-    }
+  virtual void OnDeactivation(double dTs) {
+    IVdfnNode::OnDeactivation(dTs);
+    m_pText->SetEnabled(false);
+  }
 
-	bool GetIsValid() const { return (m_pValue != NULL); }
-	bool PrepareEvaluationRun()
-	{
-		m_pValue = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>("value", this);
-		return GetIsValid();
-	}
+  bool GetIsValid() const {
+    return (m_pValue != NULL);
+  }
+  bool PrepareEvaluationRun() {
+    m_pValue = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>("value", this);
+    return GetIsValid();
+  }
 
-	std::string GetPrefix() const { return m_strPrefix; }
-	void        SetPrefix(const std::string &strPrefix) { m_strPrefix = strPrefix; }
+  std::string GetPrefix() const {
+    return m_strPrefix;
+  }
+  void SetPrefix(const std::string& strPrefix) {
+    m_strPrefix = strPrefix;
+  }
 
-	std::string GetPostfix() const { return m_strPostfix; }
-	void        SetPostfix(const std::string &strPostfix) { m_strPostfix = strPostfix; }
+  std::string GetPostfix() const {
+    return m_strPostfix;
+  }
+  void SetPostfix(const std::string& strPostfix) {
+    m_strPostfix = strPostfix;
+  }
 
-protected:
-	bool DoEvalNode()
-	{
-		const T &value = m_pValue->GetValueConstRef();
+ protected:
+  bool DoEvalNode() {
+    const T& value = m_pValue->GetValueConstRef();
 
-		std::string sValue = VistaConversion::ToString(value);
-		if(!m_strPrefix.empty())
-			sValue = m_strPrefix + sValue;
+    std::string sValue = VistaConversion::ToString(value);
+    if (!m_strPrefix.empty())
+      sValue = m_strPrefix + sValue;
 
-		if(!m_strPostfix.empty())
-			sValue = sValue + m_strPostfix;
+    if (!m_strPostfix.empty())
+      sValue = sValue + m_strPostfix;
 
-		m_pText->SetText(sValue);
+    m_pText->SetText(sValue);
 
-		return true;
-	}
+    return true;
+  }
 
-private:
-	TVdfnPort<T> *m_pValue;
-	Vista2DText *m_pText;
+ private:
+  TVdfnPort<T>* m_pValue;
+  Vista2DText*  m_pText;
 
-	std::string m_strPrefix,
-				m_strPostfix;
-    VistaDisplayManager *m_pDm;
+  std::string          m_strPrefix, m_strPostfix;
+  VistaDisplayManager* m_pDm;
 };
 
 /*============================================================================*/
@@ -137,4 +137,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFOVERLAYTEXTLABELNODE_H
-

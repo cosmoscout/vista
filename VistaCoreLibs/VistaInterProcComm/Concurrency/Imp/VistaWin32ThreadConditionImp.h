@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32)
 
 #ifndef _VISTAWIN32THREADCONDITIONIMP_H
@@ -47,29 +46,27 @@
 class VistaWin32MutexImp;
 class IVistaMutexImp;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAINTERPROCCOMMAPI VistaWin32ThreadConditionImp : public IVistaThreadConditionImp
-{
-private:
-	int m_nWaitersCount;
-	CRITICAL_SECTION m_Waiters_count_lock;
-	HANDLE m_WaitQueue;
-	HANDLE m_WaitersDone;
-	size_t m_wasBroadcast;
-protected:
-public:
-	VistaWin32ThreadConditionImp();
-	virtual ~VistaWin32ThreadConditionImp();
+class VISTAINTERPROCCOMMAPI VistaWin32ThreadConditionImp : public IVistaThreadConditionImp {
+ private:
+  int              m_nWaitersCount;
+  CRITICAL_SECTION m_Waiters_count_lock;
+  HANDLE           m_WaitQueue;
+  HANDLE           m_WaitersDone;
+  size_t           m_wasBroadcast;
 
-	virtual int SignalCondition() ;
-	virtual int BroadcastCondition() ;
-	virtual int WaitForCondition(IVistaMutexImp *) ;
-	virtual int WaitForConditionWithTimeout(IVistaMutexImp*, int iMsecs);
+ protected:
+ public:
+  VistaWin32ThreadConditionImp();
+  virtual ~VistaWin32ThreadConditionImp();
+
+  virtual int SignalCondition();
+  virtual int BroadcastCondition();
+  virtual int WaitForCondition(IVistaMutexImp*);
+  virtual int WaitForConditionWithTimeout(IVistaMutexImp*, int iMsecs);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -77,6 +74,4 @@ public:
 
 #endif //_VISTATHREADCONDITIONIMP_H
 
-
 #endif // WIN32
-

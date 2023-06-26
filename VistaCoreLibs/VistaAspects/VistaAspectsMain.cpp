@@ -21,13 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
-#include "VistaReflectionable.h"
 #include "VistaPropertyFunctorRegistry.h"
+#include "VistaReflectionable.h"
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
@@ -42,58 +40,47 @@
 static void ReleaseProperties();
 static void ClaimRegistry();
 
-
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch( ul_reason_for_call )
-	{
-	case DLL_PROCESS_ATTACH:
-	{
-		if( lpReserved == 0 )
-			ClaimRegistry();
-		break;
-	}
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-		break;
-	case DLL_PROCESS_DETACH:
-		if( lpReserved == 0 )
-			ReleaseProperties();
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH: {
+    if (lpReserved == 0)
+      ClaimRegistry();
+    break;
+  }
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+    break;
+  case DLL_PROCESS_DETACH:
+    if (lpReserved == 0)
+      ReleaseProperties();
+    break;
+  }
+  return TRUE;
 }
 
 #else
-	static void ReleaseProperties() __attribute__ ((destructor));
-	static void ClaimRegistry() __attribute__ ((constructor));
+static void ReleaseProperties() __attribute__((destructor));
+static void ClaimRegistry() __attribute__((constructor));
 #endif
 
-static void ClaimRegistry()
-{
-	IVistaReferenceCountable::refup(VistaPropertyFunctorRegistry::GetSingleton());
+static void ClaimRegistry() {
+  IVistaReferenceCountable::refup(VistaPropertyFunctorRegistry::GetSingleton());
 }
 
-static void ReleaseProperties()
-{
-	VistaReflectionableUtil::ReleaseProperties();
+static void ReleaseProperties() {
+  VistaReflectionableUtil::ReleaseProperties();
 
 #if defined(ASPECTS_FUNCTORREGISTRY_DEBUG)
-	VistaPropertyFunctorRegistry *reg = VistaPropertyFunctorRegistry::GetSingleton();
-	if( reg && reg->getcount() > 1 )
-	{
-		VistaAspectsOut out;
-		reg->Show( out );
-	}
+  VistaPropertyFunctorRegistry* reg = VistaPropertyFunctorRegistry::GetSingleton();
+  if (reg && reg->getcount() > 1) {
+    VistaAspectsOut out;
+    reg->Show(out);
+  }
 #endif
 
-	IVistaReferenceCountable::refdown(VistaPropertyFunctorRegistry::GetSingleton());
+  IVistaReferenceCountable::refdown(VistaPropertyFunctorRegistry::GetSingleton());
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

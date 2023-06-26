@@ -21,11 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaMIDIDriver.h"
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverConnectionAspect.h>
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #include <VistaInterProcComm/Connections/VistaConnection.h>
 
@@ -34,54 +33,48 @@
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
-class VistaMIDIDetachSequence : public VistaDriverConnectionAspect::IVistaConnectionSequence
-{
-public:
-  virtual bool operator()(VistaConnection *pCon)
-	{
-	  pCon->Close();
-	  return !pCon->GetIsOpen();
-	}
+class VistaMIDIDetachSequence : public VistaDriverConnectionAspect::IVistaConnectionSequence {
+ public:
+  virtual bool operator()(VistaConnection* pCon) {
+    pCon->Close();
+    return !pCon->GetIsOpen();
+  }
 };
 
-class VistaMIDIAttachSequence : public VistaDriverConnectionAspect::IVistaConnectionSequence
-{
-public:
-  virtual bool operator()(VistaConnection *pCon)
-	{
-	  if(!pCon->GetIsOpen())
-		  return pCon->Open();
+class VistaMIDIAttachSequence : public VistaDriverConnectionAspect::IVistaConnectionSequence {
+ public:
+  virtual bool operator()(VistaConnection* pCon) {
+    if (!pCon->GetIsOpen())
+      return pCon->Open();
 
-	  return true;
-	}
+    return true;
+  }
 };
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaMIDIDriver::VistaMIDIDriver(IVistaDriverCreationMethod *crm) :
-  IVistaDeviceDriver(crm),
-  m_pConnection(new VistaDriverConnectionAspect)
-{
+VistaMIDIDriver::VistaMIDIDriver(IVistaDriverCreationMethod* crm)
+    : IVistaDeviceDriver(crm)
+    , m_pConnection(new VistaDriverConnectionAspect) {
   SetUpdateType(IVistaDeviceDriver::UPDATE_CONNECTION_THREADED);
 
-  m_pConnection->SetConnection(0, NULL, "MAIN", VistaDriverConnectionAspect::ALLOW_CONNECTION_REPLACEMENT );
+  m_pConnection->SetConnection(
+      0, NULL, "MAIN", VistaDriverConnectionAspect::ALLOW_CONNECTION_REPLACEMENT);
   RegisterAspect(m_pConnection);
 
   m_pConnection->SetDetachSequence(0, new VistaMIDIDetachSequence);
   m_pConnection->SetAttachSequence(0, new VistaMIDIAttachSequence);
 
-  VistaDeviceSensor *pSen = new VistaDeviceSensor();
+  VistaDeviceSensor* pSen = new VistaDeviceSensor();
 
-  pSen->SetMeasureTranscode( GetFactory()->GetTranscoderFactoryForSensor("")->CreateTranscoder() );
-  pSen->SetTypeHint( "" );
-  AddDeviceSensor( pSen );
+  pSen->SetMeasureTranscode(GetFactory()->GetTranscoderFactoryForSensor("")->CreateTranscoder());
+  pSen->SetTypeHint("");
+  AddDeviceSensor(pSen);
 }
 
-
-VistaMIDIDriver::~VistaMIDIDriver()
-{
-  VistaDeviceSensor *pSen = GetSensorByIndex(0);
+VistaMIDIDriver::~VistaMIDIDriver() {
+  VistaDeviceSensor* pSen = GetSensorByIndex(0);
   RemDeviceSensor(pSen);
 
   delete pSen->GetMeasureTranscode();
@@ -95,47 +88,40 @@ VistaMIDIDriver::~VistaMIDIDriver()
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VistaMIDIDriver::DoConnect()
-{
-	return true;
+bool VistaMIDIDriver::DoConnect() {
+  return true;
 }
 
-bool VistaMIDIDriver::DoDisconnect()
-{
-	return true;
+bool VistaMIDIDriver::DoDisconnect() {
+  return true;
 }
 
-bool VistaMIDIDriver::DoSensorUpdate(VistaType::microtime dTs)
-{
+bool VistaMIDIDriver::DoSensorUpdate(VistaType::microtime dTs) {
   unsigned char bMIDIEvent[3];
 
   VistaMIDIMeasures::sMIDIMeasure sMIDIMeasure;
 
-  VistaDeviceSensor *pSensor = GetSensorByIndex(0);
-  VistaSensorMeasure *pM = m_pHistoryAspect->GetCurrentSlot(pSensor);
-
+  VistaDeviceSensor*  pSensor = GetSensorByIndex(0);
+  VistaSensorMeasure* pM      = m_pHistoryAspect->GetCurrentSlot(pSensor);
 
   bool oldstate = m_pConnection->GetConnection(0)->GetIsBlocking();
   m_pConnection->GetConnection(0)->SetIsBlocking(true);
 
-  while( m_pConnection->GetConnection(0)->HasPendingData() )
-  {
-	MeasureStart( 0, dTs );
+  while (m_pConnection->GetConnection(0)->HasPendingData()) {
+    MeasureStart(0, dTs);
 
-	m_pConnection->GetConnection(0)->ReadRawBuffer( bMIDIEvent, 3 );
+    m_pConnection->GetConnection(0)->ReadRawBuffer(bMIDIEvent, 3);
 
-	sMIDIMeasure.status = bMIDIEvent[0];
-	sMIDIMeasure.data0  = bMIDIEvent[1];
-	sMIDIMeasure.data1  = bMIDIEvent[2];
+    sMIDIMeasure.status = bMIDIEvent[0];
+    sMIDIMeasure.data0  = bMIDIEvent[1];
+    sMIDIMeasure.data1  = bMIDIEvent[2];
 
-	std::memcpy( &(*pM).m_vecMeasures[0], &sMIDIMeasure, sizeof(VistaMIDIMeasures::sMIDIMeasure) );
+    std::memcpy(&(*pM).m_vecMeasures[0], &sMIDIMeasure, sizeof(VistaMIDIMeasures::sMIDIMeasure));
 
-	MeasureStop( 0 );
+    MeasureStop(0);
   }
 
   m_pConnection->GetConnection(0)->SetIsBlocking(oldstate);
 
-
   return true;
 }
-

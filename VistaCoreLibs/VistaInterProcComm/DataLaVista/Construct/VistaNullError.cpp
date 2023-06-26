@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -39,11 +37,9 @@ using namespace std;
 /*============================================================================*/
 
 DLVistaNullError::DLVistaNullError()
-: DLVistaCheckError(string("Null-Error"), string("This is no error. (NULL-ERROR)"))
-{
-	m_bIsNullError = true;
+    : DLVistaCheckError(string("Null-Error"), string("This is no error. (NULL-ERROR)")) {
+  m_bIsNullError = true;
 }
 
-DLVistaNullError::~DLVistaNullError()
-{}
-
+DLVistaNullError::~DLVistaNullError() {
+}

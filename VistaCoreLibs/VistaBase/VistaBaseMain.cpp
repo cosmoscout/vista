@@ -21,9 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <iostream>
-
 
 #include "VistaBaseTypes.h"
 #include <cassert>
@@ -34,16 +32,14 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-
 /**
  * These are the attach/detach functions that should be called on dll/so (un)loading.
  * We check typedefs here and stop on error.
  */
 
-
 #ifdef LINUX
-static void __attribute__ ((constructor))  LoadBaseLib();
-static void __attribute__ ((destructor)) UnloadBaseLib();
+static void __attribute__((constructor)) LoadBaseLib();
+static void __attribute__((destructor)) UnloadBaseLib();
 #else
 static void LoadBaseLib();
 static void UnloadBaseLib();
@@ -52,53 +48,45 @@ static void UnloadBaseLib();
 #ifdef WIN32
 #include <Windows.h>
 
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
+  switch (fdwReason) {
+  case DLL_PROCESS_ATTACH:
+    if (lpReserved == 0)
+      LoadBaseLib();
+    break;
+  case DLL_PROCESS_DETACH:
+    if (lpReserved == 0)
+      UnloadBaseLib();
+    break;
+  }
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL,
-			DWORD fdwReason,
-			LPVOID lpReserved)
-{
-	switch (fdwReason)
-	{
-	case DLL_PROCESS_ATTACH:
-		if( lpReserved == 0)
-			LoadBaseLib();
-		break;
-	case DLL_PROCESS_DETACH:
-		if( lpReserved == 0 )
-			UnloadBaseLib();
-		break;
-	}
-
-	return (TRUE);
+  return (TRUE);
 }
 #endif
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-static void LoadBaseLib()
-{
-	// check typedefs
-	assert( sizeof(   VistaType::sint64) == 8 );
-	assert( sizeof(   VistaType::uint64) == 8 );
-	assert( sizeof(  VistaType::float64) == 8 );
+static void LoadBaseLib() {
+  // check typedefs
+  assert(sizeof(VistaType::sint64) == 8);
+  assert(sizeof(VistaType::uint64) == 8);
+  assert(sizeof(VistaType::float64) == 8);
 
-	assert( sizeof(   VistaType::sint32) == 4 );
-	assert( sizeof(   VistaType::uint32) == 4 );
-	assert( sizeof(  VistaType::float32) == 4 );
+  assert(sizeof(VistaType::sint32) == 4);
+  assert(sizeof(VistaType::uint32) == 4);
+  assert(sizeof(VistaType::float32) == 4);
 
-	assert( sizeof( VistaType::ushort16) == 2 );
-	assert( sizeof( VistaType::sshort16) == 2 );
+  assert(sizeof(VistaType::ushort16) == 2);
+  assert(sizeof(VistaType::sshort16) == 2);
 
-	assert( sizeof(   VistaType::byte)   == 1 );
+  assert(sizeof(VistaType::byte) == 1);
 
-	assert( sizeof(               void*) == sizeof(size_t) );	
+  assert(sizeof(void*) == sizeof(size_t));
 }
 
-
-static void UnloadBaseLib()
-{
-	vstr::DestroyStreamManager();
+static void UnloadBaseLib() {
+  vstr::DestroyStreamManager();
 }
 
 /*============================================================================*/
@@ -108,4 +96,3 @@ static void UnloadBaseLib()
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

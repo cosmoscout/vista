@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA3DCSPACENAVIGATORDRIVER_H
 #define _VISTA3DCSPACENAVIGATORDRIVER_H
 
@@ -41,13 +40,16 @@
  * - only the first found SpaceNavigator can be used. The first address is hardcoded to the code
  * - ViSTA opens a profile called „ViSTA“ on windows.
  *   See manual of the SpaceNavigator for more details.
- *   The ViSTA profile should map the buttons to „Button 1“ and „Button 2“ in order to work properly.
+ *   The ViSTA profile should map the buttons to „Button 1“ and „Button 2“ in order to work
+properly.
  *   Special keys are not supported (though this seems to be trivial).
- * - It does only support the SpaceNavigator and no other device of the 3D Connexion series, and only the first two buttons
+ * - It does only support the SpaceNavigator and no other device of the 3D Connexion series, and
+only the first two buttons
  *
  * Note that the driver simply reports the values <b>as reported by the driver</b>.
  * That means: if you alter the values to output by the driver application setting,
- * this is what you will get!! So basically, there are two choices for forcing a specific input pattern:
+ * this is what you will get!! So basically, there are two choices for forcing a specific input
+pattern:
  * - define the driver settings to report as raw as possible, write code that can handle that
  * - use stoopit code and set your desired values in the panel settings using tht installed driver.
  *
@@ -70,7 +72,8 @@
  *      	(so it might be dependent on the calibration of the profile used)</td>
  *  </tr>
  * 	<tr><td>ROTATION</td><td>VistaQuaternion</td>
- * 		<td>The rotation defined by the rotation of the cap as standard in ViSTA (positive zero-axis)</td>
+ * 		<td>The rotation defined by the rotation of the cap as standard in ViSTA (positive
+zero-axis)</td>
  *  </tr>
  * 	<tr><td>AXIS</td><td>VistaAxisAndAngle</td>
  * 		<td>The original values from the driver (rotation axis and angle</td>
@@ -92,13 +95,16 @@
  * 		<td>NAME</td><td>string</td><td>the name of the device driver</td>
  * 	</tr>
  * 	<tr>
- * 		<td>TYPE</td><td>string</td><td>must be <span class="search_hit">SPACENAVIGATOR</span></td>
+ * 		<td>TYPE</td><td>string</td><td>must be <span
+class="search_hit">SPACENAVIGATOR</span></td>
  * 	</tr>
  * 	<tr>
- * 		<td>HISTORY</td><td>int</td><td>the number of slots to be access during a read phase</td>
+ * 		<td>HISTORY</td><td>int</td><td>the number of slots to be access during a read
+phase</td>
  * 	</tr>
  * 	<tr>
- * 		<td>SENSORS</td><td>list of sections (string)</td><td>the sensors that are exported by the driver</td>
+ * 		<td>SENSORS</td><td>list of sections (string)</td><td>the sensors that are exported
+by the driver</td>
  * 	</tr>
  * </table>
  *
@@ -127,27 +133,29 @@ RAWID = 0
  * @subsection SpaceNavigatorSubSectionLinux Linux
  * - we are using the HID event layer on linux.
  *   The SpaceNavigator reports „relative“ values, while in truth, it reports absolute values.
- *   As a consequence, the „0“ postition is not reported. So use the data as „relative“ on linux only,
+ *   As a consequence, the „0“ postition is not reported. So use the data as „relative“ on linux
+only,
  *   or use a non-linear scaling, or twiddle the head slowly on linux ;)
  * - we are not scaling the positional values of the head knob on linux (range: -400; +400)
  * - we are converting the axis reported to a right handed system to be used for OpenGL processing.
- * - In case your spacenavigator controls the local mouse, use 'xinput set-int-prop „3Dconnexion SpaceNavigator“ „Device Enabled“ 32 0 '
+ * - In case your spacenavigator controls the local mouse, use 'xinput set-int-prop „3Dconnexion
+SpaceNavigator“ „Device Enabled“ 32 0 '
  * - alternatively you can add a policy to the hardware abstraction layer:
  *
  * @verbatim
 <deviceinfo version=„0.2“>
  <match key="input.product" string="3Dconnexion SpaceNavigator">
-	 <remove key="input.x11_driver" />
+         <remove key="input.x11_driver" />
  </match>
 </deviceinfo>
 @endverbatim
- * - to install the spacenavigator on a new machine look at /etc/udev/rules.d and check rights in /dev/input:
+ * - to install the spacenavigator on a new machine look at /etc/udev/rules.d and check rights in
+/dev/input:
  *
  * @verbatim
 KERNEL=="event*", ATTRS{product}=="SpaceNavigator", MODE="0666"
 @endverbatim
  */
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -158,7 +166,7 @@ KERNEL=="event*", ATTRS{product}=="SpaceNavigator", MODE="0666"
 /*============================================================================*/
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTA3DCSPACENAVIGATORDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTA3DCSPACENAVIGATORDRIVER_STATIC)
 #ifdef VISTA3DCSPACENAVIGATORDRIVER_EXPORTS
 #define VISTA3DCSPACENAVIGATORAPI __declspec(dllexport)
 #else
@@ -188,96 +196,87 @@ class IVistaDriverCreationMethod;
  * and no device backwards communication.
  *
  */
-class VISTA3DCSPACENAVIGATORAPI Vista3DCSpaceNavigator : public IVistaDeviceDriver
-{
-public:
-	Vista3DCSpaceNavigator(IVistaDriverCreationMethod *);
-	virtual ~Vista3DCSpaceNavigator();
+class VISTA3DCSPACENAVIGATORAPI Vista3DCSpaceNavigator : public IVistaDeviceDriver {
+ public:
+  Vista3DCSpaceNavigator(IVistaDriverCreationMethod*);
+  virtual ~Vista3DCSpaceNavigator();
 
-	struct VISTA3DCSPACENAVIGATORAPI _sMeasure
-	{
-		_sMeasure()
-			: m_nRotationX(0),
-				m_nRotationY(0),
-				m_nRotationZ(0),
-				m_nRotationAngle(0),
+  struct VISTA3DCSPACENAVIGATORAPI _sMeasure {
+    _sMeasure()
+        : m_nRotationX(0)
+        , m_nRotationY(0)
+        , m_nRotationZ(0)
+        , m_nRotationAngle(0)
+        ,
 
-				m_nPositionX(0),
-				m_nPositionY(0),
-				m_nPositionZ(0),
-				m_nLength(0),
-				m_NumberOfButtons(2)
-		{
-			m_nKeys[0] = m_nKeys[1] = 0;
-		}
+        m_nPositionX(0)
+        , m_nPositionY(0)
+        , m_nPositionZ(0)
+        , m_nLength(0)
+        , m_NumberOfButtons(2) {
+      m_nKeys[0] = m_nKeys[1] = 0;
+    }
 
-		double m_nRotationX,
-			   m_nRotationY,
-			   m_nRotationZ,
-			   m_nRotationAngle;
+    double m_nRotationX, m_nRotationY, m_nRotationZ, m_nRotationAngle;
 
-		double m_nPositionX,
-			   m_nPositionY,
-			   m_nPositionZ,
-			   m_nLength;
+    double m_nPositionX, m_nPositionY, m_nPositionZ, m_nLength;
 
-		long   m_NumberOfButtons;
-		long   m_nKeys[2];
-	};
+    long m_NumberOfButtons;
+    long m_nKeys[2];
+  };
 
-	//class Parameters : public TParameterContainer<Vista3DCSpaceNavigator>
-	//{
-	//public:
-	//	REFL_DECLARE;
+  // class Parameters : public TParameterContainer<Vista3DCSpaceNavigator>
+  //{
+  // public:
+  //	REFL_DECLARE;
 
-	//	Parameters( Vista3DCSpaceNavigator *parent );
-	//	virtual ~Parameters();
+  //	Parameters( Vista3DCSpaceNavigator *parent );
+  //	virtual ~Parameters();
 
-	//	enum 
-	//	{
-	//		MSG_LED_MASK_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
-	//		MSG_LAST
-	//	};
+  //	enum
+  //	{
+  //		MSG_LED_MASK_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
+  //		MSG_LAST
+  //	};
 
-	//	int  GetLEDMask() const;
-	//	bool SetLEDMask( int mask );
+  //	int  GetLEDMask() const;
+  //	bool SetLEDMask( int mask );
 
-	//	bool CanBeep() const;
-	//	bool LetBeep( bool beep );
+  //	bool CanBeep() const;
+  //	bool LetBeep( bool beep );
 
-	//private:
-	//	enum Beep
-	//	{
-	//		CAN_BEEP,
-	//		CAN_NOT_BEEP,
-	//		BEEP_STATE_UNKNOWN
-	//	};
+  // private:
+  //	enum Beep
+  //	{
+  //		CAN_BEEP,
+  //		CAN_NOT_BEEP,
+  //		BEEP_STATE_UNKNOWN
+  //	};
 
-	//	Beep m_can_beep;
-	//	unsigned int m_led_mask;
-	//};
+  //	Beep m_can_beep;
+  //	unsigned int m_led_mask;
+  //};
 
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-	bool DoConnect();
-	bool DoDisconnect();
-	bool PhysicalEnable( bool enable_flag );
+  bool DoConnect();
+  bool DoDisconnect();
+  bool PhysicalEnable(bool enable_flag);
 
-public:
-	struct _sPrivate;
-private:
-	friend class Parameters;
-	_sPrivate *m_pPrivate;
+ public:
+  struct _sPrivate;
+
+ private:
+  friend class Parameters;
+  _sPrivate* m_pPrivate;
 };
 
-
-class VISTA3DCSPACENAVIGATORAPI Vista3DCSpaceNavigatorCreateMethod : public IVistaDriverCreationMethod
-{
-public:
-	Vista3DCSpaceNavigatorCreateMethod( IVistaTranscoderFactoryFactory * );
-	virtual IVistaDeviceDriver *CreateDriver();
+class VISTA3DCSPACENAVIGATORAPI Vista3DCSpaceNavigatorCreateMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  Vista3DCSpaceNavigatorCreateMethod(IVistaTranscoderFactoryFactory*);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
-
 
 #endif //__VISTA3DCSPACENAVIGATORDRIVER_H

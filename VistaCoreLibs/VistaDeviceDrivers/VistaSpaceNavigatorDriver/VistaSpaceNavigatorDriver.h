@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTASPACENAVIGATORDRIVER_H
 #define __VISTASPACENAVIGATORDRIVER_H
 
@@ -30,7 +29,7 @@
 /*============================================================================*/
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-//CRM
+// CRM
 #include "VistaDeviceDriversBase/VistaDeviceSensor.h"
 
 /*============================================================================*/
@@ -62,65 +61,52 @@ class VistaDriverConnectionAspect;
  *
  * @todo document me
  */
-class VISTASPACENAVIGATORAPI VistaSpaceNavigator : public IVistaDeviceDriver
-{
-public:
-	VistaSpaceNavigator(IVistaDriverCreationMethod *crm);
-	virtual ~VistaSpaceNavigator();
+class VISTASPACENAVIGATORAPI VistaSpaceNavigator : public IVistaDeviceDriver {
+ public:
+  VistaSpaceNavigator(IVistaDriverCreationMethod* crm);
+  virtual ~VistaSpaceNavigator();
 
+  static IVistaDriverCreationMethod* GetDriverFactoryMethod();
 
-	static IVistaDriverCreationMethod *GetDriverFactoryMethod();
+  struct _sMeasure {
+    _sMeasure()
+        : m_nRotationX(0)
+        , m_nRotationY(0)
+        , m_nRotationZ(0)
+        , m_nRotationAngle(0)
+        ,
 
-	struct _sMeasure
-	{
-		_sMeasure()
-			: m_nRotationX(0),
-				m_nRotationY(0),
-				m_nRotationZ(0),
-				m_nRotationAngle(0),
+        m_nPositionX(0)
+        , m_nPositionY(0)
+        , m_nPositionZ(0)
+        , m_nLength(0) {
+      m_nKeys[0] = m_nKeys[1] = 0;
+    }
 
-				m_nPositionX(0),
-				m_nPositionY(0),
-				m_nPositionZ(0),
-				m_nLength(0)
-		{
-			m_nKeys[0] = m_nKeys[1] = 0;
-		}
+    double m_nRotationX, m_nRotationY, m_nRotationZ, m_nRotationAngle;
+    double m_nPositionX, m_nPositionY, m_nPositionZ, m_nLength;
 
-		double m_nRotationX,
-			   m_nRotationY,
-			   m_nRotationZ,
-			   m_nRotationAngle;
-		double m_nPositionX,
-			   m_nPositionY,
-			   m_nPositionZ,
-			   m_nLength;
+    long m_nKeys[2];
+  };
 
-		long   m_nKeys[2];
-	};
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-private:
-	VistaDriverConnectionAspect *m_pConAsp;
+ private:
+  VistaDriverConnectionAspect* m_pConAsp;
 };
 
-class VISTASPACENAVIGATORAPI VistaSpaceNavigatorCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaSpaceNavigatorCreationMethod(IVistaTranscoderFactoryFactory *metaFac)
-		:IVistaDriverCreationMethod(metaFac)
-	{
-		RegisterSensorType( "",
-			sizeof(VistaSpaceNavigator::_sMeasure),
-			20, metaFac->CreateFactoryForType("VistaSpaceNavigatorTranscode") );
-	}
+class VISTASPACENAVIGATORAPI VistaSpaceNavigatorCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaSpaceNavigatorCreationMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("", sizeof(VistaSpaceNavigator::_sMeasure), 20,
+        metaFac->CreateFactoryForType("VistaSpaceNavigatorTranscode"));
+  }
 
-	IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaSpaceNavigator(this);
-	}
-
+  IVistaDeviceDriver* CreateDriver() {
+    return new VistaSpaceNavigator(this);
+  }
 };
 
 /*============================================================================*/

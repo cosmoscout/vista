@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASIMPLETEXTOVERLAY_H
 #define _VISTASIMPLETEXTOVERLAY_H
 
@@ -57,39 +56,36 @@ class IVistaTextEntity;
  * where y-pos is the line number it is to appear in
  * and x-pos is the number of preceeding spaces
  */
-class VISTAKERNELAPI VistaSimpleTextOverlay : public IVistaSceneOverlay
-{
-public:
+class VISTAKERNELAPI VistaSimpleTextOverlay : public IVistaSceneOverlay {
+ public:
+  VistaSimpleTextOverlay(
+      VistaDisplayManager* pDisplayManager, const std::string& sViewportName = "");
+  VistaSimpleTextOverlay(VistaViewport* pViewport);
+  virtual ~VistaSimpleTextOverlay();
 
-	VistaSimpleTextOverlay( VistaDisplayManager* pDisplayManager,
-								const std::string& sViewportName = "" );
-	VistaSimpleTextOverlay( VistaViewport* pViewport );
-	virtual ~VistaSimpleTextOverlay();
+  virtual bool Do();
 
-	virtual bool Do();
+  bool AddText(IVistaTextEntity* pText, bool bManageDeletion = false);
+  bool RemText(IVistaTextEntity* pText);
 
-	bool AddText( IVistaTextEntity* pText, bool bManageDeletion = false );
-	bool RemText( IVistaTextEntity* pText );
+  virtual bool GetIsEnabled() const;
+  virtual void SetIsEnabled(bool bEnabled);
 
-	virtual bool GetIsEnabled() const;
-	virtual void SetIsEnabled( bool bEnabled );
+  virtual void UpdateOnViewportChange(int iWidth, int iHeight, int iPosX, int iPosY);
 
-	virtual void UpdateOnViewportChange( int iWidth, int iHeight,
-											int iPosX, int iPosY );
+ private:
+  class RatioChangeObserver;
 
-private:
-	class RatioChangeObserver;
+  int m_nWidth;
+  int m_nHeight;
+  int m_nPosX;
+  int m_nPosY;
 
-	int m_nWidth;
-	int m_nHeight;
-	int m_nPosX;
-	int m_nPosY;
+  std::list<IVistaTextEntity*> m_liTexts;
+  std::list<IVistaTextEntity*> m_liMemoryManagedTexts;
+  bool                         m_bEnabled;
 
-	std::list<IVistaTextEntity*> m_liTexts;
-	std::list<IVistaTextEntity*> m_liMemoryManagedTexts;
-	bool m_bEnabled;
-
-	VistaSimpleTextOverlay::RatioChangeObserver* m_pRatioObeserver;
+  VistaSimpleTextOverlay::RatioChangeObserver* m_pRatioObeserver;
 };
 
 /*============================================================================*/
@@ -97,4 +93,3 @@ private:
 /*============================================================================*/
 
 #endif //_VistaSimpleTextOverlay_H
-

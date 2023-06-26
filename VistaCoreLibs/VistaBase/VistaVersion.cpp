@@ -21,45 +21,36 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaVersion.h"
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-const char *VistaVersion::GetReleaseName()
-{ 
-	return VISTA_RELEASE_NAME;
+const char* VistaVersion::GetReleaseName() {
+  return VISTA_RELEASE_NAME;
 }
 
-const char *VistaVersion::GetVersion() 
-{ 
-	return VISTA_VERSION; 
+const char* VistaVersion::GetVersion() {
+  return VISTA_VERSION;
 }
 
-int VistaVersion::GetMajor() 
-{ 
-	return VISTA_MAJOR; 
+int VistaVersion::GetMajor() {
+  return VISTA_MAJOR;
 }
 
-int VistaVersion::GetMinor() 
-{ 
-	return VISTA_MINOR; 
+int VistaVersion::GetMinor() {
+  return VISTA_MINOR;
 }
 
-int VistaVersion::GetRevision() 
-{ 
-	return VISTA_REVISION; 
+int VistaVersion::GetRevision() {
+  return VISTA_REVISION;
 }
 
-const char *VistaVersion::GetBuildTimeString()
-{
-	return __TIME__;
+const char* VistaVersion::GetBuildTimeString() {
+  return __TIME__;
 }
 
-const char *VistaVersion::GetBuildDateString()
-{
-	return __DATE__;
+const char* VistaVersion::GetBuildDateString() {
+  return __DATE__;
 }
-

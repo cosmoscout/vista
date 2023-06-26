@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _TOGGLESHADOWCALLBACK_H
 #define _TOGGLESHADOWCALLBACK_H
 
@@ -49,36 +48,31 @@ class ShadowDemo;
  * CResetCallback
  * This Callback let the application parse the parameters again.
  */
-class ToggleShadowCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	
-	/**
-	 * Constructor
-	 * The CResetCallback needs an instance of ShadowDemo
-	 */
-	ToggleShadowCallback( ShadowDemo *appl );
-	
-	/**
-	 * Destructor
-	 * Nothing todo here yet
-	 */
-	virtual ~ToggleShadowCallback();
+class ToggleShadowCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * The CResetCallback needs an instance of ShadowDemo
+   */
+  ToggleShadowCallback(ShadowDemo* appl);
 
-	/**
-	 * Do
-	 * Invoked by the application
-	 */
-	bool Do();
+  /**
+   * Destructor
+   * Nothing todo here yet
+   */
+  virtual ~ToggleShadowCallback();
 
-private:
+  /**
+   * Do
+   * Invoked by the application
+   */
+  bool Do();
 
-	/**
-	 * The pointer to the instance of the application.
-	 */
-	ShadowDemo *m_pShadowDemo;
-
+ private:
+  /**
+   * The pointer to the instance of the application.
+   */
+  ShadowDemo* m_pShadowDemo;
 };
-
 
 #endif // _RESETCALLBACK_H

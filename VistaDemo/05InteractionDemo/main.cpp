@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
@@ -36,105 +34,94 @@
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
 
-//Only for warning needed:
+// Only for warning needed:
 #include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
-#include <VistaKernel/GraphicsManager/VistaTransformNode.h>
 #include <VistaKernel/GraphicsManager/VistaTextNode.h>
+#include <VistaKernel/GraphicsManager/VistaTransformNode.h>
 
 #include <VistaBase/VistaExceptionBase.h>
-
 
 // Demo stuff
 #include "KeyboardInteraction.h"
 #include "MsgPortUser.h"
 
-#include <VistaInterProcComm/Connections/VistaMsgChannel.h>
 #include <VistaInterProcComm/Connections/VistaConnectionIP.h>
-
+#include <VistaInterProcComm/Connections/VistaMsgChannel.h>
 
 /*============================================================================*/
 /* DEFINES					                                                  */
 /*============================================================================*/
 
-                    							// shows you how to register a
-const static int KEYBOARD_SOMEBUTTONS	=	1;	// keyboard button - simple!
-const static int MSGPORT_USER   		=	2; 	// messageport, networking...
+// shows you how to register a
+const static int KEYBOARD_SOMEBUTTONS = 1; // keyboard button - simple!
+const static int MSGPORT_USER         = 2; // messageport, networking...
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		VistaSystem *pVistaSystem = new VistaSystem;
+int main(int argc, char* argv[]) {
+  try {
+    VistaSystem* pVistaSystem = new VistaSystem;
 
-		pVistaSystem->IntroMsg();
+    pVistaSystem->IntroMsg();
 
-		std::list<std::string> liSearchPaths;
-		liSearchPaths.push_back("configfiles/");
-		liSearchPaths.push_back("../configfiles/");
-		pVistaSystem->SetIniSearchPaths(liSearchPaths);
+    std::list<std::string> liSearchPaths;
+    liSearchPaths.push_back("configfiles/");
+    liSearchPaths.push_back("../configfiles/");
+    pVistaSystem->SetIniSearchPaths(liSearchPaths);
 
-		if(pVistaSystem->Init(argc, argv))
-		{
-			
-			// Interaction can get very complex so you can use a bit mask to enable different
-			// interaction stuff
-			// Note: Simple keyboard Interaction is implemented per .ini file
-			//		 type '?' for more information.
-			//		 also the mouse is registered as trackball node.
-			// Configure the bitmask like this here:
-			// int nMask = KEYBOARD_SOMEBUTTONS | MESSAGEPORT
-			// this enables some keyboard and messageport usage  at this demo
-			// have a look at the different files for implementation
+    if (pVistaSystem->Init(argc, argv)) {
 
-			int nMask = KEYBOARD_SOMEBUTTONS | MSGPORT_USER;
+      // Interaction can get very complex so you can use a bit mask to enable different
+      // interaction stuff
+      // Note: Simple keyboard Interaction is implemented per .ini file
+      //		 type '?' for more information.
+      //		 also the mouse is registered as trackball node.
+      // Configure the bitmask like this here:
+      // int nMask = KEYBOARD_SOMEBUTTONS | MESSAGEPORT
+      // this enables some keyboard and messageport usage  at this demo
+      // have a look at the different files for implementation
 
-			if( nMask & KEYBOARD_SOMEBUTTONS )
-			{
-				KeyboardInteraction::RegisterSomeButtons( pVistaSystem );
-			}
-			if( nMask & MSGPORT_USER )
-			{
-				MsgPortUser::EchoToCout( pVistaSystem );
-			}
+      int nMask = KEYBOARD_SOMEBUTTONS | MSGPORT_USER;
 
-			//To visualize the output from the CallStack we proceed in creating a visual CallStack :D
-			//Therefore get the SceneGraph
-			VistaSceneGraph *pSG = pVistaSystem->GetGraphicsManager()->GetSceneGraph();
+      if (nMask & KEYBOARD_SOMEBUTTONS) {
+        KeyboardInteraction::RegisterSomeButtons(pVistaSystem);
+      }
+      if (nMask & MSGPORT_USER) {
+        MsgPortUser::EchoToCout(pVistaSystem);
+      }
 
-			//Setting the scene a bit away so we can see everything from start screen :)
-			VistaTransformNode *pTrans = pSG->NewTransformNode(pSG->GetRoot());
-			VistaTransformNode *pTextTransformNode  = pSG->NewTransformNode( pTrans );
-			pTextTransformNode->Translate( -6.8f , 0.0f , -15.0f);
-			VistaTextNode *pText3D = pSG->NewTextNode( pTextTransformNode, "ARIAL");
-			// Fill with text
-			if( pText3D )
-			{
-				pText3D->SetText( "Check the command line! Press B" );
-			}
+      // To visualize the output from the CallStack we proceed in creating a visual CallStack :D
+      // Therefore get the SceneGraph
+      VistaSceneGraph* pSG = pVistaSystem->GetGraphicsManager()->GetSceneGraph();
 
-			if (pVistaSystem->GetDisplayManager()->GetDisplaySystem( 0 )==0)
-				VISTA_THROW( "No DisplaySystem found", 1 );
+      // Setting the scene a bit away so we can see everything from start screen :)
+      VistaTransformNode* pTrans             = pSG->NewTransformNode(pSG->GetRoot());
+      VistaTransformNode* pTextTransformNode = pSG->NewTransformNode(pTrans);
+      pTextTransformNode->Translate(-6.8f, 0.0f, -15.0f);
+      VistaTextNode* pText3D = pSG->NewTextNode(pTextTransformNode, "ARIAL");
+      // Fill with text
+      if (pText3D) {
+        pText3D->SetText("Check the command line! Press B");
+      }
 
-			pVistaSystem->GetDisplayManager()->GetWindowByName("MAIN_WINDOW")->GetWindowProperties()->SetTitle( argv[0] );
+      if (pVistaSystem->GetDisplayManager()->GetDisplaySystem(0) == 0)
+        VISTA_THROW("No DisplaySystem found", 1);
 
-			pVistaSystem->Run();
+      pVistaSystem->GetDisplayManager()
+          ->GetWindowByName("MAIN_WINDOW")
+          ->GetWindowProperties()
+          ->SetTitle(argv[0]);
 
+      pVistaSystem->Run();
+    }
 
-		}
+    // clean up - everything else is managed (and deleted) by the VistaSystem
+    delete pVistaSystem;
+  } catch (VistaExceptionBase& e) { e.PrintException(); }
 
-		// clean up - everything else is managed (and deleted) by the VistaSystem
-		delete pVistaSystem;
-	}
-	catch ( VistaExceptionBase &e )
-	{
-		e.PrintException();
-	}
-
-	return 0;
+  return 0;
 }
 
 /* tmp
@@ -157,4 +144,3 @@ OSGWindowGLUTD.lib
 /*============================================================================*/
 /*  END OF FILE "main.cpp"                                                    */
 /*============================================================================*/
-

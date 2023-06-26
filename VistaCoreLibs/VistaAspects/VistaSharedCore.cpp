@@ -24,41 +24,30 @@
 
 #include "VistaSharedCore.h"
 
-
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
 IVistaSharedCore::IVistaSharedCore()
-: m_nReferenceCount( 0 )
-{
-
+    : m_nReferenceCount(0) {
 }
 
-IVistaSharedCore::~IVistaSharedCore()
-{
-
+IVistaSharedCore::~IVistaSharedCore() {
 }
 
-VistaType::sint32 IVistaSharedCore::GetReferenceCount() const
-{
-	return m_nReferenceCount.Get();
+VistaType::sint32 IVistaSharedCore::GetReferenceCount() const {
+  return m_nReferenceCount.Get();
 }
 
-void IVistaSharedCore::IncReferenceCount()
-{
-	m_nReferenceCount.Inc();
+void IVistaSharedCore::IncReferenceCount() {
+  m_nReferenceCount.Inc();
 }
 
-void IVistaSharedCore::DecReferenceCount()
-{
-	if( m_nReferenceCount.DecAndTestNull() )
-		delete this;
+void IVistaSharedCore::DecReferenceCount() {
+  if (m_nReferenceCount.DecAndTestNull())
+    delete this;
 }
-
 
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-

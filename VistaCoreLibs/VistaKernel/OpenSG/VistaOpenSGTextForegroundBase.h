@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA_OPENSG_TEXTFOREGROUND_BASE_H_
 #define _VISTA_OPENSG_TEXTFOREGROUND_BASE_H_
 
@@ -29,216 +28,191 @@
 #pragma once
 #endif
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/OpenSG/VistaOpenSGTextForegroundFields.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGSystemDef.h>
 
 #include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
+#include <OpenSG/OSGRefPtr.h>
 
-#include <OpenSG/OSGForeground.h> // Parent
-#include <OpenSG/OSGTextureChunk.h>
+#include <OpenSG/OSGForeground.h>   // Parent
 #include <OpenSG/OSGStringFields.h> // Formats type
+#include <OpenSG/OSGTextureChunk.h>
 
 #ifdef WIN32
 #pragma warning(pop)
 #endif
 
-
-
-
 class Vista2DText;
 
 OSG_BEGIN_NAMESPACE
 
-class VistaOpenSGTextForeground ;
+class VistaOpenSGTextForeground;
 class TextTXFFace;
 
-class VISTAKERNELAPI VistaOpenSGTextForegroundBase : public Foreground
-{
-  private:
+class VISTAKERNELAPI VistaOpenSGTextForegroundBase : public Foreground {
+ private:
+  typedef Foreground Inherited;
 
-	typedef Foreground    Inherited;
+  /*==========================  PUBLIC  =================================*/
+ public:
+  typedef VistaOpenSGTextForegroundPtr Ptr;
 
-	/*==========================  PUBLIC  =================================*/
-  public:
+  enum { TextsFieldId = Inherited::NextFieldId, NextFieldId = TextsFieldId + 1 };
 
-	typedef VistaOpenSGTextForegroundPtr  Ptr;
+  static const BitVector TextsFieldMask;
+  static const BitVector MTInfluenceMask;
 
-	enum
-	{
-		TextsFieldId   = Inherited::NextFieldId,
-		NextFieldId    = TextsFieldId   + 1
-	};
+  /*---------------------------------------------------------------------*/
+  /*                           Class Get                                 */
+  /*---------------------------------------------------------------------*/
 
+  static FieldContainerType& getClassType(void);
+  static UInt32              getClassTypeId(void);
 
-	static const BitVector TextsFieldMask;
-	static const BitVector MTInfluenceMask;
+  /*---------------------------------------------------------------------*/
+  /*                       FieldContainer Get                            */
+  /*---------------------------------------------------------------------*/
 
+  virtual FieldContainerType&       getType(void);
+  virtual const FieldContainerType& getType(void) const;
 
-	/*---------------------------------------------------------------------*/
-	/*                           Class Get                                 */
-	/*---------------------------------------------------------------------*/
+  virtual UInt32 getContainerSize(void) const;
 
-	static        FieldContainerType &getClassType    (void);
-	static        UInt32              getClassTypeId  (void);
+  /*---------------------------------------------------------------------*/
+  /*                           Field Get                                 */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                       FieldContainer Get                            */
-	/*---------------------------------------------------------------------*/
+  MField<void*>* getMFTexts(void);
 
-	virtual       FieldContainerType &getType  (void);
-	virtual const FieldContainerType &getType  (void) const;
+  void*                getTexts(const UInt32 index);
+  MField<void*>&       getTexts(void);
+  const MField<void*>& getTexts(void) const;
 
-	virtual       UInt32              getContainerSize(void) const;
+  /*---------------------------------------------------------------------*/
+  /*                           Field Set                                 */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                           Field Get                                 */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                              Sync                                   */
+  /*---------------------------------------------------------------------*/
 
-	MField<void*>       *getMFTexts      (void);
+  /*---------------------------------------------------------------------*/
+  /*                          Binary Access                              */
+  /*---------------------------------------------------------------------*/
 
-	void*               getTexts         (const UInt32 index);
-	MField<void*>       &getTexts        (void);
-	const MField<void*> &getTexts        (void) const;
+  virtual UInt32 getBinSize(const BitVector& whichField);
+  virtual void   copyToBin(BinaryDataHandler& pMem, const BitVector& whichField);
+  virtual void   copyFromBin(BinaryDataHandler& pMem, const BitVector& whichField);
 
-	/*---------------------------------------------------------------------*/
-	/*                           Field Set                                 */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                          Construction                               */
+  /*---------------------------------------------------------------------*/
 
+  static VistaOpenSGTextForegroundPtr create(void);
+  static VistaOpenSGTextForegroundPtr createEmpty(void);
 
-	/*---------------------------------------------------------------------*/
-	/*                              Sync                                   */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                              Copy                                   */
+  /*---------------------------------------------------------------------*/
 
+  virtual FieldContainerPtr shallowCopy(void) const;
 
-	/*---------------------------------------------------------------------*/
-	/*                          Binary Access                              */
-	/*---------------------------------------------------------------------*/
+  /*=========================  PROTECTED  ===============================*/
+ protected:
+  /*---------------------------------------------------------------------*/
+  /*                             Fields                                  */
+  /*---------------------------------------------------------------------*/
 
-	virtual UInt32 getBinSize (const BitVector         &whichField);
-	virtual void   copyToBin  (      BinaryDataHandler &pMem,
-							   const BitVector         &whichField);
-	virtual void   copyFromBin(      BinaryDataHandler &pMem,
-							   const BitVector         &whichField);
+  MField<void*> m_mfTexts;
 
+  class _COSGFaceHlp {
+   public:
+    _COSGFaceHlp(TextTXFFace* face, UInt32 nFaceType, UInt32 nSize, TextureChunkPtr texture);
+    ~_COSGFaceHlp();
 
-	/*---------------------------------------------------------------------*/
-	/*                          Construction                               */
-	/*---------------------------------------------------------------------*/
+    TextTXFFace*    m_pFace;
+    UInt32          m_nSize;
+    UInt32          m_nFaceType;
+    TextureChunkPtr m_pTexture;
+  };
 
-	static  VistaOpenSGTextForegroundPtr      create          (void);
-	static  VistaOpenSGTextForegroundPtr      createEmpty     (void);
+  MField<void*> m_vFaceLookup;
 
-	/*---------------------------------------------------------------------*/
-	/*                              Copy                                   */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                          Constructors                               */
+  /*---------------------------------------------------------------------*/
 
-	virtual FieldContainerPtr     shallowCopy     (void) const;
+  VistaOpenSGTextForegroundBase(void);
+  VistaOpenSGTextForegroundBase(const VistaOpenSGTextForegroundBase& source);
 
-	/*=========================  PROTECTED  ===============================*/
-  protected:
+  /*---------------------------------------------------------------------*/
+  /*                          Destructors                                */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                             Fields                                  */
-	/*---------------------------------------------------------------------*/
+  virtual ~VistaOpenSGTextForegroundBase(void);
 
-	MField<void*>  m_mfTexts;
+  /*---------------------------------------------------------------------*/
+  /*                              Sync                                   */
+  /*---------------------------------------------------------------------*/
+  //#if !defined(OSG_FIXED_MFIELDSYNC)
+  void executeSyncImpl(VistaOpenSGTextForegroundBase* pOther, const BitVector& whichField);
 
-	class _COSGFaceHlp
-	{
-	public:
-		_COSGFaceHlp(TextTXFFace *face,
-			 UInt32 nFaceType,
-			 UInt32 nSize,
-			 TextureChunkPtr texture);
-		~_COSGFaceHlp();
+  virtual void executeSync(FieldContainer& other, const BitVector& whichField);
+  //#else
+  /*    void executeSyncImpl(      SimpleStatisticsForegroundBase *pOther,
+                                                   const BitVector         &whichField,
+                                                   const SyncInfo          &sInfo     );
 
-		TextTXFFace    *m_pFace;
-		UInt32          m_nSize;
-		UInt32          m_nFaceType;
-		TextureChunkPtr m_pTexture;
-	};
+          virtual void   executeSync(      FieldContainer    &other,
+                                                             const BitVector         &whichField,
+                                                             const SyncInfo          &sInfo);
 
-	MField<void*>           m_vFaceLookup;
+          virtual void execBeginEdit     (const BitVector &whichField,
+                                                                                    UInt32 uiAspect,
+                                                                                    UInt32
+     uiContainerSize);
 
-	/*---------------------------------------------------------------------*/
-	/*                          Constructors                               */
-	/*---------------------------------------------------------------------*/
+                          void execBeginEditImpl (const BitVector &whichField,
+                                                                                    UInt32 uiAspect,
+                                                                                    UInt32
+     uiContainerSize);
 
-	VistaOpenSGTextForegroundBase(void);
-	VistaOpenSGTextForegroundBase(const VistaOpenSGTextForegroundBase &source);
+                                            virtual void onDestroyAspect(UInt32 uiId, UInt32
+     uiAspect);*/
+  //#endif
+  /*==========================  PRIVATE  ================================*/
+ private:
+  friend class FieldContainer;
 
-	/*---------------------------------------------------------------------*/
-	/*                          Destructors                                */
-	/*---------------------------------------------------------------------*/
+  static FieldDescription*  _desc[];
+  static FieldContainerType _type;
 
-	virtual ~VistaOpenSGTextForegroundBase(void);
-
-	/*---------------------------------------------------------------------*/
-	/*                              Sync                                   */
-	/*---------------------------------------------------------------------*/
-//#if !defined(OSG_FIXED_MFIELDSYNC)
-	void executeSyncImpl(      VistaOpenSGTextForegroundBase *pOther,
-						 const BitVector         &whichField);
-
-	virtual void   executeSync(      FieldContainer    &other,
-							   const BitVector         &whichField);
-//#else
-/*    void executeSyncImpl(      SimpleStatisticsForegroundBase *pOther,
-						 const BitVector         &whichField,
-						 const SyncInfo          &sInfo     );
-
-	virtual void   executeSync(      FieldContainer    &other,
-							   const BitVector         &whichField,
-							   const SyncInfo          &sInfo);
-
-	virtual void execBeginEdit     (const BitVector &whichField,
-										  UInt32     uiAspect,
-										  UInt32     uiContainerSize);
-
-			void execBeginEditImpl (const BitVector &whichField,
-										  UInt32     uiAspect,
-										  UInt32     uiContainerSize);
-
-					  virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);*/
-//#endif
-	/*==========================  PRIVATE  ================================*/
-  private:
-
-	friend class FieldContainer;
-
-	static FieldDescription   *_desc[];
-	static FieldContainerType  _type;
-
-
-	// prohibit default functions (move to 'public' if you need one)
-	void operator =(const VistaOpenSGTextForegroundBase &source);
+  // prohibit default functions (move to 'public' if you need one)
+  void operator=(const VistaOpenSGTextForegroundBase& source);
 };
 
 //---------------------------------------------------------------------------
 //   Exported Types
 //---------------------------------------------------------------------------
 
+typedef VistaOpenSGTextForegroundBase* VistaOpenSGTextForegroundBaseP;
 
-typedef VistaOpenSGTextForegroundBase *VistaOpenSGTextForegroundBaseP;
-
-typedef osgIF<VistaOpenSGTextForegroundBase::isNodeCore,
-	CoredNodePtr<VistaOpenSGTextForeground>,
-			  FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-			  >::_IRet VistaOpenSGTextForegroundNodePtr;
+typedef osgIF<VistaOpenSGTextForegroundBase::isNodeCore, CoredNodePtr<VistaOpenSGTextForeground>,
+    FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC>::_IRet
+    VistaOpenSGTextForegroundNodePtr;
 
 typedef RefPtr<VistaOpenSGTextForegroundPtr> VistaOpenSGTextForegroundRefPtr;
 

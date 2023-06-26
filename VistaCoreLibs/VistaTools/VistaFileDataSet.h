@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /**
  *      Purpose  :  Access to "FileDataSets". A dataset is an
  *                  organized group of related files.
@@ -74,7 +73,6 @@
 /* DEFINITIONS                                                                */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -84,15 +82,15 @@
 /*============================================================================*/
 #include "VistaToolsConfig.h"
 
-#include "VistaFileSystemFile.h"
 #include "VistaFileSystemDirectory.h"
+#include "VistaFileSystemFile.h"
 
+#include <cassert>
 #include <cstddef>
 #include <iostream>
+#include <list>
 #include <string>
 #include <vector>
-#include <list>
-#include <cassert>
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -105,8 +103,7 @@
 /*																			  */
 /*============================================================================*/
 
-class VISTATOOLSAPI VistaWildcard
-{
+class VISTATOOLSAPI VistaWildcard {
   /**
    *  A CWildcard consists of
    *	 1. symbol [char]		this symbol will be replaced by a value
@@ -116,26 +113,26 @@ class VISTATOOLSAPI VistaWildcard
    *
    */
 
-public:
-	VistaWildcard () {};
-	VistaWildcard (char cSymbol, int nDigits, int nMin, int nMax)
-		: m_cSymbol(cSymbol),m_nDigits (nDigits), m_nMinRange (nMin), m_nMaxRange (nMax)
-	{};
+ public:
+  VistaWildcard(){};
+  VistaWildcard(char cSymbol, int nDigits, int nMin, int nMax)
+      : m_cSymbol(cSymbol)
+      , m_nDigits(nDigits)
+      , m_nMinRange(nMin)
+      , m_nMaxRange(nMax){};
 
-	// no set/get methods, direct access
+  // no set/get methods, direct access
 
-	char	m_cSymbol;
-	int		m_nDigits;
-	int		m_nMinRange;
-	int		m_nMaxRange;
+  char m_cSymbol;
+  int  m_nDigits;
+  int  m_nMinRange;
+  int  m_nMaxRange;
 
-	friend std::ostream& operator<<(std::ostream& out,VistaWildcard &pattern);
-	friend std::istream& operator>>(std::istream& in, VistaWildcard &pattern);
-
+  friend std::ostream& operator<<(std::ostream& out, VistaWildcard& pattern);
+  friend std::istream& operator>>(std::istream& in, VistaWildcard& pattern);
 };
 
-class VISTATOOLSAPI VistaFileDataSet
- {
+class VISTATOOLSAPI VistaFileDataSet {
   /**
    * Access the methods of those classes by using
    * '(*iterator_variable)->MethodName()'
@@ -144,286 +141,289 @@ class VISTATOOLSAPI VistaFileDataSet
    * its further work to implement an own iterator for CDataSet.
    *
    */
-	// iterator specific
-public:
-
+  // iterator specific
+ public:
 #ifdef OWN_ITERATOR
 
-	class iterator;
-	friend class iterator;
-	class iterator
-		: public std::iterator<std::bidirectional_iterator_tag,
-							   VistaFileSystemFile,std::ptrdiff_t>
-	{
-		std::list<VistaFileSystemFile>::iterator it;
-		std::list<VistaFileSystemFile>* r;
-	public:
-		// "typename" necessary to resolve nesting:
-		iterator(std::list<VistaFileSystemFile>& lst,
-			const std::list<VistaFileSystemFile>::iterator& i)
-			: r(&lst), it(i) {}
-		bool operator==(const iterator& x) const {
-			return it == x.it;
-		}
-		bool operator!=(const iterator& x) const {
-			return !(*this == x);
-		}
-		std::list<VistaFileSystemFile>::reference operator*() const {
-			return *it;
-		}
-		iterator& operator++() {
-			if(it != r->end())
-				++it;
-			return *this;
-		}
-		iterator operator++(int) {
-			iterator tmp = *this;
-			++*this;
-			return tmp;
-		}
-		iterator& operator--() {
-			if(it != r->begin())
-				--it;
-			return *this;
-		}
-		iterator operator--(int) {
-			iterator tmp = *this;
-			--*this;
-			return tmp;
-		}
-		iterator insert(const VistaFileSystemFile& x){
-			return iterator(*r, r->insert(it, x));
-		}
-		iterator erase() {
-			return iterator(*r, r->erase(it));
-		}
-	};
-	void push_back(const VistaFileSystemFile& x) {
-		m_listFiles.push_back(x);
-	}
-	iterator begin() {
-		return iterator(m_listFiles, m_listFiles.begin());
-	}
-	iterator end() {
-		return iterator(m_listFiles, m_listFiles.end());
-	}
-	int size() { return (int)m_listFiles.size(); }
+  class iterator;
+  friend class iterator;
+  class iterator
+      : public std::iterator<std::bidirectional_iterator_tag, VistaFileSystemFile, std::ptrdiff_t> {
+    std::list<VistaFileSystemFile>::iterator it;
+    std::list<VistaFileSystemFile>*          r;
 
+   public:
+    // "typename" necessary to resolve nesting:
+    iterator(std::list<VistaFileSystemFile>& lst, const std::list<VistaFileSystemFile>::iterator& i)
+        : r(&lst)
+        , it(i) {
+    }
+    bool operator==(const iterator& x) const {
+      return it == x.it;
+    }
+    bool operator!=(const iterator& x) const {
+      return !(*this == x);
+    }
+    std::list<VistaFileSystemFile>::reference operator*() const {
+      return *it;
+    }
+    iterator& operator++() {
+      if (it != r->end())
+        ++it;
+      return *this;
+    }
+    iterator operator++(int) {
+      iterator tmp = *this;
+      ++*this;
+      return tmp;
+    }
+    iterator& operator--() {
+      if (it != r->begin())
+        --it;
+      return *this;
+    }
+    iterator operator--(int) {
+      iterator tmp = *this;
+      --*this;
+      return tmp;
+    }
+    iterator insert(const VistaFileSystemFile& x) {
+      return iterator(*r, r->insert(it, x));
+    }
+    iterator erase() {
+      return iterator(*r, r->erase(it));
+    }
+  };
+  void push_back(const VistaFileSystemFile& x) {
+    m_listFiles.push_back(x);
+  }
+  iterator begin() {
+    return iterator(m_listFiles, m_listFiles.begin());
+  }
+  iterator end() {
+    return iterator(m_listFiles, m_listFiles.end());
+  }
+  int size() {
+    return (int)m_listFiles.size();
+  }
 
 #else
-	typedef std::list<VistaFileSystemFile>::iterator iterator;
-	typedef std::list<VistaFileSystemFile>::const_iterator const_iterator;
+  typedef std::list<VistaFileSystemFile>::iterator       iterator;
+  typedef std::list<VistaFileSystemFile>::const_iterator const_iterator;
 
-	inline iterator begin() { return m_listFiles.begin(); }
-	inline iterator end() { return m_listFiles.end(); }
-	inline size_t   size() { return m_listFiles.size(); }
+  inline iterator begin() {
+    return m_listFiles.begin();
+  }
+  inline iterator end() {
+    return m_listFiles.end();
+  }
+  inline size_t size() {
+    return m_listFiles.size();
+  }
 #endif
 
-	// types
-	enum DATASET_TYPE { DS_NOTSET = -1, DS_PATTERN = 0, DS_DIRECTORY, DS_FILELIST};
+  // types
+  enum DATASET_TYPE { DS_NOTSET = -1, DS_PATTERN = 0, DS_DIRECTORY, DS_FILELIST };
 
-	// class methods
-public:
-	/**
-	* Constructor/destructor
-	*
-	*	On construction you can decide which type of dataset will be constructed or
-	*	construct a dataset with unspecified type.
-	*	A type will be specified with use of the first method.
-	*
-	* @param	type			type of dataset to be constructed
-	*/
-	VistaFileDataSet():m_nType (DS_NOTSET)
-	{
-		m_pDirectory = NULL;
-		m_bSet = false;
-	};
+  // class methods
+ public:
+  /**
+   * Constructor/destructor
+   *
+   *	On construction you can decide which type of dataset will be constructed or
+   *	construct a dataset with unspecified type.
+   *	A type will be specified with use of the first method.
+   *
+   * @param	type			type of dataset to be constructed
+   */
+  VistaFileDataSet()
+      : m_nType(DS_NOTSET) {
+    m_pDirectory = NULL;
+    m_bSet       = false;
+  };
 
-	VistaFileDataSet(DATASET_TYPE type):m_nType (type)
-	{
-		m_pDirectory = NULL;
-		m_bSet = false;
-	};
+  VistaFileDataSet(DATASET_TYPE type)
+      : m_nType(type) {
+    m_pDirectory = NULL;
+    m_bSet       = false;
+  };
 
-	// copy constr.
-	VistaFileDataSet(VistaFileDataSet &copy);
+  // copy constr.
+  VistaFileDataSet(VistaFileDataSet& copy);
 
-	virtual ~VistaFileDataSet();
+  virtual ~VistaFileDataSet();
 
-	/** [DS_PATTERN]
-	* SetPattern
-	*
-	*	Sets filename pattern for DS_PATTERN dataset.
-	*
-	* @param	string			set filename pattern
-	*/
-	void SetPatternString (std::string strPattern);
+  /** [DS_PATTERN]
+   * SetPattern
+   *
+   *	Sets filename pattern for DS_PATTERN dataset.
+   *
+   * @param	string			set filename pattern
+   */
+  void SetPatternString(std::string strPattern);
 
-	/** [DS_PATTERN]
-	* AddWildcard
-	*
-	*	Adds wildcard to wildcardlist.
-	*	This method will set a DS_NOTSET to DS_PATTERN.
-	*
-	* @param	VistaWildcard			wildcard to use
-	*/
-	void AddWildcard (VistaWildcard wildcard);
+  /** [DS_PATTERN]
+   * AddWildcard
+   *
+   *	Adds wildcard to wildcardlist.
+   *	This method will set a DS_NOTSET to DS_PATTERN.
+   *
+   * @param	VistaWildcard			wildcard to use
+   */
+  void AddWildcard(VistaWildcard wildcard);
 
-	/** [DS_PATTERN]
-	* GetFileNameX
-	*
-	*	Get VistaFileSystemFile to filename specified by the given patternstring, wildcards
-	*	and the parameters ...valueX-1, valueX.
-	*
-	*	GetFileName1 will replace the first added wildcard by value1 (to get a valid filename, this must be the only wildcard)
-	*	....
-	*	GetFileNameA will use an array with 'size' values to replace a number of 'size' wildcards
-	*
-	* @param	int							value to replace wildcard
-	* @RETURN	VistaFileSystemFile*				new VistaFileSystemFile pointer with requested filename
-	*										if you use GetFileName with incorrect symbolnumber
-	*										this filename could be invalid
-	*/
-	VistaFileSystemFile GetFileName1 (int value1);
-	VistaFileSystemFile GetFileName2 (int value1, int value2);
-	VistaFileSystemFile GetFileName3 (int value1, int value2, int value3);
-	VistaFileSystemFile GetFileNameA (int* value, int size);
+  /** [DS_PATTERN]
+   * GetFileNameX
+   *
+   *	Get VistaFileSystemFile to filename specified by the given patternstring, wildcards
+   *	and the parameters ...valueX-1, valueX.
+   *
+   *	GetFileName1 will replace the first added wildcard by value1 (to get a valid filename, this
+   *must be the only wildcard)
+   *	....
+   *	GetFileNameA will use an array with 'size' values to replace a number of 'size' wildcards
+   *
+   * @param	int							value to replace wildcard
+   * @RETURN	VistaFileSystemFile*				new VistaFileSystemFile pointer with requested
+   *filename if you use GetFileName with incorrect symbolnumber this filename could be invalid
+   */
+  VistaFileSystemFile GetFileName1(int value1);
+  VistaFileSystemFile GetFileName2(int value1, int value2);
+  VistaFileSystemFile GetFileName3(int value1, int value2, int value3);
+  VistaFileSystemFile GetFileNameA(int* value, int size);
 
-	/** [DS_DIRECTORY]
-	* SetDirectory
-	*
-	*	Sets type to DS_DIRECTORY and constructs filelist from given Directory path.
-	*	This method will set a DS_NOTSET to DS_DIRECTORY.
-	*
-	* @param	string				pathname of Directory
-	*/
-	void SetDirectory (std::string strDirectory);
+  /** [DS_DIRECTORY]
+   * SetDirectory
+   *
+   *	Sets type to DS_DIRECTORY and constructs filelist from given Directory path.
+   *	This method will set a DS_NOTSET to DS_DIRECTORY.
+   *
+   * @param	string				pathname of Directory
+   */
+  void SetDirectory(std::string strDirectory);
 
-	/** [DS_DIRECTORY]
-	* UpdateDirectory
-	*
-	*	This method will clear the filelist and read all files new from the given directory
-	*
-	*/
-	void UpdateDirectory ();
+  /** [DS_DIRECTORY]
+   * UpdateDirectory
+   *
+   *	This method will clear the filelist and read all files new from the given directory
+   *
+   */
+  void UpdateDirectory();
 
-	/** [DS_FILELIST]
-	* AddFile
-	*
-	*	Adds a file (by filename or pointer to VistaFileSystemFile) to filelist.
-	*	This method will set a DS_NOTSET to DS_FILELIST.
-	*
-	* @param	string/VistaFileSystemFile*				filename/pointer to existing VistaFileSystemFile
-	*/
-	void AddFile (std::string strFilename);
-	void AddFile (VistaFileSystemFile pFile);
+  /** [DS_FILELIST]
+   * AddFile
+   *
+   *	Adds a file (by filename or pointer to VistaFileSystemFile) to filelist.
+   *	This method will set a DS_NOTSET to DS_FILELIST.
+   *
+   * @param	string/VistaFileSystemFile*				filename/pointer to existing
+   *VistaFileSystemFile
+   */
+  void AddFile(std::string strFilename);
+  void AddFile(VistaFileSystemFile pFile);
 
+  /**
+   * CheckFileName
+   *
+   *	Checks, if specified filename is in filelist
+   *
+   * @param	string					filename to check
+   * @RETURN	bool					is filename in dataset ?
+   *
+   */
+  bool CheckFileName(std::string strFilename);
 
-	/**
-	* CheckFileName
-	*
-	*	Checks, if specified filename is in filelist
-	*
-	* @param	string					filename to check
-	* @RETURN	bool					is filename in dataset ?
-	*
-	*/
-	bool CheckFileName (std::string strFilename);
+  /**
+   * operator==
+   *
+   *	compares two datasets
+   *
+   * @param	CDataSet				right hand size of comparison
+   * @RETURN	bool					are datasets equal ?
+   */
+  bool operator==(const VistaFileDataSet& rhs);
 
-	/**
-	* operator==
-	*
-	*	compares two datasets
-	*
-	* @param	CDataSet				right hand size of comparison
-	* @RETURN	bool					are datasets equal ?
-	*/
-	bool operator== (const VistaFileDataSet& rhs);
+ protected:
+  /** [DS_PATTERN]
+   * CheckPattern
+   *
+   *	Checks, if all wildcardss in wildcardlist appear in patternstring
+   *
+   * @RETURN	bool				do all patterns appear in patternstring ?
+   */
+  bool CheckPattern();
 
-protected:
-	/** [DS_PATTERN]
-	* CheckPattern
-	*
-	*	Checks, if all wildcardss in wildcardlist appear in patternstring
-	*
-	* @RETURN	bool				do all patterns appear in patternstring ?
-	*/
-	bool CheckPattern ();
+  /** [DS_PATTERN]
+   * MatchPattern
+   *
+   *	Replaces an occuring wildcard in patternstring with a symbol(=value)
+   *
+   * @param	string				patternstring
+   * @param	int					value to replace wildcard in patternstring
+   *with
+   * @param	VistaWildcard			wildcard in patternstring which is replaced
+   * @RETURN	string				resulting patternstring
+   */
+  std::string MatchPattern(std::string inStrPattern, int symbol, VistaWildcard pattern);
 
-	/** [DS_PATTERN]
-	* MatchPattern
-	*
-	*	Replaces an occuring wildcard in patternstring with a symbol(=value)
-	*
-	* @param	string				patternstring
-	* @param	int					value to replace wildcard in patternstring with
-	* @param	VistaWildcard			wildcard in patternstring which is replaced
-	* @RETURN	string				resulting patternstring
-	*/
-	std::string MatchPattern (std::string inStrPattern, int symbol, VistaWildcard pattern);
+  /** [DS_PATTERN]
+   * MatchRecursivePattern
+   *
+   *	Replaces recursively all wildcards in strFile from wildcard *itPattern on to
+   *	last entry of wildcardlist.
+   *	For each wildcard all symbols from MinRange to MaxRange are replaced, if all
+   *	wildcards are resolved recursively, the resulting filename is pushed back
+   *	into the filelist.
+   *
+   *	So, a call (m_strPattern, first entry of list) will recursively generate all
+   *	filenames using the wildcardlist and push them into the filelist.
+   *
+   * @param	string				patternstring
+   * @param	iterator			iterator of current wildcard in patternlist
+   * @RETURN	bool				last entry in patternlist not reached ?
+   */
+  bool MatchRecursivePattern(std::string strFile, std::list<VistaWildcard>::iterator itPattern);
 
-	/** [DS_PATTERN]
-	* MatchRecursivePattern
-	*
-	*	Replaces recursively all wildcards in strFile from wildcard *itPattern on to
-	*	last entry of wildcardlist.
-	*	For each wildcard all symbols from MinRange to MaxRange are replaced, if all
-	*	wildcards are resolved recursively, the resulting filename is pushed back
-	*	into the filelist.
-	*
-	*	So, a call (m_strPattern, first entry of list) will recursively generate all
-	*	filenames using the wildcardlist and push them into the filelist.
-	*
-	* @param	string				patternstring
-	* @param	iterator			iterator of current wildcard in patternlist
-	* @RETURN	bool				last entry in patternlist not reached ?
-	*/
-	bool MatchRecursivePattern (std::string strFile, std::list <VistaWildcard>::iterator itPattern);
+  /**
+   * Copy
+   *
+   *	Copies one dataset to this object.
+   *
+   * @param	CVceDataSet			object to copy from
+   *
+   */
+  void CopyDataSet(VistaFileDataSet& dataset);
 
-	/**
-	* Copy
-	*
-	*	Copies one dataset to this object.
-	*
-	* @param	CVceDataSet			object to copy from
-	*
-	*/
-	void CopyDataSet (VistaFileDataSet& dataset);
+ private:
+  // dataset type
+  DATASET_TYPE m_nType;
 
-private:
-	// dataset type
-	DATASET_TYPE				m_nType;
+  // was Set method (SetPattern/SetDirectory) called ?
+  // you can't do this twice !
+  bool m_bSet;
 
-	// was Set method (SetPattern/SetDirectory) called ?
-	// you can't do this twice !
-	bool						m_bSet;
+  // type PATTERN
+  std::list<VistaWildcard> m_listWildcards;
+  std::string              m_strPattern;
 
-	// type PATTERN
-	std::list <VistaWildcard>		m_listWildcards;
-	std::string					m_strPattern;
+  // type DIRECTORY
+  VistaFileSystemDirectory* m_pDirectory;
 
-	//type DIRECTORY
-	VistaFileSystemDirectory*		m_pDirectory;
+  // type FILELIST
+  std::list<VistaFileSystemFile> m_listFiles;
 
-	//type FILELIST
-	std::list <VistaFileSystemFile>	m_listFiles;
-
-public:
-	/** <<, >>
-	* Purpose: streaming operator for CDataSet
-	* @RETURN:
-	*
-	*/
-	friend std::ostream& operator<<(std::ostream& out,VistaFileDataSet &data);
-	friend std::istream& operator>>(std::istream& in, VistaFileDataSet &data);
-
+ public:
+  /** <<, >>
+   * Purpose: streaming operator for CDataSet
+   * @RETURN:
+   *
+   */
+  friend std::ostream& operator<<(std::ostream& out, VistaFileDataSet& data);
+  friend std::istream& operator>>(std::istream& in, VistaFileDataSet& data);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //TOOLSFILEDATASET_H
-
-
+#endif // TOOLSFILEDATASET_H

@@ -21,66 +21,54 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaOSGKeyboardDriver.h"
 
 #if defined(WIN32) && !defined(VISTAOSGKEYBOARDPLUGIN_STATIC)
-	#ifdef VISTAOSGKEYBOARDPLUGIN_EXPORTS
-		#define VISTAOSGKEYBOARDPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTAOSGKEYBOARDPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAOSGKEYBOARDPLUGIN_EXPORTS
+#define VISTAOSGKEYBOARDPLUGINAPI __declspec(dllexport)
+#else
+#define VISTAOSGKEYBOARDPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAOSGKEYBOARDPLUGINAPI
+#define VISTAOSGKEYBOARDPLUGINAPI
 #endif
 
-
-namespace
-{
-	VistaOSGKeyboardDriverCreationMethod *SpFactory = NULL;
+namespace {
+VistaOSGKeyboardDriverCreationMethod* SpFactory = NULL;
 }
-
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTAOSGKEYBOARDDRIVERCONFIG_H
 
+extern "C" VISTAOSGKEYBOARDPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaOSGKeyboardDriverCreationMethod(fac);
 
-extern "C" VISTAOSGKEYBOARDPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if(SpFactory == NULL)
-		SpFactory = new VistaOSGKeyboardDriverCreationMethod(fac);
-
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAOSGKEYBOARDPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( crm == SpFactory )
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
+extern "C" VISTAOSGKEYBOARDPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == SpFactory)
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
 }
 
-extern "C" VISTAOSGKEYBOARDPLUGINAPI const char *GetDeviceClassName()
-{
-	return "OSGKEYBOARD";
+extern "C" VISTAOSGKEYBOARDPLUGINAPI const char* GetDeviceClassName() {
+  return "OSGKEYBOARD";
 }

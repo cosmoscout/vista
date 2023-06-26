@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGHALOSHADER_H_
 #define _VISTAOPENSGHALOSHADER_H_
 
@@ -31,8 +30,8 @@
 
 #include "VistaKernelOpenSGExtConfig.h"
 
-#include <string>
 #include "VistaOpenSGPerMaterialShader.h"
+#include <string>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -50,21 +49,20 @@ class VistaOpenSGPerMaterialShader;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGHaloShader : public VistaOpenSGPerMaterialShader
-{
-public:
-	VistaOpenSGHaloShader();
-	VistaOpenSGHaloShader( const std::string& sVertexShaderFile,
-							const std::string& sFragmentShaderFile );
-	~VistaOpenSGHaloShader();
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGHaloShader : public VistaOpenSGPerMaterialShader {
+ public:
+  VistaOpenSGHaloShader();
+  VistaOpenSGHaloShader(
+      const std::string& sVertexShaderFile, const std::string& sFragmentShaderFile);
+  ~VistaOpenSGHaloShader();
 
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pGeometry );
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pMaterial,
-				const std::vector<CShaderUniformParam>& vecUniformParams );
+  virtual bool ApplyToOSGMaterial(osg::ChunkMaterialPtr& pGeometry);
+  virtual bool ApplyToOSGMaterial(
+      osg::ChunkMaterialPtr& pMaterial, const std::vector<CShaderUniformParam>& vecUniformParams);
 
-private:
-	static const std::string s_sVertexShader;
-	static const std::string s_sFragmentShader;
+ private:
+  static const std::string s_sVertexShader;
+  static const std::string s_sFragmentShader;
 };
 
 /*============================================================================*/

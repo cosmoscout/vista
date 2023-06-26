@@ -21,57 +21,48 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-
 #if defined(WIN32) && !defined(VISTAWIIMOTEDRIVERPLUGIN_STATIC)
-	#ifdef VISTAWIIMOTEPLUGIN_EXPORTS
-		#define VISTAWIIMOTEPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTAWIIMOTEPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAWIIMOTEPLUGIN_EXPORTS
+#define VISTAWIIMOTEPLUGINAPI __declspec(dllexport)
+#else
+#define VISTAWIIMOTEPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAWIIMOTEPLUGINAPI
+#define VISTAWIIMOTEPLUGINAPI
 #endif
 
 #include "VistaWiimoteDriver.h"
 
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaAspects/VistaAspectsUtils.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-namespace
-{
-	VistaWiimoteDriverCreationMethod *g_SpFactory = NULL;
+namespace {
+VistaWiimoteDriverCreationMethod* g_SpFactory = NULL;
 }
 
+extern "C" VISTAWIIMOTEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (g_SpFactory == NULL)
+    g_SpFactory = new VistaWiimoteDriverCreationMethod(fac);
 
-extern "C" VISTAWIIMOTEPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( g_SpFactory == NULL )
-		g_SpFactory = new VistaWiimoteDriverCreationMethod(fac);
-
-	IVistaReferenceCountable::refup(g_SpFactory);
-	return g_SpFactory;
+  IVistaReferenceCountable::refup(g_SpFactory);
+  return g_SpFactory;
 }
 
-extern "C" VISTAWIIMOTEPLUGINAPI const char *GetDeviceClassName()
-{
-	return "WIIMOTE";
+extern "C" VISTAWIIMOTEPLUGINAPI const char* GetDeviceClassName() {
+  return "WIIMOTE";
 }
 
-
-extern "C" VISTAWIIMOTEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( g_SpFactory == NULL )
-	{
-		if(IVistaReferenceCountable::refdown(g_SpFactory))
-			g_SpFactory = NULL;
-	}
+extern "C" VISTAWIIMOTEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (g_SpFactory == NULL) {
+    if (IVistaReferenceCountable::refdown(g_SpFactory))
+      g_SpFactory = NULL;
+  }
 }
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */

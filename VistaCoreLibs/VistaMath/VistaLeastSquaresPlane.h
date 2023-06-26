@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTALEASTSUQARESPLANE_H
 #define _VISTALEASTSUQARESPLANE_H
 /*============================================================================*/
@@ -31,51 +30,46 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <vector>
 #include "VistaMathConfig.h"
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 class VistaVector3D;
-template <class Type, int dim> class VistaSquareMatrix;
+template <class Type, int dim>
+class VistaSquareMatrix;
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
-* Compute the least squares fitting plane for a given set of points
-*/
-class VISTAMATHAPI VistaLeastSquaresPlane
-{
-public:
-	/**
-	* Compute the least squares fitting plane through the given set of points
-	*
-	* @param setPoints     set of input points for which to compute the plane
-	* @param fPlaneCenter  the point set COG
-	* @param fPlaneNormal  the normal of the least squares plane through the point set
-	*/
-	static void ComputeLeastSquaresPlane(   const std::vector<VistaVector3D>& vecPoints,
-											VistaVector3D& v3PlaneCenter,
-											VistaVector3D& v3PlaneNormal);
-	/**
-	* same show as above but with other data types...
-	*/
-	static void ComputeLeastSquaresPlane(   const std::vector<double*> &vecPoints,
-											double nPlaneCenter[3],
-											double nPlaneNormal[3]);
-	static void ComputeLeastSquaresPlane(   const std::vector<float*> &vecPoints,
-											float fPlaneCenter[3],
-											float fPlaneNormal[3]);
+ * Compute the least squares fitting plane for a given set of points
+ */
+class VISTAMATHAPI VistaLeastSquaresPlane {
+ public:
+  /**
+   * Compute the least squares fitting plane through the given set of points
+   *
+   * @param setPoints     set of input points for which to compute the plane
+   * @param fPlaneCenter  the point set COG
+   * @param fPlaneNormal  the normal of the least squares plane through the point set
+   */
+  static void ComputeLeastSquaresPlane(const std::vector<VistaVector3D>& vecPoints,
+      VistaVector3D& v3PlaneCenter, VistaVector3D& v3PlaneNormal);
+  /**
+   * same show as above but with other data types...
+   */
+  static void ComputeLeastSquaresPlane(
+      const std::vector<double*>& vecPoints, double nPlaneCenter[3], double nPlaneNormal[3]);
+  static void ComputeLeastSquaresPlane(
+      const std::vector<float*>& vecPoints, float fPlaneCenter[3], float fPlaneNormal[3]);
 
-private:
-	/**
-	* here the trick is done: Compute the eigensystem of the covariance matrix
-	*/
-	static void ComputePlaneNormal( VistaSquareMatrix<double,3>& rMatrix,
-									VistaVector3D& v3PlaneNormal);
-
+ private:
+  /**
+   * here the trick is done: Compute the eigensystem of the covariance matrix
+   */
+  static void ComputePlaneNormal(
+      VistaSquareMatrix<double, 3>& rMatrix, VistaVector3D& v3PlaneNormal);
 };
 #endif /* ifndef _VISTALEASTSUQARESPLANE_H */
-

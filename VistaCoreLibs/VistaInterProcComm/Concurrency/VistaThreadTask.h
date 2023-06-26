@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADTASK_H
 #define _VISTATHREADTASK_H
 
@@ -31,7 +30,6 @@
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include "VistaThread.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,31 +42,29 @@
 class IVistaThreadedTask;
 class VistaThreadTask;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaThreadTask : public VistaThread
-{
-public:
-	VistaThreadTask();
-	virtual ~VistaThreadTask();
-	virtual void ThreadBody();
+class VISTAINTERPROCCOMMAPI VistaThreadTask : public VistaThread {
+ public:
+  VistaThreadTask();
+  virtual ~VistaThreadTask();
+  virtual void ThreadBody();
 
-	bool SetThreadedTask(IVistaThreadedTask *);
-	IVistaThreadedTask *GetThreadedTask() const;
+  bool                SetThreadedTask(IVistaThreadedTask*);
+  IVistaThreadedTask* GetThreadedTask() const;
 
-	virtual void PostRun();
-protected:
-private:
+  virtual void PostRun();
 
-	IVistaThreadedTask *m_pTask;
+ protected:
+ private:
+  IVistaThreadedTask* m_pTask;
 };
 
 /**
  * @ingroup VistaInterProcComm
- * 
+ *
  * @brief Base class for all kinds of threaded tasks in ViSTA.
  *
  * The interface defines the three methods PreWork(),
@@ -80,59 +76,57 @@ private:
  * cleanup after the task finished, like deallocating resources which
  * were allocated beforehand.
  */
-class VISTAINTERPROCCOMMAPI IVistaThreadedTask
-{
-	friend class VistaThreadTask;
-public:
-	virtual ~IVistaThreadedTask();
+class VISTAINTERPROCCOMMAPI IVistaThreadedTask {
+  friend class VistaThreadTask;
 
-	
-	bool GetIsDone() const;
+ public:
+  virtual ~IVistaThreadedTask();
 
-	/**
-	 * Indicates whether this work instance is CURRENTLY processed. A
-	 * DONE task will return false here!
-	 */
-	bool GetIsProcessed() const;
+  bool GetIsDone() const;
 
-	/**
-	 * Call this routine to execute the whole threaded task. This
-	 * comprises executing PreWork(), DefinedThreadWork() and
-	 * PostWork(). Do not override this method in subclasses, but
-	 * instead overwrite those three designated methods, respectively.
-	 */
-	void ThreadWork();
+  /**
+   * Indicates whether this work instance is CURRENTLY processed. A
+   * DONE task will return false here!
+   */
+  bool GetIsProcessed() const;
 
-protected:
-	IVistaThreadedTask();
+  /**
+   * Call this routine to execute the whole threaded task. This
+   * comprises executing PreWork(), DefinedThreadWork() and
+   * PostWork(). Do not override this method in subclasses, but
+   * instead overwrite those three designated methods, respectively.
+   */
+  void ThreadWork();
 
-    /**
-	 * Overwrite this method to prepare your working task. Resource
-	 * allocation and other preparation of the actual job execution
-	 * should happen here.
-	 */
-	virtual void PreWork();
+ protected:
+  IVistaThreadedTask();
 
-	/**
-	 * Overwrite this method for any cleanup measures after the task
-	 * has finished, like freeing up any allocated resources.
-	 */
-	virtual void PostWork();
+  /**
+   * Overwrite this method to prepare your working task. Resource
+   * allocation and other preparation of the actual job execution
+   * should happen here.
+   */
+  virtual void PreWork();
 
-	/**
-	 * This method has to be overwritten in subclasses and defines the
-	 * actual work this threaded task will perform.
-	 */
-	virtual void DefinedThreadWork() = 0;
+  /**
+   * Overwrite this method for any cleanup measures after the task
+   * has finished, like freeing up any allocated resources.
+   */
+  virtual void PostWork();
 
-private:
-	void StartWork();
-	void StopWork();
+  /**
+   * This method has to be overwritten in subclasses and defines the
+   * actual work this threaded task will perform.
+   */
+  virtual void DefinedThreadWork() = 0;
 
-	bool m_bIsProcessed;
-	bool m_bIsDone;
+ private:
+  void StartWork();
+  void StopWork();
+
+  bool m_bIsProcessed;
+  bool m_bIsDone;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

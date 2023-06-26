@@ -21,36 +21,34 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASIXENSEDRIVER_H
 #define _VISTASIXENSEDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include "VistaSixenseCommonShare.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-//Creation Method
+// Creation Method
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTASIXENSEDRIVER_STATIC) 
-	#ifdef VISTASIXENSEDRIVER_EXPORTS
-		#define VISTASIXENSEDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTASIXENSEDRIVERAPI __declspec(dllimport)
-	#endif
+// Windows DLL build
+#if defined(WIN32) && !defined(VISTASIXENSEDRIVER_STATIC)
+#ifdef VISTASIXENSEDRIVER_EXPORTS
+#define VISTASIXENSEDRIVERAPI __declspec(dllexport)
+#else
+#define VISTASIXENSEDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTASIXENSEDRIVERAPI
+#define VISTASIXENSEDRIVERAPI
 #endif
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -68,38 +66,34 @@ typedef _sixenseAllControllerData sixenseAllControllerData;
 /**
  *
  */
-class VISTASIXENSEDRIVERAPI VistaSixenseDriver : public IVistaDeviceDriver
-{
-public:
-	VistaSixenseDriver( IVistaDriverCreationMethod *crm );
-	virtual ~VistaSixenseDriver();
+class VISTASIXENSEDRIVERAPI VistaSixenseDriver : public IVistaDeviceDriver {
+ public:
+  VistaSixenseDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaSixenseDriver();
 
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool PhysicalEnable(bool bEnable);
 
-protected:
-	virtual bool DoSensorUpdate( VistaType::microtime dTs );
-	virtual bool PhysicalEnable( bool bEnable );
+  virtual bool UpdateSensor(const int nSensorIndex, const VistaType::microtime nTimestamp);
 
+ protected:
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-
-	virtual bool UpdateSensor( const int nSensorIndex, const VistaType::microtime nTimestamp );
-protected:
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
-private:
-	VistaDriverThreadAspect* m_pThreadAspect;
-	VistaDriverSensorMappingAspect* m_pMappingAspect;
-	sixenseAllControllerData* m_pData;
-	unsigned char m_anLastUpdateIndices[4];
+ private:
+  VistaDriverThreadAspect*        m_pThreadAspect;
+  VistaDriverSensorMappingAspect* m_pMappingAspect;
+  sixenseAllControllerData*       m_pData;
+  unsigned char                   m_anLastUpdateIndices[4];
 };
 
+// CREATION METHOD
 
-//CREATION METHOD
-
-class VISTASIXENSEDRIVERAPI VistaSixenseCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaSixenseCreationMethod( IVistaTranscoderFactoryFactory* metaFac );
-	virtual IVistaDeviceDriver* CreateDriver();
+class VISTASIXENSEDRIVERAPI VistaSixenseCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaSixenseCreationMethod(IVistaTranscoderFactoryFactory* metaFac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/

@@ -32,7 +32,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __OPENALSOUNDCONTEXT_H
 #define __OPENALSOUNDCONTEXT_H
 
@@ -40,17 +39,17 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <string>
-#include <map>
-#include <vector>
 #include <list>
+#include <map>
+#include <string>
+#include <vector>
 
 #include <al.h>
 #include <alc.h>
 #include <alut.h>
 
 #ifdef WIN32
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4996)
 #endif
 
 /*============================================================================*/
@@ -65,340 +64,299 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class OpenALSoundContext
-{
-public:
-	class OpenALVirtualListener;
-	class OpenALVirtualSound;
-	class OpenALSoundEnvironment;
-	class OpenALSound;
-
-	OpenALSoundContext();
-	virtual ~OpenALSoundContext();
-
-	// #######################
-	// BUFFERS
-	// #######################
-
-
-	class OpenALBuffer
-	{
-		friend class OpenALSoundContext;
-		friend class OpenALSoundContext::OpenALSound;
-	public:
-		int GetSampleRate() const;
-		int GetBitDepth() const;
-		int GetChannels() const;
-		int GetSize() const;
-
-		bool GetIsStreamingBuffer() const;
-		void SetIsStreamingBuffer(bool bIsStreamingBuffer);
-
-		ALuint GetBufferId() const;
-
-		std::string GetBufferName() const;
-		void        SetBufferName(const std::string &sName);
-		OpenALBuffer(const OpenALBuffer &mb);
-		OpenALBuffer &operator=(const OpenALBuffer &);
-
-
-		bool FillBuffer(ALuint nSize,
-						ALuint freq,
-						const ALvoid *pvBufferData,
-						ALenum eFormat);
-
-		static OpenALBuffer *ReadFromWav(const std::string &sFileName);
-		static OpenALBuffer *CreateFromBuffer(const std::string &sName,
-								 ALuint nSize,
-								 ALuint nFreq,
-								 ALenum eFormat,
-								 const ALvoid *pvBufferData);
-
-	protected:
-	private:
-		OpenALBuffer();
-		~OpenALBuffer();
-
-		ALuint m_nBufId;
-		ALuint m_nFreq;
-		ALuint m_nFormat;
-		std::string m_sName;
-		bool m_bStreamingBuffer;
-	};
-
-	bool AddBuffer(OpenALBuffer *buf);
-	bool RemBuffer(OpenALBuffer *buf);
-	OpenALBuffer *GetBuffer(const std::string &sName) const;
-	OpenALBuffer *GetBuffer(ALuint nBufferId) const;
-
-	// #######################
-	// SOUNDS
-	// #######################
-	class OpenALSound
-	{
-		friend class OpenALSoundContext;
-		friend class OpenALSoundContext::OpenALSoundEnvironment;
-	public:
-
-		enum ePlayState
-		{
-			PS_NONE = -1,
-			PS_IDLE,
-			PS_PLAY,
-			PS_PAUSE,
-			PS_REWIND,
-			PS_MUTE
-		};
+class OpenALSoundContext {
+ public:
+  class OpenALVirtualListener;
+  class OpenALVirtualSound;
+  class OpenALSoundEnvironment;
+  class OpenALSound;
 
-
-		bool SetPlaystate(ePlayState eState);
-		ePlayState GetPlaystate() const;
+  OpenALSoundContext();
+  virtual ~OpenALSoundContext();
 
-
-		float GetPitch() const;
-		void  SetPitch(float);
+  // #######################
+  // BUFFERS
+  // #######################
 
-		float GetGain() const;
-		void  SetGain(float);
+  class OpenALBuffer {
+    friend class OpenALSoundContext;
+    friend class OpenALSoundContext::OpenALSound;
 
-		bool GetIsLooping() const;
-		void SetIsLooping(bool);
+   public:
+    int GetSampleRate() const;
+    int GetBitDepth() const;
+    int GetChannels() const;
+    int GetSize() const;
 
-		enum eState
-		{
-			STATE_NONE=-1,
-			STATE_PLAYING=0,
-			STATE_STOPPED,
-			STATE_PAUSED
-		};
+    bool GetIsStreamingBuffer() const;
+    void SetIsStreamingBuffer(bool bIsStreamingBuffer);
 
-		eState GetSoundState() const;
+    ALuint GetBufferId() const;
 
+    std::string GetBufferName() const;
+    void        SetBufferName(const std::string& sName);
+    OpenALBuffer(const OpenALBuffer& mb);
+    OpenALBuffer& operator=(const OpenALBuffer&);
 
-		OpenALSoundEnvironment *GetEnvironment() const;
+    bool FillBuffer(ALuint nSize, ALuint freq, const ALvoid* pvBufferData, ALenum eFormat);
 
-		bool AttachBuffer(const OpenALBuffer &);
-		bool DetachBuffer(const OpenALBuffer *pBuffer = NULL);
-		ALuint GetBufferId() const;
+    static OpenALBuffer* ReadFromWav(const std::string& sFileName);
+    static OpenALBuffer* CreateFromBuffer(const std::string& sName, ALuint nSize, ALuint nFreq,
+        ALenum eFormat, const ALvoid* pvBufferData);
 
-		int GetNumBuffersProcessed() const;
+   protected:
+   private:
+    OpenALBuffer();
+    ~OpenALBuffer();
 
-		OpenALSound(const OpenALSound &);
-		OpenALSound &operator=(const OpenALSound &);
+    ALuint      m_nBufId;
+    ALuint      m_nFreq;
+    ALuint      m_nFormat;
+    std::string m_sName;
+    bool        m_bStreamingBuffer;
+  };
 
-	protected:
-		void SetEnvironment(OpenALSoundEnvironment *);
+  bool          AddBuffer(OpenALBuffer* buf);
+  bool          RemBuffer(OpenALBuffer* buf);
+  OpenALBuffer* GetBuffer(const std::string& sName) const;
+  OpenALBuffer* GetBuffer(ALuint nBufferId) const;
 
-		float GetFloatValue(int nId) const;
-		void  SetFloatValue(int nId, float fValue);
-		void  SetFloat3Array(int nId, float val[3]);
-		void  SetFloat3Array(int nId, float f1, float f2, float f3);
+  // #######################
+  // SOUNDS
+  // #######################
+  class OpenALSound {
+    friend class OpenALSoundContext;
+    friend class OpenALSoundContext::OpenALSoundEnvironment;
 
-		void  SetFloat6Array(int nId, float val[6]);
-		void  GetFloat3Array(int nId, float val[3]) const;
-		void  GetFloat3Array(int nId, float &f1, float &f2, float &f3) const;
-		void  GetFloat6Array(int nId, float val[6]) const;
+   public:
+    enum ePlayState { PS_NONE = -1, PS_IDLE, PS_PLAY, PS_PAUSE, PS_REWIND, PS_MUTE };
 
-		bool  GetBoolValue(int nId) const;
-		void  SetBoolValue(int nId, bool bValue);
+    bool       SetPlaystate(ePlayState eState);
+    ePlayState GetPlaystate() const;
 
-		int   GetIntValue(int nId) const;
-		void  SetIntValue(int nId, int nValue);
+    float GetPitch() const;
+    void  SetPitch(float);
 
-		OpenALSound();
-		OpenALSound(OpenALSoundEnvironment *);
-		virtual ~OpenALSound();
+    float GetGain() const;
+    void  SetGain(float);
 
-	private:
+    bool GetIsLooping() const;
+    void SetIsLooping(bool);
 
-		OpenALSoundEnvironment *m_pEnv;
-		ALuint m_nSndId;
+    enum eState { STATE_NONE = -1, STATE_PLAYING = 0, STATE_STOPPED, STATE_PAUSED };
 
-		float m_nMuteGain;
-		ePlayState m_ePlayState;
-	};
+    eState GetSoundState() const;
 
-	class OpenALVirtualSound : public OpenALSound
-	{
-		friend class OpenALSoundContext;
-		friend class OpenALSoundContext::OpenALSoundEnvironment;
-	public:
-		float GetMaxDistance() const;
-		void  SetMaxDistance(float);
+    OpenALSoundEnvironment* GetEnvironment() const;
 
-		float GetRolloffFactor() const;
-		void  SetRolloffFactor(float);
+    bool   AttachBuffer(const OpenALBuffer&);
+    bool   DetachBuffer(const OpenALBuffer* pBuffer = NULL);
+    ALuint GetBufferId() const;
 
-		float GetReferenceDistance() const;
-		void  SetReferenceDistance(float);
+    int GetNumBuffersProcessed() const;
 
-		float GetMinGain() const;
-		void  SetMinGain(float);
+    OpenALSound(const OpenALSound&);
+    OpenALSound& operator=(const OpenALSound&);
 
-		float GetMaxGain() const;
-		void  SetMaxGain(float);
+   protected:
+    void SetEnvironment(OpenALSoundEnvironment*);
 
-		float GetConeOuterGain() const;
-		void  SetConeOuterGain(float);
+    float GetFloatValue(int nId) const;
+    void  SetFloatValue(int nId, float fValue);
+    void  SetFloat3Array(int nId, float val[3]);
+    void  SetFloat3Array(int nId, float f1, float f2, float f3);
 
+    void SetFloat6Array(int nId, float val[6]);
+    void GetFloat3Array(int nId, float val[3]) const;
+    void GetFloat3Array(int nId, float& f1, float& f2, float& f3) const;
+    void GetFloat6Array(int nId, float val[6]) const;
 
-		void  GetPosition(float &x, float &y, float &z) const;
-		void  GetPosition(float pos[3]);
-		void  SetPosition(float x, float y, float z);
-		void  SetPosition(float pos[3]);
+    bool GetBoolValue(int nId) const;
+    void SetBoolValue(int nId, bool bValue);
 
-		void  GetVelocity(float &x, float &y, float &z) const;
-		void  GetVelocity(float pos[3]);
-		void  SetVelocity(float x, float y, float z);
-		void  SetVelocity(float pos[3]);
+    int  GetIntValue(int nId) const;
+    void SetIntValue(int nId, int nValue);
 
-		void  GetDirection(float &x, float &y, float &z) const;
-		void  GetDirection(float pos[3]);
-		void  SetDirection(float x, float y, float z);
-		void  SetDirection(float pos[3]);
+    OpenALSound();
+    OpenALSound(OpenALSoundEnvironment*);
+    virtual ~OpenALSound();
 
+   private:
+    OpenALSoundEnvironment* m_pEnv;
+    ALuint                  m_nSndId;
 
-		bool GetSourceIsRelative() const;
-		void SetSourceIsRelative(bool);
+    float      m_nMuteGain;
+    ePlayState m_ePlayState;
+  };
 
-		int  GetConeInnerAngle() const;
-		void SetConeInnerAngle(int);
+  class OpenALVirtualSound : public OpenALSound {
+    friend class OpenALSoundContext;
+    friend class OpenALSoundContext::OpenALSoundEnvironment;
 
-		int  GetConeOuterAngle() const;
-		void SetConeOuterAngle(int);
+   public:
+    float GetMaxDistance() const;
+    void  SetMaxDistance(float);
 
-		OpenALVirtualSound(const OpenALVirtualSound &);
-		OpenALVirtualSound &operator=(const OpenALVirtualSound &);
-	protected:
-	private:
-		OpenALVirtualSound(OpenALSoundEnvironment *);
-		virtual ~OpenALVirtualSound();
-	};
+    float GetRolloffFactor() const;
+    void  SetRolloffFactor(float);
 
+    float GetReferenceDistance() const;
+    void  SetReferenceDistance(float);
 
-	// #######################
-	// ENVIRONMENT
-	// #######################
-	class OpenALSoundEnvironment
-	{
-		friend class OpenALSoundContext;
-	public:
-		virtual ~OpenALSoundEnvironment();
+    float GetMinGain() const;
+    void  SetMinGain(float);
 
-		OpenALVirtualListener *GetListener() const;
+    float GetMaxGain() const;
+    void  SetMaxGain(float);
 
-		bool MakeCurrent();
+    float GetConeOuterGain() const;
+    void  SetConeOuterGain(float);
 
+    void GetPosition(float& x, float& y, float& z) const;
+    void GetPosition(float pos[3]);
+    void SetPosition(float x, float y, float z);
+    void SetPosition(float pos[3]);
 
-		OpenALVirtualSound *CreateAndAddSound();
-		bool DeleteSound(OpenALVirtualSound *);
-		bool RemoveSound(OpenALVirtualSound *);
-		bool AddSound(OpenALVirtualSound *);
+    void GetVelocity(float& x, float& y, float& z) const;
+    void GetVelocity(float pos[3]);
+    void SetVelocity(float x, float y, float z);
+    void SetVelocity(float pos[3]);
 
-		bool HasBuffer(OpenALBuffer *pBuf) const;
-	protected:
-	private:
-		OpenALVirtualListener *m_pListener;
-		OpenALSoundEnvironment(ALCdevice* pDev);
-		ALCcontext *m_pALCContext;
-		std::vector<OpenALVirtualSound*> m_mpSounds;
-	};
+    void GetDirection(float& x, float& y, float& z) const;
+    void GetDirection(float pos[3]);
+    void SetDirection(float x, float y, float z);
+    void SetDirection(float pos[3]);
 
+    bool GetSourceIsRelative() const;
+    void SetSourceIsRelative(bool);
 
-	// #######################
-	// LISTENER
-	// #######################
-	class OpenALVirtualListener
-	{
-		friend class OpenALSoundContext;
-		friend class OpenALSoundContext::OpenALSoundEnvironment;
-	public:
+    int  GetConeInnerAngle() const;
+    void SetConeInnerAngle(int);
 
-	bool UpdateListenerWCS(float pos[3],
-						   float view[3],
-						   float up[3]);
+    int  GetConeOuterAngle() const;
+    void SetConeOuterAngle(int);
 
+    OpenALVirtualSound(const OpenALVirtualSound&);
+    OpenALVirtualSound& operator=(const OpenALVirtualSound&);
 
-	bool UpdateListenerWCSPos(float pos[3]);
-	bool UpdateListenerWCSView(float view[3]);
-	bool UpdateListenerWCSUp(float up[3]);
+   protected:
+   private:
+    OpenALVirtualSound(OpenALSoundEnvironment*);
+    virtual ~OpenALVirtualSound();
+  };
 
-	bool UpdateListenerVel(float vel[3]);
+  // #######################
+  // ENVIRONMENT
+  // #######################
+  class OpenALSoundEnvironment {
+    friend class OpenALSoundContext;
 
-	bool UpdateListenerWCS(float x, float y, float z,
-					   float viewx, float viewy, float viewz,
-					   float upx, float upy, float upz);
+   public:
+    virtual ~OpenALSoundEnvironment();
 
+    OpenALVirtualListener* GetListener() const;
 
-	bool UpdateListenerWCSPos(float x, float y, float z);
-	bool UpdateListenerWCSView(float viewx, float viewy, float viewz);
-	bool UpdateListenerWCSUp(float upx, float upy, float upz);
+    bool MakeCurrent();
 
-	bool UpdateListenerVel(float velx, float vely, float velz);
+    OpenALVirtualSound* CreateAndAddSound();
+    bool                DeleteSound(OpenALVirtualSound*);
+    bool                RemoveSound(OpenALVirtualSound*);
+    bool                AddSound(OpenALVirtualSound*);
 
-	void SetListenerGain(float fGain);
-	float GetListenerGain() const;
+    bool HasBuffer(OpenALBuffer* pBuf) const;
 
-	OpenALSoundEnvironment *GetEnvironment() const;
-	protected:
-		void SetEnvironment(OpenALSoundEnvironment *);
-	private:
-		OpenALVirtualListener();
-		virtual ~OpenALVirtualListener();
-		OpenALSoundEnvironment *m_pEnv;
-	};
+   protected:
+   private:
+    OpenALVirtualListener* m_pListener;
+    OpenALSoundEnvironment(ALCdevice* pDev);
+    ALCcontext*                      m_pALCContext;
+    std::vector<OpenALVirtualSound*> m_mpSounds;
+  };
 
-	class OpenALCaptureContext
-	{
-	public:
-		OpenALCaptureContext(size_t freq,
-				             unsigned int format,
-				             size_t captureBufferSizeInSamples,
-				             const std::string &captureDevice = "" );
+  // #######################
+  // LISTENER
+  // #######################
+  class OpenALVirtualListener {
+    friend class OpenALSoundContext;
+    friend class OpenALSoundContext::OpenALSoundEnvironment;
 
-		~OpenALCaptureContext();
+   public:
+    bool UpdateListenerWCS(float pos[3], float view[3], float up[3]);
 
-		bool start();
-		bool stop();
-		bool doesCapture() const;
+    bool UpdateListenerWCSPos(float pos[3]);
+    bool UpdateListenerWCSView(float view[3]);
+    bool UpdateListenerWCSUp(float up[3]);
 
-		size_t captureTo( void *buffer, size_t maxSize );
-		size_t available() const;
+    bool UpdateListenerVel(float vel[3]);
 
-		static std::list<std::string> getCaptureDeviceNames();
-		static std::string getDefaultCaptureDevice();
-	private:
-		ALCdevice *m_pCapture;
-		bool m_bDoesCapture;
-	};
+    bool UpdateListenerWCS(float x, float y, float z, float viewx, float viewy, float viewz,
+        float upx, float upy, float upz);
 
+    bool UpdateListenerWCSPos(float x, float y, float z);
+    bool UpdateListenerWCSView(float viewx, float viewy, float viewz);
+    bool UpdateListenerWCSUp(float upx, float upy, float upz);
 
-// USER API
-	bool PrintState() const;
-	OpenALSoundContext::OpenALSoundEnvironment *CreateAndAddSoundEnv(const std::string &sEnvName);
-	OpenALSoundContext::OpenALSoundEnvironment *GetSoundEnvironment(const std::string &sEnvName) const;
+    bool UpdateListenerVel(float velx, float vely, float velz);
 
-	std::string GetVendor() const;
-	std::string GetVersion() const;
-	std::string GetRenderer() const;
-	std::string GetExtensions() const;
-protected:
-private:
-	// OpenAL members
-	ALCdevice  *m_pALCDevice;
+    void  SetListenerGain(float fGain);
+    float GetListenerGain() const;
 
-	std::string m_pcVendor,
-			m_pcVersion,
-			m_pcRenderer,
-			m_pcExtensions;
+    OpenALSoundEnvironment* GetEnvironment() const;
 
-	bool m_bGetEnv;
+   protected:
+    void SetEnvironment(OpenALSoundEnvironment*);
 
-	std::map<std::string, OpenALSoundEnvironment*> m_mpEnvs;
-	std::map<std::string, OpenALBuffer*> m_mpBuffers;
+   private:
+    OpenALVirtualListener();
+    virtual ~OpenALVirtualListener();
+    OpenALSoundEnvironment* m_pEnv;
+  };
+
+  class OpenALCaptureContext {
+   public:
+    OpenALCaptureContext(size_t freq, unsigned int format, size_t captureBufferSizeInSamples,
+        const std::string& captureDevice = "");
+
+    ~OpenALCaptureContext();
+
+    bool start();
+    bool stop();
+    bool doesCapture() const;
+
+    size_t captureTo(void* buffer, size_t maxSize);
+    size_t available() const;
+
+    static std::list<std::string> getCaptureDeviceNames();
+    static std::string            getDefaultCaptureDevice();
+
+   private:
+    ALCdevice* m_pCapture;
+    bool       m_bDoesCapture;
+  };
+
+  // USER API
+  bool                                        PrintState() const;
+  OpenALSoundContext::OpenALSoundEnvironment* CreateAndAddSoundEnv(const std::string& sEnvName);
+  OpenALSoundContext::OpenALSoundEnvironment* GetSoundEnvironment(
+      const std::string& sEnvName) const;
+
+  std::string GetVendor() const;
+  std::string GetVersion() const;
+  std::string GetRenderer() const;
+  std::string GetExtensions() const;
+
+ protected:
+ private:
+  // OpenAL members
+  ALCdevice* m_pALCDevice;
+
+  std::string m_pcVendor, m_pcVersion, m_pcRenderer, m_pcExtensions;
+
+  bool m_bGetEnv;
+
+  std::map<std::string, OpenALSoundEnvironment*> m_mpEnvs;
+  std::map<std::string, OpenALBuffer*>           m_mpBuffers;
 };
-
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -408,10 +366,4 @@ private:
 /* END OF FILE                                                                */
 /*============================================================================*/
 
-
-
-
 #endif // __OPENALSOUNDCONTEXT_H
-
-
-

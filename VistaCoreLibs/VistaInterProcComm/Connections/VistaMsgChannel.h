@@ -21,18 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMSGCHANNEL_H
 #define _VISTAMSGCHANNEL_H
 
 #include <string>
 
-
-#include <VistaAspects/VistaPropertyAwareable.h>
 #include <VistaAspects/VistaObserveable.h>
+#include <VistaAspects/VistaPropertyAwareable.h>
 
-#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
+#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 #include <VistaInterProcComm/Connections/VistaMsg.h>
 
 /*============================================================================*/
@@ -54,42 +52,40 @@ class VistaMsg;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaMsgChannel : public IVistaObserveable
-{
-public:
-	VistaMsgChannel();
-	virtual ~VistaMsgChannel();
+class VISTAINTERPROCCOMMAPI VistaMsgChannel : public IVistaObserveable {
+ public:
+  VistaMsgChannel();
+  virtual ~VistaMsgChannel();
 
-	bool WriteGeneralMsg( VistaMsg &);
-	bool WriteMsg(int iMethodToken, const VistaPropertyList &rList, VistaMsg::MSG *pAnswer=NULL);
-	bool WriteMsg(int iMethodToken, const VistaPropertyList &rList, VistaPropertyList &rAnswer);
+  bool WriteGeneralMsg(VistaMsg&);
+  bool WriteMsg(int iMethodToken, const VistaPropertyList& rList, VistaMsg::MSG* pAnswer = NULL);
+  bool WriteMsg(int iMethodToken, const VistaPropertyList& rList, VistaPropertyList& rAnswer);
 
-	void SetConnection(VistaConnection *pConnection);
-	VistaConnection *GetConnection() const;
+  void             SetConnection(VistaConnection* pConnection);
+  VistaConnection* GetConnection() const;
 
-	bool DisconnectL();
+  bool DisconnectL();
 
-	bool GetIsOperational() const;
+  bool GetIsOperational() const;
 
-	std::string GetLastErrorString() const;
+  std::string GetLastErrorString() const;
 
-	enum
-	{
-		MSG_CONNECTED = IVistaObserveable::MSG_LAST,
-		MSG_DISCONNECTED,
-		MSG_CONNECTIONCHANGED,
-		MSG_LAST
-	};
+  enum {
+    MSG_CONNECTED = IVistaObserveable::MSG_LAST,
+    MSG_DISCONNECTED,
+    MSG_CONNECTIONCHANGED,
+    MSG_LAST
+  };
 
+ protected:
+  VistaMsgChannel(VistaMsgChannel&);
 
-protected:
-	VistaMsgChannel(VistaMsgChannel&);
-private:
-	VistaConnection *m_pConnection;
-	VistaByteBufferSerializer m_rSer;
-	VistaByteBufferDeSerializer m_rDeSer;
+ private:
+  VistaConnection*            m_pConnection;
+  VistaByteBufferSerializer   m_rSer;
+  VistaByteBufferDeSerializer m_rDeSer;
 
-	std::string m_sLastError;
+  std::string m_sLastError;
 };
 
 /*============================================================================*/
@@ -97,4 +93,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

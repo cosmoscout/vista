@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _EVENTDEMOAPPL_H
 #define _EVENTDEMOAPPL_H
 
@@ -43,21 +42,19 @@ class DemoHandler;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class EventDemoAppl
-{
-public:
-	EventDemoAppl( int argc = 0, char* argv[] = NULL );
-	virtual ~EventDemoAppl();
+class EventDemoAppl {
+ public:
+  EventDemoAppl(int argc = 0, char* argv[] = NULL);
+  virtual ~EventDemoAppl();
 
-	void Run();
-	void CreateScene();
-	
-private:
-	VistaSystem					m_pVistaSystem;
-	DemoHandler*				m_pEventHandler;
-	VistaEventManager*			m_pEventManager;
-	GreedyObserver*				m_pGreedyObserver;
+  void Run();
+  void CreateScene();
+
+ private:
+  VistaSystem        m_pVistaSystem;
+  DemoHandler*       m_pEventHandler;
+  VistaEventManager* m_pEventManager;
+  GreedyObserver*    m_pGreedyObserver;
 };
-
 
 #endif // _EVENTDEMOAPPL_H

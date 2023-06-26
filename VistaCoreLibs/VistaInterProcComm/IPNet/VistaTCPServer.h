@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPSERVER_H
 #define _VISTATCPSERVER_H
 
@@ -29,8 +28,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <string>
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
+#include <string>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -59,60 +58,59 @@ class VistaSocketAddress;
  *  <li>while(1) { VistaTCPSocket *client = GetNextClient(); if(client) fork_away(client); };
  * </ul>
  */
-class VISTAINTERPROCCOMMAPI VistaTCPServer
-{
-private:
+class VISTAINTERPROCCOMMAPI VistaTCPServer {
+ private:
+  /**
+   * The serversocket that this server is bound to in order to accept
+   * incoming connections.
+   */
+  VistaTCPServerSocket* m_pServerSocket;
+  bool                  m_bValid;
+  int                   m_iBacklog;
 
-	/**
-	 * The serversocket that this server is bound to in order to accept
-	 * incoming connections.
-	 */
-	VistaTCPServerSocket *m_pServerSocket;
-	bool m_bValid;
-	int  m_iBacklog;
+  void SetupSocket(const VistaSocketAddress& rAdressToPutSocketOn, bool bForceReuse);
 
+ protected:
+ public:
+  /**
+   * Creates the serversocket and binds it to the interface as given in sMyHostName and
+   * the specified port.
+   * @param sMyHostName to interface name to bind this server to (a DNS valid host name or dotted ip
+   * of an ethernet interface to listen to)
+   * @param iMyPort the port to setup the server to (e.g. 80 for http-services)
+   */
+  // VistaTCPServer(const std::string &sMyHostName, int iMyPort);
+  VistaTCPServer(const VistaSocketAddress&, int iBacklog = 0, bool bForceReuse = true);
+  VistaTCPServer(
+      const std::string& sMyHostName, int iMyPort, int iBacklog = 0, bool bForceReuse = true);
 
-	void SetupSocket(const VistaSocketAddress &rAdressToPutSocketOn, bool bForceReuse);
-protected:
-public:
+  /**
+   * Closes the server socket if this is open and deletes is.
+   */
+  virtual ~VistaTCPServer();
 
-	/**
-	 * Creates the serversocket and binds it to the interface as given in sMyHostName and
-	 * the specified port.
-	 * @param sMyHostName to interface name to bind this server to (a DNS valid host name or dotted ip of an ethernet interface to listen to)
-	 * @param iMyPort the port to setup the server to (e.g. 80 for http-services)
-	 */
-	//VistaTCPServer(const std::string &sMyHostName, int iMyPort);
-	VistaTCPServer(const VistaSocketAddress &, int iBacklog = 0, bool bForceReuse=true);
-	VistaTCPServer(const std::string &sMyHostName, int iMyPort, int iBacklog = 0, bool bForceReuse=true);
+  /**
+   * Sets the server-socket into listen state and accepts incoming connections. It does
+   * accept |iBacklog|-number of concurrently incoming requests before the clients
+   * get the "connection refused" message on the peer side. This defaults to 1,
+   * as this is "usually" what you want.
+   * @param iBacklog the number of cuncurrently accepted connections, defaults to 1
+   * @return a full-blown and ready tcp-socket to send to and receive from or NULL in case of error
+   * (always check!)
+   */
+  VistaTCPSocket* GetNextClient(int iBacklog = 1);
 
-	/**
-	 * Closes the server socket if this is open and deletes is.
-	 */
-	virtual ~VistaTCPServer();
+  bool GetIsValid() const {
+    return m_bValid;
+  };
 
-	/**
-	 * Sets the server-socket into listen state and accepts incoming connections. It does
-	 * accept |iBacklog|-number of concurrently incoming requests before the clients
-	 * get the "connection refused" message on the peer side. This defaults to 1,
-	 * as this is "usually" what you want.
-	 * @param iBacklog the number of cuncurrently accepted connections, defaults to 1
-	 * @return a full-blown and ready tcp-socket to send to and receive from or NULL in case of error (always check!)
-	 */
-	VistaTCPSocket *GetNextClient( int iBacklog = 1);
+  VistaSocketAddress GetServerAddress() const;
 
-	bool GetIsValid() const { return m_bValid; };
-
-	VistaSocketAddress GetServerAddress() const;
-
-	void StopAccept();
+  void StopAccept();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-
-

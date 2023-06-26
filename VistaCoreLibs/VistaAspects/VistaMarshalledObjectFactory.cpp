@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaMarshalledObjectFactory.h"
 
+#include "VistaDeSerializer.h"
 #include "VistaSerializable.h"
 #include "VistaSerializer.h"
-#include "VistaDeSerializer.h"
 
 #include <cassert>
 /*============================================================================*/
@@ -37,182 +36,151 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaMarshalledObjectFactory::VistaMarshalledObjectFactory()
-	:	m_iTypeCounter(0),
-		m_pFactory(new VistaGenericFactory<IVistaSerializable, 
-							VistaMarshalledObjectFactory::LocalTypeInfo>)
-{
+    : m_iTypeCounter(0)
+    , m_pFactory(new VistaGenericFactory<IVistaSerializable,
+          VistaMarshalledObjectFactory::LocalTypeInfo>) {
 }
 
-VistaMarshalledObjectFactory::~VistaMarshalledObjectFactory()
-{
-	delete m_pFactory;
+VistaMarshalledObjectFactory::~VistaMarshalledObjectFactory() {
+  delete m_pFactory;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-VistaType::sint32 VistaMarshalledObjectFactory::RegisterType( 
-								IVistaSerializable *pType, 
-								IVistaCreator<IVistaSerializable> *pCreator )
-{
-	assert(m_pFactory != NULL);
-	
-	//register with the internal factory
-	LocalTypeInfo oLocalType = typeid(*pType);
-	if(!m_pFactory->RegisterCreator(oLocalType, pCreator))
-		return -1;
+VistaType::sint32 VistaMarshalledObjectFactory::RegisterType(
+    IVistaSerializable* pType, IVistaCreator<IVistaSerializable>* pCreator) {
+  assert(m_pFactory != NULL);
 
-	//generate new tpye id and insert into translation maps
-	VistaType::sint32 iNewGlobalTypeId = this->GetNextTypeId();
-	m_mapGlobalTypeToLocalType.insert(std::make_pair(iNewGlobalTypeId, oLocalType));
-	m_mapLocalTypeToGlobalType.insert(std::make_pair(oLocalType, iNewGlobalTypeId));
+  // register with the internal factory
+  LocalTypeInfo oLocalType = typeid(*pType);
+  if (!m_pFactory->RegisterCreator(oLocalType, pCreator))
+    return -1;
 
-	return iNewGlobalTypeId;
+  // generate new tpye id and insert into translation maps
+  VistaType::sint32 iNewGlobalTypeId = this->GetNextTypeId();
+  m_mapGlobalTypeToLocalType.insert(std::make_pair(iNewGlobalTypeId, oLocalType));
+  m_mapLocalTypeToGlobalType.insert(std::make_pair(oLocalType, iNewGlobalTypeId));
+
+  return iNewGlobalTypeId;
 }
 
+VistaType::sint32 VistaMarshalledObjectFactory::GetGlobalTypeId(
+    const IVistaSerializable* pType) const {
+  LocalTypeInfo                     oLocalType   = typeid(*pType);
+  TLocalToGlobalMap::const_iterator itGlobalType = m_mapLocalTypeToGlobalType.find(oLocalType);
 
-VistaType::sint32 VistaMarshalledObjectFactory::GetGlobalTypeId( 
-								const IVistaSerializable *pType ) const
-{
-	LocalTypeInfo oLocalType = typeid(*pType);
-	TLocalToGlobalMap::const_iterator itGlobalType = 
-						m_mapLocalTypeToGlobalType.find(oLocalType);
-
-	if(itGlobalType == m_mapLocalTypeToGlobalType.end())
-	{
-		//not registered
-		return -1;
-	}
-	else
-	{
-		return itGlobalType->second;
-	}
+  if (itGlobalType == m_mapLocalTypeToGlobalType.end()) {
+    // not registered
+    return -1;
+  } else {
+    return itGlobalType->second;
+  }
 }
 
+int VistaMarshalledObjectFactory::MarshalObject(
+    const IVistaSerializable* pObject, IVistaSerializer& rSer) const {
+  // map object type to global identifier
+  VistaType::sint32 iGlobalType = this->GetGlobalTypeId(pObject);
+  if (iGlobalType == -1) {
+    // type not registered
+    return -1;
+  }
+  // serialize the type identifier
+  int iRet = 0, iSum = 0;
+  iRet = rSer.WriteInt32(iGlobalType);
 
-int VistaMarshalledObjectFactory::MarshalObject(const IVistaSerializable *pObject, 
-												 IVistaSerializer &rSer ) const
-{
-	//map object type to global identifier
-	VistaType::sint32 iGlobalType = this->GetGlobalTypeId(pObject);
-	if(iGlobalType == -1)
-	{
-		//type not registered
-		return -1;
-	}
-	//serialize the type identifier
-	int iRet = 0, iSum = 0;
-	iRet = rSer.WriteInt32(iGlobalType);
-	
-	if(iRet < 0)
-	{
-		//type id serialization failed
-		return -1;
-	}
-	iSum += iRet;
-	
-	//serialize the object state right behind it
-	iRet = rSer.WriteSerializable(*pObject);
-	
-	if(iRet < 0)
-	{
-		//serializable serialization failed
-		return -1;
-	}
-	iSum += iRet;
-	
-	//done - return total number of bytes written
-	return iSum;
+  if (iRet < 0) {
+    // type id serialization failed
+    return -1;
+  }
+  iSum += iRet;
+
+  // serialize the object state right behind it
+  iRet = rSer.WriteSerializable(*pObject);
+
+  if (iRet < 0) {
+    // serializable serialization failed
+    return -1;
+  }
+  iSum += iRet;
+
+  // done - return total number of bytes written
+  return iSum;
 }
 
-IVistaSerializable * VistaMarshalledObjectFactory::UnmarshalObject(IVistaDeSerializer &rDeser) const
-{
-	//retrieve the type identifier 
-	VistaType::sint32 iGlobalTypeId = 0;
-	if(rDeser.ReadInt32(iGlobalTypeId) < 0)
-	{
-		//deserialization of type id failed
-		return NULL;
-	}
-	//map global to local type identifier
-	TGlobalToLocalMap::const_iterator itLocalId = m_mapGlobalTypeToLocalType.find(iGlobalTypeId);
+IVistaSerializable* VistaMarshalledObjectFactory::UnmarshalObject(
+    IVistaDeSerializer& rDeser) const {
+  // retrieve the type identifier
+  VistaType::sint32 iGlobalTypeId = 0;
+  if (rDeser.ReadInt32(iGlobalTypeId) < 0) {
+    // deserialization of type id failed
+    return NULL;
+  }
+  // map global to local type identifier
+  TGlobalToLocalMap::const_iterator itLocalId = m_mapGlobalTypeToLocalType.find(iGlobalTypeId);
 
-	if(itLocalId == m_mapGlobalTypeToLocalType.end())
-	{
-		//type id not registered
-		return NULL;
-	}
-	const LocalTypeInfo &rLocalType = itLocalId->second;
+  if (itLocalId == m_mapGlobalTypeToLocalType.end()) {
+    // type id not registered
+    return NULL;
+  }
+  const LocalTypeInfo& rLocalType = itLocalId->second;
 
-	//create our new object from local type identifier
-	IVistaSerializable *pNewObj = m_pFactory->CreateInstance(rLocalType);
-	if(pNewObj == NULL)
-	{
-		//object creation failed - possibly because creator was not registered properly
-		return NULL;
-	}
+  // create our new object from local type identifier
+  IVistaSerializable* pNewObj = m_pFactory->CreateInstance(rLocalType);
+  if (pNewObj == NULL) {
+    // object creation failed - possibly because creator was not registered properly
+    return NULL;
+  }
 
-	//deserialize the rest of the object
-	if(rDeser.ReadSerializable(*pNewObj) < 0)
-	{
-		//deserialization failed
-		delete pNewObj;
-		return NULL;
-	}
+  // deserialize the rest of the object
+  if (rDeser.ReadSerializable(*pNewObj) < 0) {
+    // deserialization failed
+    delete pNewObj;
+    return NULL;
+  }
 
-	//...done!
-	return pNewObj;
+  //...done!
+  return pNewObj;
 }
 
-VistaType::sint32 VistaMarshalledObjectFactory::GetNextTypeId()
-{
-	return m_iTypeCounter++;
+VistaType::sint32 VistaMarshalledObjectFactory::GetNextTypeId() {
+  return m_iTypeCounter++;
 }
 
-void VistaMarshalledObjectFactory::Clear()
-{
-	m_mapGlobalTypeToLocalType.clear();
-	m_mapLocalTypeToGlobalType.clear();
-	m_iTypeCounter = 0;
-	delete m_pFactory;
-	m_pFactory = new VistaGenericFactory<IVistaSerializable, 
-							VistaMarshalledObjectFactory::LocalTypeInfo>;
+void VistaMarshalledObjectFactory::Clear() {
+  m_mapGlobalTypeToLocalType.clear();
+  m_mapLocalTypeToGlobalType.clear();
+  m_iTypeCounter = 0;
+  delete m_pFactory;
+  m_pFactory =
+      new VistaGenericFactory<IVistaSerializable, VistaMarshalledObjectFactory::LocalTypeInfo>;
 }
 
-size_t VistaMarshalledObjectFactory::GetNumTypes() const
-{
-	return m_mapGlobalTypeToLocalType.size();
+size_t VistaMarshalledObjectFactory::GetNumTypes() const {
+  return m_mapGlobalTypeToLocalType.size();
 }
 
-
-VistaMarshalledObjectFactory::LocalTypeInfo::LocalTypeInfo( const type_info& oInfo )
-	: m_rTypeInfo(oInfo)
-{
-
+VistaMarshalledObjectFactory::LocalTypeInfo::LocalTypeInfo(const type_info& oInfo)
+    : m_rTypeInfo(oInfo) {
 }
 
-VistaMarshalledObjectFactory::LocalTypeInfo::LocalTypeInfo( const LocalTypeInfo &rOther )
-	: m_rTypeInfo(rOther.m_rTypeInfo)
-{
-
+VistaMarshalledObjectFactory::LocalTypeInfo::LocalTypeInfo(const LocalTypeInfo& rOther)
+    : m_rTypeInfo(rOther.m_rTypeInfo) {
 }
 
-bool VistaMarshalledObjectFactory::LocalTypeInfo::operator<( const LocalTypeInfo &rRHS ) const
-{
-	return this->m_rTypeInfo.before(rRHS.m_rTypeInfo) != 0;
+bool VistaMarshalledObjectFactory::LocalTypeInfo::operator<(const LocalTypeInfo& rRHS) const {
+  return this->m_rTypeInfo.before(rRHS.m_rTypeInfo) != 0;
 }
 
-bool VistaMarshalledObjectFactory::LocalTypeInfo::operator==( const LocalTypeInfo &rRHS ) const
-{
-	return this->m_rTypeInfo == rRHS.m_rTypeInfo;
+bool VistaMarshalledObjectFactory::LocalTypeInfo::operator==(const LocalTypeInfo& rRHS) const {
+  return this->m_rTypeInfo == rRHS.m_rTypeInfo;
 }
 
-const type_info& VistaMarshalledObjectFactory::LocalTypeInfo::GetTypeInfo() const
-{
-	return m_rTypeInfo;
+const type_info& VistaMarshalledObjectFactory::LocalTypeInfo::GetTypeInfo() const {
+  return m_rTypeInfo;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

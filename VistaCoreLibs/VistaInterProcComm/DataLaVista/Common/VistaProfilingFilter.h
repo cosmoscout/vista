@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTAPROFILINGFILTER_H
 #define DLVISTAPROFILINGFILTER_H
 
@@ -37,7 +36,6 @@
 #include <VistaInterProcComm/DataLaVista/Base/VistaDLVTypes.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaInPlaceFilter.h>
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -49,46 +47,42 @@ class IDLVistaRTC;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaProfilingFilter : public IDLVistaInPlaceFilter
-{
-public:
-	DLVistaProfilingFilter();
+class VISTAINTERPROCCOMMAPI DLVistaProfilingFilter : public IDLVistaInPlaceFilter {
+ public:
+  DLVistaProfilingFilter();
 
+  virtual ~DLVistaProfilingFilter();
 
-	virtual ~DLVistaProfilingFilter();
+  IDLVistaDataPacket* GivePacket(bool);
+  IDLVistaDataPacket* CreatePacket();
+  void                DeletePacket(IDLVistaDataPacket*);
+  bool                InitPacketMgmt();
 
-	IDLVistaDataPacket *GivePacket(bool);
-	IDLVistaDataPacket *CreatePacket();
-	void                DeletePacket(IDLVistaDataPacket *);
-	bool                InitPacketMgmt();
+  /**
+   * This component will accept any incoming packet, so this method will always return 0.
+   */
+  virtual int GetInputPacketType() const;
 
-	/**
-	 * This component will accept any incoming packet, so this method will always return 0.
-	 */
-	virtual int GetInputPacketType() const;
+  /**
+   * This component will forward incoming packets without modification, so this will
+   * always return 0.
+   */
+  virtual int GetOutputPacketType() const;
 
-	/**
-	 * This component will forward incoming packets without modification, so this will
-	 * always return 0.
-	 */
-	virtual int GetOutputPacketType() const;
+ protected:
+  IDLVistaDataPacket* FilterPacketL(IDLVistaDataPacket* pPacket);
 
-protected:
-	IDLVistaDataPacket *FilterPacketL(IDLVistaDataPacket *pPacket);
-private:
-	DLV_INT64 m_i64MicroMean, m_i64MicroMin, m_i64MicroMax;
-	DLV_INT32 m_i32MacroMean, m_i32MacroMin, m_i32MacroMax;
+ private:
+  DLV_INT64 m_i64MicroMean, m_i64MicroMin, m_i64MicroMax;
+  DLV_INT32 m_i32MacroMean, m_i32MacroMin, m_i32MacroMax;
 
-	DLV_INT32 m_i32PacketCount;
+  DLV_INT32 m_i32PacketCount;
 
-	IDLVistaRTC *m_pTimer;
+  IDLVistaRTC* m_pTimer;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTATOTEXTFILTER_H
-
+#endif // DLVISTATOTEXTFILTER_H

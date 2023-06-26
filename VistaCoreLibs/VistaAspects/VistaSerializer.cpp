@@ -21,9 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSerializer.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -41,72 +39,57 @@
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::ushort16 val)
-{
-	WriteShort16(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::ushort16 val) {
+  WriteShort16(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::sint32 val)
-{
-	WriteInt32(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::sint32 val) {
+  WriteInt32(val);
+  return *this;
 }
 
-
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::uint32 val)
-{
-	WriteInt32(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::uint32 val) {
+  WriteInt32(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::sint64 val)
-{
-	WriteInt64(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::sint64 val) {
+  WriteInt64(val);
+  return *this;
 }
 
-
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::uint64 val)
-{
-	WriteUInt64(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::uint64 val) {
+  WriteUInt64(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::float32 val)
-{
-	WriteFloat32(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::float32 val) {
+  WriteFloat32(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< (  VistaType::float64 val)
-{
-	WriteFloat64(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::float64 val) {
+  WriteFloat64(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< (  const std::string &val)
-{
-	WriteEncodedString(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(const std::string& val) {
+  WriteEncodedString(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< (  bool val)
-{
-	WriteBool(val);
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(bool val) {
+  WriteBool(val);
+  return *this;
 }
 
-IVistaSerializer &IVistaSerializer::operator<< ( VistaType::byte val )
-{
-	WriteRawBuffer( &val, sizeof( VistaType::byte ) );
-	return *this;
+IVistaSerializer& IVistaSerializer::operator<<(VistaType::byte val) {
+  WriteRawBuffer(&val, sizeof(VistaType::byte));
+  return *this;
 }
 
-
-void IVistaSerializer::SetByteorderSwapFlag( bool bDoesIt )
-{
-	SetByteorderSwapFlag( bDoesIt == true ? VistaSerializingToolset::SWAPS_MULTIBYTE_VALUES : VistaSerializingToolset::DOES_NOT_SWAP_MULTIBYTE_VALUES );
+void IVistaSerializer::SetByteorderSwapFlag(bool bDoesIt) {
+  SetByteorderSwapFlag(bDoesIt == true ? VistaSerializingToolset::SWAPS_MULTIBYTE_VALUES
+                                       : VistaSerializingToolset::DOES_NOT_SWAP_MULTIBYTE_VALUES);
 }
-
-

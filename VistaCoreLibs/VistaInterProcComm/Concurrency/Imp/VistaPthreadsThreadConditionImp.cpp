@@ -21,17 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <cerrno>
 
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 #if defined(VISTA_THREADING_POSIX)
 
-#include "VistaPthreadsThreadConditionImp.h"
 #include "VistaPthreadsMutexImp.h"
+#include "VistaPthreadsThreadConditionImp.h"
 
 #include <unistd.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -41,47 +39,37 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaPthreadsThreadConditionImp::VistaPthreadsThreadConditionImp()
-{
-	pthread_cond_init(&m_Condition, NULL);
+VistaPthreadsThreadConditionImp::VistaPthreadsThreadConditionImp() {
+  pthread_cond_init(&m_Condition, NULL);
 }
 
-VistaPthreadsThreadConditionImp::~VistaPthreadsThreadConditionImp()
-{
-	pthread_cond_destroy(&m_Condition);
+VistaPthreadsThreadConditionImp::~VistaPthreadsThreadConditionImp() {
+  pthread_cond_destroy(&m_Condition);
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-int VistaPthreadsThreadConditionImp::SignalCondition()
-{
-	return pthread_cond_signal(&m_Condition);
+int VistaPthreadsThreadConditionImp::SignalCondition() {
+  return pthread_cond_signal(&m_Condition);
 }
 
-int VistaPthreadsThreadConditionImp::BroadcastCondition() 
-{
-	return pthread_cond_broadcast(&m_Condition);
+int VistaPthreadsThreadConditionImp::BroadcastCondition() {
+  return pthread_cond_broadcast(&m_Condition);
 }
 
-int VistaPthreadsThreadConditionImp::WaitForCondition(IVistaMutexImp *pMutexImp) 
-{
-	return TEMP_FAILURE_RETRY( pthread_cond_wait(&m_Condition, (static_cast<VistaPthreadsMutexImp*>(pMutexImp)->GetPthreadMutex())) );
+int VistaPthreadsThreadConditionImp::WaitForCondition(IVistaMutexImp* pMutexImp) {
+  return TEMP_FAILURE_RETRY(pthread_cond_wait(
+      &m_Condition, (static_cast<VistaPthreadsMutexImp*>(pMutexImp)->GetPthreadMutex())));
 }
 
-int VistaPthreadsThreadConditionImp::WaitForConditionWithTimeout(IVistaMutexImp *pImp, int iMsecs)
-{
-	return 0;
+int VistaPthreadsThreadConditionImp::WaitForConditionWithTimeout(IVistaMutexImp* pImp, int iMsecs) {
+  return 0;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif // VISTA_THREADING_POSIX
-
-

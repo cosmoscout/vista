@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATIMEOUTROUTER_H
 #define _VISTATIMEOUTROUTER_H
 
@@ -60,97 +59,91 @@ class VistaClusterMode;
  * Use as follows.
  * - create a timeout router instance
  * - register a number of CTimedCallback instances (you have to subclass here)
-	 use the VistaTimeoutRouter::AddUpdateCall() api.
+         use the VistaTimeoutRouter::AddUpdateCall() api.
  * - the timeout router does *only* manage its internal memory, so
-	 you have to care for valid pointers to CTimedCallback instances
-	 as well as the release of the memory once the callback is not to be
-	 used anymore.
+         you have to care for valid pointers to CTimedCallback instances
+         as well as the release of the memory once the callback is not to be
+         used anymore.
  */
-class VISTAKERNELAPI VistaTimeoutRouter : public VistaTimeoutHandler
-{
-public:
+class VISTAKERNELAPI VistaTimeoutRouter : public VistaTimeoutHandler {
+ public:
+  VistaTimeoutRouter(VistaEventManager* pEvMgr, VistaClusterMode* pClusterMode);
+  virtual ~VistaTimeoutRouter();
 
-	VistaTimeoutRouter(VistaEventManager *pEvMgr,
-						VistaClusterMode   *pClusterMode);
-	virtual ~VistaTimeoutRouter();
+  /**
+   * The default number of repetitions is infinite.
+   */
+  class VISTAKERNELAPI CTimedCallback {
+   public:
+    virtual ~CTimedCallback() {
+    }
 
+    bool Callback(double dTimeStamp, double dDesiredLength, double dRealLength);
 
-	/**
-	 * The default number of repetitions is infinite.
-	 */
-	class VISTAKERNELAPI CTimedCallback
-	{
-	public:
-		virtual ~CTimedCallback()
-		{}
+    int  GetRepeatCount() const;
+    void SetRepeatCount(int nRepeatCount);
 
-		bool Callback( double dTimeStamp,
-					   double dDesiredLength,
-					   double dRealLength );
+    virtual void CallbackDoneHandshake() {
+    }
 
-		int  GetRepeatCount() const;
-		void SetRepeatCount(int nRepeatCount);
+   protected:
+    /**
+     * IMPLEMENT THIS ROUTINE IN A SUBCLASS.
+     */
+    virtual bool DoCallback(double dTimeStamp, double dDesiredLength, double dIntervalLength) = 0;
+    CTimedCallback()
+        : m_nRepeatCount(-1) // inifinite
+    {
+    }
 
-		virtual void CallbackDoneHandshake() {}
-	protected:
-		/**
-		 * IMPLEMENT THIS ROUTINE IN A SUBCLASS.
-		 */
-		virtual bool DoCallback( double dTimeStamp,
-								 double dDesiredLength,
-								 double dIntervalLength ) = 0;
-		CTimedCallback()
-			: m_nRepeatCount(-1) // inifinite
-		{}
+    int m_nRepeatCount;
+  };
 
-		int m_nRepeatCount;
-	};
+  /**
+   * Register an update callback with this router. An instance pointer
+   * to a CTimedCallback can be registered more than once with differnent
+   * update timespans, e.g. register the same instance for 1000msecs and
+   * for 500msecs.
+   */
+  void AddUpdateCall(int iMsecs, CTimedCallback*);
 
+  /**
+   * Remove an update call. You have to remember the timespan that you registered
+   * it for
+   * @return false iff the callback instance was not registered with the
+                                   timing given in iMsecs
+   */
+  bool RemUpdateCall(int iMsecs, CTimedCallback*);
 
-	/**
-	 * Register an update callback with this router. An instance pointer
-	 * to a CTimedCallback can be registered more than once with differnent
-	 * update timespans, e.g. register the same instance for 1000msecs and
-	 * for 500msecs.
-	 */
-	void AddUpdateCall(int iMsecs, CTimedCallback *);
+  // ##################################################################
+  // OVERLOADED FROM VistaTimeoutHandler
+  // ##################################################################
+  void HandleTimeout(HD_TIMER tim);
+  void HandleEvent(VistaEvent* pEvent);
 
-	/**
-	 * Remove an update call. You have to remember the timespan that you registered
-	 * it for
-	 * @return false iff the callback instance was not registered with the
-					 timing given in iMsecs
-	 */
-	bool RemUpdateCall(int iMsecs, CTimedCallback *);
+ protected:
+ private:
+  /**
+   * we map milliseconds to timer instances
+   */
+  std::map<int, HD_TIMER> m_mpTimers;
+  /**
+   * once a timer is found, we map it to a list of
+   * update candidates
+   */
+  typedef std::list<CTimedCallback*>  CBLIST;
+  typedef std::map<HD_TIMER, CBLIST*> CANDLIST;
+  CANDLIST                            m_mpUpdateCandidates;
 
-	// ##################################################################
-	// OVERLOADED FROM VistaTimeoutHandler
-	// ##################################################################
-	void HandleTimeout(HD_TIMER tim);
-	void HandleEvent(VistaEvent *pEvent);
-protected:
-private:
-	/**
-	 * we map milliseconds to timer instances
-	 */
-	std::map<int, HD_TIMER> m_mpTimers;
-	/**
-	 * once a timer is found, we map it to a list of
-	 * update candidates
-	 */
-	typedef std::list<CTimedCallback*> CBLIST;
-	typedef std::map<HD_TIMER, CBLIST * > CANDLIST;
-	CANDLIST m_mpUpdateCandidates;
+  typedef std::pair<HD_TIMER, CTimedCallback*> REMPAIR;
+  typedef std::list<REMPAIR>                   TIMLIST;
+  TIMLIST                                      m_liScheduledRemoval;
 
-	typedef std::pair<HD_TIMER, CTimedCallback*> REMPAIR;
-	typedef std::list<REMPAIR> TIMLIST;
-	TIMLIST m_liScheduledRemoval;
+  bool CallUpdaters(CBLIST* pList, HD_TIMER tim);
+  void DoReleaseTim(const REMPAIR& tim);
 
-	bool CallUpdaters(CBLIST *pList, HD_TIMER tim);
-	void DoReleaseTim( const REMPAIR & tim );
-
-	double m_dEventTick;
-	bool   m_bInCallback;
+  double m_dEventTick;
+  bool   m_bInCallback;
 };
 
 /*============================================================================*/
@@ -158,4 +151,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

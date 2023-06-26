@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnReEvalNode.h" 
+#include "VdfnReEvalNode.h"
 
 #include <VistaTools/VistaBasicProfiler.h>
 
@@ -34,41 +33,32 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 IVdfnReEvalNode::IVdfnReEvalNode()
-: IVdfnNode()
-{
+    : IVdfnNode() {
 }
 
-IVdfnReEvalNode::~IVdfnReEvalNode()
-{
+IVdfnReEvalNode::~IVdfnReEvalNode() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool IVdfnReEvalNode::NeedsEval() const
-{
-	if( IVdfnNode::NeedsEval() )
-		return true;
-	else
-		return GetNeedsReEvaluation();
+bool IVdfnReEvalNode::NeedsEval() const {
+  if (IVdfnNode::NeedsEval())
+    return true;
+  else
+    return GetNeedsReEvaluation();
 }
 
-bool IVdfnReEvalNode::EvalNode( double nTimeStamp )
-{
-	if( GetNeedsReEvaluation() )
-	{
-		//VistaProfileScope( "Eval[" + GetNameForNameable() + "]" );
-		SetUpdateTimeStamp( nTimeStamp );
-		return DoEvalNode();
-	}
-	else
-		return IVdfnNode::EvalNode( nTimeStamp );
+bool IVdfnReEvalNode::EvalNode(double nTimeStamp) {
+  if (GetNeedsReEvaluation()) {
+    // VistaProfileScope( "Eval[" + GetNameForNameable() + "]" );
+    SetUpdateTimeStamp(nTimeStamp);
+    return DoEvalNode();
+  } else
+    return IVdfnNode::EvalNode(nTimeStamp);
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

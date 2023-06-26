@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _DEMOEVENT_H
 #define _DEMOEVENT_H
 
@@ -31,40 +30,31 @@
 #include <VistaKernel/EventManager/VistaEvent.h>
 #include <string>
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
  * CDemoEvent - an example for an application-defined event
  */
-class DemoEvent : public VistaEvent
-{
-public:
-    
-	DemoEvent();
+class DemoEvent : public VistaEvent {
+ public:
+  DemoEvent();
 
-	virtual ~DemoEvent();
+  virtual ~DemoEvent();
 
-	virtual std::string GetName() const 
-	{ 
-		return VistaEvent::GetName()+"::CDemoEvent"; 
-	}
+  virtual std::string GetName() const {
+    return VistaEvent::GetName() + "::CDemoEvent";
+  }
 
-	enum
-	{
-		EID_DEMOEVENT,
-		EID_LAST
-	};
+  enum { EID_DEMOEVENT, EID_LAST };
 
-	static int GetTypeId();
-	static void SetTypeId( int iId );
+  static int  GetTypeId();
+  static void SetTypeId(int iId);
 
-	static std::string GetIdString( int iId );
+  static std::string GetIdString(int iId);
 
-private:
-	static int  m_iEventId;
+ private:
+  static int m_iEventId;
 };
-
 
 #endif //_DEMOEVENT_H

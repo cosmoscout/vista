@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 #include "VistaProcessImp.h"
@@ -43,40 +42,32 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaProcessImp::IVistaProcessImp()
-{
+IVistaProcessImp::IVistaProcessImp() {
 }
 
-IVistaProcessImp::~IVistaProcessImp()
-{
+IVistaProcessImp::~IVistaProcessImp() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-IVistaProcessImp *IVistaProcessImp::CreateProcessImp()
-{
-	// factory method
+IVistaProcessImp* IVistaProcessImp::CreateProcessImp() {
+  // factory method
 #if defined(WIN32)
-	return new VistaWin32ProcessImp;
+  return new VistaWin32ProcessImp;
 #elif defined(LINUX) || defined(HPUX) || defined(SUNOS) || defined(IRIX)
-	return new VistaPosixProcessImp;
+  return new VistaPosixProcessImp;
 #else
-	return 0;
+  return 0;
 #endif
 }
 
-void IVistaProcessImp::PreRun()
-{
+void IVistaProcessImp::PreRun() {
 }
 
-void IVistaProcessImp::PostRun()
-{
+void IVistaProcessImp::PostRun() {
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

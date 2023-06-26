@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _IVISTA3DTEXT_H
 #define _IVISTA3DTEXT_H
 
-#include <string>
 #include <VistaKernel/VistaKernelConfig.h>
+#include <string>
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -43,44 +42,42 @@ class VistaBoundingBox;
 class VistaColor;
 class VistaVector3D;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI IVista3DText
-{
-public:
-	// Constructor
-	//virtual IVista3DFontInterface();
+class VISTAKERNELAPI IVista3DText {
+ public:
+  // Constructor
+  // virtual IVista3DFontInterface();
 
-	// Deconstructor
-	virtual ~IVista3DText();
+  // Deconstructor
+  virtual ~IVista3DText();
 
-	virtual void		  SetText(const std::string &Text ) = 0;
-	virtual std::string   GetText() const                   = 0;
+  virtual void        SetText(const std::string& Text) = 0;
+  virtual std::string GetText() const                  = 0;
 
-	virtual float         GetFontSize() const          = 0;
-	virtual void          SetFontSize(float fFontSize) = 0;
+  virtual float GetFontSize() const          = 0;
+  virtual void  SetFontSize(float fFontSize) = 0;
 
-	virtual float         GetFontDepth() const = 0;
-	virtual void          SetFontDepth(float fDepth) = 0;
+  virtual float GetFontDepth() const       = 0;
+  virtual void  SetFontDepth(float fDepth) = 0;
 
-	virtual bool          FontHasChar(char c) const    = 0;
+  virtual bool FontHasChar(char c) const = 0;
 
-	virtual bool          SetFontName(const std::string &sFontName) = 0;
-	virtual std::string   GetFontName() const = 0;
+  virtual bool        SetFontName(const std::string& sFontName) = 0;
+  virtual std::string GetFontName() const                       = 0;
 
-	virtual bool          GetIsLit() const = 0;
-	virtual bool          SetIsLit(bool bSet) = 0;
+  virtual bool GetIsLit() const    = 0;
+  virtual bool SetIsLit(bool bSet) = 0;
 
+  virtual VistaColor GetFontColor() const                   = 0;
+  virtual void       SetFontColor(const VistaColor& oColor) = 0;
 
-	virtual VistaColor    GetFontColor() const = 0;
-	virtual void          SetFontColor( const VistaColor& oColor ) = 0;
+ protected:
+  IVista3DText();
 
-protected:
-	IVista3DText();
-private:
+ private:
 };
 
 /*============================================================================*/
@@ -88,4 +85,3 @@ private:
 /*============================================================================*/
 
 #endif //_IVISTA3DTEXTINTERFACE_H
-

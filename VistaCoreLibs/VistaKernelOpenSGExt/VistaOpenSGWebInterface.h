@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGWEBINTERFACE_H_
 #define _VISTAOPENSGWEBINTERFACE_H_
 
@@ -47,28 +46,26 @@ class VistaSystem;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGWebInterface : public VistaEventHandler
-{
-public:
-	VistaOpenSGWebInterface( VistaSystem* pVistaSystem,
-								const int iPort = 8888 );
-	~VistaOpenSGWebInterface();
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGWebInterface : public VistaEventHandler {
+ public:
+  VistaOpenSGWebInterface(VistaSystem* pVistaSystem, const int iPort = 8888);
+  ~VistaOpenSGWebInterface();
 
-	void SetWebPort( const int iPort );
-	int GetWebPort() const;
+  void SetWebPort(const int iPort);
+  int  GetWebPort() const;
 
-	virtual void SetIsEnabled( bool bSet );
+  virtual void SetIsEnabled(bool bSet);
 
-	virtual void HandleEvent( VistaEvent *pEvent );
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-private:
-	void SetupWebInterface();
+ private:
+  void SetupWebInterface();
 
-private:
-	VistaSystem*		m_pVistaSystem;
-	struct DataWrapper;
-	DataWrapper*		m_pDataWrapper;
-	int					m_iPort;
+ private:
+  VistaSystem* m_pVistaSystem;
+  struct DataWrapper;
+  DataWrapper* m_pDataWrapper;
+  int          m_iPort;
 };
 
 /*============================================================================*/

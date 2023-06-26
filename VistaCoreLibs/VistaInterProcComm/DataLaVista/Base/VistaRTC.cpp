@@ -21,64 +21,51 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
 #include "VistaRTC.h"
 
-
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-IDLVistaRTC *IDLVistaRTC::m_pSingleton = 0;
+IDLVistaRTC* IDLVistaRTC::m_pSingleton = 0;
 
-IDLVistaRTC::IDLVistaRTC()
-{
-	SetRTCSingleton(this);
+IDLVistaRTC::IDLVistaRTC() {
+  SetRTCSingleton(this);
 }
 
+IDLVistaRTC::IDLVistaRTC(IDLVistaRTC&) {
 
-IDLVistaRTC::IDLVistaRTC(IDLVistaRTC &)
-{
-	
-	//throw;
+  // throw;
 }
 
-
-IDLVistaRTC::~IDLVistaRTC()
-{
-	m_pSingleton = 0;
+IDLVistaRTC::~IDLVistaRTC() {
+  m_pSingleton = 0;
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-
-void IDLVistaRTC::SetRTCSingleton(IDLVistaRTC *pSingleton)
-{
-	// this can only be done once!
-	if(!m_pSingleton)
-		m_pSingleton = pSingleton;
+void IDLVistaRTC::SetRTCSingleton(IDLVistaRTC* pSingleton) {
+  // this can only be done once!
+  if (!m_pSingleton)
+    m_pSingleton = pSingleton;
 }
 
-IDLVistaRTC *IDLVistaRTC::GetRTCSingleton()
-{
-	return m_pSingleton;
+IDLVistaRTC* IDLVistaRTC::GetRTCSingleton() {
+  return m_pSingleton;
 }
 
-const char *IDLVistaRTC::GetPrintfFormatSpecifier()
-{
+const char* IDLVistaRTC::GetPrintfFormatSpecifier() {
 #if defined(WIN32)
-	return "%I64d";
+  return "%I64d";
 #elif defined(LINUX)
-	return "%lld";
+  return "%lld";
 #else
-	return "%d";
+  return "%d";
 #endif
 }
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACLUSTERBYTEBUFFERDATASYNCBASE_H
 #define _VISTACLUSTERBYTEBUFFERDATASYNCBASE_H
 
@@ -31,11 +30,11 @@
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
-#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
+#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,63 +43,57 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaClusterBytebufferLeaderDataSyncBase : public IVistaClusterDataSync
-{
-public:
-	explicit VistaClusterBytebufferLeaderDataSyncBase( const bool bVerbose = true );
-	virtual ~VistaClusterBytebufferLeaderDataSyncBase();
+class VISTAINTERPROCCOMMAPI VistaClusterBytebufferLeaderDataSyncBase
+    : public IVistaClusterDataSync {
+ public:
+  explicit VistaClusterBytebufferLeaderDataSyncBase(const bool bVerbose = true);
+  virtual ~VistaClusterBytebufferLeaderDataSyncBase();
 
-	virtual bool SyncTime( VistaType::systemtime& nTime );
-	virtual bool SyncData( std::string& sData );
-	virtual bool SyncData( VistaPropertyList& oList );
-	virtual bool SyncData( IVistaSerializable& oSerializable );
-	virtual bool SyncData( VistaType::byte* pData, 
-							const int iDataSize );
-	virtual bool SyncData( VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							int& iDataSize );
-	virtual bool SyncData( std::vector<VistaType::byte>& vecData );
-protected:
-	bool SendMessage();
-	virtual bool DoSendMessage() = 0;
+  virtual bool SyncTime(VistaType::systemtime& nTime);
+  virtual bool SyncData(std::string& sData);
+  virtual bool SyncData(VistaPropertyList& oList);
+  virtual bool SyncData(IVistaSerializable& oSerializable);
+  virtual bool SyncData(VistaType::byte* pData, const int iDataSize);
+  virtual bool SyncData(VistaType::byte* pDataBuffer, const int iBufferSize, int& iDataSize);
+  virtual bool SyncData(std::vector<VistaType::byte>& vecData);
 
-protected:
-	VistaType::uint64		m_nSyncCount;
-	VistaByteBufferSerializer m_oMessage;
-	const VistaType::byte*	m_pExtBuffer;
-	VistaType::sint32		m_nExtBufferSize;
+ protected:
+  bool         SendMessage();
+  virtual bool DoSendMessage() = 0;
+
+ protected:
+  VistaType::uint64         m_nSyncCount;
+  VistaByteBufferSerializer m_oMessage;
+  const VistaType::byte*    m_pExtBuffer;
+  VistaType::sint32         m_nExtBufferSize;
 };
 
-class VISTAINTERPROCCOMMAPI VistaClusterBytebufferFollowerDataSyncBase : public IVistaClusterDataSync
-{
-public:
-	VistaClusterBytebufferFollowerDataSyncBase( const bool bSwap,
-									const bool bVerbose = true );
-	virtual ~VistaClusterBytebufferFollowerDataSyncBase();
+class VISTAINTERPROCCOMMAPI VistaClusterBytebufferFollowerDataSyncBase
+    : public IVistaClusterDataSync {
+ public:
+  VistaClusterBytebufferFollowerDataSyncBase(const bool bSwap, const bool bVerbose = true);
+  virtual ~VistaClusterBytebufferFollowerDataSyncBase();
 
-	virtual bool SyncTime( VistaType::systemtime& nTime );
-	virtual bool SyncData( std::string& sData );
-	virtual bool SyncData( VistaPropertyList& oList );
-	virtual bool SyncData( IVistaSerializable& oSerializable );
-	virtual bool SyncData( VistaType::byte* pData, 
-							const int iDataSize );
-	virtual bool SyncData( VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							int& iDataSize );
-	virtual bool SyncData( std::vector<VistaType::byte>& vecData );
+  virtual bool SyncTime(VistaType::systemtime& nTime);
+  virtual bool SyncData(std::string& sData);
+  virtual bool SyncData(VistaPropertyList& oList);
+  virtual bool SyncData(IVistaSerializable& oSerializable);
+  virtual bool SyncData(VistaType::byte* pData, const int iDataSize);
+  virtual bool SyncData(VistaType::byte* pDataBuffer, const int iBufferSize, int& iDataSize);
+  virtual bool SyncData(std::vector<VistaType::byte>& vecData);
 
-	const VistaType::byte* GetMessageBuffer() const;
-	int GetMessageSize() const;
+  const VistaType::byte* GetMessageBuffer() const;
+  int                    GetMessageSize() const;
 
-protected:
-	bool ReceiveMessage( VistaType::sint32 nExpectedMessageType );
-	virtual bool DoReceiveMessage() = 0;
+ protected:
+  bool         ReceiveMessage(VistaType::sint32 nExpectedMessageType);
+  virtual bool DoReceiveMessage() = 0;
 
-protected:
-	VistaType::uint64	m_nSyncCount;
-	bool				m_bSwap;
-	std::vector<VistaType::byte>	m_vecMessageBuffer;
-	VistaByteBufferDeSerializer		m_oMessage;
+ protected:
+  VistaType::uint64            m_nSyncCount;
+  bool                         m_bSwap;
+  std::vector<VistaType::byte> m_vecMessageBuffer;
+  VistaByteBufferDeSerializer  m_oMessage;
 };
 
 /*============================================================================*/

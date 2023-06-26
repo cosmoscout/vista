@@ -22,7 +22,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNDELAYNODE_H
 #define _VDFNDELAYNODE_H
 
@@ -33,10 +32,10 @@
 #include <VistaAspects/VistaPropertyAwareable.h>
 #include <VistaBase/VistaExceptionBase.h>
 
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
 #include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
 
 #include <deque>
 
@@ -56,76 +55,60 @@
  *
  * @ingroup VdfnNodes
  */
-template<class T>
-class VdfnDelayNode : public IVdfnNode
-{
-public:
-	VdfnDelayNode(unsigned int iDelay) :
-		IVdfnNode(),
-		m_pOutValue( new TVdfnPort<T> ),
-		m_iDelay(iDelay),
-		m_pInPort( NULL )
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<T> > );
-		RegisterOutPort( "out", m_pOutValue );
-	}
+template <class T>
+class VdfnDelayNode : public IVdfnNode {
+ public:
+  VdfnDelayNode(unsigned int iDelay)
+      : IVdfnNode()
+      , m_pOutValue(new TVdfnPort<T>)
+      , m_iDelay(iDelay)
+      , m_pInPort(NULL) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterOutPort("out", m_pOutValue);
+  }
 
-	virtual ~VdfnDelayNode()
-	{
-	}
+  virtual ~VdfnDelayNode() {
+  }
 
+  bool PrepareEvaluationRun() {
+    m_pInPort = dynamic_cast<TVdfnPort<T>*>(GetInPort("in"));
+    m_pOutValue->SetValue(T(), 0);
+    return GetIsValid();
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pInPort  = dynamic_cast<TVdfnPort<T>*>(GetInPort( "in" ));
-		m_pOutValue->SetValue( T(), 0 );
-		return GetIsValid();
-	}
+ protected:
+  bool DoEvalNode() {
+    // store value
+    m_vecBuffer.push_back(m_pInPort->GetValue());
 
-protected:
-	bool DoEvalNode()
-	{
-		// store value
-		m_vecBuffer.push_back( m_pInPort->GetValue() );
+    if (m_vecBuffer.size() == m_iDelay + 1) {
+      m_pOutValue->SetValue(m_vecBuffer.front(), GetUpdateTimeStamp());
+      m_vecBuffer.pop_front();
+    }
+    return true;
+  }
 
-		if(m_vecBuffer.size() == m_iDelay+1)
-		{
-			m_pOutValue->SetValue( m_vecBuffer.front(), GetUpdateTimeStamp() );
-			m_vecBuffer.pop_front();
-		}
-		return true;
-	}
+ private:
+  TVdfnPort<T>*m_pOutValue, *m_pInPort;
 
-private:
-	TVdfnPort<T> *m_pOutValue,
-		         *m_pInPort;
-
-	unsigned int  m_iDelay;
-	std::deque<T> m_vecBuffer;
+  unsigned int  m_iDelay;
+  std::deque<T> m_vecBuffer;
 };
 
-template<class T>
-class VdfnDelayNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const
-	{
-		try
-		{
-			const VistaPropertyList &subs = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
-			unsigned int delay = subs.GetValueOrDefault<int>( "delay", 1 );
-			
-			return new VdfnDelayNode<T>(delay);
-		}
-		catch(VistaExceptionBase &x)
-		{
-			x.PrintException();
-		}
-		return NULL;
-		
-	}
-};
+template <class T>
+class VdfnDelayNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const {
+    try {
+      const VistaPropertyList& subs =
+          oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
+      unsigned int delay = subs.GetValueOrDefault<int>("delay", 1);
 
+      return new VdfnDelayNode<T>(delay);
+    } catch (VistaExceptionBase& x) { x.PrintException(); }
+    return NULL;
+  }
+};
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -135,4 +118,3 @@ public:
 /* END OF FILE                                                                */
 /*============================================================================*/
 #endif //_VDFNDELAYNODE_H
-

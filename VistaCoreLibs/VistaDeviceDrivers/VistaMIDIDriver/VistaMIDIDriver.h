@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMIDIDRIVER_H__
 #define _VISTAMIDIDRIVER_H__
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include "VistaMIDICommonShare.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <string>
 
-//CRM
+// CRM
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 /*============================================================================*/
@@ -41,14 +40,14 @@
 /*============================================================================*/
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAMIDIDRIVER_STATIC) 
-	#ifdef VISTAMIDIDRIVER_EXPORTS
-		#define VISTAMIDIDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTAMIDIDRIVERAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTAMIDIDRIVER_STATIC)
+#ifdef VISTAMIDIDRIVER_EXPORTS
+#define VISTAMIDIDRIVERAPI __declspec(dllexport)
+#else
+#define VISTAMIDIDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAMIDIDRIVERAPI
+#define VISTAMIDIDRIVERAPI
 #endif
 
 // Shared library support
@@ -81,7 +80,7 @@
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-class VistaDriverConnectionAspect ;
+class VistaDriverConnectionAspect;
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -95,46 +94,37 @@ class VistaDriverConnectionAspect ;
  * @todo check windows implementation
  * @todo see whether this driver can benefit from the new Connect() API
  */
-class VISTAMIDIDRIVERAPI VistaMIDIDriver : public IVistaDeviceDriver
-{
-public:
-	VistaMIDIDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaMIDIDriver();
+class VISTAMIDIDRIVERAPI VistaMIDIDriver : public IVistaDeviceDriver {
+ public:
+  VistaMIDIDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaMIDIDriver();
 
-protected:
-	bool DoConnect();
-	bool DoDisconnect();
+ protected:
+  bool DoConnect();
+  bool DoDisconnect();
 
-	bool DoSensorUpdate(VistaType::microtime dTs);
+  bool DoSensorUpdate(VistaType::microtime dTs);
 
-private:
-	// the file descriptor for the device file
-	VistaDriverConnectionAspect* m_pConnection ;
+ private:
+  // the file descriptor for the device file
+  VistaDriverConnectionAspect* m_pConnection;
 };
 
+class VISTAMIDIDRIVERAPI VistaMIDIDriverCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaMIDIDriverCreationMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("", sizeof(VistaMIDIMeasures::sMIDIMeasure), 100,
+        metaFac->CreateFactoryForType("VistaMIDITranscode"));
+  }
 
-
-class VISTAMIDIDRIVERAPI VistaMIDIDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaMIDIDriverCreationMethod(IVistaTranscoderFactoryFactory *metaFac)
-		:IVistaDriverCreationMethod(metaFac)
-	{
-		RegisterSensorType( "",
-			sizeof(VistaMIDIMeasures::sMIDIMeasure),
-			100, metaFac->CreateFactoryForType("VistaMIDITranscode") );
-	}
-
-	virtual IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaMIDIDriver(this);
-	}
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaMIDIDriver(this);
+  }
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
 
 #endif //_VISTAMOUSEDRIVER_H

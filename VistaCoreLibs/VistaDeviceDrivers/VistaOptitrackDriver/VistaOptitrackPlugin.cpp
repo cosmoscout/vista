@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaOptitrackDriver.h"
 
 #if defined(WIN32) && !defined(VISTAOPTITRACKDRIVERPLUGIN_STATIC)
@@ -34,57 +33,46 @@
 #define VISTAOPTITRACKPLUGINAPI
 #endif
 
-namespace
-{
-	VistaOptitrackCreationMethod *SpFactory = NULL;
+namespace {
+VistaOptitrackCreationMethod* SpFactory = NULL;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-extern "C" VISTAOPTITRACKPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaOptitrackDriver(crm);
+extern "C" VISTAOPTITRACKPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaOptitrackDriver(crm);
 }
 
-extern "C" VISTAOPTITRACKPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaOptitrackCreationMethod(fac);
+extern "C" VISTAOPTITRACKPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaOptitrackCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAOPTITRACKPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTAOPTITRACKPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTAOPTITRACKPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTAOPTITRACKPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-
-extern "C" VISTAOPTITRACKPLUGINAPI const char *GetDeviceClassName()
-{
-	return "OPTITRACK";
+extern "C" VISTAOPTITRACKPLUGINAPI const char* GetDeviceClassName() {
+  return "OPTITRACK";
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

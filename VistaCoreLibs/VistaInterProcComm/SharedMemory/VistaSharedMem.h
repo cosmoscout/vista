@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASHAREDMEM_H
 #define _VISTASHAREDMEM_H
 
@@ -36,31 +35,27 @@
 // ============================================================================
 // ============================================================================
 // ============================================================================
-class VISTAINTERPROCCOMMAPI VistaSharedMemory
-{
-//METHODS
-public:
-	VistaSharedMemory();
-	virtual ~VistaSharedMemory();
+class VISTAINTERPROCCOMMAPI VistaSharedMemory {
+  // METHODS
+ public:
+  VistaSharedMemory();
+  virtual ~VistaSharedMemory();
 
-	// IMPLEMENTATION
-	virtual  bool    CreateSharedMem  (std::string & sharedMem, long size = 0);
-	virtual  void *  GetSharedMemPointer (std::string & sharedMem);
-	virtual  bool    DestroySharedMem (std::string & sharedMem);
-	virtual  bool    SetSharedMem (std::string & sharedMem, void * pBufferSrc,
-									long size, long offset = 0);
-	virtual  bool    GetSharedMem  (std::string & sharedMem, void * pBufferTar,
-									long size, long offset = 0);
-	virtual  bool    SetSharedMemSize (long size);
-	virtual  long    GetSharedMemSize ();
+  // IMPLEMENTATION
+  virtual bool  CreateSharedMem(std::string& sharedMem, long size = 0);
+  virtual void* GetSharedMemPointer(std::string& sharedMem);
+  virtual bool  DestroySharedMem(std::string& sharedMem);
+  virtual bool  SetSharedMem(std::string& sharedMem, void* pBufferSrc, long size, long offset = 0);
+  virtual bool  GetSharedMem(std::string& sharedMem, void* pBufferTar, long size, long offset = 0);
+  virtual bool  SetSharedMemSize(long size);
+  virtual long  GetSharedMemSize();
 
-protected:
-
-// MEMBERS
-private:
-	std::string         m_strMapFileName;
-	void *              m_pSharedMem;
-	long                m_nSharedMemSize;
+ protected:
+  // MEMBERS
+ private:
+  std::string m_strMapFileName;
+  void*       m_pSharedMem;
+  long        m_nSharedMemSize;
 };
 
 #endif // _VISTASHAREDMEM_H

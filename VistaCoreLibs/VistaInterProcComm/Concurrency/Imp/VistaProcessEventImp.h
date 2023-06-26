@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROCESSEVENTIMP_H
 #define _VISTAPROCESSEVENTIMP_H
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -35,33 +33,31 @@
 #include <VistaBase/VistaBaseTypes.h>
 #include <string>
 
-class VISTAINTERPROCCOMMAPI IVistaProcessEventImp
-{
-public:
-	// signaller ctor
-	IVistaProcessEventImp( const std::string& sEventName );
-	// receiver ctor
-	IVistaProcessEventImp( const std::string& sEventName,
-						   const int nMaxWaitForSignaller );
-	virtual ~IVistaProcessEventImp();
+class VISTAINTERPROCCOMMAPI IVistaProcessEventImp {
+ public:
+  // signaller ctor
+  IVistaProcessEventImp(const std::string& sEventName);
+  // receiver ctor
+  IVistaProcessEventImp(const std::string& sEventName, const int nMaxWaitForSignaller);
+  virtual ~IVistaProcessEventImp();
 
-	std::string GetEventName() const;
-	bool GetIsSignaller() const;
+  std::string GetEventName() const;
+  bool        GetIsSignaller() const;
 
-	virtual bool GetIsValid() const = 0;
- 
-	virtual bool SignalEvent() = 0;
-	virtual bool WaitForEvent( bool bBlock ) = 0;
-	virtual bool WaitForEvent( int iBlockTime ) = 0;
+  virtual bool GetIsValid() const = 0;
 
-	static IVistaProcessEventImp* CreateProcessEventSignallerImp( const std::string& sEventName );
-	static IVistaProcessEventImp* CreateProcessEventReceiverImp( const std::string& sEventName,
-																	const int nMaxWaitForSignaller );
-private:
-	std::string m_sEventName;
-	bool m_bIsSignaller;
+  virtual bool SignalEvent()                = 0;
+  virtual bool WaitForEvent(bool bBlock)    = 0;
+  virtual bool WaitForEvent(int iBlockTime) = 0;
+
+  static IVistaProcessEventImp* CreateProcessEventSignallerImp(const std::string& sEventName);
+  static IVistaProcessEventImp* CreateProcessEventReceiverImp(
+      const std::string& sEventName, const int nMaxWaitForSignaller);
+
+ private:
+  std::string m_sEventName;
+  bool        m_bIsSignaller;
 };
-
 
 /*============================================================================*/
 

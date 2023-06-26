@@ -21,11 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 #include "VistaMutexImp.h"
-
 
 #if defined(VISTA_THREADING_WIN32)
 #include "VistaWin32MutexImp.h"
@@ -47,26 +45,21 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-IVistaMutexImp::IVistaMutexImp ()
-{
+IVistaMutexImp::IVistaMutexImp() {
 }
 
-IVistaMutexImp::~IVistaMutexImp ()
-{
+IVistaMutexImp::~IVistaMutexImp() {
 }
 
-IVistaMutexImp *IVistaMutexImp::CreateMutexImp(const std::string &sName, eScope nScope)
-{
+IVistaMutexImp* IVistaMutexImp::CreateMutexImp(const std::string& sName, eScope nScope) {
 #if defined(VISTA_THREADING_WIN32)
-	return new VistaWin32MutexImp(sName, nScope);
+  return new VistaWin32MutexImp(sName, nScope);
 #elif defined(VISTA_THREADING_SPROC)
-	return new VistaSPROCMutexImp(sName, nScope);
+  return new VistaSPROCMutexImp(sName, nScope);
 #elif defined(VISTA_THREADING_POSIX)
-	return new VistaPthreadsMutexImp(sName, nScope);
+  return new VistaPthreadsMutexImp(sName, nScope);
 #else
 #error NO THREAD MODEL?
-	return 0;
+  return 0;
 #endif
 }
-	
-

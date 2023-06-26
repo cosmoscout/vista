@@ -21,18 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASENSORREADER_H_
 #define _VISTASENSORREADER_H_
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
 #include "VistaDeviceDriversConfig.h"
-#include <VistaBase/VistaBaseTypes.h>
 #include <VistaAspects/VistaNameable.h>
+#include <VistaBase/VistaBaseTypes.h>
 #include <map>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -60,41 +58,42 @@ class VistaObjectRegistry;
  * to define light-weight access interfaces to read states (for example a common read
  * state for all driver sensors).
  */
-class VISTADEVICEDRIVERSAPI IVistaReadStateSource : public IVistaNameable
-{
-public:
-	virtual VistaSensorReadState *      GetReadState( VistaDeviceSensor & ) = 0;
+class VISTADEVICEDRIVERSAPI IVistaReadStateSource : public IVistaNameable {
+ public:
+  virtual VistaSensorReadState* GetReadState(VistaDeviceSensor&) = 0;
 
-	virtual std::string GetNameForNameable() const;
-	virtual void SetNameForNameable(const std::string &sNewName);
-protected:
-	IVistaReadStateSource()
-		: IVistaNameable()
-		, m_name() {}
+  virtual std::string GetNameForNameable() const;
+  virtual void        SetNameForNameable(const std::string& sNewName);
 
-	IVistaReadStateSource( const std::string &name )
-		: IVistaNameable()
-		, m_name(name) {}
-private:
-	std::string                m_name;
+ protected:
+  IVistaReadStateSource()
+      : IVistaNameable()
+      , m_name() {
+  }
+
+  IVistaReadStateSource(const std::string& name)
+      : IVistaNameable()
+      , m_name(name) {
+  }
+
+ private:
+  std::string m_name;
 };
-
 
 /**
  * \brief intermediate shallow interface that allows for registration or read states with sensors.
  *
  * Introduces the update method to be used to update all sensors attached  to this SensorReader.
  */
-class VISTADEVICEDRIVERSAPI IVistaSensorReader : public IVistaReadStateSource
-{
-public:
-	virtual ~IVistaSensorReader();
-	virtual bool Update() = 0;
-protected:
-	IVistaSensorReader( const std::string &strName );
+class VISTADEVICEDRIVERSAPI IVistaSensorReader : public IVistaReadStateSource {
+ public:
+  virtual ~IVistaSensorReader();
+  virtual bool Update() = 0;
 
-private:
+ protected:
+  IVistaSensorReader(const std::string& strName);
 
+ private:
 };
 
 /**
@@ -102,18 +101,16 @@ private:
  *
  * Abstract interface to retrieve read states for all sensors of a given driver.
  */
-class VISTADEVICEDRIVERSAPI IVddReadstateSource : public IVistaReadStateSource
-{
-public:
-	virtual ~IVddReadstateSource() {}
-	virtual std::map<VistaDeviceSensor*, VistaSensorReadState*> GetReadStatesForDriver( IVistaDeviceDriver * ) = 0;
+class VISTADEVICEDRIVERSAPI IVddReadstateSource : public IVistaReadStateSource {
+ public:
+  virtual ~IVddReadstateSource() {
+  }
+  virtual std::map<VistaDeviceSensor*, VistaSensorReadState*> GetReadStatesForDriver(
+      IVistaDeviceDriver*) = 0;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif // _VISTASENSORREADER_H_
-
-

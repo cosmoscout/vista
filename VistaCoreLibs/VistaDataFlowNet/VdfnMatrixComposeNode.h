@@ -29,12 +29,11 @@
 /*============================================================================*/
 #include "VdfnConfig.h"
 #include "VdfnNode.h"
+#include "VdfnNodeFactory.h"
 #include "VdfnPort.h"
 #include "VdfnSerializer.h"
-#include "VdfnNodeFactory.h"
 
 #include <VistaBase/VistaVectorMath.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -63,35 +62,33 @@
  *
  * @outport{out, VistaTransformMatrix, The composed matrix}
  */
-class VISTADFNAPI VdfnMatrixComposeNode : public IVdfnNode
-{
-public:
-	
-	VdfnMatrixComposeNode();
-	virtual ~VdfnMatrixComposeNode();
+class VISTADFNAPI VdfnMatrixComposeNode : public IVdfnNode {
+ public:
+  VdfnMatrixComposeNode();
+  virtual ~VdfnMatrixComposeNode();
 
-	virtual bool GetIsValid() const;
-	virtual bool PrepareEvaluationRun();
+  virtual bool GetIsValid() const;
+  virtual bool PrepareEvaluationRun();
 
-	static const std::string SOutputMatrixOutPortName;
+  static const std::string SOutputMatrixOutPortName;
 
-	static const std::string STranslationInPortName;
-	static const std::string SOrientationInPortName;
-	static const std::string SScaleInPortName;
-	static const std::string SScaleOrientationInPortName;
+  static const std::string STranslationInPortName;
+  static const std::string SOrientationInPortName;
+  static const std::string SScaleInPortName;
+  static const std::string SScaleOrientationInPortName;
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
-	void RegisterInPrototypes();
+ private:
+  void RegisterInPrototypes();
 
-	TVdfnPort<VistaVector3D>        *m_pInTranslation;
-	TVdfnPort<VistaQuaternion>      *m_pInOrientation;
-	TVdfnPort<VistaVector3D>        *m_pInScale;
-	TVdfnPort<VistaQuaternion>      *m_pInScaleOrientation;
-	
-	TVdfnPort<VistaTransformMatrix> *m_pOutputMatrix;
+  TVdfnPort<VistaVector3D>*   m_pInTranslation;
+  TVdfnPort<VistaQuaternion>* m_pInOrientation;
+  TVdfnPort<VistaVector3D>*   m_pInScale;
+  TVdfnPort<VistaQuaternion>* m_pInScaleOrientation;
+
+  TVdfnPort<VistaTransformMatrix>* m_pOutputMatrix;
 };
 
 /*============================================================================*/

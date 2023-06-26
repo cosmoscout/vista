@@ -21,18 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
 #include "VistaDTrackSDKDriver.h"
+#include <DTrack.hpp>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include <DTrack.hpp>
 
 #if defined(WIN32)
-#pragma warning (disable: 4786)
+#pragma warning(disable : 4786)
 
 #define VISTADTRACKSDKDRIVERPLUGINEXPORT __declspec(dllexport)
 #define VISTADTRACKSDKDRIVERPLUGINIMPORT __declspec(dllimport)
@@ -61,20 +60,15 @@
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif
@@ -82,80 +76,69 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 /*
 IVistaDriverCreationMethod *VistaDTrackSDKDriver::GetDriverFactoryMethod()
 {
-	if(SpFactory == NULL)
-	{
-		SpFactory = new VistaDTrackSDKDriverCreateMethod;
+        if(SpFactory == NULL)
+        {
+                SpFactory = new VistaDTrackSDKDriverCreateMethod;
 
-		// we assume an update rate of 20Hz at max. Devices we inspected reported
-		// an update rate of about 17Hz, which seem reasonable.
-		SpFactory->RegisterSensorType( "BODY", sizeof(dtrack_body_type),
-			                           60,
-									   new VistaDTrackSDKBodyTranscodeFactory,
-									   VistaDTrackSDKBodyTranscode::GetTypeString() );
-		SpFactory->RegisterSensorType( "MARKER", sizeof(dtrack_marker_type),
-			                           60,
-									   new VistaDTrackSDKMarkerTranscodeFactory,
-									   VistaDTrackSDKMarkerTranscode::GetTypeString() );
+                // we assume an update rate of 20Hz at max. Devices we inspected reported
+                // an update rate of about 17Hz, which seem reasonable.
+                SpFactory->RegisterSensorType( "BODY", sizeof(dtrack_body_type),
+                                                   60,
+                                                                           new
+VistaDTrackSDKBodyTranscodeFactory, VistaDTrackSDKBodyTranscode::GetTypeString() );
+                SpFactory->RegisterSensorType( "MARKER", sizeof(dtrack_marker_type),
+                                                   60,
+                                                                           new
+VistaDTrackSDKMarkerTranscodeFactory, VistaDTrackSDKMarkerTranscode::GetTypeString() );
 
-	}
+        }
 
-	return SpFactory;
+        return SpFactory;
 } */
 
-namespace
-{
-	class VistaDTrackSDKDriverCreateMethod : public IVistaDriverCreationMethod
-	{
-	public:
-		VistaDTrackSDKDriverCreateMethod(IVistaTranscoderFactoryFactory *metaFac)
-			: IVistaDriverCreationMethod(metaFac)
-		{
-			RegisterSensorType( "BODY", sizeof(dtrack_body_type),
-				60,
-				metaFac->CreateFactoryForType("BODY") );
-			RegisterSensorType( "MARKER", sizeof(dtrack_marker_type),
-				60,
-				metaFac->CreateFactoryForType("MARKER") );
-		}
+namespace {
+class VistaDTrackSDKDriverCreateMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaDTrackSDKDriverCreateMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("BODY", sizeof(dtrack_body_type), 60, metaFac->CreateFactoryForType("BODY"));
+    RegisterSensorType(
+        "MARKER", sizeof(dtrack_marker_type), 60, metaFac->CreateFactoryForType("MARKER"));
+  }
 
-		virtual IVistaDeviceDriver *CreateDriver()
-		{
-			return new VistaDTrackSDKDriver(this);
-		}
-	};
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaDTrackSDKDriver(this);
+  }
+};
 
+VistaDTrackSDKDriverCreateMethod* SpFactory = NULL;
+} // namespace
 
-
-	VistaDTrackSDKDriverCreateMethod *SpFactory = NULL;
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaDTrackSDKDriver(crm);
 }
 
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaDTrackSDKDriver(crm);
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaDTrackSDKDriverCreateMethod(fac);
+
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaDTrackSDKDriverCreateMethod(fac);
-
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI const char* GetDeviceClassName() {
+  return "DTRACKSDKDRIVER";
 }
 
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "DTRACKSDKDRIVER";
-}
-
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	//@TODO: What?
-	if( SpFactory == NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  //@TODO: What?
+  if (SpFactory == NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
 /*============================================================================*/
@@ -169,8 +152,3 @@ extern "C" VISTADTRACKSDKDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverC
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-
-
-
-

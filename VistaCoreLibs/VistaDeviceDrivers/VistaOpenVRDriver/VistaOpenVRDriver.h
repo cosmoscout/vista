@@ -22,7 +22,6 @@
 /*                                 DLR/utzi_se                                */
 /*============================================================================*/
 
-
 #ifndef __VISTAOPENVRDRIVERDRIVER_H
 #define __VISTAOPENVRDRIVERDRIVER_H
 
@@ -37,8 +36,8 @@
 /*============================================================================*/
 // Shared library support
 
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTAOPENVR_STATIC) 
+// Windows DLL build
+#if defined(WIN32) && !defined(VISTAOPENVR_STATIC)
 #ifdef VISTAOPENVR_EXPORTS
 #define VISTAOPENVRDRIVERAPI __declspec(dllexport)
 #else
@@ -76,8 +75,8 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-namespace vr{
-	class IVRSystem;
+namespace vr {
+class IVRSystem;
 }
 class VistaDriverThreadAspect;
 
@@ -89,28 +88,26 @@ class VistaDriverThreadAspect;
  * this is a driver for transmitting OpenVR tracking data provided by openVR.
  *
  */
-class VISTAOPENVRDRIVERAPI VistaOpenVRDriver : public IVistaDeviceDriver
-{
-public:
-	VistaOpenVRDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaOpenVRDriver();
+class VISTAOPENVRDRIVERAPI VistaOpenVRDriver : public IVistaDeviceDriver {
+ public:
+  VistaOpenVRDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaOpenVRDriver();
 
-protected:
-	virtual bool PhysicalEnable(bool bEnabled);
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
+ protected:
+  virtual bool PhysicalEnable(bool bEnabled);
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-	bool DoConnect();
-	bool DoDisconnect();
-private:
-	vr::IVRSystem* m_pVRSystem;
+  bool DoConnect();
+  bool DoDisconnect();
 
-	VistaDriverThreadAspect *m_pThread;
+ private:
+  vr::IVRSystem* m_pVRSystem;
 
-	bool UpdateStickSensor( VistaType::microtime dTs);
-	bool UpdateHeadSensor( VistaType::microtime dTs);
+  VistaDriverThreadAspect* m_pThread;
 
+  bool UpdateStickSensor(VistaType::microtime dTs);
+  bool UpdateHeadSensor(VistaType::microtime dTs);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAWIN32PRIORITYIMP_H
@@ -30,8 +29,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaPriorityImp.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -44,14 +43,12 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaWin32PriorityImp : public IVistaPriorityImp
-{
-public:
-	VistaWin32PriorityImp();
+class VISTAINTERPROCCOMMAPI VistaWin32PriorityImp : public IVistaPriorityImp {
+ public:
+  VistaWin32PriorityImp();
 
-	virtual ~VistaWin32PriorityImp();
+  virtual ~VistaWin32PriorityImp();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -60,4 +57,3 @@ public:
 #endif //_VISTAWIN32PRIORITY_H
 
 #endif // VISTA_THREADING_WIN32
-

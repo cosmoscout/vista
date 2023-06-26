@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaClusterSyncEntity.h"
 
 /*============================================================================*/
@@ -31,85 +30,67 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaClusterSyncEntity::IVistaClusterSyncEntity( const bool bVerbose, const bool bIsLeader )
-: IVistaObserveable()
-, m_bVerbose( bVerbose )
-, m_bIsLeader( bIsLeader )
-{
+IVistaClusterSyncEntity::IVistaClusterSyncEntity(const bool bVerbose, const bool bIsLeader)
+    : IVistaObserveable()
+    , m_bVerbose(bVerbose)
+    , m_bIsLeader(bIsLeader) {
 }
 
-IVistaClusterSyncEntity::IVistaClusterSyncEntity( const IVistaClusterSyncEntity& )
-: IVistaObserveable()
-{
-}	
-
-IVistaClusterSyncEntity::~IVistaClusterSyncEntity()
-{
+IVistaClusterSyncEntity::IVistaClusterSyncEntity(const IVistaClusterSyncEntity&)
+    : IVistaObserveable() {
 }
 
-bool IVistaClusterSyncEntity::GetIsVerbose() const
-{
-	return m_bVerbose;
+IVistaClusterSyncEntity::~IVistaClusterSyncEntity() {
 }
 
-void IVistaClusterSyncEntity::SetIsVerbose( const bool bSet )
-{
-	m_bVerbose = bSet;
+bool IVistaClusterSyncEntity::GetIsVerbose() const {
+  return m_bVerbose;
 }
 
-
-bool IVistaClusterSyncEntity::GetIsLeader() const
-{
-	return m_bIsLeader;
+void IVistaClusterSyncEntity::SetIsVerbose(const bool bSet) {
+  m_bVerbose = bSet;
 }
 
-int IVistaClusterSyncEntity::GetNumberOfFollowers() const
-{
-	return 0;
+bool IVistaClusterSyncEntity::GetIsLeader() const {
+  return m_bIsLeader;
 }
 
-int IVistaClusterSyncEntity::GetNumberOfActiveFollowers() const
-{
-	return 0;
+int IVistaClusterSyncEntity::GetNumberOfFollowers() const {
+  return 0;
 }
 
-int IVistaClusterSyncEntity::GetNumberOfDeadFollowers() const
-{
-	return 0;
+int IVistaClusterSyncEntity::GetNumberOfActiveFollowers() const {
+  return 0;
 }
 
-std::string IVistaClusterSyncEntity::GetFollowerNameForId( const int nID ) const
-{
-	return "";
+int IVistaClusterSyncEntity::GetNumberOfDeadFollowers() const {
+  return 0;
 }
 
-int IVistaClusterSyncEntity::GetFollowerIdForName( const std::string& sName ) const
-{
-	return -1;
+std::string IVistaClusterSyncEntity::GetFollowerNameForId(const int nID) const {
+  return "";
 }
 
-bool IVistaClusterSyncEntity::GetFollowerIsAlive( const int nID ) const
-{
-	return false;
+int IVistaClusterSyncEntity::GetFollowerIdForName(const std::string& sName) const {
+  return -1;
 }
 
-int IVistaClusterSyncEntity::GetLastChangedFollower()
-{
-	return -1;
+bool IVistaClusterSyncEntity::GetFollowerIsAlive(const int nID) const {
+  return false;
 }
 
-bool IVistaClusterSyncEntity::DeactivateFollower( const std::string& sName )
-{
-	return false;
+int IVistaClusterSyncEntity::GetLastChangedFollower() {
+  return -1;
 }
 
-bool IVistaClusterSyncEntity::DeactivateFollower( const int nID )
-{
-	return false;
+bool IVistaClusterSyncEntity::DeactivateFollower(const std::string& sName) {
+  return false;
 }
 
+bool IVistaClusterSyncEntity::DeactivateFollower(const int nID) {
+  return false;
+}
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-

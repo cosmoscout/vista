@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMEMORYINFO_H
 #define _VISTAMEMORYINFO_H
 
@@ -45,17 +44,16 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTATOOLSAPI VistaMemoryInfo
-{
-public:
-	VistaMemoryInfo();
-	~VistaMemoryInfo();
+class VISTATOOLSAPI VistaMemoryInfo {
+ public:
+  VistaMemoryInfo();
+  ~VistaMemoryInfo();
 
-	static long GetWorkingSet();
-	static long GetPeakWorkingSet();
+  static long GetWorkingSet();
+  static long GetPeakWorkingSet();
 
-protected:
-private:
+ protected:
+ private:
 };
 
 /*============================================================================*/
@@ -63,5 +61,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAMEMORYINFO_H
-
-

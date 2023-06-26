@@ -21,30 +21,27 @@
 /*                                                                            */
 /*============================================================================*/
 
-#include <VistaKernel/VistaSystem.h>
 #include <VistaKernel/GraphicsManager/VistaAxes.h>
+#include <VistaKernel/VistaSystem.h>
 
 #ifndef _DISPLAYDEMOAPPL_H
 #define _DISPLAYDEMOAPPL_H
 
 class VistaSystem;
 
-class DisplayDemoAppl
-{
-public:
-	DisplayDemoAppl( int argc = 0, char  *argv[] = 0 );
-	virtual ~DisplayDemoAppl();
+class DisplayDemoAppl {
+ public:
+  DisplayDemoAppl(int argc = 0, char* argv[] = 0);
+  virtual ~DisplayDemoAppl();
 
-// IMPLEMENTATION
-	void Run  ();
-	void CreateScene();
+  // IMPLEMENTATION
+  void Run();
+  void CreateScene();
 
-
-
-// MEMBERS
-private:
-	VistaSystem	m_vistaSystem;
-    VistaAxes* pAxes;
+  // MEMBERS
+ private:
+  VistaSystem m_vistaSystem;
+  VistaAxes*  pAxes;
 };
 
 #endif /* _DISPLAYDEMOAPPL_H */

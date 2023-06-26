@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATOOLSSTD_H
 #define _VISTATOOLSSTD_H
 
@@ -38,21 +37,21 @@
 #include <cstdlib>
 
 // Standard C++ includes
-#include <iostream>
 #include <fstream>
+#include <iostream>
 //#include <sstream>
-#include <string>
 #include <list>
-#include <vector>
 #include <map>
 #include <stack>
+#include <string>
+#include <vector>
 
 // system includes
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #ifdef WIN32
-#include <io.h>   // access
+#include <io.h> // access
 #else
 #include <unistd.h>
 #endif
@@ -61,12 +60,12 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-#define ProfilerOK		true
-#define ProfilerPointerIsNull	-1
-#define ProfilerFileError	-2
-#define ProfilerSectionNotFound	-3
-#define ProfilerEntryNotFound	-4
-#define ProfilerCommonError	-5
+#define ProfilerOK true
+#define ProfilerPointerIsNull -1
+#define ProfilerFileError -2
+#define ProfilerSectionNotFound -3
+#define ProfilerEntryNotFound -4
+#define ProfilerCommonError -5
 #define ProfilerMaxBufferLength 4096
 
 /*============================================================================*/

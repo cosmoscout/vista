@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaKernel/EventManager/VistaSystemEvent.h>
 
 #include <VistaBase/VistaStreamUtils.h>
@@ -43,19 +42,16 @@ int VistaSystemEvent::m_nEventId = VistaEvent::VET_INVALID;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaSystemEvent::VistaSystemEvent()
-{
-	SetType( VistaSystemEvent::GetTypeId() );
+VistaSystemEvent::VistaSystemEvent() {
+  SetType(VistaSystemEvent::GetTypeId());
 }
 
-VistaSystemEvent::VistaSystemEvent( const EVENT_ID eEventID )
-{
-	SetType( VistaSystemEvent::GetTypeId() );
-	SetId( eEventID );
+VistaSystemEvent::VistaSystemEvent(const EVENT_ID eEventID) {
+  SetType(VistaSystemEvent::GetTypeId());
+  SetId(eEventID);
 }
 
-VistaSystemEvent::~VistaSystemEvent()
-{
+VistaSystemEvent::~VistaSystemEvent() {
 }
 
 /*============================================================================*/
@@ -67,15 +63,13 @@ VistaSystemEvent::~VistaSystemEvent()
 /*  NAME      :   SetId                                                       */
 /*                                                                            */
 /*============================================================================*/
-bool VistaSystemEvent::SetId(int iId)
-{
-	if (iId > VSE_INVALID && iId < VSE_UPPER_BOUND)
-	{
-		VistaEvent::SetId(iId);
-		return true;
-	}
-	VistaEvent::SetId(VSE_INVALID);
-	return false;
+bool VistaSystemEvent::SetId(int iId) {
+  if (iId > VSE_INVALID && iId < VSE_UPPER_BOUND) {
+    VistaEvent::SetId(iId);
+    return true;
+  }
+  VistaEvent::SetId(VSE_INVALID);
+  return false;
 }
 
 /*============================================================================*/
@@ -83,51 +77,46 @@ bool VistaSystemEvent::SetId(int iId)
 /*  NAME      :   GetName                                                     */
 /*                                                                            */
 /*============================================================================*/
-std::string VistaSystemEvent::GetName() const
-{
-	return VistaEvent::GetName() + "::VistaSystemEvent";
+std::string VistaSystemEvent::GetName() const {
+  return VistaEvent::GetName() + "::VistaSystemEvent";
 }
 
-std::string VistaSystemEvent::GetIdString(int nId) 
-{
-	switch (nId)
-	{
-	case VSE_INVALID:
-		return "VSE_INVALID";
-	case VSE_INIT:
-		return  "VSE_INIT";
-	case VSE_QUIT:
-		return "VSE_QUIT";
-	case VSE_EXIT:
-		return  "VSE_EXIT";
-	case VSE_PREGRAPHICS:
-		return  "VSE_PREGRAPHICS";
-	case VSE_POSTGRAPHICS:
-		return  "VSE_POSTGRAPHICS";
-	case VSE_UPDATE_INTERACTION:
-		return  "VSE_UPDATE_INTERACTION";
-	case VSE_UPDATE_DELAYED_INTERACTION:
-		return  "VSE_UPDATE_DELAYED_INTERACTION";
-	case VSE_UPDATE_DISPLAYS:
-		return "VSE_UPDATE_DISPLAYS";
-	case VSE_PREAPPLICATIONLOOP:
-			return "VSE_PREAPPLICATIONLOOP";
-	case VSE_POSTAPPLICATIONLOOP:
-			return "VSE_POSTAPPLICATIONLOOP";
-	default:
-		return VistaEvent::GetIdString(nId);
-	}
+std::string VistaSystemEvent::GetIdString(int nId) {
+  switch (nId) {
+  case VSE_INVALID:
+    return "VSE_INVALID";
+  case VSE_INIT:
+    return "VSE_INIT";
+  case VSE_QUIT:
+    return "VSE_QUIT";
+  case VSE_EXIT:
+    return "VSE_EXIT";
+  case VSE_PREGRAPHICS:
+    return "VSE_PREGRAPHICS";
+  case VSE_POSTGRAPHICS:
+    return "VSE_POSTGRAPHICS";
+  case VSE_UPDATE_INTERACTION:
+    return "VSE_UPDATE_INTERACTION";
+  case VSE_UPDATE_DELAYED_INTERACTION:
+    return "VSE_UPDATE_DELAYED_INTERACTION";
+  case VSE_UPDATE_DISPLAYS:
+    return "VSE_UPDATE_DISPLAYS";
+  case VSE_PREAPPLICATIONLOOP:
+    return "VSE_PREAPPLICATIONLOOP";
+  case VSE_POSTAPPLICATIONLOOP:
+    return "VSE_POSTAPPLICATIONLOOP";
+  default:
+    return VistaEvent::GetIdString(nId);
+  }
 }
 
-int VistaSystemEvent::GetTypeId()
-{
-	return VistaSystemEvent::m_nEventId;
+int VistaSystemEvent::GetTypeId() {
+  return VistaSystemEvent::m_nEventId;
 }
 
-void VistaSystemEvent::SetTypeId(int nId)
-{
-	if(VistaSystemEvent::m_nEventId == VistaEvent::VET_INVALID)
-		VistaSystemEvent::m_nEventId = nId;
+void VistaSystemEvent::SetTypeId(int nId) {
+  if (VistaSystemEvent::m_nEventId == VistaEvent::VET_INVALID)
+    VistaSystemEvent::m_nEventId = nId;
 }
 
 /*============================================================================*/
@@ -135,11 +124,9 @@ void VistaSystemEvent::SetTypeId(int nId)
 /*  NAME      :   Debug                                                       */
 /*                                                                            */
 /*============================================================================*/
-void VistaSystemEvent::Debug(std::ostream & out) const
-{
-	VistaEvent::Debug(out);
-	out << " [ViSyEv]   EventId: ";
-	out << GetIdString(GetId());
-	out << std::endl;
+void VistaSystemEvent::Debug(std::ostream& out) const {
+  VistaEvent::Debug(out);
+  out << " [ViSyEv]   EventId: ";
+  out << GetIdString(GetId());
+  out << std::endl;
 }
-

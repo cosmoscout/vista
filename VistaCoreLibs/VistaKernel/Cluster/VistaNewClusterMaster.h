@@ -21,20 +21,19 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTANEWCLUSTERMASTER_H
 #define _VISTANEWCLUSTERMASTER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/Cluster/VistaClusterMode.h>
 #include <VistaKernel/Cluster/Utils/VistaMasterSlaveUtils.h>
+#include <VistaKernel/Cluster/VistaClusterMode.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
-#include <string>
-#include <list>
 #include <iostream>
+#include <list>
+#include <string>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -53,153 +52,145 @@ class VistaEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaNewClusterMaster : public VistaClusterMode
-{
-public:
-	VistaNewClusterMaster( VistaSystem* pVisatSystem,
-			            const std::string& sMasterName );
-	~VistaNewClusterMaster();
+class VISTAKERNELAPI VistaNewClusterMaster : public VistaClusterMode {
+ public:
+  VistaNewClusterMaster(VistaSystem* pVisatSystem, const std::string& sMasterName);
+  ~VistaNewClusterMaster();
 
-	virtual bool Init( const std::string& sClusterSection,
-						const VistaPropertyList& oConfig );
-	/**
-	 * Inits the cluster master without any additional info to simply record
-	 * all events into a session recording file. Apart from that, it won't perform
-	 * any communication and work like a standalone mode
-	 */
-	virtual bool Init( const std::string& sRecordDataFolder );
-	virtual bool PostInit();
+  virtual bool Init(const std::string& sClusterSection, const VistaPropertyList& oConfig);
+  /**
+   * Inits the cluster master without any additional info to simply record
+   * all events into a session recording file. Apart from that, it won't perform
+   * any communication and work like a standalone mode
+   */
+  virtual bool Init(const std::string& sRecordDataFolder);
+  virtual bool PostInit();
 
-	virtual int GetClusterMode() const;
-	virtual std::string GetClusterModeName() const;
-	
-	virtual int GetNodeType() const;
-	virtual std::string GetNodeTypeName() const;
-	virtual std::string GetNodeName() const;
-	virtual std::string GetConfigSectionName() const;
-	virtual int GetNodeID() const;
+  virtual int         GetClusterMode() const;
+  virtual std::string GetClusterModeName() const;
 
-	virtual bool GetIsLeader() const;
-	virtual bool GetIsFollower() const;
+  virtual int         GetNodeType() const;
+  virtual std::string GetNodeTypeName() const;
+  virtual std::string GetNodeName() const;
+  virtual std::string GetConfigSectionName() const;
+  virtual int         GetNodeID() const;
 
-	virtual bool StartFrame();
-	virtual bool ProcessFrame();
-	virtual bool EndFrame();
+  virtual bool GetIsLeader() const;
+  virtual bool GetIsFollower() const;
 
-	virtual void SwapSync();
-	
-	virtual bool CreateConnections( std::vector<VistaConnectionIP*>& vecConnections );
-	virtual bool CreateNamedConnections( std::vector<std::pair<VistaConnectionIP*, std::string> >&
-															vecConnections );
+  virtual bool StartFrame();
+  virtual bool ProcessFrame();
+  virtual bool EndFrame();
 
-	virtual IVistaDataTunnel* CreateDataTunnel( IDLVistaDataPacket* pPacketProto );
-	virtual IVistaClusterDataSync* CreateDataSync();
-	virtual IVistaClusterDataSync* GetDefaultDataSync();
-	virtual IVistaClusterBarrier* CreateBarrier();
-	virtual IVistaClusterBarrier* GetDefaultBarrier();
-	virtual IVistaClusterDataCollect* CreateDataCollect();
+  virtual void SwapSync();
 
-	virtual void Debug( std::ostream& oStream ) const;
+  virtual bool CreateConnections(std::vector<VistaConnectionIP*>& vecConnections);
+  virtual bool CreateNamedConnections(
+      std::vector<std::pair<VistaConnectionIP*, std::string>>& vecConnections);
 
-	/**
-	 * Sets or Gets the record data folder. If the folder string is not empty, the
-	 * session will be recorded to the specified folder. Note that 
-	 * SetRecordDataFolder has to be called before Init() to take full effect, and
-	 * will overwrite record folders specified in the ini file (but not the one explicitely
-	 * passed to the record-only init).
-	 */
-	void SetRecordDataFolder( const std::string& sFolder );
-	std::string GetRecordDataFolder() const;
-	
-	static void ReplaceDataInRecordFilename( std::string& sFolderName, VistaType::systemtime nTime );
+  virtual IVistaDataTunnel*         CreateDataTunnel(IDLVistaDataPacket* pPacketProto);
+  virtual IVistaClusterDataSync*    CreateDataSync();
+  virtual IVistaClusterDataSync*    GetDefaultDataSync();
+  virtual IVistaClusterBarrier*     CreateBarrier();
+  virtual IVistaClusterBarrier*     GetDefaultBarrier();
+  virtual IVistaClusterDataCollect* CreateDataCollect();
 
+  virtual void Debug(std::ostream& oStream) const;
 
-private: 
-	class Slave;
-	class EventObserver;
-	class SyncEntityObserver;
-	friend class EventObserver;
-	friend class SyncEntityObserver;
+  /**
+   * Sets or Gets the record data folder. If the folder string is not empty, the
+   * session will be recorded to the specified folder. Note that
+   * SetRecordDataFolder has to be called before Init() to take full effect, and
+   * will overwrite record folders specified in the ini file (but not the one explicitely
+   * passed to the record-only init).
+   */
+  void        SetRecordDataFolder(const std::string& sFolder);
+  std::string GetRecordDataFolder() const;
 
-	int GetNextFreeBroadcastPort();
-	int GetNextFreeZeroMQPort();
+  static void ReplaceDataInRecordFilename(std::string& sFolderName, VistaType::systemtime nTime);
 
-	bool ConnectToSlave( const std::string& sName,
-					const std::string &sIP, int iPort );
-	void WaitForSlaveInit();
-	void TransmitClusterSetupInfo();
+ private:
+  class Slave;
+  class EventObserver;
+  class SyncEntityObserver;
+  friend class EventObserver;
+  friend class SyncEntityObserver;
 
-	void DeactivateSlaveAfterDrop( const std::string& sName );
-	void DeactivateSlaveAfterDrop( Slave* pSlave );
+  int GetNextFreeBroadcastPort();
+  int GetNextFreeZeroMQPort();
 
-	VistaConnectionIP* CreateConnectionToSlave( Slave* pSlave );
+  bool ConnectToSlave(const std::string& sName, const std::string& sIP, int iPort);
+  void WaitForSlaveInit();
+  void TransmitClusterSetupInfo();
 
-	bool DistributeEvent( const VistaEvent* pEvent );
+  void DeactivateSlaveAfterDrop(const std::string& sName);
+  void DeactivateSlaveAfterDrop(Slave* pSlave);
 
-	IVistaClusterDataSync* CreateTypedDataSync( int nType, bool bUseDefaultConnection );
-	IVistaClusterDataSync* CreateTCPIPDataSync( bool bUseDefaultConnection );
-	IVistaClusterDataSync* CreateZeroMQDataSync();
-	IVistaClusterDataSync* CreateInterProcDataSync();
+  VistaConnectionIP* CreateConnectionToSlave(Slave* pSlave);
 
-	IVistaClusterBarrier* CreateTypedBarrier( int nType, bool bUseDefaultConnection,
-												bool bIsSwapSyncBarrier );
-	IVistaClusterBarrier* CreateTCPBarrier( bool bUseDefaultConnection,
-												bool bIsSwapSyncBarrier );
-	IVistaClusterBarrier* CreateZeroMQBarrier( bool bUseDefaultConnection,
-												bool bIsSwapSyncBarrier );
-	IVistaClusterBarrier* CreateBroadcastBarrier( bool bUseDefaultConnection,
-												bool bIsSwapSyncBarrier );
-	IVistaClusterBarrier* CreateInterProcBarrier( bool bIsSwapSyncBarrier);
+  bool DistributeEvent(const VistaEvent* pEvent);
 
-	bool InitSwapSync();
-	bool CreateDefaultSyncs();
+  IVistaClusterDataSync* CreateTypedDataSync(int nType, bool bUseDefaultConnection);
+  IVistaClusterDataSync* CreateTCPIPDataSync(bool bUseDefaultConnection);
+  IVistaClusterDataSync* CreateZeroMQDataSync();
+  IVistaClusterDataSync* CreateInterProcDataSync();
 
-	bool CheckSyncEntityDelay( Slave* pSlave );
-	void ProcessSyncEntityDelay();
+  IVistaClusterBarrier* CreateTypedBarrier(
+      int nType, bool bUseDefaultConnection, bool bIsSwapSyncBarrier);
+  IVistaClusterBarrier* CreateTCPBarrier(bool bUseDefaultConnection, bool bIsSwapSyncBarrier);
+  IVistaClusterBarrier* CreateZeroMQBarrier(bool bUseDefaultConnection, bool bIsSwapSyncBarrier);
+  IVistaClusterBarrier* CreateBroadcastBarrier(bool bUseDefaultConnection, bool bIsSwapSyncBarrier);
+  IVistaClusterBarrier* CreateInterProcBarrier(bool bIsSwapSyncBarrier);
 
-	void ParseParameters( const VistaPropertyList& oSection );
-	void ParseDataSyncType( const VistaPropertyList& oSection );
-	void ParseSwapSyncType( const VistaPropertyList& oSection );
-	void ParseBarrierType( const VistaPropertyList& oSection);
-	void PrintClusterSetupInfo();
+  bool InitSwapSync();
+  bool CreateDefaultSyncs();
 
-	std::ostream& GetDebugStream();
+  bool CheckSyncEntityDelay(Slave* pSlave);
+  void ProcessSyncEntityDelay();
 
-private:
-	VistaSystem*			m_pVistaSystem;
-	std::string				m_sMasterName;
-	std::string				m_sMasterSectionName;
-	
-	std::string				m_sBroadcastIP;
-	VistaMasterSlave::FreePortList	m_vecFreeTCPPorts;
-	VistaMasterSlave::FreePortList	m_vecFreeBroadcastPorts;
-	std::string				m_sZeroMQAddress;
-	VistaMasterSlave::FreePortList	m_vecZeroMQPorts;
-	int						m_nNumBroadcastGroups;
-	int						m_nMaxConsecutiveBarrierSyncFailures;
+  void ParseParameters(const VistaPropertyList& oSection);
+  void ParseDataSyncType(const VistaPropertyList& oSection);
+  void ParseSwapSyncType(const VistaPropertyList& oSection);
+  void ParseBarrierType(const VistaPropertyList& oSection);
+  void PrintClusterSetupInfo();
 
-	IVistaClusterDataSync*	m_pDefaultDataSync;
-	IVistaClusterBarrier*	m_pDefaultBarrier;
-	IVistaClusterBarrier*	m_pSwapSyncBarrier;
+  std::ostream& GetDebugStream();
 
-	EventObserver*			m_pEventObserver;	
-	SyncEntityObserver*		m_pSyncEntityObserver;
+ private:
+  VistaSystem* m_pVistaSystem;
+  std::string  m_sMasterName;
+  std::string  m_sMasterSectionName;
 
-	std::vector<Slave*>		m_vecSlaves;
-	std::vector<Slave*>		m_vecActiveSlaves;
-	std::vector<Slave*>		m_vecDeadSlaves;
+  std::string                    m_sBroadcastIP;
+  VistaMasterSlave::FreePortList m_vecFreeTCPPorts;
+  VistaMasterSlave::FreePortList m_vecFreeBroadcastPorts;
+  std::string                    m_sZeroMQAddress;
+  VistaMasterSlave::FreePortList m_vecZeroMQPorts;
+  int                            m_nNumBroadcastGroups;
+  int                            m_nMaxConsecutiveBarrierSyncFailures;
 
-	std::vector<Slave*>		m_vecSyncEntityDelayedSlaves;
+  IVistaClusterDataSync* m_pDefaultDataSync;
+  IVistaClusterBarrier*  m_pDefaultBarrier;
+  IVistaClusterBarrier*  m_pSwapSyncBarrier;
 
-	VistaMasterSlave::Message	m_oMessage;
+  EventObserver*      m_pEventObserver;
+  SyncEntityObserver* m_pSyncEntityObserver;
 
-	int						m_nSwapSyncMethod;
-	int						m_nBarrierWaitMethod;
-	int						m_nSwapSyncTimeout;	
-	int						m_nDataSyncMethod;
+  std::vector<Slave*> m_vecSlaves;
+  std::vector<Slave*> m_vecActiveSlaves;
+  std::vector<Slave*> m_vecDeadSlaves;
 
-	std::string				m_sRecordDataFolder;
-	int						m_nRecordSyncCounter;
+  std::vector<Slave*> m_vecSyncEntityDelayedSlaves;
+
+  VistaMasterSlave::Message m_oMessage;
+
+  int m_nSwapSyncMethod;
+  int m_nBarrierWaitMethod;
+  int m_nSwapSyncTimeout;
+  int m_nDataSyncMethod;
+
+  std::string m_sRecordDataFolder;
+  int         m_nRecordSyncCounter;
 };
 
 /*============================================================================*/
@@ -207,4 +198,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTANEWCLUSTERMASTER_H
-

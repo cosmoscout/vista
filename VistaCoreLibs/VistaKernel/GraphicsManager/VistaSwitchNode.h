@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASWITCHNODE_H
 #define _VISTASWITCHNODE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include "VistaKernel/GraphicsManager/VistaGroupNode.h"
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -48,30 +47,28 @@ class IVistaNodeData;
  * per default no child (index == -1) is selected!
  *
  */
-class VISTAKERNELAPI VistaSwitchNode : public VistaGroupNode
-{
-	friend class VistaSceneGraph;
-	friend class IVistaNodeBridge;
-public:
-	/** Set child to be rendered
-	  * @param int i : Index of child to be rendered. -1 means no child (default).
-	  * @return bool: forwarding to toolkit node succeeded
-	  */
-	virtual bool	SetActiveChild(int i);
-	/** Retrieve index of currently active child
-	  * @return int : Index of currently rendered child
-	*/
-	virtual int		GetActiveChild() const;
-	//virtual void	Debug(std::ostream &out, int nLevel=0);
+class VISTAKERNELAPI VistaSwitchNode : public VistaGroupNode {
+  friend class VistaSceneGraph;
+  friend class IVistaNodeBridge;
 
-	virtual ~VistaSwitchNode();
-protected:
-	VistaSwitchNode();
-	VistaSwitchNode(	VistaGroupNode*				pParent,
-						IVistaNodeBridge*				pBridge,
-						IVistaNodeData*					pData,
-						std::string						strName="");
+ public:
+  /** Set child to be rendered
+   * @param int i : Index of child to be rendered. -1 means no child (default).
+   * @return bool: forwarding to toolkit node succeeded
+   */
+  virtual bool SetActiveChild(int i);
+  /** Retrieve index of currently active child
+   * @return int : Index of currently rendered child
+   */
+  virtual int GetActiveChild() const;
+  // virtual void	Debug(std::ostream &out, int nLevel=0);
 
+  virtual ~VistaSwitchNode();
+
+ protected:
+  VistaSwitchNode();
+  VistaSwitchNode(VistaGroupNode* pParent, IVistaNodeBridge* pBridge, IVistaNodeData* pData,
+      std::string strName = "");
 };
 
 /*============================================================================*/

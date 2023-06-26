@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 ///////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2002, Industrial Light & Magic, a division of Lucas
@@ -56,15 +55,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-
 // Primary authors:
 //     Florian Kainz <kainz@ilm.com>
 //     Rod Bogart <rgb@ilm.com>
 
-
 #ifndef INCLUDED_VISTAHALF_LIMITS_H
 #define INCLUDED_VISTAHALF_LIMITS_H
-
 
 //------------------------------------------------------------------------
 //
@@ -72,54 +68,67 @@
 //
 //------------------------------------------------------------------------
 
-#include <limits>
 #include "VistaHalf.h"
+#include <limits>
 
 namespace std {
 
 template <>
-class numeric_limits <VistaHalf>
-{
-  public:
+class numeric_limits<VistaHalf> {
+ public:
+  static const bool is_specialized = true;
 
-	static const bool is_specialized = true;
+  static VistaHalf min() throw() {
+    return VISTAHALF_NRM_MIN;
+  }
+  static VistaHalf max() throw() {
+    return VISTAHALF_MAX;
+  }
 
-	static VistaHalf min () throw () {return VISTAHALF_NRM_MIN;}
-	static VistaHalf max () throw () {return VISTAHALF_MAX;}
+  static const int  digits     = VISTAHALF_MANT_DIG;
+  static const int  digits10   = VISTAHALF_DIG;
+  static const bool is_signed  = true;
+  static const bool is_integer = false;
+  static const bool is_exact   = false;
+  static const int  radix      = VISTAHALF_RADIX;
+  static VistaHalf  epsilon() throw() {
+    return VISTAHALF_EPSILON;
+  }
+  static VistaHalf round_error() throw() {
+    return VISTAHALF_EPSILON / 2;
+  }
 
-	static const int digits = VISTAHALF_MANT_DIG;
-	static const int digits10 = VISTAHALF_DIG;
-	static const bool is_signed = true;
-	static const bool is_integer = false;
-	static const bool is_exact = false;
-	static const int radix = VISTAHALF_RADIX;
-	static VistaHalf epsilon () throw () {return VISTAHALF_EPSILON;}
-	static VistaHalf round_error () throw () {return VISTAHALF_EPSILON / 2;}
+  static const int min_exponent   = VISTAHALF_MIN_EXP;
+  static const int min_exponent10 = VISTAHALF_MIN_10_EXP;
+  static const int max_exponent   = VISTAHALF_MAX_EXP;
+  static const int max_exponent10 = VISTAHALF_MAX_10_EXP;
 
-	static const int min_exponent = VISTAHALF_MIN_EXP;
-	static const int min_exponent10 = VISTAHALF_MIN_10_EXP;
-	static const int max_exponent = VISTAHALF_MAX_EXP;
-	static const int max_exponent10 = VISTAHALF_MAX_10_EXP;
+  static const bool               has_infinity      = true;
+  static const bool               has_quiet_NaN     = true;
+  static const bool               has_signaling_NaN = true;
+  static const float_denorm_style has_denorm        = denorm_present;
+  static const bool               has_denorm_loss   = false;
+  static VistaHalf                infinity() throw() {
+    return VistaHalf::posInf();
+  }
+  static VistaHalf quiet_NaN() throw() {
+    return VistaHalf::qNan();
+  }
+  static VistaHalf signaling_NaN() throw() {
+    return VistaHalf::sNan();
+  }
+  static VistaHalf denorm_min() throw() {
+    return VISTAHALF_MIN;
+  }
 
-	static const bool has_infinity = true;
-	static const bool has_quiet_NaN = true;
-	static const bool has_signaling_NaN = true;
-	static const float_denorm_style has_denorm = denorm_present;
-	static const bool has_denorm_loss = false;
-	static VistaHalf infinity () throw () {return VistaHalf::posInf();}
-	static VistaHalf quiet_NaN () throw () {return VistaHalf::qNan();}
-	static VistaHalf signaling_NaN () throw () {return VistaHalf::sNan();}
-	static VistaHalf denorm_min () throw () {return VISTAHALF_MIN;}
+  static const bool is_iec559  = false;
+  static const bool is_bounded = false;
+  static const bool is_modulo  = false;
 
-	static const bool is_iec559 = false;
-	static const bool is_bounded = false;
-	static const bool is_modulo = false;
-
-	static const bool traps = true;
-	static const bool tinyness_before = false;
-	static const float_round_style round_style = round_to_nearest;
+  static const bool              traps           = true;
+  static const bool              tinyness_before = false;
+  static const float_round_style round_style     = round_to_nearest;
 };
-
 
 } // namespace std
 

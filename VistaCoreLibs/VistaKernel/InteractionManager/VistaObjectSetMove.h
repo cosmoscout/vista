@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOBJECTSETMOVE_H
 #define _VISTAOBJECTSETMOVE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaBase/VistaVectorMath.h>
+#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaMath/VistaIndirectXform.h>
 #include <vector>
 
@@ -65,84 +64,79 @@ class IVistaTransformable;
  * @todo correct this by using a matrix implementation (correct indirectxform)
  * -> use world matrices, not pos/ori!
  */
-class VISTAKERNELAPI VistaObjectSetMove
-{
-public:
-	VistaObjectSetMove();
-	~VistaObjectSetMove();
+class VISTAKERNELAPI VistaObjectSetMove {
+ public:
+  VistaObjectSetMove();
+  ~VistaObjectSetMove();
 
-	class IMoveFilter
-	{
-	public:
-		virtual ~IMoveFilter() {}
-		virtual bool Move( const VistaVector3D &startPos,
-				   const VistaQuaternion &startOri,
-				   const VistaVector3D &plannedPos,
-				   const VistaQuaternion &plannedOri,
-				   VistaVector3D &allowedPos,
-				   VistaQuaternion &allowedOri ) = 0;
-	};
-	/**
-	 * Is to be called <b>once</b> at the start of your drag operation.
-	 * Works only on registered instances.
-	 * @param v3Pos the origin position in world space of the pick ray
-	 * @param qOri the orientation of the pick ray in world space
-	 */
-	bool StartMove( const VistaVector3D &v3Pos,
-					const VistaQuaternion &qOri );
+  class IMoveFilter {
+   public:
+    virtual ~IMoveFilter() {
+    }
+    virtual bool Move(const VistaVector3D& startPos, const VistaQuaternion& startOri,
+        const VistaVector3D& plannedPos, const VistaQuaternion& plannedOri,
+        VistaVector3D& allowedPos, VistaQuaternion& allowedOri) = 0;
+  };
+  /**
+   * Is to be called <b>once</b> at the start of your drag operation.
+   * Works only on registered instances.
+   * @param v3Pos the origin position in world space of the pick ray
+   * @param qOri the orientation of the pick ray in world space
+   */
+  bool StartMove(const VistaVector3D& v3Pos, const VistaQuaternion& qOri);
 
-	/**
-	 * Is to be called on every change of the origin of the pick ray of
-	 * your drag operation on the set. Provide the values in world reference
-	 * frame.
-	 * @param v3Pos the origin of your pick ray in wcs
-	 * @param qOri the orientation of your pick ray in wcs
-	 */
-	bool Move( const VistaVector3D &v3Pos,
-			   const VistaQuaternion &qOri );
+  /**
+   * Is to be called on every change of the origin of the pick ray of
+   * your drag operation on the set. Provide the values in world reference
+   * frame.
+   * @param v3Pos the origin of your pick ray in wcs
+   * @param qOri the orientation of your pick ray in wcs
+   */
+  bool Move(const VistaVector3D& v3Pos, const VistaQuaternion& qOri);
 
-	/**
-	 * Register an object with this pick set. Call StartMove() <b>after</b>
-	 * every registration, as this initializes the values for the transformation
-	 * on all regitered items in this pick set. Should be safe to call during a
-	 * drag operation.
-	 */
-	bool RegisterObject(IVistaTransformable *pTrans);
-	bool GetIsRegistered(IVistaTransformable *pTrans) const;
+  /**
+   * Register an object with this pick set. Call StartMove() <b>after</b>
+   * every registration, as this initializes the values for the transformation
+   * on all regitered items in this pick set. Should be safe to call during a
+   * drag operation.
+   */
+  bool RegisterObject(IVistaTransformable* pTrans);
+  bool GetIsRegistered(IVistaTransformable* pTrans) const;
 
-	/**
-	 *  Unregister an instance from this pick set. Should be safe to call during
-	 *  a drag operation.
-	 */
-	bool UnregisterObject(IVistaTransformable *pTrans);
+  /**
+   *  Unregister an instance from this pick set. Should be safe to call during
+   *  a drag operation.
+   */
+  bool UnregisterObject(IVistaTransformable* pTrans);
 
-	IMoveFilter *GetMoveFilter() const;
-	void SetMoveFilter(IMoveFilter *);
-protected:
-private:
-	struct _sLookup
-	{
-		_sLookup()
-			: m_pObj(NULL) {}
+  IMoveFilter* GetMoveFilter() const;
+  void         SetMoveFilter(IMoveFilter*);
 
-		_sLookup( IVistaTransformable *pTrans )
-			: m_pObj( pTrans ) {}
+ protected:
+ private:
+  struct _sLookup {
+    _sLookup()
+        : m_pObj(NULL) {
+    }
 
-		bool operator==(const _sLookup &oOther) const
-		{
-			return (m_pObj == oOther.m_pObj);
-		}
+    _sLookup(IVistaTransformable* pTrans)
+        : m_pObj(pTrans) {
+    }
 
-		IVistaTransformable *m_pObj;
-		VistaIndirectXform  m_nXForm;
-		VistaVector3D       m_v3Trans; // trans @ the beginning of the drag
-		VistaQuaternion     m_qOri; // ori @ the beginning of the drag
-	};
+    bool operator==(const _sLookup& oOther) const {
+      return (m_pObj == oOther.m_pObj);
+    }
 
-	typedef std::vector<_sLookup> SELECTVEC;
-	SELECTVEC m_vecRegisteredObjects;
+    IVistaTransformable* m_pObj;
+    VistaIndirectXform   m_nXForm;
+    VistaVector3D        m_v3Trans; // trans @ the beginning of the drag
+    VistaQuaternion      m_qOri;    // ori @ the beginning of the drag
+  };
 
-	IMoveFilter *m_pMoveFilter;
+  typedef std::vector<_sLookup> SELECTVEC;
+  SELECTVEC                     m_vecRegisteredObjects;
+
+  IMoveFilter* m_pMoveFilter;
 };
 
 /*============================================================================*/

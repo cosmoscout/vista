@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPSOCKET_H
 #define _VISTATCPSOCKET_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaSocket.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <string>
 
@@ -45,55 +44,53 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
 /**
  * This is the base class for all tcp-based communication.
  * you will use this on a server side, when you accepted an incoming connection.
  * Otherwise you might consider to use the server or client socket directly.
  */
-class VISTAINTERPROCCOMMAPI VistaTCPSocket : public IVistaSocket
-{
-	// TCPServerSockets must have access to SetIsConnected()
-	friend class VistaTCPServerSocket;
-public:
-	/**
-	 * Creates a tcp-socket for a given socket descriptor. This is useful
-	 * when using legacy API.
-	 */
-	VistaTCPSocket(HANDLE iSockDesc);
+class VISTAINTERPROCCOMMAPI VistaTCPSocket : public IVistaSocket {
+  // TCPServerSockets must have access to SetIsConnected()
+  friend class VistaTCPServerSocket;
 
-	/**
-	 * create an empty unbound nohost-socket that is going to be parameterized
-	 * later on.
-	 */
-	VistaTCPSocket();
+ public:
+  /**
+   * Creates a tcp-socket for a given socket descriptor. This is useful
+   * when using legacy API.
+   */
+  VistaTCPSocket(HANDLE iSockDesc);
 
-	/**
-	 * deconstructs this socket. does not call close
-	 */
-	virtual ~VistaTCPSocket();
+  /**
+   * create an empty unbound nohost-socket that is going to be parameterized
+   * later on.
+   */
+  VistaTCPSocket();
 
-	virtual bool CloseSocket(bool bSkipRead=false);
+  /**
+   * deconstructs this socket. does not call close
+   */
+  virtual ~VistaTCPSocket();
 
-	/**
-	 * @return "TCP"
-	 */
-	std::string GetSocketTypeString() const;
+  virtual bool CloseSocket(bool bSkipRead = false);
 
-	/**
-	 * Turns socket-layer-level buffering to either on or off
-	 * @param bBuffering true iff the calls to send/receive should be buffered, false else (direct send/receive)
-	 */
-	virtual void SetIsBuffering(bool bBuffering);
+  /**
+   * @return "TCP"
+   */
+  std::string GetSocketTypeString() const;
 
-private:
-	bool m_bCloseRecursionFlag;
+  /**
+   * Turns socket-layer-level buffering to either on or off
+   * @param bBuffering true iff the calls to send/receive should be buffered, false else (direct
+   * send/receive)
+   */
+  virtual void SetIsBuffering(bool bBuffering);
+
+ private:
+  bool m_bCloseRecursionFlag;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

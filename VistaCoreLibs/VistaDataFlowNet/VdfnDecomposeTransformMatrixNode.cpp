@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnDecomposeTransformMatrixNode.h" 
+#include "VdfnDecomposeTransformMatrixNode.h"
 #include "VistaAspects/VistaConversion.h"
 
 /*============================================================================*/
@@ -33,48 +32,39 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VdfnDecomposeTransformMatrixNode::VdfnDecomposeTransformMatrixNode()
-: m_pIn( NULL )
-{
-	RegisterInPortPrototype( "in", new TVdfnPortTypeCompare< TVdfnPort< VistaTransformMatrix > >() );
+    : m_pIn(NULL) {
+  RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<VistaTransformMatrix>>());
 
-	for( int i = 0; i < 4; ++i )
-	{
-		for( int j = 0; j < 4; ++j )
-		{
-			TVdfnPort< float >* pPort = new TVdfnPort< float >();
-			m_vecOutPorts.push_back( pPort );
-			RegisterOutPort( VistaConversion::ToString( i ) + "_" + VistaConversion::ToString( j ), pPort );
-		}
-	}	
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      TVdfnPort<float>* pPort = new TVdfnPort<float>();
+      m_vecOutPorts.push_back(pPort);
+      RegisterOutPort(VistaConversion::ToString(i) + "_" + VistaConversion::ToString(j), pPort);
+    }
+  }
 }
-VdfnDecomposeTransformMatrixNode::~VdfnDecomposeTransformMatrixNode()
-{
+VdfnDecomposeTransformMatrixNode::~VdfnDecomposeTransformMatrixNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnDecomposeTransformMatrixNode::PrepareEvaluationRun()
-{
-	m_pIn = dynamic_cast< TVdfnPort< VistaTransformMatrix >* >( GetInPort( "in" ) );
-	return GetIsValid();
+bool VdfnDecomposeTransformMatrixNode::PrepareEvaluationRun() {
+  m_pIn = dynamic_cast<TVdfnPort<VistaTransformMatrix>*>(GetInPort("in"));
+  return GetIsValid();
 }
 
-bool VdfnDecomposeTransformMatrixNode::DoEvalNode()
-{
-	const VistaTransformMatrix& matValues = m_pIn->GetValueConstRef();
-	std::vector< TVdfnPort< float >* >::iterator itPort = m_vecOutPorts.begin();
-	for( int i = 0; i < 4; ++i )
-	{
-		for( int j = 0; j < 4; ++j, ++itPort )
-		{
-			(*itPort)->SetValue( matValues[i][j], GetUpdateTimeStamp() );
-		}
-	}
-	return true;
+bool VdfnDecomposeTransformMatrixNode::DoEvalNode() {
+  const VistaTransformMatrix&              matValues = m_pIn->GetValueConstRef();
+  std::vector<TVdfnPort<float>*>::iterator itPort    = m_vecOutPorts.begin();
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j, ++itPort) {
+      (*itPort)->SetValue(matValues[i][j], GetUpdateTimeStamp());
+    }
+  }
+  return true;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

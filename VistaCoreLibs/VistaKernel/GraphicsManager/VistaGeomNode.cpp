@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaKernel/GraphicsManager/VistaGeomNode.h"
 #include "VistaKernel/GraphicsManager/VistaGeometry.h"
 #include "VistaKernel/GraphicsManager/VistaNodeBridge.h"
@@ -36,104 +35,79 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaGeomNode::VistaGeomNode(	VistaGroupNode*			pParent, 
-								VistaGeometry*				pGeom, 
-								IVistaNodeBridge*			pBridge,
-								IVistaNodeData*				pData,
-								std::string strName)
-				:VistaLeafNode(pParent,pBridge,pData,strName)
-{
-	m_nType = VISTA_GEOMNODE;
-	m_pGeometry = pGeom;
-	if(m_pGeometry)
-		m_pBridge->RegisterGeometry(m_pGeometry);
+VistaGeomNode::VistaGeomNode(VistaGroupNode* pParent, VistaGeometry* pGeom,
+    IVistaNodeBridge* pBridge, IVistaNodeData* pData, std::string strName)
+    : VistaLeafNode(pParent, pBridge, pData, strName) {
+  m_nType     = VISTA_GEOMNODE;
+  m_pGeometry = pGeom;
+  if (m_pGeometry)
+    m_pBridge->RegisterGeometry(m_pGeometry);
 }
 
-
-VistaGeomNode::~VistaGeomNode()
-{
-	// it should be ok to give NULL here
-	if(m_pGeometry)
-	{
-		if(m_pBridge->UnregisterGeometry(m_pGeometry))
-		{
-			//clear toolkit data
-			m_pBridge->ClearGeomNodeData(this);
-		}
-	}
+VistaGeomNode::~VistaGeomNode() {
+  // it should be ok to give NULL here
+  if (m_pGeometry) {
+    if (m_pBridge->UnregisterGeometry(m_pGeometry)) {
+      // clear toolkit data
+      m_pBridge->ClearGeomNodeData(this);
+    }
+  }
 }
 
 // ============================================================================
 // ============================================================================
-VistaGeometry* VistaGeomNode::GetGeometry() const
-{
-	return m_pGeometry;
+VistaGeometry* VistaGeomNode::GetGeometry() const {
+  return m_pGeometry;
 }
 // ============================================================================
 // ============================================================================
-bool VistaGeomNode::SetGeometry(VistaGeometry* pGeom)
-{
-	if(m_pGeometry)
-	{
-		// unregister geometry
-		bool deleted = m_pBridge->UnregisterGeometry(m_pGeometry);
-		if(deleted)
-		{
-			m_pGeometry = NULL;
+bool VistaGeomNode::SetGeometry(VistaGeometry* pGeom) {
+  if (m_pGeometry) {
+    // unregister geometry
+    bool deleted = m_pBridge->UnregisterGeometry(m_pGeometry);
+    if (deleted) {
+      m_pGeometry = NULL;
 
-			// clean toolkit node
-			m_pBridge->ClearGeomNodeData(this);
-		}
-	}
+      // clean toolkit node
+      m_pBridge->ClearGeomNodeData(this);
+    }
+  }
 
-	
-	if(pGeom)
-	{
-		if(m_pBridge->SetGeometry(pGeom->m_pData, m_pData))
-		{
-			m_pGeometry = pGeom;
-			m_pBridge->RegisterGeometry(m_pGeometry);
-			return true;
-		}
-	}
-	else
-	{
-		m_pGeometry = NULL;
-		return true;
-	}
-	return false;
+  if (pGeom) {
+    if (m_pBridge->SetGeometry(pGeom->m_pData, m_pData)) {
+      m_pGeometry = pGeom;
+      m_pBridge->RegisterGeometry(m_pGeometry);
+      return true;
+    }
+  } else {
+    m_pGeometry = NULL;
+    return true;
+  }
+  return false;
 }
 
-
-bool VistaGeomNode::ScaleGeometry(const float fX, const float fY, const float fZ)
-{
-	if(m_pGeometry)
-	{
-		return m_pGeometry->ScaleGeometry(fX, fY, fZ);
-	}
-	return false;
+bool VistaGeomNode::ScaleGeometry(const float fX, const float fY, const float fZ) {
+  if (m_pGeometry) {
+    return m_pGeometry->ScaleGeometry(fX, fY, fZ);
+  }
+  return false;
 }
 
 // ============================================================================
 // ============================================================================
-bool VistaGeomNode::CanHaveChildren() const
-{
-	return false;
+bool VistaGeomNode::CanHaveChildren() const {
+  return false;
 }
 
-void VistaGeomNode::Debug( std::ostream& oOut, int nLevel /*= 0 */ ) const
-{
-	VistaLeafNode::Debug( oOut, nLevel );
-	
-	oOut << vstr::indent;
-	for(int j=0; j<nLevel; j++)
-		oOut << "  ";
-	oOut << "   Geometry: " 
-		<< std::setw( 10 ) << m_pGeometry->GetNumberOfVertices() << " verts, "
-		<< std::setw( 10 ) << m_pGeometry->GetNumberOfFaces() << " faces"
-		<< std::endl;
+void VistaGeomNode::Debug(std::ostream& oOut, int nLevel /*= 0 */) const {
+  VistaLeafNode::Debug(oOut, nLevel);
+
+  oOut << vstr::indent;
+  for (int j = 0; j < nLevel; j++)
+    oOut << "  ";
+  oOut << "   Geometry: " << std::setw(10) << m_pGeometry->GetNumberOfVertices() << " verts, "
+       << std::setw(10) << m_pGeometry->GetNumberOfFaces() << " faces" << std::endl;
 }
 
 // ============================================================================
 // ============================================================================
-

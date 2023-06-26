@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDefSemaphoreImp.h"
 
 #include <limits.h>
@@ -40,64 +39,52 @@
 
 /*============================================================================*/
 
-VistaDefSemaphoreImp::VistaDefSemaphoreImp ( unsigned int inStart )
-: IVistaSemaphoreImp()
-{
-	if ( inStart > INT_MAX )
-		counter = INT_MAX;
-	else
-		counter = static_cast<int> ( inStart );
+VistaDefSemaphoreImp::VistaDefSemaphoreImp(unsigned int inStart)
+    : IVistaSemaphoreImp() {
+  if (inStart > INT_MAX)
+    counter = INT_MAX;
+  else
+    counter = static_cast<int>(inStart);
 
-	wait.Lock ();
+  wait.Lock();
 }
 
-void VistaDefSemaphoreImp::Wait()
-{
-	counterAccess.Lock ();
+void VistaDefSemaphoreImp::Wait() {
+  counterAccess.Lock();
 
-	if ( counter -- <= 0 )
-	{
-		counterAccess.Unlock ();
-		wait.Lock   ();
-	}
-	else
-	{
-		counterAccess.Unlock ();
-	}
+  if (counter-- <= 0) {
+    counterAccess.Unlock();
+    wait.Lock();
+  } else {
+    counterAccess.Unlock();
+  }
 }
 
-bool VistaDefSemaphoreImp::TryWait ()
-{
-	counterAccess.Lock ();
+bool VistaDefSemaphoreImp::TryWait() {
+  counterAccess.Lock();
 
-	if ( counter <= 1  )
-	{
-		counterAccess.Unlock ();
-		return false;
-	}
-	else
-	{
-		counter --;
-		counterAccess.Unlock ();
-		return true;
-	}
+  if (counter <= 1) {
+    counterAccess.Unlock();
+    return false;
+  } else {
+    counter--;
+    counterAccess.Unlock();
+    return true;
+  }
 }
 
-void VistaDefSemaphoreImp::Post ()
-{
-	counterAccess.Lock ();
+void VistaDefSemaphoreImp::Post() {
+  counterAccess.Lock();
 
-	if ( counter < 0 )
-	{
-		wait.Unlock();
-	}
+  if (counter < 0) {
+    wait.Unlock();
+  }
 
-	counter ++;
+  counter++;
 
-	counterAccess.Unlock ();
+  counterAccess.Unlock();
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

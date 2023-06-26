@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _RANDOMNUMBERDFNNODE_H
 #define _RANDOMNUMBERDFNNODE_H
 
@@ -30,8 +29,8 @@
 /*============================================================================*/
 
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
 
 #include <VistaAspects/VistaPropertyAwareable.h>
 
@@ -58,22 +57,21 @@ class VistaRandomNumberGenerator;
  *
  * @outport{out,float}
  */
-class RandomNumberDfnNode : public IVdfnNode
-{
-public:
-	RandomNumberDfnNode( float fMin, float fMax );
-	~RandomNumberDfnNode();
+class RandomNumberDfnNode : public IVdfnNode {
+ public:
+  RandomNumberDfnNode(float fMin, float fMax);
+  ~RandomNumberDfnNode();
 
-protected:
-	virtual bool DoEvalNode();
-	virtual bool GetIsMasterSim() const;
+ protected:
+  virtual bool DoEvalNode();
+  virtual bool GetIsMasterSim() const;
 
-protected:
-	float							m_fMin;
-	float							m_fRange;
+ protected:
+  float m_fMin;
+  float m_fRange;
 
-	TVdfnPort<float>*				m_pOut;
-	VistaRandomNumberGenerator*		m_pRand;
+  TVdfnPort<float>*           m_pOut;
+  VistaRandomNumberGenerator* m_pRand;
 };
 
 /**
@@ -85,13 +83,12 @@ protected:
  * For this, we create our own NodeCreator, which defines how to extract the
  * parameters and create the node
  */
-class RandomNumberDfnNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	RandomNumberDfnNodeCreate();
-	virtual ~RandomNumberDfnNodeCreate();
+class RandomNumberDfnNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  RandomNumberDfnNodeCreate();
+  virtual ~RandomNumberDfnNodeCreate();
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList& oPropertyList ) const;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oPropertyList) const;
 };
 
 /*============================================================================*/
@@ -99,4 +96,3 @@ public:
 /*============================================================================*/
 
 #endif //_RANDOMNUMBERDFNNODE_H
-

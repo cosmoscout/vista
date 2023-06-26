@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "DemoEvent.h"
 #include <iostream>
 
@@ -33,46 +32,37 @@ int DemoEvent::m_iEventId = VistaEvent::VET_INVALID;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DemoEvent::DemoEvent()
-{
-	SetType( m_iEventId );
-	SetId( EID_DEMOEVENT );
+DemoEvent::DemoEvent() {
+  SetType(m_iEventId);
+  SetId(EID_DEMOEVENT);
 }
 
-DemoEvent::~DemoEvent()
-{
+DemoEvent::~DemoEvent() {
 #ifdef DEBUG
-    cout << " [DemoEvent] >> DESTRUCTOR <<" << endl;
+  cout << " [DemoEvent] >> DESTRUCTOR <<" << endl;
 #endif
 }
 
-int DemoEvent::GetTypeId()
-{
-	return DemoEvent::m_iEventId;
+int DemoEvent::GetTypeId() {
+  return DemoEvent::m_iEventId;
 }
 
-void DemoEvent::SetTypeId(int iId)
-{
-        // event ID can only set once
-	if(m_iEventId != VistaEvent::VET_INVALID)
-		return;
+void DemoEvent::SetTypeId(int iId) {
+  // event ID can only set once
+  if (m_iEventId != VistaEvent::VET_INVALID)
+    return;
 
-        cout << "[DemoEvent]::SetTypeId >> " << iId << endl;
-	m_iEventId = iId;
+  cout << "[DemoEvent]::SetTypeId >> " << iId << endl;
+  m_iEventId = iId;
 }
 
+std::string DemoEvent::GetIdString(int iId) {
+  if (iId == EID_DEMOEVENT)
+    return "DEMOEVENT";
 
-std::string DemoEvent::GetIdString(int iId)
-{
-	if(iId == EID_DEMOEVENT)
-		return "DEMOEVENT";
-
-	return VistaEvent::GetIdString(iId);
+  return VistaEvent::GetIdString(iId);
 }
-
-
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-

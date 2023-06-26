@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNWINDOWSOURCENODE_H
 #define _VISTADFNWINDOWSOURCENODE_H
 
@@ -31,11 +30,10 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
-
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -54,37 +52,32 @@ class VistaWindow;
  * Retrieves window dimensions of the associated window.
  *
  * @ingroup VdfnNodes
- * @outport{win_x, int, window x position on screen} 
- * @outport{win_y, int, window y position on screen} 
- * @outport{win_w, int, window width} 
- * @outport{win_h, int, window height} 
+ * @outport{win_x, int, window x position on screen}
+ * @outport{win_y, int, window y position on screen}
+ * @outport{win_w, int, window width}
+ * @outport{win_h, int, window height}
  */
-class VISTAKERNELAPI VistaDfnWindowSourceNode : public IVdfnNode
-{
-public:
-	VistaDfnWindowSourceNode( VistaWindow *pWindow );
+class VISTAKERNELAPI VistaDfnWindowSourceNode : public IVdfnNode {
+ public:
+  VistaDfnWindowSourceNode(VistaWindow* pWindow);
 
+  ~VistaDfnWindowSourceNode();
 
-	~VistaDfnWindowSourceNode();
+  virtual bool GetIsValid() const;
 
-	virtual bool GetIsValid() const;
+ protected:
+  virtual bool DoEvalNode();
 
-protected:
-	virtual bool DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const;
 
-	virtual unsigned int CalcUpdateNeededScore() const;
+ private:
+  TVdfnPort<int>*m_pX, *m_pY, *m_pW, *m_pH;
 
-private:
-	TVdfnPort<int> *m_pX,
-				   *m_pY,
-				   *m_pW,
-				   *m_pH;
+  class WindowObserver;
+  VistaWindow*    m_pWindow;
+  WindowObserver* m_pObs;
 
-	class WindowObserver;
-	VistaWindow *m_pWindow;
-	WindowObserver *m_pObs;
-
-	mutable unsigned int m_nUpdateCount;
+  mutable unsigned int m_nUpdateCount;
 };
 
 /*============================================================================*/

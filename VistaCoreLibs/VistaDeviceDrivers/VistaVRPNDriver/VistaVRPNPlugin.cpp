@@ -21,20 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-
 #if defined(WIN32) && !defined(VISTAVRPNPLUGIN_STATIC)
-	#ifdef VISTAVRPNPLUGIN_EXPORTS
-		#define VISTAVRPNPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTAVRPNPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAVRPNPLUGIN_EXPORTS
+#define VISTAVRPNPLUGINAPI __declspec(dllexport)
+#else
+#define VISTAVRPNPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAVRPNPLUGINAPI
+#define VISTAVRPNPLUGINAPI
 #endif
 
 #include "VistaVRPNDriver.h"
@@ -45,57 +43,47 @@
 
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-namespace
-{
-	VRPNDriverCreationMethod *g_SpFactory = NULL;
+namespace {
+VRPNDriverCreationMethod* g_SpFactory = NULL;
 }
-
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTASPACENAVIGATORCONFIG_H
 
-extern "C" VISTAVRPNPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( g_SpFactory == NULL )
-		g_SpFactory = new VRPNDriverCreationMethod(fac);
+extern "C" VISTAVRPNPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (g_SpFactory == NULL)
+    g_SpFactory = new VRPNDriverCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(g_SpFactory);
-	return g_SpFactory;
+  IVistaReferenceCountable::refup(g_SpFactory);
+  return g_SpFactory;
 }
 
-extern "C" VISTAVRPNPLUGINAPI const char *GetDeviceClassName()
-{
-	return "VRPN";
+extern "C" VISTAVRPNPLUGINAPI const char* GetDeviceClassName() {
+  return "VRPN";
 }
 
-extern "C" VISTAVRPNPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *)
-{
-	if( g_SpFactory == NULL )
-		return;
+extern "C" VISTAVRPNPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod*) {
+  if (g_SpFactory == NULL)
+    return;
 
-	if(IVistaReferenceCountable::refdown(g_SpFactory))
-		g_SpFactory = NULL;
+  if (IVistaReferenceCountable::refdown(g_SpFactory))
+    g_SpFactory = NULL;
 }
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -108,8 +96,3 @@ extern "C" VISTAVRPNPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMeth
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-
-
-
-

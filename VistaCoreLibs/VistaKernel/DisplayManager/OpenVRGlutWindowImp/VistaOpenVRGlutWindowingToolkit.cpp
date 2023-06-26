@@ -34,76 +34,68 @@
 #define NOMINMAX
 #include <windows.h>
 #endif
-#include "VistaBase/VistaTimeUtils.h"
-#include "GL/glut.h"
 #include "../VistaViewport.h"
+#include "GL/glut.h"
+#include "VistaBase/VistaTimeUtils.h"
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaOpenVRGlutWindowingToolkit::VistaOpenVRGlutWindowingToolkit()
-: VistaGlutWindowingToolkit()
-, m_pVRSystem(nullptr)
-{
-	if(!vr::VR_IsHmdPresent()){
-		vstr::errp()<<"Error: No OpenVR HMD present while constructing VistaOpenVRGlutWindowingToolkit!\n";
-	}
+    : VistaGlutWindowingToolkit()
+    , m_pVRSystem(nullptr) {
+  if (!vr::VR_IsHmdPresent()) {
+    vstr::errp()
+        << "Error: No OpenVR HMD present while constructing VistaOpenVRGlutWindowingToolkit!\n";
+  }
 
-	vr::EVRInitError eError = vr::VRInitError_None;
-	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
+  vr::EVRInitError eError = vr::VRInitError_None;
+  m_pVRSystem             = vr::VR_Init(&eError, vr::VRApplication_Scene);
 
-	if(eError!=0){
-		vstr::errp()<<"Error while connecting to OpenVR API in VistaOpenVRGlutWindowingToolkit ctor: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
-	}
+  if (eError != 0) {
+    vstr::errp() << "Error while connecting to OpenVR API in VistaOpenVRGlutWindowingToolkit ctor: "
+                 << vr::VR_GetVRInitErrorAsEnglishDescription(eError) << std::endl;
+  }
 
-	if ( !vr::VRCompositor() )
-	{
-		vstr::errp()<<"Error: OpenVR compositor initialization failed in VistaOpenVRGlutWindowingToolkit ctor!\n";
-	}
+  if (!vr::VRCompositor()) {
+    vstr::errp() << "Error: OpenVR compositor initialization failed in "
+                    "VistaOpenVRGlutWindowingToolkit ctor!\n";
+  }
 }
 
-VistaOpenVRGlutWindowingToolkit::~VistaOpenVRGlutWindowingToolkit()
-{
-	vr::VR_Shutdown();
+VistaOpenVRGlutWindowingToolkit::~VistaOpenVRGlutWindowingToolkit() {
+  vr::VR_Shutdown();
 }
 
-bool VistaOpenVRGlutWindowingToolkit::RegisterWindow( VistaWindow* pWindow )
-{
-	bool bSuccess = VistaGlutWindowingToolkit::RegisterWindow( pWindow );
+bool VistaOpenVRGlutWindowingToolkit::RegisterWindow(VistaWindow* pWindow) {
+  bool bSuccess = VistaGlutWindowingToolkit::RegisterWindow(pWindow);
 
-	uint32_t width, height;
-	m_pVRSystem->GetRecommendedRenderTargetSize(&width, &height);
-	pWindow->GetWindowProperties()->SetSize( width, height );	
+  uint32_t width, height;
+  m_pVRSystem->GetRecommendedRenderTargetSize(&width, &height);
+  pWindow->GetWindowProperties()->SetSize(width, height);
 
-	return bSuccess;
+  return bSuccess;
 }
 
-bool VistaOpenVRGlutWindowingToolkit::InitWindow( VistaWindow* pWindow )
-{
-	if(!VistaGlutWindowingToolkit::InitWindow(pWindow)) {
-		vstr::errp()<<"Couldn't initialize Window for a OpenVR application." << std::endl;
-		return false;
-    }
+bool VistaOpenVRGlutWindowingToolkit::InitWindow(VistaWindow* pWindow) {
+  if (!VistaGlutWindowingToolkit::InitWindow(pWindow)) {
+    vstr::errp() << "Couldn't initialize Window for a OpenVR application." << std::endl;
+    return false;
+  }
 
-	BindWindow( pWindow );
+  BindWindow(pWindow);
 
-	return true;
+  return true;
 }
-void VistaOpenVRGlutWindowingToolkit::DisplayWindow( const VistaWindow* pWindow )
-{
-	VistaGlutWindowingToolkit::DisplayWindow( pWindow );
-	vr::VRCompositor()->PostPresentHandoff();
+void VistaOpenVRGlutWindowingToolkit::DisplayWindow(const VistaWindow* pWindow) {
+  VistaGlutWindowingToolkit::DisplayWindow(pWindow);
+  vr::VRCompositor()->PostPresentHandoff();
 }
 
-vr::IVRSystem* VistaOpenVRGlutWindowingToolkit::GetVRSystem()
-{
-	return m_pVRSystem;
+vr::IVRSystem* VistaOpenVRGlutWindowingToolkit::GetVRSystem() {
+  return m_pVRSystem;
 }
-
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-
-

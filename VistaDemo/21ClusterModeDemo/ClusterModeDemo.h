@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _CLUSTERMODEDEMO_H
 #define _CLUSTERMODEDEMO_H
 
@@ -50,37 +49,35 @@ class VistaMsg;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class ClusterModeDemo : public VistaEventHandler
-{
-public:
-	ClusterModeDemo( int argc = 0, char *argv[] = NULL );
-	virtual ~ClusterModeDemo();
+class ClusterModeDemo : public VistaEventHandler {
+ public:
+  ClusterModeDemo(int argc = 0, char* argv[] = NULL);
+  virtual ~ClusterModeDemo();
 
-	void Run();
+  void Run();
 
-	virtual void HandleEvent( VistaEvent* pEvent );
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-private:
-	void AddTextToOverlay( const std::string& sText );
-	void PerformSomeComputation();
+ private:
+  void AddTextToOverlay(const std::string& sText);
+  void PerformSomeComputation();
 
-	void SetupExternalMessageEvent();
-	void CheckThreadedComputation();
-	void HandleExternalMessageEvent( VistaEvent* pEvent );
+  void SetupExternalMessageEvent();
+  void CheckThreadedComputation();
+  void HandleExternalMessageEvent(VistaEvent* pEvent);
 
-	void ComputeSomething();
+  void ComputeSomething();
 
-	VistaSystem* m_pVistaSystem;
-	std::vector< IVistaTextEntity* > m_vecTexts;
-	VistaSimpleTextOverlay* m_pTextOverlay;
+  VistaSystem*                   m_pVistaSystem;
+  std::vector<IVistaTextEntity*> m_vecTexts;
+  VistaSimpleTextOverlay*        m_pTextOverlay;
 
-	IVistaClusterBarrier* m_pBarrier;
-	IVistaClusterDataSync* m_pDataSync;
+  IVistaClusterBarrier*  m_pBarrier;
+  IVistaClusterDataSync* m_pDataSync;
 
-	ComputationThread* m_pComputeThread;
-	VistaExternalMsgEvent* m_pComputeFinishedEvent;
-	VistaMsg* m_pMessage;
+  ComputationThread*     m_pComputeThread;
+  VistaExternalMsgEvent* m_pComputeFinishedEvent;
+  VistaMsg*              m_pMessage;
 };
-
 
 #endif // _CLUSTERMODEDEMO_H

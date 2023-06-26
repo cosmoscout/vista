@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VTKDRAWOBJECT_H
 #define _VTKDRAWOBJECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,7 +30,7 @@
 // =======================================================
 // ATTENTION: Include VTK headers before including WTK !!!
 // =======================================================
-//INCREASE THE HEAP: /Zm1000
+// INCREASE THE HEAP: /Zm1000
 
 //#include <vtk.h>
 // USE: "vtk3.2/include/vtkConfigure.cxx"
@@ -46,9 +44,9 @@
 
 // include OpenGL and VTK libraries
 #ifdef _WIN32
-    #include <vtkWin32OpenGLRenderWindow.h>
+#include <vtkWin32OpenGLRenderWindow.h>
 #else
-    #include <vtkXOpenGLRenderWindow.h>
+#include <vtkXOpenGLRenderWindow.h>
 #endif
 
 //#include <VistaKernel/VistaOldGraphicsManager.h>
@@ -75,28 +73,25 @@ class vtkActorCollection;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VtkDrawObject : public VTKOGLRENWIN, public IVistaOpenGLDraw
-{
-public:
-    // CONSTRUCTORS / DESTRUCTOR 
-    VtkDrawObject ();
-    virtual ~VtkDrawObject ();
+class VtkDrawObject : public VTKOGLRENWIN, public IVistaOpenGLDraw {
+ public:
+  // CONSTRUCTORS / DESTRUCTOR
+  VtkDrawObject();
+  virtual ~VtkDrawObject();
 
-    // INTERFACE REALIZATION OFIVistaOpenGLDraw
-	virtual bool GetBoundingBox(VistaBoundingBox &);
-	virtual bool Do();
+  // INTERFACE REALIZATION OFIVistaOpenGLDraw
+  virtual bool GetBoundingBox(VistaBoundingBox&);
+  virtual bool Do();
 
-private:
-    // OVERRIDE METHODS OF vtk?OpenGLRenderWindow
-    void MakeCurrent()
-    {
-		return;
-	}
+ private:
+  // OVERRIDE METHODS OF vtk?OpenGLRenderWindow
+  void MakeCurrent() {
+    return;
+  }
 
-protected:
-    vtkRenderer *                   m_pVtkRenderer;
-    vtkActorCollection *            m_pActorColl;
+ protected:
+  vtkRenderer*        m_pVtkRenderer;
+  vtkActorCollection* m_pActorColl;
 };
-
 
 #endif // _VTKDRAWOBJECT_H

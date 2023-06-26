@@ -21,15 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
-
 
 #if defined(VISTA_THREADING_POSIX)
 
-#include <unistd.h>
-#include <errno.h>
 #include "VistaPthreadThreadEventImp.h"
+#include <errno.h>
+#include <unistd.h>
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -40,105 +38,93 @@
 /*============================================================================*/
 
 VistaPthreadThreadEventImp::VistaPthreadThreadEventImp()
-: autoreset(true), state(0)
-{
-	pthread_mutex_init(&mtx, 0);
-	pthread_cond_init(&cond, 0);
+    : autoreset(true)
+    , state(0) {
+  pthread_mutex_init(&mtx, 0);
+  pthread_cond_init(&cond, 0);
 }
 
-
-VistaPthreadThreadEventImp::~VistaPthreadThreadEventImp()
-{
-	pthread_cond_destroy(&cond);
-	pthread_mutex_destroy(&mtx);
+VistaPthreadThreadEventImp::~VistaPthreadThreadEventImp() {
+  pthread_cond_destroy(&cond);
+  pthread_mutex_destroy(&mtx);
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-void VistaPthreadThreadEventImp::SignalEvent()
-{
-	TEMP_FAILURE_RETRY( pthread_mutex_lock(&mtx) );
-	
-	state = 1;
-	if (autoreset)
-		pthread_cond_signal(&cond);
-	else
-		pthread_cond_broadcast(&cond);
-	pthread_mutex_unlock(&mtx);
+void VistaPthreadThreadEventImp::SignalEvent() {
+  TEMP_FAILURE_RETRY(pthread_mutex_lock(&mtx));
+
+  state = 1;
+  if (autoreset)
+    pthread_cond_signal(&cond);
+  else
+    pthread_cond_broadcast(&cond);
+  pthread_mutex_unlock(&mtx);
 }
 
-bool VistaPthreadThreadEventImp::WaitForEvent(int iTimeoutMSecs)
-{
-	bool ret = true;
+bool VistaPthreadThreadEventImp::WaitForEvent(int iTimeoutMSecs) {
+  bool ret = true;
 
-	TEMP_FAILURE_RETRY( pthread_mutex_lock(&mtx) );
-	if(state == 0)
-	{
-		struct timespec ts;
-		clock_gettime(CLOCK_REALTIME, &ts);
-		
-		// add delta to nanoseconds
-		ts.tv_nsec += long(iTimeoutMSecs) * 1000000L;
+  TEMP_FAILURE_RETRY(pthread_mutex_lock(&mtx));
+  if (state == 0) {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
 
-		// wrap nanoseconds
-		int sec_wrap = ts.tv_nsec / 1000000000L;
-		ts.tv_sec += sec_wrap;
-		ts.tv_nsec = ts.tv_nsec - sec_wrap * 1000000000L;
+    // add delta to nanoseconds
+    ts.tv_nsec += long(iTimeoutMSecs) * 1000000L;
 
-		if(pthread_cond_timedwait(&cond, &mtx, &ts) == ETIMEDOUT)
-			ret = false;
-	}
-	if (autoreset)
-		state = 0;
-	pthread_mutex_unlock(&mtx);
+    // wrap nanoseconds
+    int sec_wrap = ts.tv_nsec / 1000000000L;
+    ts.tv_sec += sec_wrap;
+    ts.tv_nsec = ts.tv_nsec - sec_wrap * 1000000000L;
 
-	return ret;
+    if (pthread_cond_timedwait(&cond, &mtx, &ts) == ETIMEDOUT)
+      ret = false;
+  }
+  if (autoreset)
+    state = 0;
+  pthread_mutex_unlock(&mtx);
+
+  return ret;
 }
 
-bool VistaPthreadThreadEventImp::WaitForEvent(bool bBlock)
-{
-	bool ret = true;
+bool VistaPthreadThreadEventImp::WaitForEvent(bool bBlock) {
+  bool ret = true;
 
-	TEMP_FAILURE_RETRY( pthread_mutex_lock(&mtx) );
-	if(bBlock)
-	{
-		if(state == 0)
-			TEMP_FAILURE_RETRY( pthread_cond_wait(&cond, &mtx) );
-	}
-	else if(state == 0)
-		ret = false;
-		
-	if (autoreset)
-		state = 0;
-	pthread_mutex_unlock(&mtx);
+  TEMP_FAILURE_RETRY(pthread_mutex_lock(&mtx));
+  if (bBlock) {
+    if (state == 0)
+      TEMP_FAILURE_RETRY(pthread_cond_wait(&cond, &mtx));
+  } else if (state == 0)
+    ret = false;
 
-	return ret;
+  if (autoreset)
+    state = 0;
+  pthread_mutex_unlock(&mtx);
+
+  return ret;
 }
 
-HANDLE VistaPthreadThreadEventImp::GetEventSignalHandle() const
-{
-	// to be honest... we should throw here
-	return (HANDLE)0xFFFFFFFF;
+HANDLE VistaPthreadThreadEventImp::GetEventSignalHandle() const {
+  // to be honest... we should throw here
+  return (HANDLE)0xFFFFFFFF;
 }
 
-HANDLE VistaPthreadThreadEventImp::GetEventWaitHandle() const
-{
-	// to be honest... we should throw here
-	return (HANDLE)0xFFFFFFFF;
+HANDLE VistaPthreadThreadEventImp::GetEventWaitHandle() const {
+  // to be honest... we should throw here
+  return (HANDLE)0xFFFFFFFF;
 }
 
-bool VistaPthreadThreadEventImp::ResetThisEvent( ResetBehavior /* reset_behavior */ )
-{
-	TEMP_FAILURE_RETRY( pthread_mutex_lock(&mtx) );
-	state = 0;
-	pthread_mutex_unlock(&mtx);
-	return true;
+bool VistaPthreadThreadEventImp::ResetThisEvent(ResetBehavior /* reset_behavior */) {
+  TEMP_FAILURE_RETRY(pthread_mutex_lock(&mtx));
+  state = 0;
+  pthread_mutex_unlock(&mtx);
+  return true;
 }
 
 #endif
 
 // ============================================================================
 // ============================================================================
-

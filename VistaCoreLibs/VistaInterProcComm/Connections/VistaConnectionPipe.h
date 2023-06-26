@@ -21,43 +21,38 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACONNECTIONPIPE_H__
 #define _VISTACONNECTIONPIPE_H__
 
 #include <VistaInterProcComm/Connections/VistaConnection.h>
 
+class VISTAINTERPROCCOMMAPI VistaConnectionPipe : public VistaConnection {
+ public:
+  VistaConnectionPipe();
+  ~VistaConnectionPipe();
 
-class VISTAINTERPROCCOMMAPI VistaConnectionPipe : public VistaConnection
-{
-public:
-	VistaConnectionPipe();
-	~VistaConnectionPipe();
+  bool Open();
+  void Close();
 
-	bool Open();
-	void Close();
+  int Receive(void* buffer, const int length, int iTimeout = 0);
+  int Send(const void* buffer, const int length);
 
-	int Receive( void *buffer, const int length, int iTimeout=0 );
-	int Send( const void *buffer, const int length );
+  bool          HasPendingData() const;
+  unsigned long PendingDataSize() const;
 
-	bool HasPendingData() const;
-	unsigned long PendingDataSize() const;
+  HANDLE GetConnectionDescriptor() const;
+  HANDLE GetConnectionWaitForDescriptor();
 
-	HANDLE GetConnectionDescriptor() const;
-	HANDLE GetConnectionWaitForDescriptor();
-
-private:
+ private:
 #if !defined(WIN32)
-	int m_fd[2];
+  int m_fd[2];
 #else
 
 #endif
 };
 
-
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif  //_VISTACONNECTIONPIPE_H__
+#endif //_VISTACONNECTIONPIPE_H__

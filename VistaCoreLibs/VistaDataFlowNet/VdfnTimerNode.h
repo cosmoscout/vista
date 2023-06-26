@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNTIMERNODE_H
 #define _VDFNTIMERNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,8 +30,8 @@
 #include "VdfnConfig.h"
 #include "VdfnNode.h"
 #include "VdfnPort.h"
-#include <VistaInterProcComm/DataLaVista/Base/VistaDLVTypes.h>
 #include <VistaBase/VistaTimer.h>
+#include <VistaInterProcComm/DataLaVista/Base/VistaDLVTypes.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -64,90 +62,88 @@
  * the node is evaluating unconditionally, that means it will produce output on
  * every iteration.
  */
-class VISTADFNAPI VdfnTimerNode : public IVdfnNode
-{
-public:
-	/**
-	 * a timer interface to use for querying the node time
-	 */
-	class VISTADFNAPI CGetTime
-	{
-	public:
-		virtual ~CGetTime() {}
-		/**
-		 * get the current time (abstract the timing interface).
-		 * the API is not const on purpose, as implementations may need
-		 * to conserve state during the operation.
-		 * @return the current system time in seconds since epoch
-		 */
-		virtual double GetTime() = 0;
-	};
+class VISTADFNAPI VdfnTimerNode : public IVdfnNode {
+ public:
+  /**
+   * a timer interface to use for querying the node time
+   */
+  class VISTADFNAPI CGetTime {
+   public:
+    virtual ~CGetTime() {
+    }
+    /**
+     * get the current time (abstract the timing interface).
+     * the API is not const on purpose, as implementations may need
+     * to conserve state during the operation.
+     * @return the current system time in seconds since epoch
+     */
+    virtual double GetTime() = 0;
+  };
 
+  /**
+   * @param pTime the timer interface to use, pTime deletion will be managed by Node.
+   * @param bReset controls the behavior of the node upon activation
+            of the graph (OnActivation()). If set to true, the node will
+            reset the dt value to 0, as otherwise dt will contain the
+            timespan between deactivation and activation.
+   */
+  VdfnTimerNode(CGetTime* pTime, bool bReset);
 
-	/**
-	 * @param pTime the timer interface to use, pTime deletion will be managed by Node.
-	 * @param bReset controls the behavior of the node upon activation
-	          of the graph (OnActivation()). If set to true, the node will
-	          reset the dt value to 0, as otherwise dt will contain the
-	          timespan between deactivation and activation.
-	 */
-	VdfnTimerNode( CGetTime *pTime, bool bReset );
+  /**
+   * empty
+   */
+  virtual ~VdfnTimerNode();
 
-	/**
-	 * empty
-	 */
-	virtual ~VdfnTimerNode();
+  /**
+   * @return true when a valid timer was given during construction
+   */
+  bool GetIsValid() const;
 
-	/**
-	 * @return true when a valid timer was given during construction
-	 */
-	bool GetIsValid() const;
+  /**
+   * in case this node is flagged to reset on activation, this node
+   * is reset on activation or not. (surprising, is it not?)
+   * @param dTs the current timestamp
+   */
+  void OnActivation(double dTs);
 
-	/**
-	 * in case this node is flagged to reset on activation, this node
-	 * is reset on activation or not. (surprising, is it not?)
-	 * @param dTs the current timestamp
-	 */
-	void OnActivation( double dTs );
+  /**
+   * this is a master sim node, so in case of serialization, it will be
+   * serialized to reflect the master timing on the slave node.
+   * @return true
+   */
+  virtual bool GetIsMasterSim() const {
+    return true;
+  }
 
-	/**
-	 * this is a master sim node, so in case of serialization, it will be
-	 * serialized to reflect the master timing on the slave node.
-	 * @return true
-	 */
-	virtual bool GetIsMasterSim() const { return true; }
+ protected:
+  virtual bool DoEvalNode();
 
-protected:
-	virtual bool   DoEvalNode();
+ private:
+  TVdfnPort<double>*m_pTimer, *m_pDt;
 
-private:
-	TVdfnPort<double> *m_pTimer,
-					  *m_pDt;
+  bool m_bReset;
 
-	bool               m_bReset;
-
-	CGetTime          *m_pGetTime;
-	double             m_nLastUpdate;
+  CGetTime* m_pGetTime;
+  double    m_nLastUpdate;
 };
 
 /**
  * implementation of a timer interface based on VistaTimer.
  */
-class VISTADFNAPI CTimerGetTime : public VdfnTimerNode::CGetTime
-{
-public:
-	CTimerGetTime();
+class VISTADFNAPI CTimerGetTime : public VdfnTimerNode::CGetTime {
+ public:
+  CTimerGetTime();
 
-	/**
-	 * @return the system time (VistaTimer::GetSystemTime())
-	 */
-	double GetTime();
-private:
-	VistaTimer m_oTimer;
+  /**
+   * @return the system time (VistaTimer::GetSystemTime())
+   */
+  double GetTime();
+
+ private:
+  VistaTimer m_oTimer;
 };
 
 // #############################################################################
-
 
 /**
  * a ticktimer node can be used to inject activation at user defined intervals,
@@ -159,42 +155,41 @@ private:
                      between the evaluation runs (can be larger than set using step)}
  * @outport{fraction,double,reflects ticktime-step}
  */
-class VISTADFNAPI VdfnTickTimerNode : public IVdfnNode
-{
-public:
-	/**
-	 * @param pGetTime the timer interface to use for timings. pGetTime deletion will be managed by Node.
-	 */
-	VdfnTickTimerNode( VdfnTimerNode::CGetTime *pGetTime );
-	~VdfnTickTimerNode();
+class VISTADFNAPI VdfnTickTimerNode : public IVdfnNode {
+ public:
+  /**
+   * @param pGetTime the timer interface to use for timings. pGetTime deletion will be managed by
+   * Node.
+   */
+  VdfnTickTimerNode(VdfnTimerNode::CGetTime* pGetTime);
+  ~VdfnTickTimerNode();
 
-	/**
-	 * @return true when a valid timer interface was specified during construction
-	           and the inport <i>step</i> is set.
-	 */
-	bool GetIsValid() const;
+  /**
+   * @return true when a valid timer interface was specified during construction
+             and the inport <i>step</i> is set.
+   */
+  bool GetIsValid() const;
 
-	/**
-	 * @return GetIsValid()
-	 */
-	bool PrepareEvaluationRun();
+  /**
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun();
 
-	/**
-	 * in a clustered setup, this node relfects the master's state on all slaves.
-	 * @return true
-	 */
-	virtual bool GetIsMasterSim() const { return true; }
+  /**
+   * in a clustered setup, this node relfects the master's state on all slaves.
+   * @return true
+   */
+  virtual bool GetIsMasterSim() const {
+    return true;
+  }
 
-protected:
-	bool DoEvalNode() ;
+ protected:
+  bool DoEvalNode();
 
-private:
-	VdfnTimerNode::CGetTime *m_pGetTime;
-	TVdfnPort<double> *m_pTickTime,
-					  *m_pFraction,
-					  *m_pTimeStep,
-					  *m_pTime;
-	double             m_nLastUpdate;
+ private:
+  VdfnTimerNode::CGetTime* m_pGetTime;
+  TVdfnPort<double>*       m_pTickTime, *m_pFraction, *m_pTimeStep, *m_pTime;
+  double                   m_nLastUpdate;
 };
 
 /*============================================================================*/
@@ -202,4 +197,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNTIMERNODE_H
-

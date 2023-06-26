@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaReferenceCountable.h"
 
 /*============================================================================*/
@@ -31,18 +30,15 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaReferenceCountable::IVistaReferenceCountable()
-{
-	m_iReferenceCount = 0;
+IVistaReferenceCountable::IVistaReferenceCountable() {
+  m_iReferenceCount = 0;
 }
 
-IVistaReferenceCountable::IVistaReferenceCountable(const IVistaReferenceCountable &)
-{
-	m_iReferenceCount = 0; // we are independent ;)
+IVistaReferenceCountable::IVistaReferenceCountable(const IVistaReferenceCountable&) {
+  m_iReferenceCount = 0; // we are independent ;)
 }
 
-IVistaReferenceCountable::~IVistaReferenceCountable()
-{
+IVistaReferenceCountable::~IVistaReferenceCountable() {
 }
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
@@ -51,5 +47,3 @@ IVistaReferenceCountable::~IVistaReferenceCountable()
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

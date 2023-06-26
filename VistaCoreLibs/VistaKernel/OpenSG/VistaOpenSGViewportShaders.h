@@ -44,19 +44,15 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VistaOSGViewportShader
-{
-	VISTAKERNELAPI const std::string& GetStandardVertexShader();
-	VISTAKERNELAPI const std::string& GetAnaglyphCyanMagentaFragmentShader();
-	VISTAKERNELAPI const std::string& GetAnaglyphCyanMagentaMonochromeFragmentShader();
-	VISTAKERNELAPI const std::string& GetNullPostProcessFragmentShader();
-};
-
+namespace VistaOSGViewportShader {
+VISTAKERNELAPI const std::string& GetStandardVertexShader();
+VISTAKERNELAPI const std::string& GetAnaglyphCyanMagentaFragmentShader();
+VISTAKERNELAPI const std::string& GetAnaglyphCyanMagentaMonochromeFragmentShader();
+VISTAKERNELAPI const std::string& GetNullPostProcessFragmentShader();
+}; // namespace VistaOSGViewportShader
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAOPENSGVIEWPORTSHADERS_H
-
-

@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "ObserverRegisterCallback.h"
-#include <VistaTools/VistaMemoryInfo.h>
 #include <VistaKernel/GraphicsManager/VistaGraphicsManager.h>
+#include <VistaTools/VistaMemoryInfo.h>
 
-#include <VistaKernel/EventManager/VistaSystemEvent.h>
 #include <VistaKernel/EventManager/VistaCentralEventHandler.h>
 #include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/EventManager/VistaEventObserver.h>
+#include <VistaKernel/EventManager/VistaSystemEvent.h>
 
 #include "TimeObserver.h"
 
@@ -38,71 +37,59 @@
 /*============================================================================*/
 
 ObserverRegisterCallback::ObserverRegisterCallback(
-	VistaEventManager* pEventManager,int iObserverType, int iEventType)
-	:m_pEventManager(pEventManager),
-		m_iObserverType(iObserverType),
-		m_iEventType(iEventType)
-{
-	m_pObserver = NULL;
+    VistaEventManager* pEventManager, int iObserverType, int iEventType)
+    : m_pEventManager(pEventManager)
+    , m_iObserverType(iObserverType)
+    , m_iEventType(iEventType) {
+  m_pObserver = NULL;
 }
 
-ObserverRegisterCallback::~ObserverRegisterCallback()
-{
-	// do NOT delete the EventManager
-	m_pEventManager = NULL;
+ObserverRegisterCallback::~ObserverRegisterCallback() {
+  // do NOT delete the EventManager
+  m_pEventManager = NULL;
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-bool ObserverRegisterCallback::PrepareCallback()
-{
-	return true;
+bool ObserverRegisterCallback::PrepareCallback() {
+  return true;
 }
 
-bool ObserverRegisterCallback::Do()
-{
-	bool bState = false;
+bool ObserverRegisterCallback::Do() {
+  bool bState = false;
 
-	if( !m_pObserver )
-	{
-		std::cout << "TRY" << std::endl;
-		switch(m_iObserverType)
-		{
-		case TIME_OBSERVER:
-			m_pObserver = new TimeObserver(m_pEventManager, m_iEventType);
-			break;
-		default:
-			std::cout << "[ObserverRegisterCallback] failed - unknown observer" << std::endl;
-			return false;
-			break;
-		}
-		bState = m_pEventManager->RegisterObserver(m_pObserver, m_iEventType);
-	}
-	else
-	{
-		m_pEventManager->UnregisterObserver(m_pObserver,m_iEventType);
-		delete m_pObserver;
-		m_pObserver = NULL;
-		bState = true;
-	}
+  if (!m_pObserver) {
+    std::cout << "TRY" << std::endl;
+    switch (m_iObserverType) {
+    case TIME_OBSERVER:
+      m_pObserver = new TimeObserver(m_pEventManager, m_iEventType);
+      break;
+    default:
+      std::cout << "[ObserverRegisterCallback] failed - unknown observer" << std::endl;
+      return false;
+      break;
+    }
+    bState = m_pEventManager->RegisterObserver(m_pObserver, m_iEventType);
+  } else {
+    m_pEventManager->UnregisterObserver(m_pObserver, m_iEventType);
+    delete m_pObserver;
+    m_pObserver = NULL;
+    bState      = true;
+  }
 
-	if( bState )
-	{
-		std::cout << "[ObserverRegisterCallback] success" << std::endl;
-	}
-	else
-	{
-		std::cout << "[ObserverRegisterCallback] failed" << std::endl;
-	}
+  if (bState) {
+    std::cout << "[ObserverRegisterCallback] success" << std::endl;
+  } else {
+    std::cout << "[ObserverRegisterCallback] failed" << std::endl;
+  }
 
-	return bState;
+  return bState;
 }
 
-bool ObserverRegisterCallback::PostCallback()
-{
-	return true;
+bool ObserverRegisterCallback::PostCallback() {
+  return true;
 }
 
 /*============================================================================*/

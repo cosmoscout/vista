@@ -35,102 +35,93 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 #include <OpenSG/OSGConfig.h>
 #ifdef WIN32
 #pragma warning(pop)
 #endif
 
-
 class IVistaOpenGLDraw;
 OSG_BEGIN_NAMESPACE
 
-class VISTAKERNELAPI VistaOpenGLDrawCore : public VistaOpenGLDrawCoreBase
-{
-private:
+class VISTAKERNELAPI VistaOpenGLDrawCore : public VistaOpenGLDrawCoreBase {
+ private:
+  typedef VistaOpenGLDrawCoreBase                                 Inherited;
+  typedef std::map<const VistaOpenGLDrawCore*, IVistaOpenGLDraw*> DrawObjectsMap;
 
+  /*==========================  PUBLIC  =================================*/
+ public:
+  /*---------------------------------------------------------------------*/
+  /*! \name                      Sync                                    */
+  /*! \{                                                                 */
 
-	typedef VistaOpenGLDrawCoreBase Inherited;
-	typedef std::map<const VistaOpenGLDrawCore*, IVistaOpenGLDraw*> DrawObjectsMap;
+  virtual void changed(BitVector whichField, UInt32 origin);
 
-	/*==========================  PUBLIC  =================================*/
-public:
+  // get/set callback
+  IVistaOpenGLDraw* GetOpenGLDraw() const;
+  void              SetOpenGLDraw(IVistaOpenGLDraw* ptr) const;
 
-	/*---------------------------------------------------------------------*/
-	/*! \name                      Sync                                    */
-	/*! \{                                                                 */
+  // draw the object
+  virtual Action::ResultE drawPrimitives(DrawActionBase* action);
 
-	virtual void changed(BitVector  whichField, UInt32 origin);
+  // updates
+  void adjustVolume(Volume& volume);
 
-	// get/set callback
-	IVistaOpenGLDraw* GetOpenGLDraw() const;
-	void SetOpenGLDraw(IVistaOpenGLDraw* ptr) const;
+  static void InvalidateMarkedVolumes();
 
-	// draw the object
-    virtual Action::ResultE drawPrimitives(DrawActionBase * action);
+  /*! \}                                                                 */
+  /*---------------------------------------------------------------------*/
+  /*! \name                     Output                                   */
+  /*! \{                                                                 */
 
-    // updates
-    void adjustVolume(Volume & volume);
+  virtual void dump(UInt32 uiIndent = 0, const BitVector bvFlags = 0) const;
 
+  /*! \}                                                                 */
+  /*=========================  PROTECTED  ===============================*/
+ protected:
+  // Variables should all be in VistaOpenGLDrawCoreBase.
 
-	static void InvalidateMarkedVolumes();
+  /*---------------------------------------------------------------------*/
+  /*! \name                  Constructors                                */
+  /*! \{                                                                 */
 
-	/*! \}                                                                 */
-	/*---------------------------------------------------------------------*/
-	/*! \name                     Output                                   */
-	/*! \{                                                                 */
+  VistaOpenGLDrawCore(void);
+  VistaOpenGLDrawCore(const VistaOpenGLDrawCore& source);
 
-	virtual void dump(UInt32 uiIndent = 0, const BitVector bvFlags = 0) const;
+  /*! \}                                                                 */
+  /*---------------------------------------------------------------------*/
+  /*! \name                   Destructors                                */
+  /*! \{                                                                 */
 
+  virtual ~VistaOpenGLDrawCore(void);
 
-	/*! \}                                                                 */
-	/*=========================  PROTECTED  ===============================*/
-protected:
+  /*! \}                                                                 */
 
-	// Variables should all be in VistaOpenGLDrawCoreBase.
+  /*==========================  PRIVATE  ================================*/
+ private:
+  static DrawObjectsMap s_mapOpenGLDrawObjects;
+  // IVistaOpenGLDraw *m_pOpenGLDraw;
 
-	/*---------------------------------------------------------------------*/
-	/*! \name                  Constructors                                */
-	/*! \{                                                                 */
+  friend class FieldContainer;
+  friend class VistaOpenGLDrawCoreBase;
 
-	VistaOpenGLDrawCore(void);
-	VistaOpenGLDrawCore(const VistaOpenGLDrawCore &source);
+  static void initMethod(void);
 
-	/*! \}                                                                 */
-	/*---------------------------------------------------------------------*/
-	/*! \name                   Destructors                                */
-	/*! \{                                                                 */
+  // prohibit default functions (move to 'public' if you need one)
 
-	virtual ~VistaOpenGLDrawCore(void);
-
-	/*! \}                                                                 */
-
-	/*==========================  PRIVATE  ================================*/
-private:
-
-	static DrawObjectsMap s_mapOpenGLDrawObjects;
-	//IVistaOpenGLDraw *m_pOpenGLDraw;
-
-	friend class FieldContainer;
-	friend class VistaOpenGLDrawCoreBase;
-
-	static void initMethod(void);
-
-	// prohibit default functions (move to 'public' if you need one)
-
-	void operator =(const VistaOpenGLDrawCore &source);
+  void operator=(const VistaOpenGLDrawCore& source);
 };
 
-typedef VistaOpenGLDrawCore *VistaOpenGLDrawCoreP;
+typedef VistaOpenGLDrawCore* VistaOpenGLDrawCoreP;
 
 OSG_END_NAMESPACE
 
-#include "OSGVistaOpenGLDrawCoreBase.inl"
 #include "OSGVistaOpenGLDrawCore.inl"
+#include "OSGVistaOpenGLDrawCoreBase.inl"
 
 #define OSGVistaOpenGLDrawCore_HEADER_CVSID "@(#)$Id$"
 

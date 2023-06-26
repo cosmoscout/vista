@@ -34,58 +34,52 @@
 
 #include <VistaAspects/VistaReflectionable.h>
 
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
-
 
 /*============================================================================*/
 /* HELPERS                                                                    */
 /*============================================================================*/
 
-struct VistaTestDriverMeasure
-{
-	int m_nValue;
+struct VistaTestDriverMeasure {
+  int m_nValue;
 };
 
-class VistaTestDriver : public IVistaDeviceDriver
-{
-public:
-	VistaTestDriver( IVistaDriverCreationMethod* pCreationMethod );
-	
-	virtual bool DoSensorUpdate( VistaType::microtime dTs ) override;
+class VistaTestDriver : public IVistaDeviceDriver {
+ public:
+  VistaTestDriver(IVistaDriverCreationMethod* pCreationMethod);
 
-	void PushValue( int nValue );
+  virtual bool DoSensorUpdate(VistaType::microtime dTs) override;
 
-	virtual bool DoConnect() override;
+  void PushValue(int nValue);
 
-	virtual bool DoDisconnect() override;
+  virtual bool DoConnect() override;
 
-	class CreationMethod;
-private:
-	int m_nReadBuffer;
+  virtual bool DoDisconnect() override;
+
+  class CreationMethod;
+
+ private:
+  int m_nReadBuffer;
 };
 
+class VistaTestDriverWrapper {
+ public:
+  VistaTestDriverWrapper();
+  ~VistaTestDriverWrapper();
 
-class VistaTestDriverWrapper
-{
-public:
-	VistaTestDriverWrapper();
-	~VistaTestDriverWrapper();
+  VistaTestDriver*                GetDriver();
+  VistaDeviceSensor*              GetSensor();
+  const VistaMeasureHistory&      GetHistory();
+  IVistaMeasureTranscode::IntGet* GetTranscodeGet();
 
-	VistaTestDriver* GetDriver();
-	VistaDeviceSensor* GetSensor();
-	const VistaMeasureHistory& GetHistory();
-	IVistaMeasureTranscode::IntGet* GetTranscodeGet();
-	
-private:
-	
-	std::unique_ptr< IVistaTranscoderFactoryFactory > m_pMetaFactory;
-	std::unique_ptr< VistaTestDriver::CreationMethod > m_pCreationMethod;
-	std::unique_ptr< VistaTestDriver > m_pDriver;
-	
-	VistaDeviceSensor* m_pSensor;
+ private:
+  std::unique_ptr<IVistaTranscoderFactoryFactory>  m_pMetaFactory;
+  std::unique_ptr<VistaTestDriver::CreationMethod> m_pCreationMethod;
+  std::unique_ptr<VistaTestDriver>                 m_pDriver;
+
+  VistaDeviceSensor* m_pSensor;
 };
 
 #endif //_VISTATESTDRIVER
-

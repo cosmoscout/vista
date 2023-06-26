@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIRMANDRIVER_H
 #define _VISTAIRMANDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -37,13 +35,13 @@
 /*============================================================================*/
 
 #if defined(WIN32) && !defined(VISTAIRMANDRIVER_STATIC)
-	#ifdef VISTAIRMANDRIVER_EXPORTS
-		#define VISTAIRMANDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTAIRMANDRIVERAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAIRMANDRIVER_EXPORTS
+#define VISTAIRMANDRIVERAPI __declspec(dllexport)
+#else
+#define VISTAIRMANDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAIRMANDRIVERAPI
+#define VISTAIRMANDRIVERAPI
 #endif
 
 /*============================================================================*/
@@ -69,39 +67,35 @@ class IVistaDriverCreationMethod;
  * See http://www.intolect.com/irmandetail.htm for more details on the device
  * (and its successors).
  */
-class VISTAIRMANDRIVERAPI VistaIRManDriver : public IVistaDeviceDriver
-{
-public:
-	/**
-	 * the memory layout for an IRMan sample, 6 bytes as collected by the device.
-	 */
-	struct _sIRManSample
-	{
-		unsigned char m_acKeyCode[6];
-	};
+class VISTAIRMANDRIVERAPI VistaIRManDriver : public IVistaDeviceDriver {
+ public:
+  /**
+   * the memory layout for an IRMan sample, 6 bytes as collected by the device.
+   */
+  struct _sIRManSample {
+    unsigned char m_acKeyCode[6];
+  };
 
+  VistaIRManDriver(IVistaDriverCreationMethod*);
+  virtual ~VistaIRManDriver();
 
-	VistaIRManDriver( IVistaDriverCreationMethod * );
-	virtual ~VistaIRManDriver();
+ protected:
+  bool DoSensorUpdate(VistaType::microtime nTs);
 
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-protected:
-	bool DoSensorUpdate( VistaType::microtime nTs );
-
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
-private:
-	VistaDriverConnectionAspect *m_pConnectionAspect;
+ private:
+  VistaDriverConnectionAspect* m_pConnectionAspect;
 };
 
+class VISTAIRMANDRIVERAPI VistaIRManDriverCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaIRManDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 
-class VISTAIRMANDRIVERAPI VistaIRManDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaIRManDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
-protected:
-private:
+ protected:
+ private:
 };
 
 /*============================================================================*/
@@ -109,4 +103,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAIRMANDRIVER_H
-

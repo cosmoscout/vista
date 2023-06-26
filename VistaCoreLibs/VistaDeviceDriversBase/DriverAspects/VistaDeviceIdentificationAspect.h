@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADEVICEIDENTIFICATIONASPECT_H
 #define _VISTADEVICEIDENTIFICATIONASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 
 #include <string>
 /*============================================================================*/
@@ -54,35 +52,34 @@
  * The API should be self-explanatory.
  */
 class VISTADEVICEDRIVERSAPI VistaDeviceIdentificationAspect
-				   : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	VistaDeviceIdentificationAspect();
-	virtual ~VistaDeviceIdentificationAspect();
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  VistaDeviceIdentificationAspect();
+  virtual ~VistaDeviceIdentificationAspect();
 
-	int GetVendorID() const;
-	void SetVendorID(int);
-	int GetProductID() const;
-	void SetProductID(int);
-	int GetSerialNumber() const;
-	void SetSerialNumber(int);
-	std::string GetDeviceName() const;
-	void SetDeviceName( const std::string& sName );
+  int         GetVendorID() const;
+  void        SetVendorID(int);
+  int         GetProductID() const;
+  void        SetProductID(int);
+  int         GetSerialNumber() const;
+  void        SetSerialNumber(int);
+  std::string GetDeviceName() const;
+  void        SetDeviceName(const std::string& sName);
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-protected:
-private:
-	unsigned int m_nVendorID;
-	unsigned int m_nProductID;
-	unsigned int m_nSerialNumber;
-	std::string m_sDeviceName;
+ protected:
+ private:
+  unsigned int m_nVendorID;
+  unsigned int m_nProductID;
+  unsigned int m_nSerialNumber;
+  std::string  m_sDeviceName;
 
-	static int m_nAspectId;
+  static int m_nAspectId;
 };
 
 /*============================================================================*/

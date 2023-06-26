@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEXTENSIONNODE_H
 #define _VISTAEXTENSIONNODE_H
 
@@ -29,7 +28,6 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
-
 
 #include "VistaKernel/GraphicsManager/VistaLeafNode.h"
 
@@ -48,35 +46,32 @@ class IVistaExplicitCallbackInterface;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaExtensionNode : public VistaLeafNode
-{
-	friend class VistaSceneGraph;
-public:
-	virtual ~VistaExtensionNode();
+class VISTAKERNELAPI VistaExtensionNode : public VistaLeafNode {
+  friend class VistaSceneGraph;
 
-	/** Call drawing routine specified within current NodeExtension
-	  * @return bool true/false
-	*/
-	virtual bool Update();
-	virtual bool CanHaveChildren() const;
+ public:
+  virtual ~VistaExtensionNode();
 
-	virtual bool Init();
+  /** Call drawing routine specified within current NodeExtension
+   * @return bool true/false
+   */
+  virtual bool Update();
+  virtual bool CanHaveChildren() const;
 
-	VistaExtensionNode(	VistaGroupNode*				pParent,
-							IVistaExplicitCallbackInterface* pExt,
-							IVistaNodeBridge*				pBridge,
-							IVistaNodeData*					pData,
-							const std::string &name = "");
+  virtual bool Init();
 
+  VistaExtensionNode(VistaGroupNode* pParent, IVistaExplicitCallbackInterface* pExt,
+      IVistaNodeBridge* pBridge, IVistaNodeData* pData, const std::string& name = "");
 
-	IVistaExplicitCallbackInterface *GetExtension() const;
-	virtual bool SetExtension(IVistaExplicitCallbackInterface *pExt);
-protected:
-	VistaExtensionNode();
+  IVistaExplicitCallbackInterface* GetExtension() const;
+  virtual bool                     SetExtension(IVistaExplicitCallbackInterface* pExt);
 
-	IVistaExplicitCallbackInterface* m_pExtension;
+ protected:
+  VistaExtensionNode();
 
-	bool m_bValid;
+  IVistaExplicitCallbackInterface* m_pExtension;
+
+  bool m_bValid;
 };
 
 /*============================================================================*/
@@ -84,5 +79,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTAEXTENSIONNODE_H
-
-

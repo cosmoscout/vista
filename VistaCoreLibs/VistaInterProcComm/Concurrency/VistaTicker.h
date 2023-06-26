@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATICKER_H
 #define _VISTATICKER_H
 
@@ -32,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaBase/VistaBaseTypes.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <VistaBase/VistaAtomicCounter.h>
 
@@ -52,84 +51,76 @@ class VistaThreadEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaTicker
-{
-public:
-	VistaTicker(unsigned int nGranularity = 10);
-	virtual ~VistaTicker();
+class VISTAINTERPROCCOMMAPI VistaTicker {
+ public:
+  VistaTicker(unsigned int nGranularity = 10);
+  virtual ~VistaTicker();
 
+  bool StartTicker();
+  bool StopTicker();
 
-	bool StartTicker();
-	bool StopTicker();
+  unsigned int GetGranularity() const;
 
-	unsigned int GetGranularity() const;
+  class VISTAINTERPROCCOMMAPI TriggerContext {
+    friend class VistaTicker;
 
-	class VISTAINTERPROCCOMMAPI TriggerContext
-	{
-		friend class VistaTicker;
-	public:
-		TriggerContext(int nTimeout, bool bPulsing);
-		TriggerContext(int nTimeout, bool bPulsing, VistaThreadEvent *);
+   public:
+    TriggerContext(int nTimeout, bool bPulsing);
+    TriggerContext(int nTimeout, bool bPulsing, VistaThreadEvent*);
 
-		virtual ~TriggerContext();
+    virtual ~TriggerContext();
 
-		HANDLE GetEventWaitHandle() const;
+    HANDLE GetEventWaitHandle() const;
 
-		void Reset();
+    void Reset();
 
-	private:
-		unsigned int m_nTimeout;
-		unsigned int m_nCurrent;
-		bool         m_bPulsing;
-		bool         m_bActive;
-		VistaThreadEvent *m_pTrigger;
-		bool m_bOwnEvent;
-	};
+   private:
+    unsigned int      m_nTimeout;
+    unsigned int      m_nCurrent;
+    bool              m_bPulsing;
+    bool              m_bActive;
+    VistaThreadEvent* m_pTrigger;
+    bool              m_bOwnEvent;
+  };
 
-	bool AddTrigger(TriggerContext *);
-	bool RemTrigger(TriggerContext *, bool bDelete = false);
+  bool AddTrigger(TriggerContext*);
+  bool RemTrigger(TriggerContext*, bool bDelete = false);
 
-	class AfterPulseFunctor
-	{
-	public:
-		virtual ~AfterPulseFunctor() {}
-		virtual bool operator()() = 0;
-	};
+  class AfterPulseFunctor {
+   public:
+    virtual ~AfterPulseFunctor() {
+    }
+    virtual bool operator()() = 0;
+  };
 
-	AfterPulseFunctor *GetAfterPulseFunctor() const;
-	void                SetAfterPulseFunctor( AfterPulseFunctor * );
+  AfterPulseFunctor* GetAfterPulseFunctor() const;
+  void               SetAfterPulseFunctor(AfterPulseFunctor*);
 
-	void UpdateTriggerContexts();
+  void UpdateTriggerContexts();
 
-private:
-	unsigned int m_nGranularity;
-	bool         m_bRunning;
-	AfterPulseFunctor *m_pAfterPulseFunctor;
+ private:
+  unsigned int       m_nGranularity;
+  bool               m_bRunning;
+  AfterPulseFunctor* m_pAfterPulseFunctor;
 
-	typedef std::vector<TriggerContext*> TRIGVEC;
-	TriggerContext **m_pFirst;
-	TRIGVEC::size_type m_nSizeCache;
-	TRIGVEC m_vecTriggers;
-
-
+  typedef std::vector<TriggerContext*> TRIGVEC;
+  TriggerContext**                     m_pFirst;
+  TRIGVEC::size_type                   m_nSizeCache;
+  TRIGVEC                              m_vecTriggers;
 
 #if defined(WIN32)
 
-	static void CALLBACK TickerCallback(UINT uTimerID,
-							   UINT uMsg,
-							   DWORD_PTR dwUser,
-							   DWORD_PTR dw1,
-							   DWORD_PTR dw2);
+  static void CALLBACK TickerCallback(
+      UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 
-	MMRESULT m_Ticker;
-	static VistaSigned32Atomic m_nNumTimers;
+  MMRESULT                   m_Ticker;
+  static VistaSigned32Atomic m_nNumTimers;
 #else
-	class TickerThread;
+  class TickerThread;
 
-	TickerThread *m_ticker_thread;
+  TickerThread* m_ticker_thread;
 
 #endif
-
 };
 
 /*============================================================================*/
@@ -137,4 +128,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTATICKER_H
-

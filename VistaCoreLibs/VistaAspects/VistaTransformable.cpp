@@ -21,22 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTransformable.h"
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-
-IVistaTransformable::IVistaTransformable()
-{
+IVistaTransformable::IVistaTransformable() {
 }
 
-IVistaTransformable::~IVistaTransformable()
-{
+IVistaTransformable::~IVistaTransformable() {
 }
-
 
 /*============================================================================*/
 /* For convenience: Implementation Prototype based on MATHTYPES               */
@@ -47,134 +42,134 @@ IVistaTransformable::~IVistaTransformable()
 
 bool ClassName::SetTranslation( const VistaVector3D& v3Translation )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::Translate( const VistaVector3D& v3Translation )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::SetRotation( const VistaQuaternion& qRotation )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::Rotate( const VistaQuaternion& qRotation )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::SetScale( const VistaVector3D& v3Scale )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::Scale( const VistaVector3D& v3Scale )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::SetTransform( const VistaTransformMatrix& matTransform )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 bool ClassName::Transform( const VistaTransformMatrix& matTransform )
 {
-	//IMPLEMENT ME
-	return false;
+        //IMPLEMENT ME
+        return false;
 }
 
 //GENERIC IMPLEMENTATION
 
 bool ClassName::SetTranslation( const float fX, const float fY, const float fZ )
 {
-	return SetTranslation( VistaVector3D( fX, fY, fZ ) );
+        return SetTranslation( VistaVector3D( fX, fY, fZ ) );
 }
 bool ClassName::SetTranslation( const float a3fTranslation[3] )
 {
-	return SetTranslation( VistaVector3D( a3fTranslation ) );
+        return SetTranslation( VistaVector3D( a3fTranslation ) );
 }
 bool ClassName::SetTranslation( const double a3dTranslation[3] )
 {
-	return SetTranslation( VistaVector3D( a3dTranslation ) );
+        return SetTranslation( VistaVector3D( a3dTranslation ) );
 }
 bool ClassName::Translate( const float fX, const float fY, const float fZ )
 {
-	return Translate( VistaVector3D( fX, fY, fZ ) );
+        return Translate( VistaVector3D( fX, fY, fZ ) );
 }
 bool ClassName::Translate( const float a3fTranslation[3] )
 {
-	return Translate( VistaVector3D( a3fTranslation ) );
+        return Translate( VistaVector3D( a3fTranslation ) );
 }
 bool ClassName::Translate( const double a3dTranslation[3] )
 {
-	return Translate( VistaVector3D( a3dTranslation ) );
+        return Translate( VistaVector3D( a3dTranslation ) );
 }
 bool ClassName::SetRotation( const float fX, const float fY, const float fZ, const float fW )
 {
-	return SetRotation( VistaQuaternion( fX, fY, fZ, fW ) );
+        return SetRotation( VistaQuaternion( fX, fY, fZ, fW ) );
 }
 bool ClassName::SetRotation( const float a4fRotation[4] )
 {
-	return SetRotation( VistaQuaternion( a4fRotation ) );
+        return SetRotation( VistaQuaternion( a4fRotation ) );
 }
 bool ClassName::SetRotation( const double a4dRotation[4] )
 {
-	return SetRotation( VistaQuaternion( a4dRotation ) );
+        return SetRotation( VistaQuaternion( a4dRotation ) );
 }
 bool ClassName::Rotate( const float fX, const float fY, const float fZ, const float fW )
 {
-	return Rotate( VistaQuaternion( fX, fY, fZ, fW ) );
+        return Rotate( VistaQuaternion( fX, fY, fZ, fW ) );
 }
 bool ClassName::Rotate( const float a4fRotation[4] )
 {
-	return Rotate( VistaQuaternion( a4fRotation ) );
+        return Rotate( VistaQuaternion( a4fRotation ) );
 }
 bool ClassName::Rotate( const double a4dRotation[4] )
 {
-	return Rotate( VistaQuaternion( a4dRotation ) );
+        return Rotate( VistaQuaternion( a4dRotation ) );
 }
 bool ClassName::SetTransform( const float a16fTransform[16], const bool bColumnMajor )
 {
-	return SetTransform( VistaTransformMatrix( a16fTransform, bColumnMajor ) );
+        return SetTransform( VistaTransformMatrix( a16fTransform, bColumnMajor ) );
 }
 bool ClassName::SetTransform( const double a16dTransform[16], const bool bColumnMajor )
 {
-	return SetTransform( VistaTransformMatrix( a16dTransform, bColumnMajor ) );
+        return SetTransform( VistaTransformMatrix( a16dTransform, bColumnMajor ) );
 }
 bool ClassName::Transform( const float a16fTransform[16], const bool bColumnMajor )
 {
-	return Transform( VistaTransformMatrix( a16fTransform, bColumnMajor ) );
+        return Transform( VistaTransformMatrix( a16fTransform, bColumnMajor ) );
 }
 bool ClassName::Transform( const double a16dTransform[16], const bool bColumnMajor )
 {
-	return Transform( VistaTransformMatrix( a16dTransform, bColumnMajor ) );
+        return Transform( VistaTransformMatrix( a16dTransform, bColumnMajor ) );
 }
 bool ClassName::SetScale( const float fX, const float fY, const float fZ )
-{	
-	return SetScale( VistaVector3D( fX, fY, fZ ) );
+{
+        return SetScale( VistaVector3D( fX, fY, fZ ) );
 }
 bool ClassName::SetScale( const float a3fScale[3] )
 {
-	return SetScale( VistaVector3D( a3fScale ) );
+        return SetScale( VistaVector3D( a3fScale ) );
 }
 bool ClassName::SetScale( const double a3dScale[3] )
 {
-	return SetScale( VistaVector3D( a3dScale ) );
+        return SetScale( VistaVector3D( a3dScale ) );
 }
 bool ClassName::Scale( const float fX, const float fY, const float fZ )
-{	
-	return Scale( VistaVector3D( fX, fY, fZ ) );
+{
+        return Scale( VistaVector3D( fX, fY, fZ ) );
 }
 bool ClassName::Scale( const float a3fScale[3] )
 {
-	return Scale( VistaVector3D( a3fScale ) );
+        return Scale( VistaVector3D( a3fScale ) );
 }
 bool ClassName::Scale( const double a3dScale[3] )
 {
-	return Scale( VistaVector3D( a3dScale ) );
+        return Scale( VistaVector3D( a3dScale ) );
 }
 
 */

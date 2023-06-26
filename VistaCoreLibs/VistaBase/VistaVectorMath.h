@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAVECTORMATH_H
 #define _VISTAVECTORMATH_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -39,10 +37,10 @@
 /*============================================================================*/
 
 #include "VistaMathBasics.h"
-#include "VistaVector3D.h"
 #include "VistaQuaternion.h"
-#include "VistaTransformMatrix.h"
 #include "VistaReferenceFrame.h"
+#include "VistaTransformMatrix.h"
+#include "VistaVector3D.h"
 
 /*============================================================================*/
 // CLASS DEFINITIONS                                                          */

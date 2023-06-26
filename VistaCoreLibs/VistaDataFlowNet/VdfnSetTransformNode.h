@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNSETTRANSFORMNODE_H
 #define _VDFNSETTRANSFORMNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -34,7 +32,6 @@
 #include "VdfnPort.h"
 #include "VdfnSerializer.h"
 #include <VistaBase/VistaVectorMath.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -75,69 +72,69 @@ class VdfnObjectRegistry;
          incoming state change, and it will evaluate on and inport set. This can be
          confusing.
  */
-class VISTADFNAPI VdfnSetTransformNode : public IVdfnNode
-{
-public:
-	/**
-	 * empty constructor, use SetTransformTarget() to make this node work.
-	 */
-	VdfnSetTransformNode();
+class VISTADFNAPI VdfnSetTransformNode : public IVdfnNode {
+ public:
+  /**
+   * empty constructor, use SetTransformTarget() to make this node work.
+   */
+  VdfnSetTransformNode();
 
-	/**
-	 * delayed construction constructor, give an object registry to look for
-	 * a transformable upon the call to PrepareEvaluationRun().
-	 * @param a non NULL object registry
-	 * @param strKey the name to look for in the registry, case sensitive
-	 */
-	VdfnSetTransformNode( VdfnObjectRegistry *, const std::string &strKey );
+  /**
+   * delayed construction constructor, give an object registry to look for
+   * a transformable upon the call to PrepareEvaluationRun().
+   * @param a non NULL object registry
+   * @param strKey the name to look for in the registry, case sensitive
+   */
+  VdfnSetTransformNode(VdfnObjectRegistry*, const std::string& strKey);
 
-	/**
-	 * use when the transformable is known already.
-	 */
-	VdfnSetTransformNode(IVistaTransformable *pObj);
+  /**
+   * use when the transformable is known already.
+   */
+  VdfnSetTransformNode(IVistaTransformable* pObj);
 
-	/**
-	 * does nothing.
-	 */
-	~VdfnSetTransformNode();
+  /**
+   * does nothing.
+   */
+  ~VdfnSetTransformNode();
 
-	/**
-	 * is valid when GetTransformTarget() != NULL and at least one inport is set
-	 */
-	virtual bool GetIsValid() const;
+  /**
+   * is valid when GetTransformTarget() != NULL and at least one inport is set
+   */
+  virtual bool GetIsValid() const;
 
-	/**
-	 * in case a registry was provided, the name key is not empty and no transform
-	 * target was set, the method tries to claim a transform target from the
-	 * registry and caches the node ports
-	 * @return GetIsValid()
-	 */
-	virtual bool PrepareEvaluationRun();
+  /**
+   * in case a registry was provided, the name key is not empty and no transform
+   * target was set, the method tries to claim a transform target from the
+   * registry and caches the node ports
+   * @return GetIsValid()
+   */
+  virtual bool PrepareEvaluationRun();
 
-	/**
-	 * @return the current transform target
-	 */
-	IVistaTransformable *GetTransformTarget() const;
+  /**
+   * @return the current transform target
+   */
+  IVistaTransformable* GetTransformTarget() const;
 
-	/**
-	 * set the current transfom target.
-	 */
-	void SetTransformTarget( IVistaTransformable * );
+  /**
+   * set the current transfom target.
+   */
+  void SetTransformTarget(IVistaTransformable*);
 
-	static const std::string STransformInPortName;
-protected:
-	virtual bool DoEvalNode();
+  static const std::string STransformInPortName;
 
-private:
-	void RegisterInPrototypes();
+ protected:
+  virtual bool DoEvalNode();
 
-	TVdfnPort<VistaTransformMatrix> *m_pInTransform;
+ private:
+  void RegisterInPrototypes();
 
-	unsigned int m_nTCount; // update count for transform inport
+  TVdfnPort<VistaTransformMatrix>* m_pInTransform;
 
-	IVistaTransformable *m_pTransform;
-	VdfnObjectRegistry *m_pObjRegistry;
-	std::string          m_strKey;
+  unsigned int m_nTCount; // update count for transform inport
+
+  IVistaTransformable* m_pTransform;
+  VdfnObjectRegistry*  m_pObjRegistry;
+  std::string          m_strKey;
 };
 
 /*============================================================================*/
@@ -145,4 +142,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNSETTRANSFORMNODE_H
-

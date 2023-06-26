@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCOMPOSETRANSFORMMATRIXNODE
 #define _VDFNCOMPOSETRANSFORMMATRIXNODE
 
@@ -57,22 +56,21 @@
  *
  * @outport{out,VistaTransformMatrix, assembled matrix}
  */
-class VISTADFNAPI VdfnComposeTransformMatrixNode : public IVdfnNode
-{
-public:
-	VdfnComposeTransformMatrixNode();
-	virtual ~VdfnComposeTransformMatrixNode();
+class VISTADFNAPI VdfnComposeTransformMatrixNode : public IVdfnNode {
+ public:
+  VdfnComposeTransformMatrixNode();
+  virtual ~VdfnComposeTransformMatrixNode();
 
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
-	TVdfnPort< float >*						m_a4x4pInPorts[4][4];
-	TVdfnPort< VistaTransformMatrix >*		m_pOut;
+ private:
+  TVdfnPort<float>*                m_a4x4pInPorts[4][4];
+  TVdfnPort<VistaTransformMatrix>* m_pOut;
 };
 
 /*============================================================================*/

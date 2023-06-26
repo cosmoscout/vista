@@ -30,9 +30,9 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
 #include <OVR.h>
 #include <OVR_CAPI_GL.h>
+#include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -48,26 +48,24 @@ union ovrGLConfig;
 /**
  * Oculus Window extensions around the Glut windowing toolkit
  */
-class VISTAKERNELAPI VistaOculusGlutWindowingToolkit : public VistaGlutWindowingToolkit
-{
-public:
-	VistaOculusGlutWindowingToolkit();
-	~VistaOculusGlutWindowingToolkit();
+class VISTAKERNELAPI VistaOculusGlutWindowingToolkit : public VistaGlutWindowingToolkit {
+ public:
+  VistaOculusGlutWindowingToolkit();
+  ~VistaOculusGlutWindowingToolkit();
 
-	virtual void DisplayWindow( const VistaWindow* pWindow );
+  virtual void DisplayWindow(const VistaWindow* pWindow);
 
-	virtual bool RegisterWindow( VistaWindow* pWindow );
-	virtual bool UnregisterWindow( VistaWindow* pWindow );
-	
-	ovrHmd GetHmdForWindow( VistaWindow* pWindow );
+  virtual bool RegisterWindow(VistaWindow* pWindow);
+  virtual bool UnregisterWindow(VistaWindow* pWindow);
 
+  ovrHmd GetHmdForWindow(VistaWindow* pWindow);
 
-	virtual bool InitWindow( VistaWindow* pWindow );
-	bool FillOculusRenderConfigForWindow( VistaWindow* pWindow, ovrGLConfig& oOculusConfig );
+  virtual bool InitWindow(VistaWindow* pWindow);
+  bool         FillOculusRenderConfigForWindow(VistaWindow* pWindow, ovrGLConfig& oOculusConfig);
 
-private:
-	class Internal;
-	Internal* m_pData;
+ private:
+  class Internal;
+  Internal* m_pData;
 };
 
 /*============================================================================*/

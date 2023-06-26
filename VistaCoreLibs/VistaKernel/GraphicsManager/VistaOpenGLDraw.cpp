@@ -28,32 +28,21 @@
 /*============================================================================*/
 
 IVistaOpenGLDraw::IVistaOpenGLDraw()
-: IVistaExplicitCallbackInterface()
-, m_bBoundsDirty(true)
-{
-
+    : IVistaExplicitCallbackInterface()
+    , m_bBoundsDirty(true) {
 }
 
-
-IVistaOpenGLDraw::~IVistaOpenGLDraw()
-{
-
+IVistaOpenGLDraw::~IVistaOpenGLDraw() {
 }
 
-
-bool IVistaOpenGLDraw::GetAndResetDirtyFlag()
-{
-	if(m_bBoundsDirty)
-	{
-		m_bBoundsDirty = false;
-		return true;
-	}
-	return false;
+bool IVistaOpenGLDraw::GetAndResetDirtyFlag() {
+  if (m_bBoundsDirty) {
+    m_bBoundsDirty = false;
+    return true;
+  }
+  return false;
 }
 
-
-void IVistaOpenGLDraw::MarkBoundingBoxAsDirty()
-{
-	m_bBoundsDirty = true;
+void IVistaOpenGLDraw::MarkBoundingBoxAsDirty() {
+  m_bBoundsDirty = true;
 }
-

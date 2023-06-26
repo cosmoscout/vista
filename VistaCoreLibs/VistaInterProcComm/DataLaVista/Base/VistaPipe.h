@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTAPIPE_H
 #define IDLVISTAPIPE_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -34,9 +32,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
-#include "VistaDataProducer.h"
 #include "VistaDataConsumer.h"
+#include "VistaDataProducer.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <list>
 
@@ -50,81 +48,78 @@ class IDLVistaDataPacket;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IDLVistaPipe : public IDLVistaPipeComponent
-{
-protected:
-	IDLVistaPipe();
-public:
-	virtual ~IDLVistaPipe();
+class VISTAINTERPROCCOMMAPI IDLVistaPipe : public IDLVistaPipeComponent {
+ protected:
+  IDLVistaPipe();
 
-	virtual bool IsFull() const =0;
-	virtual bool IsEmpty() const =0;
-	virtual int Capacity() const =0;
+ public:
+  virtual ~IDLVistaPipe();
 
-	/**
-	 * This is a method for constraint checking.
-	 * @param pComp the component to see whether this is registered as input to this component
-	 * @return true if pComp is a valid input to this component.
-	 */
-	virtual bool IsInputComponent(IDLVistaPipeComponent *pComp) const;
+  virtual bool IsFull() const   = 0;
+  virtual bool IsEmpty() const  = 0;
+  virtual int  Capacity() const = 0;
 
-	/**
-	 * This is a method for constraint checking.
-	 * @param pComp the component to see whether this is registered as input to this component
-	 * @return true if pComp is a valid input to this component.
-	 */
-	virtual bool IsOutputComponent(IDLVistaPipeComponent *pComp) const;
-	virtual bool AttachInputComponent(IDLVistaPipeComponent * pComp);
+  /**
+   * This is a method for constraint checking.
+   * @param pComp the component to see whether this is registered as input to this component
+   * @return true if pComp is a valid input to this component.
+   */
+  virtual bool IsInputComponent(IDLVistaPipeComponent* pComp) const;
 
-	virtual bool AttachOutputComponent(IDLVistaPipeComponent * pComp);
+  /**
+   * This is a method for constraint checking.
+   * @param pComp the component to see whether this is registered as input to this component
+   * @return true if pComp is a valid input to this component.
+   */
+  virtual bool IsOutputComponent(IDLVistaPipeComponent* pComp) const;
+  virtual bool AttachInputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool DetachInputComponent(IDLVistaPipeComponent * pComp);
+  virtual bool AttachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool DetachOutputComponent(IDLVistaPipeComponent * pComp);
+  virtual bool DetachInputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual IDLVistaDataPacket *CreatePacket() { /** we de not create packets **/ return 0; };
+  virtual bool DetachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual void DeletePacket(IDLVistaDataPacket *pPacket) {/** we do not delete packets **/ };
+  virtual IDLVistaDataPacket* CreatePacket() { /** we de not create packets **/
+    return 0;
+  };
 
-	virtual std::list<IDLVistaPipeComponent *> GetInputComponents() const;
+  virtual void DeletePacket(IDLVistaDataPacket* pPacket){/** we do not delete packets **/};
 
-	virtual std::list<IDLVistaPipeComponent *> GetOutputComponents() const;
+  virtual std::list<IDLVistaPipeComponent*> GetInputComponents() const;
 
-	/**
-	 * This component will accept any incoming packet, this method will return the type that the attached output will
-	 * expect.
-	 * @return this pipe's output component's input type or -1 iff this pipe is not connected
-	 */
-	virtual int GetInputPacketType() const;
+  virtual std::list<IDLVistaPipeComponent*> GetOutputComponents() const;
 
-	/**
-	 * This component will forward incoming packets without modification, so this method will return the
-	 * type that is given as input to this pipe
-	 * @return this pipe's input component's output type ot -1 iff this pipe is not connected
-	 */
-	virtual int GetOutputPacketType() const;
+  /**
+   * This component will accept any incoming packet, this method will return the type that the
+   * attached output will expect.
+   * @return this pipe's output component's input type or -1 iff this pipe is not connected
+   */
+  virtual int GetInputPacketType() const;
 
-	virtual IDLVistaPipeComponent *GetOutboundByIndex(int iIndex) const ;
+  /**
+   * This component will forward incoming packets without modification, so this method will return
+   * the type that is given as input to this pipe
+   * @return this pipe's input component's output type ot -1 iff this pipe is not connected
+   */
+  virtual int GetOutputPacketType() const;
 
-	virtual int GetNumberOfOutbounds() const ;
+  virtual IDLVistaPipeComponent* GetOutboundByIndex(int iIndex) const;
 
+  virtual int GetNumberOfOutbounds() const;
 
-	virtual int GetNumberOfInbounds() const;
+  virtual int GetNumberOfInbounds() const;
 
-	virtual IDLVistaPipeComponent *GetInboundByIndex(int iIndex) const ;
+  virtual IDLVistaPipeComponent* GetInboundByIndex(int iIndex) const;
 
-protected:
-	IDLVistaPipeComponent * m_pInput;
+ protected:
+  IDLVistaPipeComponent* m_pInput;
 
-	IDLVistaPipeComponent * m_pOutput;
+  IDLVistaPipeComponent* m_pOutput;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //IDLVISTAPIPE_H
-
-
+#endif // IDLVISTAPIPE_H

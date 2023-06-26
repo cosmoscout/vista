@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _COBSERVERREGISTERCALLBACK_H
 #define _COBSERVERREGISTERCALLBACK_H
 
@@ -31,7 +30,6 @@
 
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
 
-
 class VistaEventManager;
 class VistaEventObserver;
 
@@ -39,30 +37,26 @@ class VistaEventObserver;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class ObserverRegisterCallback : public IVistaExplicitCallbackInterface
-{
-public:
+class ObserverRegisterCallback : public IVistaExplicitCallbackInterface {
+ public:
+  static const int NULL_OBSERVER = 0;
+  static const int DEMO_OBSERVER = 1;
+  static const int TIME_OBSERVER = 2;
+  ObserverRegisterCallback(VistaEventManager* pEventManager, int iObserverType, int iEventType);
+  ~ObserverRegisterCallback();
 
-	static const int NULL_OBSERVER				= 0;
-	static const int DEMO_OBSERVER				= 1;
-	static const int TIME_OBSERVER				= 2;
-	ObserverRegisterCallback(VistaEventManager* pEventManager, int iObserverType,
-		int iEventType);
-	~ObserverRegisterCallback();
+  // Interface
+  bool PrepareCallback();
+  bool Do();
+  bool PostCallback();
 
-	// Interface
-	bool PrepareCallback();
-	bool Do();
-	bool PostCallback();
+ private:
+  int                m_iEventType;
+  int                m_iObserverType;
+  VistaEventManager* m_pEventManager;
 
-
-private:
-	int					m_iEventType;
-	int					m_iObserverType;
-	VistaEventManager*	m_pEventManager;
-
-	// some observers
-	VistaEventObserver*	m_pObserver;
+  // some observers
+  VistaEventObserver* m_pObserver;
 };
 
 #endif

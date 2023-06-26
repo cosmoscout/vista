@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDriverLoggingAspect.h" 
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include "VistaDriverLoggingAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
 #include <VistaBase/VistaStreamUtils.h>
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 #if defined(SUNOS)
 #include <typeinfo.h>
@@ -37,114 +36,88 @@
 #include <typeinfo>
 #endif
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int VistaDriverLoggingAspect::m_nAspectId  = -1;
+int VistaDriverLoggingAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaDriverLoggingAspect::VistaDriverLoggingAspect()
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(true), // can be unregistered
-	  m_nLogLevel(0),
-	  m_bEnabled(true)
-{
-	if(VistaDriverLoggingAspect::GetAspectId() == -1) // unregistered
-		VistaDriverLoggingAspect::SetAspectId( 
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("LOGGING"));
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(true)
+    , // can be unregistered
+    m_nLogLevel(0)
+    , m_bEnabled(true) {
+  if (VistaDriverLoggingAspect::GetAspectId() == -1) // unregistered
+    VistaDriverLoggingAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("LOGGING"));
 
-	SetId(VistaDriverLoggingAspect::GetAspectId());
+  SetId(VistaDriverLoggingAspect::GetAspectId());
 }
 
-VistaDriverLoggingAspect::~VistaDriverLoggingAspect()
-{
+VistaDriverLoggingAspect::~VistaDriverLoggingAspect() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-void VistaDriverLoggingAspect::Log( VistaType::microtime nTimestamp,
-									const IVistaDeviceDriver *pDriver, 
-									const std::string &strMsg,
-									int nLogLevel)
-{
-	if(m_bEnabled && (nLogLevel >= m_nLogLevel))
-	{
-		DoLog( nTimestamp, pDriver, strMsg, nLogLevel );
-	}
+void VistaDriverLoggingAspect::Log(VistaType::microtime nTimestamp,
+    const IVistaDeviceDriver* pDriver, const std::string& strMsg, int nLogLevel) {
+  if (m_bEnabled && (nLogLevel >= m_nLogLevel)) {
+    DoLog(nTimestamp, pDriver, strMsg, nLogLevel);
+  }
 }
 
-
-int  VistaDriverLoggingAspect::GetLogLevel() const
-{
-	return m_nLogLevel;
+int VistaDriverLoggingAspect::GetLogLevel() const {
+  return m_nLogLevel;
 }
 
-void VistaDriverLoggingAspect::SetLogLevel(int nLevel)
-{
-	m_nLogLevel = nLevel;
+void VistaDriverLoggingAspect::SetLogLevel(int nLevel) {
+  m_nLogLevel = nLevel;
 }
 
+bool VistaDriverLoggingAspect::DoLog(VistaType::microtime nTimestamp,
+    const IVistaDeviceDriver* pDriver, const std::string& strMsg, int nLogLevel) {
+  if (m_strMnemonic.empty()) {
+    vstr::outi() << nTimestamp << "\t" << typeid(pDriver).name() << "\t" << pDriver << std::endl;
+  } else {
+    vstr::outi() << nTimestamp << "\t" << m_strMnemonic << "\t" << pDriver << std::endl;
+  }
 
-bool VistaDriverLoggingAspect::DoLog( VistaType::microtime nTimestamp,
-									  const IVistaDeviceDriver *pDriver,
-									  const std::string &strMsg, int nLogLevel)
-{
-	if(m_strMnemonic.empty())
-	{
-		vstr::outi() << nTimestamp << "\t" << typeid(pDriver).name() << "\t"
-			<< pDriver << std::endl;
-	}
-	else
-	{
-		vstr::outi() << nTimestamp << "\t" << m_strMnemonic << "\t" << pDriver << std::endl;
-	}
-
-	vstr::outi() << strMsg << std::endl;
-	return true;
+  vstr::outi() << strMsg << std::endl;
+  return true;
 }
 
-bool VistaDriverLoggingAspect::GetEnabled() const
-{
-	return m_bEnabled;
+bool VistaDriverLoggingAspect::GetEnabled() const {
+  return m_bEnabled;
 }
 
-void VistaDriverLoggingAspect::SetEnabled(bool bEnabled)
-{
-	m_bEnabled = bEnabled;
+void VistaDriverLoggingAspect::SetEnabled(bool bEnabled) {
+  m_bEnabled = bEnabled;
 }
 
-std::string VistaDriverLoggingAspect::GetMnemonic() const
-{
-	return m_strMnemonic;
+std::string VistaDriverLoggingAspect::GetMnemonic() const {
+  return m_strMnemonic;
 }
 
-void VistaDriverLoggingAspect::SetMnemonic(const std::string &strMnemonic)
-{
-	m_strMnemonic = strMnemonic;
+void VistaDriverLoggingAspect::SetMnemonic(const std::string& strMnemonic) {
+  m_strMnemonic = strMnemonic;
 }
 
 // #########################################
 // OVERWRITE IN SUBCLASSES
 // #########################################
-int  VistaDriverLoggingAspect::GetAspectId()
-{
-	return VistaDriverLoggingAspect::m_nAspectId;
+int VistaDriverLoggingAspect::GetAspectId() {
+  return VistaDriverLoggingAspect::m_nAspectId;
 }
 
-void VistaDriverLoggingAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
-
+void VistaDriverLoggingAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATICKTIMEREVENT_H
 #define _VISTATICKTIMEREVENT_H
 
@@ -33,8 +32,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEvent.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /*  MACROS AND DEFINES                                                        */
@@ -50,67 +49,61 @@ class VistaTickTimer;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaTickTimerEvent : public VistaEvent
-{
-public:
-	/**
-	 * Constructor. Pass the source of this event.
-	 * @param pWatch the source element of this event.
-	 */
-	VistaTickTimerEvent(VistaTickTimer *pWatch);
+class VISTAKERNELAPI VistaTickTimerEvent : public VistaEvent {
+ public:
+  /**
+   * Constructor. Pass the source of this event.
+   * @param pWatch the source element of this event.
+   */
+  VistaTickTimerEvent(VistaTickTimer* pWatch);
 
-	/**
-	 * Destructor. Does nothing.
-	 */
-	virtual ~VistaTickTimerEvent();
+  /**
+   * Destructor. Does nothing.
+   */
+  virtual ~VistaTickTimerEvent();
 
-	/**
-	 * We define a type for this kind of event without deeper reason, yet.
-	 * This is for future enhancments.
-	 */
-	enum VISTAKERNELAPI EV_TYPE
-	{
-		SWEV_TICK=0
-	};
+  /**
+   * We define a type for this kind of event without deeper reason, yet.
+   * This is for future enhancments.
+   */
+  enum VISTAKERNELAPI EV_TYPE { SWEV_TICK = 0 };
 
-	enum VISTAKERNELAPI TTEV_ID
-	{
-		TTID_TIMEOUT = 0,
-		TTID_UPPER_BOUND
-	};
+  enum VISTAKERNELAPI TTEV_ID { TTID_TIMEOUT = 0, TTID_UPPER_BOUND };
 
+  /**
+   * Returns the name of this event-type.
+   * This is "TickTimerEvent" always.
+   * @return "TickTimerEvent"
+   */
+  virtual std::string GetName() const;
 
-	/**
-	 * Returns the name of this event-type.
-	 * This is "TickTimerEvent" always.
-	 * @return "TickTimerEvent"
-	 */
-	virtual std::string GetName() const;
+  /**
+   * Returns the source of this event. You will need this in case you set up
+   * more than one TickTimer.
+   * @return the source of this event
+   * @see m_pSource()
+   */
+  VistaTickTimer* GetSourceTickTimer() const {
+    return m_pSource;
+  };
 
-	/**
-	 * Returns the source of this event. You will need this in case you set up
-	 * more than one TickTimer.
-	 * @return the source of this event
-	 * @see m_pSource()
-	 */
-	VistaTickTimer *GetSourceTickTimer() const { return m_pSource; };
+  void SetTickEventTime(double dTime);
 
-	void SetTickEventTime( double dTime );
+  static std::string GetIdString(int nId);
+  static int         GetTypeId();
+  static void        SetTypeId(int nId);
 
-	static std::string GetIdString(int nId);
-	static int GetTypeId();
-	static void SetTypeId(int nId);
+  static void RegisterEventTypes(VistaEventManager* pEventManager);
 
-	static void RegisterEventTypes( VistaEventManager* pEventManager );
-protected:
-	/**
-	 * A pointer to the source of this Event.
-	 */
-	VistaTickTimer *m_pSource;
-private:
-	static int m_nEventId;
+ protected:
+  /**
+   * A pointer to the source of this Event.
+   */
+  VistaTickTimer* m_pSource;
+
+ private:
+  static int m_nEventId;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

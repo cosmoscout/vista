@@ -21,43 +21,35 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaSensorReader.h" 
+#include "VistaSensorReader.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-std::string IVistaReadStateSource::GetNameForNameable() const
-{
-	return m_name;
+std::string IVistaReadStateSource::GetNameForNameable() const {
+  return m_name;
 }
 
-void IVistaReadStateSource::SetNameForNameable(const std::string &sNewName)
-{
-	m_name = sNewName;
+void IVistaReadStateSource::SetNameForNameable(const std::string& sNewName) {
+  m_name = sNewName;
 }
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaSensorReader::IVistaSensorReader( const std::string &strName )
-: IVistaReadStateSource( strName )
-{
-
+IVistaSensorReader::IVistaSensorReader(const std::string& strName)
+    : IVistaReadStateSource(strName) {
 }
 
-IVistaSensorReader::~IVistaSensorReader()
-{
+IVistaSensorReader::~IVistaSensorReader() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

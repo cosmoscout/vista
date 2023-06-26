@@ -29,10 +29,10 @@
 /*============================================================================*/
 #include "VdfnConfig.h"
 #include "VdfnNode.h"
-#include "VdfnPort.h"
-#include "VdfnSerializer.h"
 #include "VdfnNodeFactory.h"
 #include "VdfnObjectRegistry.h"
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 
 #include <VistaBase/VistaVectorMath.h>
 
@@ -53,41 +53,40 @@
  * VdfnQuaternionSlerpNode<br>
  * This DFN-Node calculates the slerp between two quaternions using a fraction
  * value.<br>
- * 
+ *
  * @ingroup VdfnNodes
  * @inport{ first, VistaQuaternion, optional, First quaternion (default = 0\,
  * 0\, 0\, 1) }
- * @inport{ second, VistaQuaternion, optional, Second quaternion (default = 
+ * @inport{ second, VistaQuaternion, optional, Second quaternion (default =
  * 0\, 0\, 0\, 1) }
  * @inport{ fraction, float, optional, Fraction value for interpolation
  * between quaternions (default = 0) }
  *
  * @outport{ out, VistaQuaternion, The resulting VistaQuaternion }
  */
-class VISTADFNAPI VdfnQuaternionSlerpNode : public IVdfnNode
-{
-public:
-	VdfnQuaternionSlerpNode();
-   virtual ~VdfnQuaternionSlerpNode();
-   
-   virtual bool GetIsValid() const;
-   virtual bool PrepareEvaluationRun();
-   
-   static const std::string S_sFirstQuaternionInPortName;
-   static const std::string S_sSecondQuaternionInPortName;
-   static const std::string S_sFractionInPortName;
+class VISTADFNAPI VdfnQuaternionSlerpNode : public IVdfnNode {
+ public:
+  VdfnQuaternionSlerpNode();
+  virtual ~VdfnQuaternionSlerpNode();
 
-   static const std::string S_sQuaternionOutPortName;
+  virtual bool GetIsValid() const;
+  virtual bool PrepareEvaluationRun();
 
-protected:
-   virtual bool DoEvalNode();
+  static const std::string S_sFirstQuaternionInPortName;
+  static const std::string S_sSecondQuaternionInPortName;
+  static const std::string S_sFractionInPortName;
 
-private:
-   TVdfnPort< VistaQuaternion > *m_pInFirstQuaternion;
-   TVdfnPort< VistaQuaternion > *m_pInSecondQuaternion;
-   TVdfnPort< float > *m_pInFraction;
-   
-   TVdfnPort< VistaQuaternion > *m_pOutQuaternion;
+  static const std::string S_sQuaternionOutPortName;
+
+ protected:
+  virtual bool DoEvalNode();
+
+ private:
+  TVdfnPort<VistaQuaternion>* m_pInFirstQuaternion;
+  TVdfnPort<VistaQuaternion>* m_pInSecondQuaternion;
+  TVdfnPort<float>*           m_pInFraction;
+
+  TVdfnPort<VistaQuaternion>* m_pOutQuaternion;
 };
 
 /*============================================================================*/

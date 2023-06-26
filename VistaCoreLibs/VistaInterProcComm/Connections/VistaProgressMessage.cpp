@@ -26,9 +26,8 @@ using namespace std;
 
 #include "VistaProgressMessage.h"
 
-#include <VistaAspects/VistaSerializer.h>
 #include <VistaAspects/VistaDeSerializer.h>
-
+#include <VistaAspects/VistaSerializer.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -37,181 +36,152 @@ using namespace std;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaProgressMessage::VistaProgressMessage()
-{
-		m_iTotalProgress = 0;
-		m_iSubtaskProgress = 0;
-		m_iIconStateMax = 7;
-		m_bHideFlag = false;
+VistaProgressMessage::VistaProgressMessage() {
+  m_iTotalProgress   = 0;
+  m_iSubtaskProgress = 0;
+  m_iIconStateMax    = 7;
+  m_bHideFlag        = false;
 }
 
-VistaProgressMessage::~VistaProgressMessage()
-{
+VistaProgressMessage::~VistaProgressMessage() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-string VistaProgressMessage::GetApplicationName() const
-{
-	return m_sApplicationName;
+string VistaProgressMessage::GetApplicationName() const {
+  return m_sApplicationName;
 }
 
-void        VistaProgressMessage::SetApplicationName(const string &sApplicationName)
-{
-	m_sApplicationName = sApplicationName;
+void VistaProgressMessage::SetApplicationName(const string& sApplicationName) {
+  m_sApplicationName = sApplicationName;
 }
 
-
-int         VistaProgressMessage::GetIconState() const
-{
-	return m_iTotalProgress;
+int VistaProgressMessage::GetIconState() const {
+  return m_iTotalProgress;
 }
 
-void        VistaProgressMessage::SetIconState(int iState)
-{
-	m_iTotalProgress = iState;
+void VistaProgressMessage::SetIconState(int iState) {
+  m_iTotalProgress = iState;
 }
 
-int	    VistaProgressMessage::GetIconStateMax() const
-{
-	return m_iIconStateMax;
+int VistaProgressMessage::GetIconStateMax() const {
+  return m_iIconStateMax;
 }
 
-void        VistaProgressMessage::SetIconStateMax(int iStateMax)
-{
-	m_iIconStateMax = iStateMax;
+void VistaProgressMessage::SetIconStateMax(int iStateMax) {
+  m_iIconStateMax = iStateMax;
 }
 
-int         VistaProgressMessage::GetTotalProgress() const
-{
-	return m_iTotalProgress;
+int VistaProgressMessage::GetTotalProgress() const {
+  return m_iTotalProgress;
 }
 
-void        VistaProgressMessage::SetTotalProgress(int iTotalProgress)
-{
-	m_iTotalProgress = iTotalProgress;
+void VistaProgressMessage::SetTotalProgress(int iTotalProgress) {
+  m_iTotalProgress = iTotalProgress;
 }
 
-string VistaProgressMessage::GetTotalProgressLabel() const
-{
-	return m_sProgressLabel;
+string VistaProgressMessage::GetTotalProgressLabel() const {
+  return m_sProgressLabel;
 }
 
-void        VistaProgressMessage::SetTotalProgressLabel(const string &sTotalProgressLabel)
-{
-	m_sProgressLabel = sTotalProgressLabel;
+void VistaProgressMessage::SetTotalProgressLabel(const string& sTotalProgressLabel) {
+  m_sProgressLabel = sTotalProgressLabel;
 }
 
-int         VistaProgressMessage::GetSubtaskProgress() const
-{
-	return m_iSubtaskProgress;
+int VistaProgressMessage::GetSubtaskProgress() const {
+  return m_iSubtaskProgress;
 }
 
-void        VistaProgressMessage::SetSubtaskProgress(int iSubtaskProgress)
-{
-	m_iSubtaskProgress = iSubtaskProgress;
+void VistaProgressMessage::SetSubtaskProgress(int iSubtaskProgress) {
+  m_iSubtaskProgress = iSubtaskProgress;
 }
 
-string VistaProgressMessage::GetSubtaskProgressLabel() const
-{
-	return m_sSubtaskLabel;
+string VistaProgressMessage::GetSubtaskProgressLabel() const {
+  return m_sSubtaskLabel;
 }
 
-void        VistaProgressMessage::SetSubtaskProgressLabel(const string &sSubtaskLabel)
-{
-	m_sSubtaskLabel = sSubtaskLabel;
+void VistaProgressMessage::SetSubtaskProgressLabel(const string& sSubtaskLabel) {
+  m_sSubtaskLabel = sSubtaskLabel;
 }
 
-
-bool        VistaProgressMessage::GetHideFlag() const
-{
-	return m_bHideFlag;
+bool VistaProgressMessage::GetHideFlag() const {
+  return m_bHideFlag;
 }
 
-void        VistaProgressMessage::SetHideFlag(bool bFlag)
-{
-	m_bHideFlag = bFlag;
+void VistaProgressMessage::SetHideFlag(bool bFlag) {
+  m_bHideFlag = bFlag;
 }
 
-
-string VistaProgressMessage::GetPictureName() const
-{
-	return m_sPictureName;
+string VistaProgressMessage::GetPictureName() const {
+  return m_sPictureName;
 }
 
-void        VistaProgressMessage::SetPictureName(const string &sPicName)
-{
-	m_sPictureName = sPicName;
+void VistaProgressMessage::SetPictureName(const string& sPicName) {
+  m_sPictureName = sPicName;
 }
 
-int VistaProgressMessage::Serialize(IVistaSerializer &rSer) const
-{
-	int iSize = 0;
-	iSize += rSer.WriteInt32(VistaType::uint32(m_sApplicationName.size()));
-	iSize += rSer.WriteString(m_sApplicationName);
+int VistaProgressMessage::Serialize(IVistaSerializer& rSer) const {
+  int iSize = 0;
+  iSize += rSer.WriteInt32(VistaType::uint32(m_sApplicationName.size()));
+  iSize += rSer.WriteString(m_sApplicationName);
 
-	iSize += rSer.WriteInt32(VistaType::uint32(m_sProgressLabel.size()));
-	iSize += rSer.WriteString(m_sProgressLabel);
+  iSize += rSer.WriteInt32(VistaType::uint32(m_sProgressLabel.size()));
+  iSize += rSer.WriteString(m_sProgressLabel);
 
-	iSize += rSer.WriteInt32(VistaType::uint32(m_sSubtaskLabel.size()));
-	iSize += rSer.WriteString(m_sSubtaskLabel);
+  iSize += rSer.WriteInt32(VistaType::uint32(m_sSubtaskLabel.size()));
+  iSize += rSer.WriteString(m_sSubtaskLabel);
 
-	iSize += rSer.WriteInt32(VistaType::uint32(m_sPictureName.size()));
-	iSize += rSer.WriteString(m_sPictureName);
+  iSize += rSer.WriteInt32(VistaType::uint32(m_sPictureName.size()));
+  iSize += rSer.WriteString(m_sPictureName);
 
-	iSize += rSer.WriteInt32(m_iTotalProgress);
-	iSize += rSer.WriteInt32(m_iSubtaskProgress);
-	iSize += rSer.WriteInt32(m_iIconStateMax);
-	
-	iSize += rSer.WriteBool(m_bHideFlag);
+  iSize += rSer.WriteInt32(m_iTotalProgress);
+  iSize += rSer.WriteInt32(m_iSubtaskProgress);
+  iSize += rSer.WriteInt32(m_iIconStateMax);
 
-	return iSize;
+  iSize += rSer.WriteBool(m_bHideFlag);
+
+  return iSize;
 }
 
-int VistaProgressMessage::DeSerialize(IVistaDeSerializer &rDeSer)
-{
-	int iSizeTmp=0;
-	int iSize = 0;
-	iSize += rDeSer.ReadInt32(iSizeTmp);
-	if(iSizeTmp)
-		iSize += rDeSer.ReadString(m_sApplicationName, iSizeTmp);
-	else
-		m_sApplicationName = "";
+int VistaProgressMessage::DeSerialize(IVistaDeSerializer& rDeSer) {
+  int iSizeTmp = 0;
+  int iSize    = 0;
+  iSize += rDeSer.ReadInt32(iSizeTmp);
+  if (iSizeTmp)
+    iSize += rDeSer.ReadString(m_sApplicationName, iSizeTmp);
+  else
+    m_sApplicationName = "";
 
-	iSize += rDeSer.ReadInt32(iSizeTmp);
-	if(iSizeTmp)
-		iSize += rDeSer.ReadString(m_sProgressLabel, iSizeTmp);
-	else
-		m_sProgressLabel = "";
+  iSize += rDeSer.ReadInt32(iSizeTmp);
+  if (iSizeTmp)
+    iSize += rDeSer.ReadString(m_sProgressLabel, iSizeTmp);
+  else
+    m_sProgressLabel = "";
 
-	iSize += rDeSer.ReadInt32(iSizeTmp);
-	if(iSizeTmp)
-		iSize += rDeSer.ReadString(m_sSubtaskLabel, iSizeTmp);
-	else
-		m_sSubtaskLabel = "";
+  iSize += rDeSer.ReadInt32(iSizeTmp);
+  if (iSizeTmp)
+    iSize += rDeSer.ReadString(m_sSubtaskLabel, iSizeTmp);
+  else
+    m_sSubtaskLabel = "";
 
-	iSize += rDeSer.ReadInt32(iSizeTmp);
-	if(iSizeTmp)
-		iSize += rDeSer.ReadString(m_sPictureName, iSizeTmp);
-	else
-		m_sPictureName = "";
+  iSize += rDeSer.ReadInt32(iSizeTmp);
+  if (iSizeTmp)
+    iSize += rDeSer.ReadString(m_sPictureName, iSizeTmp);
+  else
+    m_sPictureName = "";
 
-	iSize += rDeSer.ReadInt32(m_iTotalProgress);
-	iSize += rDeSer.ReadInt32(m_iSubtaskProgress);
-	iSize += rDeSer.ReadInt32(m_iIconStateMax);
+  iSize += rDeSer.ReadInt32(m_iTotalProgress);
+  iSize += rDeSer.ReadInt32(m_iSubtaskProgress);
+  iSize += rDeSer.ReadInt32(m_iIconStateMax);
 
-	iSize += rDeSer.ReadBool(m_bHideFlag);
-	return iSize;
+  iSize += rDeSer.ReadBool(m_bHideFlag);
+  return iSize;
 }
 
-string VistaProgressMessage::GetSignature() const
-{
-	return "VistaProgressMessage";
+string VistaProgressMessage::GetSignature() const {
+  return "VistaProgressMessage";
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

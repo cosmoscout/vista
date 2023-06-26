@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTAREGISTRATION_H
 #define IDLVISTAREGISTRATION_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,14 +31,13 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <string>
-#include <map>
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
+#include <map>
+#include <string>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -51,55 +48,46 @@
  * It is supposed to be more or less an information source for clients and the
  * definition of an interface for specialized classes.
  */
-class VISTAINTERPROCCOMMAPI IDLVistaRegistration
-{
-private:
-	/**
-	 * We prohibit the copying.
-	 */
-	IDLVistaRegistration(IDLVistaRegistration &);
+class VISTAINTERPROCCOMMAPI IDLVistaRegistration {
+ private:
+  /**
+   * We prohibit the copying.
+   */
+  IDLVistaRegistration(IDLVistaRegistration&);
 
-//	typedef map<string, int> NAME2TYPE;
-//	typedef map<int, string> TYPE2NAME;
+  //	typedef map<string, int> NAME2TYPE;
+  //	typedef map<int, string> TYPE2NAME;
 
-	std::map<std::string, int> m_mpNames2Types;
-	std::map<int, std::string> m_mpTypes2Names;
+  std::map<std::string, int> m_mpNames2Types;
+  std::map<int, std::string> m_mpTypes2Names;
 
-	static IDLVistaRegistration *m_pSingleton; /**< there can only be one... */
+  static IDLVistaRegistration* m_pSingleton; /**< there can only be one... */
 
-protected:
-	IDLVistaRegistration();
+ protected:
+  IDLVistaRegistration();
 
-	int RegisterPacketType(const std::string &SName);
-	bool RegisterPacketType(const std::string &SName, int iTypeId);
+  int  RegisterPacketType(const std::string& SName);
+  bool RegisterPacketType(const std::string& SName, int iTypeId);
 
+  bool UnregisterPacketType(int iTypeId);
+  bool UnregisterPacketType(const std::string& SPacketName);
 
-	bool UnregisterPacketType(int iTypeId);
-	bool UnregisterPacketType(const std::string &SPacketName);
+  static bool RegisterRegistration(IDLVistaRegistration*);
 
+  virtual int CreateTypeIdForName(const std::string& SName) = 0;
 
-	static bool RegisterRegistration(IDLVistaRegistration *);
+ public:
+  virtual std::string GetNameForTypeId(int iTypeId) const;
 
-	virtual int CreateTypeIdForName(const std::string &SName) = 0;
+  virtual int GetTypeIdForName(const std::string& SName) const;
 
-public:
+  virtual ~IDLVistaRegistration();
 
-	virtual std::string GetNameForTypeId(int iTypeId) const;
-
-	virtual int       GetTypeIdForName(const std::string &SName) const;
-
-
-	virtual ~IDLVistaRegistration();
-
-	static IDLVistaRegistration *GetRegistrationSingleton();
-
+  static IDLVistaRegistration* GetRegistrationSingleton();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //IDLVISTAFILTER_H
-
-
+#endif // IDLVISTAFILTER_H

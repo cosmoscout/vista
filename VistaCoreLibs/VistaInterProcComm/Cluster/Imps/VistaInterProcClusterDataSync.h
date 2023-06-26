@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINTERPROCCLUSTERDATASYNC_H
 #define _VISTAINTERPROCCLUSTERDATASYNC_H
 
@@ -30,11 +29,11 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBytebufferDataSyncBase.h>
+#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,94 +43,88 @@ class VistaConnectionNamedPipe;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaInterProcClusterLeaderDataSync : public VistaClusterBytebufferLeaderDataSyncBase
-{
-public:
-	VistaInterProcClusterLeaderDataSync( const bool bActAsInterProcServer = false,
-										const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaInterProcClusterLeaderDataSync
+    : public VistaClusterBytebufferLeaderDataSyncBase {
+ public:
+  VistaInterProcClusterLeaderDataSync(
+      const bool bActAsInterProcServer = false, const bool bVerbose = true);
 
-	virtual ~VistaInterProcClusterLeaderDataSync();
+  virtual ~VistaInterProcClusterLeaderDataSync();
 
-	bool AddInterProc( const std::string& sInterProcName );
-	bool ConnectPipes();
+  bool AddInterProc(const std::string& sInterProcName);
+  bool ConnectPipes();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-protected:
-	virtual bool DoSendMessage();
+ protected:
+  virtual bool DoSendMessage();
 
-private:
-	bool m_bActAsInterProcServer;
-	std::vector<VistaConnectionNamedPipe*> m_vecConnections;
+ private:
+  bool                                   m_bActAsInterProcServer;
+  std::vector<VistaConnectionNamedPipe*> m_vecConnections;
 };
 
-class VISTAINTERPROCCOMMAPI VistaInterProcClusterFollowerDataSync : public VistaClusterBytebufferFollowerDataSyncBase
-{
-public:
-	VistaInterProcClusterFollowerDataSync( const std::string& sInterProcName,
-										const bool bActAsInterProcServer = false,
-										const bool bVerbose = true );
-	virtual ~VistaInterProcClusterFollowerDataSync();
+class VISTAINTERPROCCOMMAPI VistaInterProcClusterFollowerDataSync
+    : public VistaClusterBytebufferFollowerDataSyncBase {
+ public:
+  VistaInterProcClusterFollowerDataSync(const std::string& sInterProcName,
+      const bool bActAsInterProcServer = false, const bool bVerbose = true);
+  virtual ~VistaInterProcClusterFollowerDataSync();
 
-	bool ConnectPipe();
+  bool ConnectPipe();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-private:
-	virtual bool DoReceiveMessage();
+ private:
+  virtual bool DoReceiveMessage();
 
-private:
-	VistaConnectionNamedPipe* m_pConnection;
+ private:
+  VistaConnectionNamedPipe* m_pConnection;
 };
 
-class VISTAINTERPROCCOMMAPI VistaInterProcClusterRedirectDataSync : public VistaInterProcClusterLeaderDataSync
-{
-public:
-	VistaInterProcClusterRedirectDataSync( const bool bVerbose = true );
-	VistaInterProcClusterRedirectDataSync( IVistaClusterDataSync* pOriginalClusterSync,
-											const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaInterProcClusterRedirectDataSync
+    : public VistaInterProcClusterLeaderDataSync {
+ public:
+  VistaInterProcClusterRedirectDataSync(const bool bVerbose = true);
+  VistaInterProcClusterRedirectDataSync(
+      IVistaClusterDataSync* pOriginalClusterSync, const bool bVerbose = true);
 
-	virtual ~VistaInterProcClusterRedirectDataSync();
+  virtual ~VistaInterProcClusterRedirectDataSync();
 
-	
-	IVistaClusterDataSync* GetDependentDataSync() const;
-	void SetDependentDataSync( IVistaClusterDataSync* pSync );
+  IVistaClusterDataSync* GetDependentDataSync() const;
+  void                   SetDependentDataSync(IVistaClusterDataSync* pSync);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual bool SyncTime( VistaType::systemtime& nTime );
-	virtual bool SyncData( std::string& sData );
-	virtual bool SyncData( VistaPropertyList& oList );
-	virtual bool SyncData( IVistaSerializable& oSerializable );
-	virtual bool SyncData( VistaType::byte* pData, 
-							const int iDataSize );
-	virtual bool SyncData( VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							int& iDataSize );
-	virtual bool SyncData( std::vector<VistaType::byte>& vecData );
+  virtual bool SyncTime(VistaType::systemtime& nTime);
+  virtual bool SyncData(std::string& sData);
+  virtual bool SyncData(VistaPropertyList& oList);
+  virtual bool SyncData(IVistaSerializable& oSerializable);
+  virtual bool SyncData(VistaType::byte* pData, const int iDataSize);
+  virtual bool SyncData(VistaType::byte* pDataBuffer, const int iBufferSize, int& iDataSize);
+  virtual bool SyncData(std::vector<VistaType::byte>& vecData);
 
-private:
-	bool SendRedirectedMessage();
+ private:
+  bool SendRedirectedMessage();
 
-private:
-	std::vector<VistaConnectionNamedPipe*> m_vecConnections;
-	
-	IVistaClusterDataSync*						m_pDependentDataSync;
-	VistaClusterBytebufferFollowerDataSyncBase*	m_pDependentDataSyncMessage;
+ private:
+  std::vector<VistaConnectionNamedPipe*> m_vecConnections;
+
+  IVistaClusterDataSync*                      m_pDependentDataSync;
+  VistaClusterBytebufferFollowerDataSyncBase* m_pDependentDataSyncMessage;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

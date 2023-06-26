@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNNEGATENODE_H
 #define _VDFNNEGATENODE_H
 
@@ -29,11 +28,10 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
-#include "VdfnSerializer.h"
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
-
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -54,43 +52,38 @@
  * @inport{in,type T,mandatory,the value to invert using this node}
  * @outport{out,type T, the negated value}
  */
-template<class T>
-class TVdfnNegateNode : public IVdfnNode
-{
-public:
-	TVdfnNegateNode()
-	: IVdfnNode(),
-	  m_pIn(NULL),
-	  m_pOut( new TVdfnPort<T> )
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<T> >);
-		RegisterOutPort( "out", m_pOut );
-	}
+template <class T>
+class TVdfnNegateNode : public IVdfnNode {
+ public:
+  TVdfnNegateNode()
+      : IVdfnNode()
+      , m_pIn(NULL)
+      , m_pOut(new TVdfnPort<T>) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterOutPort("out", m_pOut);
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pIn = dynamic_cast<TVdfnPort<T>*>(GetInPort("in"));
-		return GetIsValid();
-	}
-protected:
-	/**
-	 * note that the method remains unimplemented for the template. For
-	 * user defined types, specialize this template and define this function.
-	 * @return true usually
-	 */
-	bool DoEvalNode()
-	{
-		return m_pOut->SetValue( -m_pIn->GetValue(), GetUpdateTimeStamp() );
-	}
-private:
-	TVdfnPort<T> *m_pIn,
-	             *m_pOut;
+  bool PrepareEvaluationRun() {
+    m_pIn = dynamic_cast<TVdfnPort<T>*>(GetInPort("in"));
+    return GetIsValid();
+  }
+
+ protected:
+  /**
+   * note that the method remains unimplemented for the template. For
+   * user defined types, specialize this template and define this function.
+   * @return true usually
+   */
+  bool DoEvalNode() {
+    return m_pOut->SetValue(-m_pIn->GetValue(), GetUpdateTimeStamp());
+  }
+
+ private:
+  TVdfnPort<T>*m_pIn, *m_pOut;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif // _VDFNNEGATENODE_H
-

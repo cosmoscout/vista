@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACLUSTERSTANDALONE_H
 #define _VISTACLUSTERSTANDALONE_H
 
@@ -43,51 +42,49 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaClusterStandalone : public VistaClusterMode
-{
-public:
-	VistaClusterStandalone();
-	virtual ~VistaClusterStandalone();
+class VISTAKERNELAPI VistaClusterStandalone : public VistaClusterMode {
+ public:
+  VistaClusterStandalone();
+  virtual ~VistaClusterStandalone();
 
-	virtual bool Init( const std::string& sClusterSection,
-						const VistaPropertyList& oConfig );
-	virtual bool PostInit();
+  virtual bool Init(const std::string& sClusterSection, const VistaPropertyList& oConfig);
+  virtual bool PostInit();
 
-	virtual int GetClusterMode() const;
-	virtual std::string GetClusterModeName() const;
-	
-	virtual int GetNodeType() const;
-	virtual std::string GetNodeTypeName() const;
-	virtual std::string GetNodeName() const;
-	virtual std::string GetConfigSectionName() const;
-	virtual int GetNodeID() const;
+  virtual int         GetClusterMode() const;
+  virtual std::string GetClusterModeName() const;
 
-	virtual bool GetIsLeader() const;
-	virtual bool GetIsFollower() const;
+  virtual int         GetNodeType() const;
+  virtual std::string GetNodeTypeName() const;
+  virtual std::string GetNodeName() const;
+  virtual std::string GetConfigSectionName() const;
+  virtual int         GetNodeID() const;
 
-	virtual int GetNumberOfNodes() const;
-	virtual std::string GetNodeName( const int iNodeID ) const;
+  virtual bool GetIsLeader() const;
+  virtual bool GetIsFollower() const;
 
-	virtual bool StartFrame();
-	virtual bool ProcessFrame();
-	virtual bool EndFrame();
+  virtual int         GetNumberOfNodes() const;
+  virtual std::string GetNodeName(const int iNodeID) const;
 
-	virtual void SwapSync();
-	
-	virtual bool CreateConnections( std::vector<VistaConnectionIP*>& vecConnections );
-	virtual bool CreateNamedConnections( std::vector<std::pair<VistaConnectionIP*, std::string> >&
-															vecConnections );
-	virtual IVistaDataTunnel* CreateDataTunnel( IDLVistaDataPacket* pPacketProto );
-	virtual IVistaClusterDataSync* CreateDataSync();
-	virtual IVistaClusterDataSync* GetDefaultDataSync();
-	virtual IVistaClusterBarrier* CreateBarrier();
-	virtual IVistaClusterBarrier* GetDefaultBarrier();
-	virtual IVistaClusterDataCollect* CreateDataCollect();
+  virtual bool StartFrame();
+  virtual bool ProcessFrame();
+  virtual bool EndFrame();
 
-	virtual void Debug( std::ostream& oStream ) const;
+  virtual void SwapSync();
 
-	IVistaClusterDataSync*		m_pDefaultDataSync;
-	IVistaClusterBarrier*	m_pDefaultBarrier;
+  virtual bool CreateConnections(std::vector<VistaConnectionIP*>& vecConnections);
+  virtual bool CreateNamedConnections(
+      std::vector<std::pair<VistaConnectionIP*, std::string>>& vecConnections);
+  virtual IVistaDataTunnel*         CreateDataTunnel(IDLVistaDataPacket* pPacketProto);
+  virtual IVistaClusterDataSync*    CreateDataSync();
+  virtual IVistaClusterDataSync*    GetDefaultDataSync();
+  virtual IVistaClusterBarrier*     CreateBarrier();
+  virtual IVistaClusterBarrier*     GetDefaultBarrier();
+  virtual IVistaClusterDataCollect* CreateDataCollect();
+
+  virtual void Debug(std::ostream& oStream) const;
+
+  IVistaClusterDataSync* m_pDefaultDataSync;
+  IVistaClusterBarrier*  m_pDefaultBarrier;
 };
 
 /*============================================================================*/
@@ -95,4 +92,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTACLUSTERSTANDALONE_H
-

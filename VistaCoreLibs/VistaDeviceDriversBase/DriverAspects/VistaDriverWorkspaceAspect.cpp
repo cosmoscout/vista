@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDriverWorkspaceAspect.h" 
+#include "VistaDriverWorkspaceAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
 
 #include <cassert>
@@ -31,72 +30,63 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int VistaDriverWorkspaceAspect::m_nAspectId  = -1;
+int VistaDriverWorkspaceAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaDriverWorkspaceAspect::VistaDriverWorkspaceAspect()
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(false)
-{
-	if(VistaDriverWorkspaceAspect::GetAspectId() == -1) // unregistered
-		VistaDriverWorkspaceAspect::SetAspectId( 
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("WORKSPACE"));
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(false) {
+  if (VistaDriverWorkspaceAspect::GetAspectId() == -1) // unregistered
+    VistaDriverWorkspaceAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("WORKSPACE"));
 
-	SetId(VistaDriverWorkspaceAspect::GetAspectId());
+  SetId(VistaDriverWorkspaceAspect::GetAspectId());
 }
 
-VistaDriverWorkspaceAspect::~VistaDriverWorkspaceAspect()
-{
+VistaDriverWorkspaceAspect::~VistaDriverWorkspaceAspect() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-bool VistaDriverWorkspaceAspect::GetWorkspace(const std::string &strKey, VistaBoundingBox &bbOut) const
-{
-	std::map<std::string, VistaBoundingBox>::const_iterator cit = m_mpWorkspaces.find(strKey);
-	if(cit == m_mpWorkspaces.end())
-		return false;
+bool VistaDriverWorkspaceAspect::GetWorkspace(
+    const std::string& strKey, VistaBoundingBox& bbOut) const {
+  std::map<std::string, VistaBoundingBox>::const_iterator cit = m_mpWorkspaces.find(strKey);
+  if (cit == m_mpWorkspaces.end())
+    return false;
 
-	bbOut = (*cit).second;
-	return true;
+  bbOut = (*cit).second;
+  return true;
 }
 
-void VistaDriverWorkspaceAspect::SetWorkspace( const std::string &strKey, const VistaBoundingBox &bb )
-{
-	m_mpWorkspaces[strKey] = bb;
+void VistaDriverWorkspaceAspect::SetWorkspace(
+    const std::string& strKey, const VistaBoundingBox& bb) {
+  m_mpWorkspaces[strKey] = bb;
 }
 
+std::list<std::string> VistaDriverWorkspaceAspect::GetWorkspaceKeys() const {
+  std::list<std::string> strKeys;
+  for (std::map<std::string, VistaBoundingBox>::const_iterator cit = m_mpWorkspaces.begin();
+       cit != m_mpWorkspaces.end(); ++cit) {
+    strKeys.push_back((*cit).first);
+  }
 
-std::list<std::string> VistaDriverWorkspaceAspect::GetWorkspaceKeys() const
-{
-	std::list<std::string> strKeys;
-	for(std::map<std::string, VistaBoundingBox>::const_iterator cit = m_mpWorkspaces.begin();
-		cit != m_mpWorkspaces.end(); ++cit)
-	{
-		strKeys.push_back( (*cit).first );
-	}
-
-	strKeys.sort();
-	return strKeys;
+  strKeys.sort();
+  return strKeys;
 }
 
 // #########################################
 // OVERWRITE IN SUBCLASSES
 // #########################################
-int  VistaDriverWorkspaceAspect::GetAspectId()
-{
-	return VistaDriverWorkspaceAspect::m_nAspectId;
+int VistaDriverWorkspaceAspect::GetAspectId() {
+  return VistaDriverWorkspaceAspect::m_nAspectId;
 }
 
-void VistaDriverWorkspaceAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
+void VistaDriverWorkspaceAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

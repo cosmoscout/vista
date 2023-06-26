@@ -38,36 +38,34 @@
  * There for the A-Buffer is used to store fragments and later display them.
  *
  * @TODO !WARNING:
- *	This is an early Prototype. 
+ *	This is an early Prototype.
  *	The interface of this class will probably change.
  */
-class VISTAOGLEXTAPI VistaABufferCSG : public VistaABufferOIT
-{
-public: 
-	/**************************************************************************/
-	/* CONSTRUCTORS / DESTRUCTOR                                              */
-	/**************************************************************************/
-	VistaABufferCSG();
-	virtual ~VistaABufferCSG();
+class VISTAOGLEXTAPI VistaABufferCSG : public VistaABufferOIT {
+ public:
+  /**************************************************************************/
+  /* CONSTRUCTORS / DESTRUCTOR                                              */
+  /**************************************************************************/
+  VistaABufferCSG();
+  virtual ~VistaABufferCSG();
 
-	//Extension
-	void SetDispalyExtensionShaderName( const std::string& strName );
+  // Extension
+  void SetDispalyExtensionShaderName(const std::string& strName);
 
-	/**
-	 * See VistaABufferOIT::GetShaderPrototype
-	 */
-	virtual VistaGLSLShader* CreateShaderPrototype();
+  /**
+   * See VistaABufferOIT::GetShaderPrototype
+   */
+  virtual VistaGLSLShader* CreateShaderPrototype();
 
+ protected:
+  virtual bool InitABuffer(unsigned int uiFragmentesPerPixel, unsigned int uiPageSize);
+  virtual bool InitShader();
 
-protected:
-	virtual bool InitABuffer( unsigned int uiFragmentesPerPixel, unsigned int uiPageSize );
-	virtual bool InitShader();
+  bool InitDefaultShader();
+  bool InitDisplayShader();
 
-	bool InitDefaultShader(); 
-	bool InitDisplayShader(); 
-
-protected:
-	std::string m_strDisplayShaderExt;
+ protected:
+  std::string m_strDisplayShaderExt;
 };
 #endif // Include guard.
 /*============================================================================*/

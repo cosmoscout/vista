@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNPROJECTIONSOURCENODE_H
 #define _VISTADFNPROJECTIONSOURCENODE_H
 
@@ -31,11 +30,11 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 #include <VistaBase/VistaVectorMath.h>
 
@@ -50,63 +49,53 @@
 class VistaProjection;
 class VistaDisplayManager;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
  * Outputs the projection values of the registered projection.
- * 
+ *
  * @ingroup VdfnNodes
  *
- * @outport{midpoint, VistaVector3D, the midpoint of the projection}  
- * @outport{normal, VistaVector3D, the normal of the projection}  
- * @outport{up, VistaVector3D, the up-vector of the projection}   
- * @outport{left, double, the left extent of the projection}  
- * @outport{right, double, the right extent of the projection}  
- * @outport{top, double, the top extent of the projection}  
- * @outport{bottom, double, the bottom extent of the projection}  
- * @outport{near, double, the near extent of the projection}  
- * @outport{far, double, the far extent of the projection}  
+ * @outport{midpoint, VistaVector3D, the midpoint of the projection}
+ * @outport{normal, VistaVector3D, the normal of the projection}
+ * @outport{up, VistaVector3D, the up-vector of the projection}
+ * @outport{left, double, the left extent of the projection}
+ * @outport{right, double, the right extent of the projection}
+ * @outport{top, double, the top extent of the projection}
+ * @outport{bottom, double, the bottom extent of the projection}
+ * @outport{near, double, the near extent of the projection}
+ * @outport{far, double, the far extent of the projection}
  */
-class VISTAKERNELAPI VistaDfnProjectionSourceNode : public IVdfnNode
-{
-public:
-	VistaDfnProjectionSourceNode(VistaProjection *pWindow);
-	~VistaDfnProjectionSourceNode();
+class VISTAKERNELAPI VistaDfnProjectionSourceNode : public IVdfnNode {
+ public:
+  VistaDfnProjectionSourceNode(VistaProjection* pWindow);
+  ~VistaDfnProjectionSourceNode();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-protected:
-	virtual bool   DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-	virtual unsigned int    CalcUpdateNeededScore() const;
+  virtual unsigned int CalcUpdateNeededScore() const;
 
-private:
-	TVdfnPort<VistaVector3D> *m_pMidpoint,
-							  *m_pNormal,
-							  *m_pUp;
-	TVdfnPort<double> *m_pLeft,
-				   *m_pRight,
-				   *m_pTop,
-				   *m_pBottom,
-				   *m_pNear,
-				   *m_pFar;
+ private:
+  TVdfnPort<VistaVector3D>*m_pMidpoint, *m_pNormal, *m_pUp;
+  TVdfnPort<double>*       m_pLeft, *m_pRight, *m_pTop, *m_pBottom, *m_pNear, *m_pFar;
 
-	class ProjectionObserver;
-	VistaProjection *m_pProjection;
-	ProjectionObserver *m_pObs;
+  class ProjectionObserver;
+  VistaProjection*    m_pProjection;
+  ProjectionObserver* m_pObs;
 
-	struct _sUpdate
-	{
-		_sUpdate()
-			: m_nUpdateCount(0),
-			  m_bNeedsUpdate(true)
-		{}
+  struct _sUpdate {
+    _sUpdate()
+        : m_nUpdateCount(0)
+        , m_bNeedsUpdate(true) {
+    }
 
-		unsigned int m_nUpdateCount;
-		bool m_bNeedsUpdate;
-	} *m_pUpd;
+    unsigned int m_nUpdateCount;
+    bool         m_bNeedsUpdate;
+  } * m_pUpd;
 };
 
 /*============================================================================*/
@@ -114,4 +103,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNPROJECTIONSOURCENODE_H
-

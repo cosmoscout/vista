@@ -21,9 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include "Vista3DCSpaceNavigatorDriver.h"
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
@@ -47,174 +46,148 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-namespace
-{
-	class Vista3DCTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		Vista3DCTranscode()
-		{
-			m_nNumberOfScalars = 0;
-		}
+namespace {
+class Vista3DCTranscode : public IVistaMeasureTranscode {
+ public:
+  Vista3DCTranscode() {
+    m_nNumberOfScalars = 0;
+  }
 
-		static std::string GetTypeString() { return "Vista3DCTranscode"; }
-		REFL_INLINEIMP(Vista3DCTranscode, IVistaMeasureTranscode);
-	};
+  static std::string GetTypeString() {
+    return "Vista3DCTranscode";
+  }
+  REFL_INLINEIMP(Vista3DCTranscode, IVistaMeasureTranscode);
+};
 
-	class Vista3DCSNPosTranscode : public IVistaMeasureTranscode::V3Get
-	{
-	public:
-		Vista3DCSNPosTranscode()
-			: IVistaMeasureTranscode::V3Get("POSITION",
-			Vista3DCTranscode::GetTypeString(),
-									"space navigator 3D position values") {}
+class Vista3DCSNPosTranscode : public IVistaMeasureTranscode::V3Get {
+ public:
+  Vista3DCSNPosTranscode()
+      : IVistaMeasureTranscode::V3Get(
+            "POSITION", Vista3DCTranscode::GetTypeString(), "space navigator 3D position values") {
+  }
 
-		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const Vista3DCSpaceNavigator::_sMeasure *m = pMeasure->getRead< Vista3DCSpaceNavigator::_sMeasure >();
+  virtual VistaVector3D GetValue(const VistaSensorMeasure* pMeasure) const {
+    const Vista3DCSpaceNavigator::_sMeasure* m =
+        pMeasure->getRead<Vista3DCSpaceNavigator::_sMeasure>();
 
-			return VistaVector3D(
-						float( m->m_nPositionX),
-						float( m->m_nPositionY),
-						float( m->m_nPositionZ));
-		}
+    return VistaVector3D(float(m->m_nPositionX), float(m->m_nPositionY), float(m->m_nPositionZ));
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaVector3D &v3Pos) const
-		{
-			v3Pos = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaVector3D& v3Pos) const {
+    v3Pos = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	class Vista3DCSNAxisTranscode : public IVistaMeasureTranscode::TTranscodeValueGet<VistaAxisAndAngle>
-	{
-	public:
-		Vista3DCSNAxisTranscode()
-			: IVistaMeasureTranscode::TTranscodeValueGet<VistaAxisAndAngle>("AXIS",
-									Vista3DCTranscode::GetTypeString(),
-									"space navigator 3D axis and angle value")
-		{}
+class Vista3DCSNAxisTranscode
+    : public IVistaMeasureTranscode::TTranscodeValueGet<VistaAxisAndAngle> {
+ public:
+  Vista3DCSNAxisTranscode()
+      : IVistaMeasureTranscode::TTranscodeValueGet<VistaAxisAndAngle>(
+            "AXIS", Vista3DCTranscode::GetTypeString(), "space navigator 3D axis and angle value") {
+  }
 
-		virtual VistaAxisAndAngle GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const Vista3DCSpaceNavigator::_sMeasure *m = pMeasure->getRead< Vista3DCSpaceNavigator::_sMeasure >();
+  virtual VistaAxisAndAngle GetValue(const VistaSensorMeasure* pMeasure) const {
+    const Vista3DCSpaceNavigator::_sMeasure* m =
+        pMeasure->getRead<Vista3DCSpaceNavigator::_sMeasure>();
 
-			VistaAxisAndAngle aaa(
-						VistaVector3D(float( m->m_nRotationX),
-									   float( m->m_nRotationY),
-									   float( m->m_nRotationZ)),
-									   float(Vista::DegToRad(float(m->m_nRotationAngle))));
+    VistaAxisAndAngle aaa(
+        VistaVector3D(float(m->m_nRotationX), float(m->m_nRotationY), float(m->m_nRotationZ)),
+        float(Vista::DegToRad(float(m->m_nRotationAngle))));
 
-			if(_isnan(aaa.m_v3Axis[0]) || _isnan(aaa.m_v3Axis[1]) || _isnan(aaa.m_v3Axis[2]) )
-				return VistaAxisAndAngle( VistaVector3D(0,0,-1), 0 );
+    if (_isnan(aaa.m_v3Axis[0]) || _isnan(aaa.m_v3Axis[1]) || _isnan(aaa.m_v3Axis[2]))
+      return VistaAxisAndAngle(VistaVector3D(0, 0, -1), 0);
 
-			return aaa;
-		}
+    return aaa;
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaAxisAndAngle &aaa) const
-		{
-			aaa = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaAxisAndAngle& aaa) const {
+    aaa = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	class Vista3DCSNOrientationTranscode : public IVistaMeasureTranscode::QuatGet
-	{
-	public:
-		Vista3DCSNOrientationTranscode()
-			: IVistaMeasureTranscode::QuatGet("ORIENTATION",
-			Vista3DCTranscode::GetTypeString(),
-									"space navigator 3D orientation (right-handed)") {}
+class Vista3DCSNOrientationTranscode : public IVistaMeasureTranscode::QuatGet {
+ public:
+  Vista3DCSNOrientationTranscode()
+      : IVistaMeasureTranscode::QuatGet("ORIENTATION", Vista3DCTranscode::GetTypeString(),
+            "space navigator 3D orientation (right-handed)") {
+  }
 
-		virtual VistaQuaternion    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const Vista3DCSpaceNavigator::_sMeasure *m = pMeasure->getRead< Vista3DCSpaceNavigator::_sMeasure >();
+  virtual VistaQuaternion GetValue(const VistaSensorMeasure* pMeasure) const {
+    const Vista3DCSpaceNavigator::_sMeasure* m =
+        pMeasure->getRead<Vista3DCSpaceNavigator::_sMeasure>();
 
-			VistaAxisAndAngle aaa(VistaVector3D(float( m->m_nRotationX),
-												  float( m->m_nRotationY),
-												  float( m->m_nRotationZ)),
-												  Vista::DegToRad(float(m->m_nRotationAngle)));
+    VistaAxisAndAngle aaa(
+        VistaVector3D(float(m->m_nRotationX), float(m->m_nRotationY), float(m->m_nRotationZ)),
+        Vista::DegToRad(float(m->m_nRotationAngle)));
 
-			if(_isnan(aaa.m_v3Axis[0]) || _isnan(aaa.m_v3Axis[1]) || _isnan(aaa.m_v3Axis[2]) )
-				return VistaQuaternion();
+    if (_isnan(aaa.m_v3Axis[0]) || _isnan(aaa.m_v3Axis[1]) || _isnan(aaa.m_v3Axis[2]))
+      return VistaQuaternion();
 
-			if(aaa.m_v3Axis.GetLength() < Vista::Epsilon)
-				return VistaQuaternion();
+    if (aaa.m_v3Axis.GetLength() < Vista::Epsilon)
+      return VistaQuaternion();
 
-			VistaQuaternion q(aaa);
-			q.Normalize();
+    VistaQuaternion q(aaa);
+    q.Normalize();
 
-			return q;
-		}
+    return q;
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaQuaternion &qRot) const
-		{
-			qRot = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaQuaternion& qRot) const {
+    qRot = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	class Vista3DCSNButtonTranscode : public IVistaMeasureTranscode::TTranscodeValueGet<bool>
-	{
-	public:
-		Vista3DCSNButtonTranscode(int nBt,
-			const std::string &strLabel,
-			const std::string &strDesc)
-			: IVistaMeasureTranscode::TTranscodeValueGet<bool>(strLabel,
-			Vista3DCTranscode::GetTypeString(), strDesc),
-			m_nBt(nBt)
-		{}
+class Vista3DCSNButtonTranscode : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+ public:
+  Vista3DCSNButtonTranscode(int nBt, const std::string& strLabel, const std::string& strDesc)
+      : IVistaMeasureTranscode::TTranscodeValueGet<bool>(
+            strLabel, Vista3DCTranscode::GetTypeString(), strDesc)
+      , m_nBt(nBt) {
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const Vista3DCSpaceNavigator::_sMeasure *m = pMeasure->getRead< Vista3DCSpaceNavigator::_sMeasure >();
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure) const {
+    const Vista3DCSpaceNavigator::_sMeasure* m =
+        pMeasure->getRead<Vista3DCSpaceNavigator::_sMeasure>();
 
-			return ((m->m_nKeys[m_nBt]==1) ? true : false);
-		}
+    return ((m->m_nKeys[m_nBt] == 1) ? true : false);
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, bool &nState) const
-		{
-			nState = GetValue(pMeasure);
-			return true;
-		}
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, bool& nState) const {
+    nState = GetValue(pMeasure);
+    return true;
+  }
 
-		int m_nBt;
-	};
+  int m_nBt;
+};
 
+IVistaPropertyGetFunctor* SapGetter[] = {new Vista3DCSNPosTranscode, new Vista3DCSNAxisTranscode,
+    new Vista3DCSNOrientationTranscode,
+    new Vista3DCSNButtonTranscode(0, "BUTTON_1", "Left button of 3DC SpaceNavigator"),
+    new Vista3DCSNButtonTranscode(1, "BUTTON_2", "Right button of 3DC SpaceNavigator"), NULL};
 
-	IVistaPropertyGetFunctor *SapGetter[] =
-	{
-		new Vista3DCSNPosTranscode,
-		new Vista3DCSNAxisTranscode,
-		new Vista3DCSNOrientationTranscode,
-		new Vista3DCSNButtonTranscode(0, "BUTTON_1", "Left button of 3DC SpaceNavigator"),
-		new Vista3DCSNButtonTranscode(1, "BUTTON_2", "Right button of 3DC SpaceNavigator"),
-		NULL
-	};
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-	class Vista3DCSpaceNavigatorTranscodeFactory : public TDefaultTranscoderFactory<Vista3DCTranscode>
-	{
-	public:
-		Vista3DCSpaceNavigatorTranscodeFactory()
-		: TDefaultTranscoderFactory<Vista3DCTranscode>(Vista3DCTranscode::GetTypeString())
-		{}
-	};
-}
+class Vista3DCSpaceNavigatorTranscodeFactory : public TDefaultTranscoderFactory<Vista3DCTranscode> {
+ public:
+  Vista3DCSpaceNavigatorTranscodeFactory()
+      : TDefaultTranscoderFactory<Vista3DCTranscode>(Vista3DCTranscode::GetTypeString()) {
+  }
+};
+} // namespace
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-
 
 #ifdef VISTA3DCSPACENAVIGATORTRANSCODER_EXPORTS
-	DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<Vista3DCSpaceNavigatorTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(
+    TSimpleTranscoderFactoryFactory<Vista3DCSpaceNavigatorTranscodeFactory>)
 #else
-	DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<Vista3DCSpaceNavigatorTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(
+    TSimpleTranscoderFactoryFactory<Vista3DCSpaceNavigatorTranscodeFactory>)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
 IMPTRANSCODERPLUG_CLEANUP(TSimpleTranscoderFactoryFactory<Vista3DCSpaceNavigatorTranscodeFactory>)
-
-

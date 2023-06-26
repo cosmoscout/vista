@@ -21,26 +21,23 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #define _ATL_APARTMENT_THREADED
 #define _ATL_NO_AUTOMATIC_NAMESPACE
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS // some CString constructors will be explicit
 
 #include <atlbase.h>
 #include <atlcom.h>
-#include <atlwin.h>
-#include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
 #include <atlstr.h>
+#include <atltypes.h>
+#include <atlwin.h>
 
 using namespace ATL;
 
-
 #import "progid:TDxInput.Device.1" no_namespace
 
-int main( int argc, char** argv )
-{
-	return 0;
+int main(int argc, char** argv) {
+  return 0;
 }

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDummyClusterBarrier.h"
 
 /*============================================================================*/
@@ -32,40 +31,32 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaDummyClusterBarrier::VistaDummyClusterBarrier()
-: IVistaClusterBarrier( false, true )
-{
+    : IVistaClusterBarrier(false, true) {
 }
 
-VistaDummyClusterBarrier::~VistaDummyClusterBarrier()
-{
+VistaDummyClusterBarrier::~VistaDummyClusterBarrier() {
 }
 
-bool VistaDummyClusterBarrier::BarrierWait( int iTimeOut )
-{
-	return true;
+bool VistaDummyClusterBarrier::BarrierWait(int iTimeOut) {
+  return true;
 }
 
-bool VistaDummyClusterBarrier::GetIsValid() const
-{
-	return true;
+bool VistaDummyClusterBarrier::GetIsValid() const {
+  return true;
 }
 
-std::string VistaDummyClusterBarrier::GetBarrierType() const
-{
-	return "DummyBarrier";
+std::string VistaDummyClusterBarrier::GetBarrierType() const {
+  return "DummyBarrier";
 }
 
-int VistaDummyClusterBarrier::GetSendBlockingThreshold() const
-{
-	return -1;
+int VistaDummyClusterBarrier::GetSendBlockingThreshold() const {
+  return -1;
 }
 
-bool VistaDummyClusterBarrier::SetSendBlockingThreshold( const int nNumBytes )
-{
-	return false;
+bool VistaDummyClusterBarrier::SetSendBlockingThreshold(const int nNumBytes) {
+  return false;
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-

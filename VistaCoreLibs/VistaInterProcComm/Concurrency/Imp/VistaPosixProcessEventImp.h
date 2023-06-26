@@ -21,12 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAPOSIXPROCESSEVENTIMPL_H
 #define _VISTAPOSIXPROCESSEVENTIMPL_H
-
 
 #include "VistaProcessEventImp.h"
 
@@ -36,33 +34,28 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaPosixProcessEventImp : public IVistaProcessEventImp
-{
-public:
+class VISTAINTERPROCCOMMAPI VistaPosixProcessEventImp : public IVistaProcessEventImp {
+ public:
+  VistaPosixProcessEventImp(const std::string& sEventName);
+  VistaPosixProcessEventImp(const std::string& sEventName, const int nWaitTimeout);
+  virtual ~VistaPosixProcessEventImp();
 
-	VistaPosixProcessEventImp( const std::string& sEventName );
-	VistaPosixProcessEventImp( const std::string& sEventName,
-							   const int nWaitTimeout );
-	virtual ~VistaPosixProcessEventImp();
-	
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool SignalEvent();
-	bool WaitForEvent(bool bBlock);
-	bool WaitForEvent(int iBlockTime);
+  bool SignalEvent();
+  bool WaitForEvent(bool bBlock);
+  bool WaitForEvent(int iBlockTime);
 
-	bool ResetThisEvent();
+  bool ResetThisEvent();
 
-private:
-	bool m_bManagesFiles;
-	int m_nFifo;
-	fd_set* m_oReadSet;
+ private:
+  bool    m_bManagesFiles;
+  int     m_nFifo;
+  fd_set* m_oReadSet;
 };
-
 
 /*============================================================================*/
 
 #endif // _VISTAITERATIONTHREAD_H
 
 #endif // VISTA_THREADING_WIN32
-

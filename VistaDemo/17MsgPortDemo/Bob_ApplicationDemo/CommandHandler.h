@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __COMMANDHANDLER_H
 #define __COMMANDHANDLER_H
 
@@ -30,32 +29,28 @@
 /*============================================================================*/
 #include <VistaKernel/EventManager/VistaEventHandler.h>
 
-
 /*============================================================================*/
 /* FORWARD DECLARATION                                                        */
 /*============================================================================*/
 class Bob;
 
-
 /*============================================================================*/
 /* CLASS DEFINITION                                                           */
 /*============================================================================*/
-class CommandHandler : public VistaEventHandler
-{
-public:	
-	// Constructor, Destructor. boring.
-	CommandHandler(VistaEventManager *pEvMgr, Bob *pBob);
-	virtual ~CommandHandler();
+class CommandHandler : public VistaEventHandler {
+ public:
+  // Constructor, Destructor. boring.
+  CommandHandler(VistaEventManager* pEvMgr, Bob* pBob);
+  virtual ~CommandHandler();
 
-	// HandleEvent is called by the VistaEventManager.
-	// If the Event is triggered by Alice, we react on her command here!
-	virtual void HandleEvent(VistaEvent *pEvent);
+  // HandleEvent is called by the VistaEventManager.
+  // If the Event is triggered by Alice, we react on her command here!
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-protected:
-
-private:
-	VistaEventManager *m_pEvMgr;
-	Bob	*m_pBob;
+ protected:
+ private:
+  VistaEventManager* m_pEvMgr;
+  Bob*               m_pBob;
 };
 
 #endif //__COMMANDHANDLER_H

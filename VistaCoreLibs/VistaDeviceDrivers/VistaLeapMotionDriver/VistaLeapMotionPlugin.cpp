@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaLeapMotionDriver.h"
 
 #if defined(WIN32) && !defined(VISTALEAPMOTIONDRIVERPLUGIN_STATIC)
@@ -34,57 +33,46 @@
 #define VISTALEAPMOTIONPLUGINAPI
 #endif
 
-namespace
-{
-	VistaLeapMotionCreationMethod *SpFactory = NULL;
+namespace {
+VistaLeapMotionCreationMethod* SpFactory = NULL;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-extern "C" VISTALEAPMOTIONPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaLeapMotionDriver(crm);
+extern "C" VISTALEAPMOTIONPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaLeapMotionDriver(crm);
 }
 
-extern "C" VISTALEAPMOTIONPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaLeapMotionCreationMethod(fac);
+extern "C" VISTALEAPMOTIONPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaLeapMotionCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTALEAPMOTIONPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTALEAPMOTIONPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTALEAPMOTIONPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTALEAPMOTIONPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-
-extern "C" VISTALEAPMOTIONPLUGINAPI const char *GetDeviceClassName()
-{
-	return "LEAPMOTION";
+extern "C" VISTALEAPMOTIONPLUGINAPI const char* GetDeviceClassName() {
+  return "LEAPMOTION";
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

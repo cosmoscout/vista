@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNNAVIGATIONNODE_H
 #define _VISTADFNNAVIGATIONNODE_H
 
@@ -30,9 +29,9 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
 #include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
 
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
 
@@ -75,7 +74,7 @@
  * mode 0 - Unconstrained rotation - rotation is not modified
  * mode 1 - Helicopter Mode - rotation is constrained to yaw, i.e. one only
  *          rotates around the y axis
- * mode 2 - LookAround Mode - Only Yaw and Pitch components are retained, and 
+ * mode 2 - LookAround Mode - Only Yaw and Pitch components are retained, and
  *          all roll (rotation around x-axis) is removed. Thus, one can look
  *          around and up and down, but not "tilt" your head.
  *          Careful: This node removes all roll from the full rotation, i.e.
@@ -89,76 +88,72 @@
  * "default_linear_velocity" (default is 1.0) and "default_angular_velocity"
  * (default is pi).
  */
-class VISTAKERNELAPI VistaDfnNavigationNode : public IVdfnNode
-{
-public:
-	VistaDfnNavigationNode( const int iDefaultNavigationMode = 0,
-							const float fDefaultLinearSpeed = 1.0f,
-							const float fDefaultAngularSpeed = 3.14159f,
-							const float fLinearAcceleration = 0,
-							const float fLinearDecceleration = 0,
-							const float fAngularAcceleration = 0,
-							const float fAngularDecceleration = 0 );
-	virtual ~VistaDfnNavigationNode();
+class VISTAKERNELAPI VistaDfnNavigationNode : public IVdfnNode {
+ public:
+  VistaDfnNavigationNode(const int iDefaultNavigationMode = 0,
+      const float fDefaultLinearSpeed = 1.0f, const float fDefaultAngularSpeed = 3.14159f,
+      const float fLinearAcceleration = 0, const float fLinearDecceleration = 0,
+      const float fAngularAcceleration = 0, const float fAngularDecceleration = 0);
+  virtual ~VistaDfnNavigationNode();
 
-	virtual bool PrepareEvaluationRun();
-protected:
-	virtual bool DoEvalNode();
-	virtual bool GetIsValid() const;
+  virtual bool PrepareEvaluationRun();
 
-	/**
-	 * Translates matTransform with the offset given by the translation
-	 * inport.
-	 */
-	void ApplyTranslation( VistaTransformMatrix& matTransform );
+ protected:
+  virtual bool DoEvalNode();
+  virtual bool GetIsValid() const;
 
-	void UpdateVelocities();
+  /**
+   * Translates matTransform with the offset given by the translation
+   * inport.
+   */
+  void ApplyTranslation(VistaTransformMatrix& matTransform);
 
-	/**
-	 * Helper functions that take the matrix matTransform and rotate it
-	 * by the rotation on the inport, scaled by angular velocity
-	 * and time difference, and applies the rotation to the input
-	 * matrix. The rotation is constraint differently in
-	 * the different functions.
-	 */
-	void ApplyRotationFull( VistaTransformMatrix& matTransform );
-	void ApplyRotationYawOnly( VistaTransformMatrix& matTransform );
-	void ApplyRotationNoRoll( VistaTransformMatrix& matTransform );
+  void UpdateVelocities();
 
-private:
-	TVdfnPort<VistaTransformMatrix>*	m_pTransform;
-	TVdfnPort<VistaTransformMatrix>*	m_pOut;
-	TVdfnPort<VistaVector3D>*		m_pTranslation;
-	TVdfnPort<double>*				m_pDeltaTime;
-	TVdfnPort<VistaQuaternion>*		m_pRotation;
-	TVdfnPort<VistaVector3D>*		m_pRotationPivot;
-	TVdfnPort<int>*					m_pNavigationMode;
-	TVdfnPort<float>*				m_pLinearSpeed;
-	TVdfnPort<float>*				m_pAngularSpeed;
+  /**
+   * Helper functions that take the matrix matTransform and rotate it
+   * by the rotation on the inport, scaled by angular velocity
+   * and time difference, and applies the rotation to the input
+   * matrix. The rotation is constraint differently in
+   * the different functions.
+   */
+  void ApplyRotationFull(VistaTransformMatrix& matTransform);
+  void ApplyRotationYawOnly(VistaTransformMatrix& matTransform);
+  void ApplyRotationNoRoll(VistaTransformMatrix& matTransform);
 
-	float				m_fTargetAngularSpeed;
-	float				m_fCurrentAngularSpeed;
-	VistaAxisAndAngle	m_aaCurrentAngularVelocity;
-	float				m_fAngularAcceleration;
-	float				m_fAngularDecceleration;
+ private:
+  TVdfnPort<VistaTransformMatrix>* m_pTransform;
+  TVdfnPort<VistaTransformMatrix>* m_pOut;
+  TVdfnPort<VistaVector3D>*        m_pTranslation;
+  TVdfnPort<double>*               m_pDeltaTime;
+  TVdfnPort<VistaQuaternion>*      m_pRotation;
+  TVdfnPort<VistaVector3D>*        m_pRotationPivot;
+  TVdfnPort<int>*                  m_pNavigationMode;
+  TVdfnPort<float>*                m_pLinearSpeed;
+  TVdfnPort<float>*                m_pAngularSpeed;
 
-	float				m_fDefaultLinearSpeed;
-	VistaVector3D		m_v3TargetLinearVelocity;
-	VistaVector3D		m_v3CurrentLinearVelocity;
-	float				m_fLinearAcceleration;
-	float				m_fLinearDeceleration;
-	int					m_iNavigationMode;
+  float             m_fTargetAngularSpeed;
+  float             m_fCurrentAngularSpeed;
+  VistaAxisAndAngle m_aaCurrentAngularVelocity;
+  float             m_fAngularAcceleration;
+  float             m_fAngularDecceleration;
 
-	float				m_fDeltaTime;
+  float         m_fDefaultLinearSpeed;
+  VistaVector3D m_v3TargetLinearVelocity;
+  VistaVector3D m_v3CurrentLinearVelocity;
+  float         m_fLinearAcceleration;
+  float         m_fLinearDeceleration;
+  int           m_iNavigationMode;
 
-	// saves the revision of the delta-time inport from the last evaluation
-	// to see if the time-delta has really been updated.
-	unsigned int m_nLastDTUpateCount;
+  float m_fDeltaTime;
+
+  // saves the revision of the delta-time inport from the last evaluation
+  // to see if the time-delta has really been updated.
+  unsigned int m_nLastDTUpateCount;
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
 
 #endif

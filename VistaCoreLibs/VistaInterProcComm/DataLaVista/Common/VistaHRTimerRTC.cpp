@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -30,72 +28,57 @@
 
 #if defined(_USE_HRRTC)
 
-
 #include <cstdio>
 #include <sys/types.h>
 
 #ifdef UXPV
-	#include <sys/timesu.h>
+#include <sys/timesu.h>
 #else
-	#include <unistd.h>
-	#include <sys/times.h>
-	#include <sys/time.h>
-	#include <time.h>
+#include <unistd.h>
+#include <sys/times.h>
+#include <sys/time.h>
+#include <time.h>
 #endif
 
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DLVistaHRTimerRTC::DLVistaHRTimerRTC()
-{
+DLVistaHRTimerRTC::DLVistaHRTimerRTC() {
 }
 
-
-DLVistaHRTimerRTC::DLVistaHRTimerRTC(DLVistaHRTimerRTC &)
-{
+DLVistaHRTimerRTC::DLVistaHRTimerRTC(DLVistaHRTimerRTC&) {
 }
 
-
-DLVistaHRTimerRTC::~DLVistaHRTimerRTC()
-{
+DLVistaHRTimerRTC::~DLVistaHRTimerRTC() {
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-double DLVistaHRTimerRTC::GetTickToSecond( DLV_INT64 nTs ) const
-{
-	// nTs is given in nanoseconds
-	return nTs / 1000000L;
+double DLVistaHRTimerRTC::GetTickToSecond(DLV_INT64 nTs) const {
+  // nTs is given in nanoseconds
+  return nTs / 1000000L;
 }
 
-
-DLV_INT32 DLVistaHRTimerRTC::GetTimeStamp() const
-{
-	return (DLV_INT32)GetSystemTime();
+DLV_INT32 DLVistaHRTimerRTC::GetTimeStamp() const {
+  return (DLV_INT32)GetSystemTime();
 }
 
+double DLVistaHRTimerRTC::GetSystemTime() const {
+  double sysSeconds;
 
-double DLVistaHRTimerRTC::GetSystemTime() const
-{
-	double  sysSeconds;
+  struct timeval tv;
+  gettimeofday(&tv, (struct timezone*)0);
 
-	struct timeval tv;
-	gettimeofday(&tv, (struct timezone*)0);
+  // seconds since 1.1.1970
+  sysSeconds = ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0);
 
-	// seconds since 1.1.1970
-	sysSeconds = ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0 );
-
-	return sysSeconds;
+  return sysSeconds;
 }
 
-
-DLV_INT64 DLVistaHRTimerRTC::GetTickCount() const
-{
-	return (DLV_INT64)gethrtime();
+DLV_INT64 DLVistaHRTimerRTC::GetTickCount() const {
+  return (DLV_INT64)gethrtime();
 }
-
 
 #endif // _USE_HRRTC
-

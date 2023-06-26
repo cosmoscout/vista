@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROXIMITYFADEOUT_H
 #define _VISTAPROXIMITYFADEOUT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -49,36 +47,32 @@ class VistaDisplayManager;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaProximityFadeout : public IVistaProximityWarningBase
-{
-public:
-	VistaProximityFadeout( VistaEventManager* pManager,
-								const float nBeginWarningDistance,
-								const float nMaxWarningDistance );
-	virtual ~VistaProximityFadeout();
+class VISTAKERNELAPI VistaProximityFadeout : public IVistaProximityWarningBase {
+ public:
+  VistaProximityFadeout(VistaEventManager* pManager, const float nBeginWarningDistance,
+      const float nMaxWarningDistance);
+  virtual ~VistaProximityFadeout();
 
-	void AddViewport( VistaViewport* pViewport );
-	void AddAllViewports( VistaDisplayManager* pDisplayManager );
+  void AddViewport(VistaViewport* pViewport);
+  void AddAllViewports(VistaDisplayManager* pDisplayManager);
 
-	VistaColor GetFadeoutColor() const;
-	void SetFadeoutColor( const VistaColor& oColor );
+  VistaColor GetFadeoutColor() const;
+  void       SetFadeoutColor(const VistaColor& oColor);
 
-	virtual bool DoUpdate( const float nMinDistance,
-							const float nWarningLevel,
-							const VistaVector3D& v3PointOnBounds,
-							const VistaVector3D& v3UserPosition,
-							const VistaQuaternion& qUserOrientation );
+  virtual bool DoUpdate(const float nMinDistance, const float nWarningLevel,
+      const VistaVector3D& v3PointOnBounds, const VistaVector3D& v3UserPosition,
+      const VistaQuaternion& qUserOrientation);
 
-	virtual bool GetIsEnabled() const;
-	virtual bool SetIsEnabled( const bool bSet );
+  virtual bool GetIsEnabled() const;
+  virtual bool SetIsEnabled(const bool bSet);
 
-	virtual bool DoTimeUpdate( VistaType::systemtime nTime, const float nOpacityScale, const bool bFlashState  );
+  virtual bool DoTimeUpdate(
+      VistaType::systemtime nTime, const float nOpacityScale, const bool bFlashState);
 
-private:
-	VistaColor m_oFadeoutColor;
-	class FadeoutOverlay;
-	std::vector<FadeoutOverlay*> m_vecOverlays;
+ private:
+  VistaColor m_oFadeoutColor;
+  class FadeoutOverlay;
+  std::vector<FadeoutOverlay*> m_vecOverlays;
 };
 
 #endif //_VISTAPROXIMITYFADEOUT_H
-

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACRC32_H
 #define _VISTACRC32_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -39,11 +37,9 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -74,34 +70,32 @@
  *             Table Look-Up", Communications of the ACM, 31(8), pp.1008-1013, 1988.
  *
  */
-class VISTATOOLSAPI VistaCRC32
-{
-public:
+class VISTATOOLSAPI VistaCRC32 {
+ public:
+  VistaCRC32(unsigned long ulKey = 0x04c11db7);
+  virtual ~VistaCRC32();
 
-	VistaCRC32						(unsigned long ulKey = 0x04c11db7);
-	virtual ~VistaCRC32			();
+  /// Computes and returns checksum
+  unsigned long ProcessString(const std::string& sText);
+  /// Computes and returns checksum
 
-	/// Computes and returns checksum
-	unsigned long	ProcessString	(const std::string &sText);
-	/// Computes and returns checksum
+  unsigned long ProcessByteBuffer(VistaType::byte* pByteBuffer, int iLength);
 
-	unsigned long	ProcessByteBuffer(VistaType::byte* pByteBuffer, int iLength);
+  /// Adds successively to checksum
+  void AddString(const std::string& sText);
 
-	/// Adds successively to checksum
-	void			AddString		(const std::string &sText);
+  /// Adds successively to checksum
+  void AddByteBuffer(VistaType::byte* pByteBuffer, int iLength);
 
-	/// Adds successively to checksum
-	void			AddByteBuffer	(VistaType::byte* pByteBuffer, int iLength);
+  /// Returns accumulated checksum and resets internal checksum
+  unsigned long GetResult();
 
-	/// Returns accumulated checksum and resets internal checksum
-	unsigned long	GetResult		();
+ private:
+  void Init(unsigned long ulKey);
+  void AddByte(VistaType::byte cByte);
 
-private:
-	void			Init			(unsigned long ulKey);
-	void			AddByte			(VistaType::byte cByte);
-
-	unsigned long m_ulLUTElements[256];
-	unsigned long m_ulRegister;
+  unsigned long m_ulLUTElements[256];
+  unsigned long m_ulRegister;
 };
 
 /*============================================================================*/

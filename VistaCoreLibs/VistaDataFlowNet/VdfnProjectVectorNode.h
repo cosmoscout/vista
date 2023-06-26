@@ -21,21 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNPROJECTVECTORNODE_H
 #define _VDFNPROJECTVECTORNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
 
-#include "VdfnSerializer.h"
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
-
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -56,54 +53,51 @@
  * @outport{out,float,the component x\,y or z\,depending on the configuration of
           the node}
  */
-class VISTADFNAPI VdfnProjectVectorNode : public IVdfnNode
-{
-public:
-    enum eProject
-    {
-        PRJ_X = 0, /**< project X */
-        PRJ_Y,     /**< project Y */
-        PRJ_Z,     /**< project Z */
-        PRJ_NONE
-    };
+class VISTADFNAPI VdfnProjectVectorNode : public IVdfnNode {
+ public:
+  enum eProject {
+    PRJ_X = 0, /**< project X */
+    PRJ_Y,     /**< project Y */
+    PRJ_Z,     /**< project Z */
+    PRJ_NONE
+  };
 
-    /**
-     * @param ePrj the component to project, behavior of setting PRJ_NONE is undefined
-     */
-    VdfnProjectVectorNode( eProject ePrj );
+  /**
+   * @param ePrj the component to project, behavior of setting PRJ_NONE is undefined
+   */
+  VdfnProjectVectorNode(eProject ePrj);
 
-    /**
-     * @return true when a proper project mode was set and the inport is valid
-     */
-    bool GetIsValid() const;
+  /**
+   * @return true when a proper project mode was set and the inport is valid
+   */
+  bool GetIsValid() const;
 
-    /**
-     * @return GetIsValid()
-     */
-    bool PrepareEvaluationRun();
+  /**
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun();
 
-protected:
-    bool DoEvalNode();
+ protected:
+  bool DoEvalNode();
 
-private:
-    TVdfnPort<VistaVector3D> *m_pVecIn;
-    TVdfnPort<float>          *m_pValOut;
-    eProject                   m_ePrj;
+ private:
+  TVdfnPort<VistaVector3D>* m_pVecIn;
+  TVdfnPort<float>*         m_pValOut;
+  eProject                  m_ePrj;
 };
 
 /**
  * creates a VdfnProjectVectorNode
  */
-class VISTADFNAPI VdfnProjectVectorNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	/**
-	 * accepts
-	 * - component: 'X', 'Y' or 'Z' (case-insensitive)
-	 * default is PRJ_NONE
-	 * @return a VdfnProjectVectorNode
-	 */
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+class VISTADFNAPI VdfnProjectVectorNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  /**
+   * accepts
+   * - component: 'X', 'Y' or 'Z' (case-insensitive)
+   * default is PRJ_NONE
+   * @return a VdfnProjectVectorNode
+   */
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 };
 
 /*============================================================================*/
@@ -111,4 +105,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

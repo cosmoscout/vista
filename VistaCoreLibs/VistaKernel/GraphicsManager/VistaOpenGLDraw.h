@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENGLDRAW_H
 #define _VISTAOPENGLDRAW_H
 
@@ -31,8 +30,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,46 +44,44 @@ class VistaBoundingBox;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI IVistaOpenGLDraw : public IVistaExplicitCallbackInterface
-{
-public:
-	IVistaOpenGLDraw();
-	virtual ~IVistaOpenGLDraw();
+class VISTAKERNELAPI IVistaOpenGLDraw : public IVistaExplicitCallbackInterface {
+ public:
+  IVistaOpenGLDraw();
+  virtual ~IVistaOpenGLDraw();
 
-	/**
-	 * overloaded from IVistaExplicitCallbackInterface.
-	 * This method may be omited on a traversal if the underlying renderer
-	 * classified this node as invisible. If you change shape/Bounding box
-	 * Notify the sytem by calling MarkBoundsAsDirty which will invalidate
-	 * your parent node's Volume and thus trigger a re-evaluation of underneath
-	 * Volumes.
-	 */
-	virtual bool Do () = 0;
+  /**
+   * overloaded from IVistaExplicitCallbackInterface.
+   * This method may be omited on a traversal if the underlying renderer
+   * classified this node as invisible. If you change shape/Bounding box
+   * Notify the sytem by calling MarkBoundsAsDirty which will invalidate
+   * your parent node's Volume and thus trigger a re-evaluation of underneath
+   * Volumes.
+   */
+  virtual bool Do() = 0;
 
+  /**
+   * @brief	Gets the bounding box.
+   * @return	true if it succeeds, false if it fails.
+   * If it returns false, the parent's bounding volume is extendet by the
+   * local origin (0,0,0).
+   */
+  virtual bool GetBoundingBox(VistaBoundingBox& bb) = 0;
 
-	/**
-	 * @brief	Gets the bounding box.
-	 * @return	true if it succeeds, false if it fails.
-	 * If it returns false, the parent's bounding volume is extendet by the
-	 * local origin (0,0,0).
-	 */
-	virtual bool GetBoundingBox(VistaBoundingBox &bb) = 0;
+  /**
+   * @brief	Mark bounding box as dirty.
+   * This will result in an invalidation of the parent node's bounding volume
+   * before the next render traversal. Thereby the next cull-traversal will
+   * call GetBoundingBox to update the node's volume.
+   */
+  void MarkBoundingBoxAsDirty();
 
-	/**
-	 * @brief	Mark bounding box as dirty.
-	 * This will result in an invalidation of the parent node's bounding volume
-	 * before the next render traversal. Thereby the next cull-traversal will
-	 * call GetBoundingBox to update the node's volume.
-	 */
-	void MarkBoundingBoxAsDirty();
-	
-	/**
-	 * for internal use only.
-	 */
-	virtual bool GetAndResetDirtyFlag();
+  /**
+   * for internal use only.
+   */
+  virtual bool GetAndResetDirtyFlag();
 
-private:
-	bool m_bBoundsDirty;
+ private:
+  bool m_bBoundsDirty;
 };
 
 /*============================================================================*/

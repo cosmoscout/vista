@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAWIN32MUTEXIMP_H
@@ -39,7 +38,6 @@
 
 #include <string>
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -48,40 +46,34 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI VistaWin32MutexImp : public IVistaMutexImp {
+ public:
+  VistaWin32MutexImp(const std::string& sName, IVistaMutexImp::eScope nScope);
+  virtual ~VistaWin32MutexImp();
 
-class VISTAINTERPROCCOMMAPI VistaWin32MutexImp : public IVistaMutexImp
-{
-public:
-	VistaWin32MutexImp  (const std::string &sName, IVistaMutexImp::eScope nScope);
-	virtual ~VistaWin32MutexImp ();
+  virtual void Lock();
 
+  virtual bool TryLock();
 
-	virtual void Lock ();
+  virtual void Unlock();
 
-	virtual bool TryLock();
+  HANDLE GetMutex() {
+    return m_Mutex;
+  };
 
-	virtual void Unlock();
-
-	HANDLE GetMutex() { return m_Mutex; };
-
-private:
-	CRITICAL_SECTION     win32CriticalSection;
-	HANDLE m_Mutex;
+ private:
+  CRITICAL_SECTION win32CriticalSection;
+  HANDLE           m_Mutex;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif //_VISTASYSTEM_H
 
 #endif // VISTA_THREADING_WIN32
-
-

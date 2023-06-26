@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCOMPOSEQUATERNIONFROMDIRECTIONSNODE
 #define _VDFNCOMPOSEQUATERNIONFROMDIRECTIONSNODE
 
@@ -51,25 +50,24 @@
  *
  * @ingroup VdfnNodes
  */
-class VISTADFNAPI VdfnComposeQuaternionFromDirectionsNode : public IVdfnNode
-{
-public:
-	VdfnComposeQuaternionFromDirectionsNode();
-	virtual ~VdfnComposeQuaternionFromDirectionsNode();
+class VISTADFNAPI VdfnComposeQuaternionFromDirectionsNode : public IVdfnNode {
+ public:
+  VdfnComposeQuaternionFromDirectionsNode();
+  virtual ~VdfnComposeQuaternionFromDirectionsNode();
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
-	TVdfnPort<VistaVector3D>*		m_pInFrom;
-	TVdfnPort<VistaVector3D>*		m_pInTo;
-	TVdfnPort<VistaQuaternion>*		m_pOut;
+ private:
+  TVdfnPort<VistaVector3D>*   m_pInFrom;
+  TVdfnPort<VistaVector3D>*   m_pInTo;
+  TVdfnPort<VistaQuaternion>* m_pOut;
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif 
+#endif

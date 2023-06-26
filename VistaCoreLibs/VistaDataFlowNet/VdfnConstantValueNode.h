@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCONSTANTVALUENODE_H
 #define _VDFNCONSTANTVALUENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -59,30 +57,27 @@
  * @ingroup VdfnNodes
  * @outport{value,type T,outputs a value of type T}
  */
-template<class T>
-class TVdfnConstantValueNode : public IVdfnNode
-{
-public:
-	TVdfnConstantValueNode()
-	{
-		RegisterOutPort( "value", new TVdfnPort<T> );
-	}
+template <class T>
+class TVdfnConstantValueNode : public IVdfnNode {
+ public:
+  TVdfnConstantValueNode() {
+    RegisterOutPort("value", new TVdfnPort<T>);
+  }
 
-	void SetValue( T oValue )
-	{
-		TVdfnPort<T> *pOut = dynamic_cast<TVdfnPort<T>*>(GetOutPort("value"));
-		pOut->SetValue(oValue, GetUpdateTimeStamp());
-	}
+  void SetValue(T oValue) {
+    TVdfnPort<T>* pOut = dynamic_cast<TVdfnPort<T>*>(GetOutPort("value"));
+    pOut->SetValue(oValue, GetUpdateTimeStamp());
+  }
 
-protected:
-	/**
-	 * @return true
-	 */
-	bool DoEvalNode()
-	{
-		return true; // should be ok
-	}
-private:
+ protected:
+  /**
+   * @return true
+   */
+  bool DoEvalNode() {
+    return true; // should be ok
+  }
+
+ private:
 };
 
 /*============================================================================*/
@@ -90,4 +85,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNCONSTANTVALUENODE_H
-

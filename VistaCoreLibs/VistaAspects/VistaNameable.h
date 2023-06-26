@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTANAMEABLE_H
 #define _VISTANAMEABLE_H
 
@@ -49,25 +48,24 @@
 /**
  * The IVistaNameable-Interface.
  */
-class VISTAASPECTSAPI IVistaNameable
-{
-public:
-	virtual ~IVistaNameable();
+class VISTAASPECTSAPI IVistaNameable {
+ public:
+  virtual ~IVistaNameable();
 
-	/**
-	 * @todo set method names to "Name()", so it reads like nmbl.Name()
-	 */ 
-	virtual std::string GetNameForNameable() const = 0;
-	virtual void SetNameForNameable(const std::string &sNewName) = 0;
+  /**
+   * @todo set method names to "Name()", so it reads like nmbl.Name()
+   */
+  virtual std::string GetNameForNameable() const                      = 0;
+  virtual void        SetNameForNameable(const std::string& sNewName) = 0;
 
+  /**
+   * @todo rename to GetId(), return VistaType::uint64 or native (size_t)
+   * or remove from this interface...
+   */
+  void* GetNameableId() const;
 
-	/**
-	 * @todo rename to GetId(), return VistaType::uint64 or native (size_t)
-	 * or remove from this interface...
-	 */
-	void* GetNameableId() const;
-protected:
-	IVistaNameable();
+ protected:
+  IVistaNameable();
 };
 
 /*============================================================================*/
@@ -75,5 +73,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTANAMEABLE_H
-
-

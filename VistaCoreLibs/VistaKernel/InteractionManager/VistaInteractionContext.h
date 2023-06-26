@@ -21,22 +21,20 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINTERACTIONCONTEXT_H
 #define _VISTAINTERACTIONCONTEXT_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaAspects/VistaObserveable.h>
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaDLVTypes.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaBase/VistaVectorMath.h>
 
 #include <VistaTools/VistaRingBuffer.h>
-
 
 #include <vector>
 
@@ -63,103 +61,94 @@ class VdfnGraph;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaInteractionContext : public IVistaObserveable
-{
-	friend class VistaInteractionManager;
-public:
+class VISTAKERNELAPI VistaInteractionContext : public IVistaObserveable {
+  friend class VistaInteractionManager;
 
-	VistaInteractionContext(VistaInteractionManager *pInMgr,
-							 VistaEventManager *pEvMgr );
+ public:
+  VistaInteractionContext(VistaInteractionManager* pInMgr, VistaEventManager* pEvMgr);
 
-	virtual ~VistaInteractionContext();
+  virtual ~VistaInteractionContext();
 
+  enum {
+    MSG_ENABLESTATE_CHANGE = IVistaObserveable::MSG_LAST,
+    MSG_UPDATE_TS_CHANGE,
+    MSG_CONTEXT_GRAPH_CHANGE,
+    MSG_ROLEID_CHANGE,
+    MSG_GRAPHSOURCE_CHANGE,
+    MSG_LAST
+  };
 
-	enum
-	{
-		MSG_ENABLESTATE_CHANGE = IVistaObserveable::MSG_LAST,
-		MSG_UPDATE_TS_CHANGE,
-        MSG_CONTEXT_GRAPH_CHANGE,
-        MSG_ROLEID_CHANGE,
-        MSG_GRAPHSOURCE_CHANGE,
-		MSG_LAST
-	};
+  bool GetIsEnabled() const;
+  void SetIsEnabled(bool bEnabled);
 
-	bool GetIsEnabled() const;
-	void SetIsEnabled(bool bEnabled);
+  bool GetIsEventSource() const;
+  void SetIsEventSource(bool bSource);
 
-    bool GetIsEventSource() const;
-    void SetIsEventSource(bool bSource);
+  VdfnGraph* GetTransformGraph() const;
+  void       SetTransformGraph(VdfnGraph*);
 
-	VdfnGraph *GetTransformGraph() const;
-	void        SetTransformGraph(VdfnGraph *);
+  std::string GetGraphSource() const;
+  void        SetGraphSource(const std::string& sGraphFile);
 
-	std::string GetGraphSource() const;
-	void        SetGraphSource( const std::string &sGraphFile );
+  unsigned int GetUpdateIndex() const;
 
-    unsigned int GetUpdateIndex() const;
+  unsigned int GetRoleId() const;
+  void         SetRoleId(unsigned int nRoleId);
 
-    unsigned int GetRoleId() const;
-    void         SetRoleId( unsigned int nRoleId );
+  // #######################################################################
+  // SERIALIZE API
+  // #######################################################################
 
-	// #######################################################################
-	// SERIALIZE API
-	// #######################################################################
+  static int SerializeContext(IVistaSerializer&, const VistaInteractionContext&);
+  static int DeSerializeContext(IVistaDeSerializer&, VistaInteractionContext&);
 
-	static int SerializeContext(IVistaSerializer &,
-								const VistaInteractionContext &);
-	static int DeSerializeContext(IVistaDeSerializer &,
-								  VistaInteractionContext &);
+  // ######################################################################
+  // API for server sides contexts, users should not use this
+  // ######################################################################
+  bool Update(double dTs);
+  bool Evaluate(double nTs);
 
-	// ######################################################################
-	// API for server sides contexts, users should not use this
-	// ######################################################################
-	bool Update( double dTs );
-	bool Evaluate( double nTs );
+  // ######################################################################
+  // Debugging Functions
+  // ######################################################################
+  std::ostream* GetDebuggingStream() const;
+  void          SetDebuggingStream(std::ostream* pStream, bool bManageDeletion);
 
-	// ######################################################################
-	// Debugging Functions
-	// ######################################################################
-	std::ostream* GetDebuggingStream() const;
-	void SetDebuggingStream( std::ostream* pStream, bool bManageDeletion );
+  bool GetDumpAsDot() const;
+  void SetDumpAsDot(bool bSet);
 
-	bool GetDumpAsDot() const;
-	void SetDumpAsDot( bool bSet );
+  bool GetAutoPrintDebugInfo() const;
+  void SetAutoPrintDebugInfo(const bool bSet);
 
-	bool GetAutoPrintDebugInfo() const;
-	void SetAutoPrintDebugInfo( const bool bSet );
+  void PrintDebuggingInfo(std::ostream& oStream) const;
+  void PrintDebuggingInfo() const;
 
+  void DumpStateAsDot(const std::string& sTargetFile) const;
+  void DumpStateAsDot() const;
 
-	void PrintDebuggingInfo( std::ostream& oStream ) const;
-	void PrintDebuggingInfo() const;
+ private:
+  // prevent copying
+  VistaInteractionContext(const VistaInteractionContext&);
+  VistaInteractionContext& operator=(const VistaInteractionContext&);
 
-	void DumpStateAsDot( const std::string& sTargetFile ) const;
-	void DumpStateAsDot() const;
-	
+ private:
+  bool m_bEnabled;
+  bool m_bRegistered;
+  bool m_bEventSource;
 
-private:
-	// prevent copying
-	VistaInteractionContext(const VistaInteractionContext &);
-	VistaInteractionContext &operator=(const VistaInteractionContext &);
+  unsigned int m_nUpdateIndex;
+  unsigned int m_nRoleId;
+  std::string  m_sGraphFile;
 
-private:
+  VdfnGraph*               m_pTransformGraph;
+  VistaInteractionEvent*   m_pEvent;
+  VistaEventManager*       m_pEventManager;
+  VistaInteractionManager* m_pInteractionManager;
 
-	bool					m_bEnabled;
-	bool					m_bRegistered;
-	bool					m_bEventSource;
-
-    unsigned int			m_nUpdateIndex;
-	unsigned int			m_nRoleId;
-	std::string             m_sGraphFile;
-
-	VdfnGraph*				m_pTransformGraph;
-	VistaInteractionEvent*	m_pEvent;
-	VistaEventManager*		m_pEventManager;
-	VistaInteractionManager*	m_pInteractionManager;
-
-	bool					m_bAutoPrintInfo;
-	std::ostream*			m_pDebugStream;
-	bool					m_bManageDebugStream;
-	bool					m_bDumpAsDot;
+  bool          m_bAutoPrintInfo;
+  std::ostream* m_pDebugStream;
+  bool          m_bManageDebugStream;
+  bool          m_bDumpAsDot;
 };
 
 /*============================================================================*/

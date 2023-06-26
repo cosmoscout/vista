@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNDUMPHISTORYNODE_H
 #define _VDFNDUMPHISTORYNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -33,10 +31,10 @@
 
 #include "VdfnConfig.h"
 
-#include "VdfnNode.h"
-#include "VdfnPort.h"
-#include "VdfnNodeFactory.h"
 #include "VdfnHistoryPort.h"
+#include "VdfnNode.h"
+#include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
 
 #include <fstream>
 
@@ -61,28 +59,26 @@
  * @inport{history,History,mandatory,inport single argument\, provide the history
                                      to dump on update}
  */
-class VISTADFNAPI VdfnDumpHistoryNode : public IVdfnNode
-{
-public:
-	VdfnDumpHistoryNode(const std::string &strFileName);
-	bool PrepareEvaluationRun();
-protected:
-	bool DoEvalNode();
-private:
-	HistoryPort    *m_pHistory;
-	std::ofstream   m_ofstream;
+class VISTADFNAPI VdfnDumpHistoryNode : public IVdfnNode {
+ public:
+  VdfnDumpHistoryNode(const std::string& strFileName);
+  bool PrepareEvaluationRun();
+
+ protected:
+  bool DoEvalNode();
+
+ private:
+  HistoryPort*  m_pHistory;
+  std::ofstream m_ofstream;
 };
 
-
-class VISTADFNAPI VdfnDumpHistoryDefaultCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VdfnDumpHistoryDefaultCreate();
-	IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+class VISTADFNAPI VdfnDumpHistoryDefaultCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VdfnDumpHistoryDefaultCreate();
+  IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNCOUNTERNODE_H
-

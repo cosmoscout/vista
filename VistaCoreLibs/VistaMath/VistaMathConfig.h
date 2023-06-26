@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMATHCONFIG_H
 #define _VISTAMATHCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAMATH_STATIC) 
-	#ifdef VISTAMATH_EXPORTS
-		#define VISTAMATHAPI __declspec(dllexport)
-	#else
-		#define VISTAMATHAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTAMATH_STATIC)
+#ifdef VISTAMATH_EXPORTS
+#define VISTAMATHAPI __declspec(dllexport)
+#else
+#define VISTAMATHAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAMATHAPI
+#define VISTAMATHAPI
 #endif
 
 #endif //_VISTAMATHCONFIG_H

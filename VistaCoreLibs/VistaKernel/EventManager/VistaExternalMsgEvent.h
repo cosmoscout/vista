@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEXTERNALMSGEVENT_H
 #define _VISTAEXTERNALMSGEVENT_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include "VistaSystemEvent.h"
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,45 +44,38 @@ class VistaMsg;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaExternalMsgEvent : public VistaSystemEvent
-{
-public:
-	enum
-	{
-		VEID_FIRST = 0,
-		VEID_INCOMING_MSG=0,
-		VEID_LAST
-	};
+class VISTAKERNELAPI VistaExternalMsgEvent : public VistaSystemEvent {
+ public:
+  enum { VEID_FIRST = 0, VEID_INCOMING_MSG = 0, VEID_LAST };
 
+  VistaExternalMsgEvent();
+  virtual ~VistaExternalMsgEvent();
 
-	VistaExternalMsgEvent();
-	virtual ~VistaExternalMsgEvent();
+  VistaMsg* GetThisMsg() const;
+  void      SetThisMsg(VistaMsg*);
 
-	VistaMsg *GetThisMsg() const;
-	void             SetThisMsg(VistaMsg *);
+  /**
+   * Think of this as "SAVE"
+   */
+  virtual int Serialize(IVistaSerializer&) const;
 
-	/**
-	 * Think of this as "SAVE"
-	 */
-	virtual int Serialize(IVistaSerializer &) const;
+  /**
+   * Think of this as "LOAD"
+   */
+  virtual int DeSerialize(IVistaDeSerializer&);
 
-	/**
-	 * Think of this as "LOAD"
-	 */
-	virtual int DeSerialize(IVistaDeSerializer &);
+  virtual std::string GetSignature() const;
 
-	virtual std::string GetSignature() const;
+  bool SetId(int iId);
 
-	bool	SetId(int iId);
+  static int         GetTypeId();
+  static void        SetTypeId(int nId);
+  static std::string GetIdString(int nId);
 
-	static int GetTypeId();
-	static void SetTypeId(int nId);
-	static std::string GetIdString(int nId);
-protected:
-private:
-	VistaMsg *m_pKernelMsg;
-	static int m_nEventId;
-
+ protected:
+ private:
+  VistaMsg*  m_pKernelMsg;
+  static int m_nEventId;
 };
 
 /*============================================================================*/
@@ -91,4 +83,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAEXTERNALMSGEVENT_H
-

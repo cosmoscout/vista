@@ -21,51 +21,42 @@
 /*                                                                            */
 /*============================================================================*/
 
+#include "VistaDeviceDriverAspectRegistry.h"
 
-#include "VistaDeviceDriverAspectRegistry.h" 
-
-
-namespace 
-{
-	VistaDeviceDriverAspectRegistry *SpSingleton = NULL;
+namespace {
+VistaDeviceDriverAspectRegistry* SpSingleton = NULL;
 }
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-VistaDeviceDriverAspectRegistry *VistaDeviceDriverAspectRegistry::GetSingleton()
-{
-	if(SpSingleton == NULL)
-		SpSingleton = new VistaDeviceDriverAspectRegistry;
-	return SpSingleton;
+VistaDeviceDriverAspectRegistry* VistaDeviceDriverAspectRegistry::GetSingleton() {
+  if (SpSingleton == NULL)
+    SpSingleton = new VistaDeviceDriverAspectRegistry;
+  return SpSingleton;
 }
-
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaDeviceDriverAspectRegistry::VistaDeviceDriverAspectRegistry()
-: m_nNextAspectId(0)
-{
+    : m_nNextAspectId(0) {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-unsigned int VistaDeviceDriverAspectRegistry::RegisterAspect( const std::string &strAspectToken )
-{
-	m_mpTokenMap[m_nNextAspectId] = strAspectToken;
-	return m_nNextAspectId++;
+unsigned int VistaDeviceDriverAspectRegistry::RegisterAspect(const std::string& strAspectToken) {
+  m_mpTokenMap[m_nNextAspectId] = strAspectToken;
+  return m_nNextAspectId++;
 }
 
-std::string  VistaDeviceDriverAspectRegistry::GetTokenForId( unsigned int nId ) const
-{
-	std::map<unsigned int, std::string>::const_iterator it = m_mpTokenMap.find(nId);
-	if(it == m_mpTokenMap.end())
-		return "<<NOT REGISTERED>>";
-	return (*it).second;
+std::string VistaDeviceDriverAspectRegistry::GetTokenForId(unsigned int nId) const {
+  std::map<unsigned int, std::string>::const_iterator it = m_mpTokenMap.find(nId);
+  if (it == m_mpTokenMap.end())
+    return "<<NOT REGISTERED>>";
+  return (*it).second;
 }
 
 /*============================================================================*/

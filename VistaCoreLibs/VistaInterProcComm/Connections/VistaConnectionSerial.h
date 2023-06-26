@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACONNECTIONSERIAL_H
 #define _VISTACONNECTIONSERIAL_H
 
@@ -46,64 +45,59 @@ class VistaSerialPort;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI VistaConnectionSerial : public VistaConnection {
+ public:
+  VistaConnectionSerial();
 
-class VISTAINTERPROCCOMMAPI VistaConnectionSerial : public VistaConnection
-{
-public:
-	VistaConnectionSerial();
+  VistaConnectionSerial(const std::string& sPortName);
 
-	VistaConnectionSerial(const std::string &sPortName);
+  virtual ~VistaConnectionSerial();
 
-	virtual ~VistaConnectionSerial();
+  virtual bool Open();
+  virtual void Close();
 
+  virtual int Receive(void* buffer, const int length, int iTimeout = 0);
+  virtual int Send(const void* buffer, const int length);
 
-	virtual bool Open();
-	virtual void Close();
+  bool        SetPortByName(const std::string& sPortName);
+  std::string GetPortName() const;
 
-	virtual int Receive(void *buffer, const int length, int iTimeout = 0);
-	virtual int Send(const void *buffer, const int length);
+  bool SetPortByIndex(int iIndex);
+  int  GetPortIndex() const;
 
+  bool          SetSpeed(int eSpeed);
+  int           GetSpeed() const;
+  unsigned long GetMaximumSpeed() const;
 
-	bool          SetPortByName(const std::string &sPortName);
-	std::string   GetPortName() const;
+  bool SetParity(int eParam);
+  int  GetParity() const;
 
-	bool          SetPortByIndex(int iIndex);
-	int           GetPortIndex() const;
+  bool SetDataBits(int eParam);
+  int  GetDataBits() const;
 
-	bool          SetSpeed( int eSpeed);
-	int           GetSpeed() const;
-	unsigned long GetMaximumSpeed () const;
+  bool  SetStopBits(float eParam);
+  float GetStopBits() const;
 
-	bool          SetParity ( int eParam );
-	int           GetParity () const;
+  bool SetHardwareFlow(bool bInHandshaking);
+  bool GetIsHardwareFlow() const;
 
-	bool          SetDataBits ( int eParam );
-	int           GetDataBits () const;
+  bool SetSoftwareFlow(bool bParam);
+  bool GetIsSoftwareFlow() const;
 
-	bool          SetStopBits ( float eParam );
-	float         GetStopBits () const;
+  bool SetBlockingMode(
+      unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant);
 
-	bool          SetHardwareFlow ( bool bInHandshaking );
-	bool          GetIsHardwareFlow() const;
+  virtual bool          HasPendingData() const;
+  virtual unsigned long WaitForIncomingData(int timeout = 0);
+  virtual unsigned long PendingDataSize() const;
 
-	bool          SetSoftwareFlow ( bool bParam );
-	bool          GetIsSoftwareFlow () const;
+  virtual void SetIsBlocking(bool bBlocking);
+  virtual bool GetIsBlocking() const;
 
-	bool          SetBlockingMode ( unsigned long inReadInterval,
-									unsigned long inReadMultiplyer,
-									unsigned long inReadConstant );
+  virtual HANDLE GetConnectionDescriptor() const;
 
-	virtual bool HasPendingData() const;
-	virtual unsigned long WaitForIncomingData(int timeout=0);
-	virtual unsigned long PendingDataSize() const;
-
-	virtual void SetIsBlocking(bool bBlocking);
-	virtual bool GetIsBlocking() const;
-
-	virtual HANDLE GetConnectionDescriptor() const;
-
-private:
-	VistaSerialPort *m_pSerialPort;
+ private:
+  VistaSerialPort* m_pSerialPort;
 };
 
 /*============================================================================*/
@@ -111,4 +105,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTACONNECTIONSERIAL_H
-

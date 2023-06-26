@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTARAMQUEUEPIPE_H
 #define DLVISTARAMQUEUEPIPE_H
 
@@ -32,80 +31,78 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaPipe.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <deque>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-
 
 class IDLVistaDataPacket;
 class DLVistaPacketQueue;
 class VistaMutex;
 class VistaThreadEvent;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaRamQueuePipe : public IDLVistaPipe
-{
-public:
+class VISTAINTERPROCCOMMAPI DLVistaRamQueuePipe : public IDLVistaPipe {
+ public:
+  DLVistaRamQueuePipe();
 
-	DLVistaRamQueuePipe();
+  ~DLVistaRamQueuePipe();
 
-	~DLVistaRamQueuePipe();
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
+  virtual IDLVistaDataPacket* ReturnPacket();
 
-	virtual IDLVistaDataPacket * GivePacket(bool bBlock);
-	virtual IDLVistaDataPacket * ReturnPacket();
+  bool InitPacketMgmt();
 
-	bool InitPacketMgmt();
+  bool IsFull() const;
+  bool IsEmpty() const;
+  int  Capacity() const {
+    return -1;
+  };
+  int OwnerLockEmpty();
 
-	bool IsFull() const;
-	bool IsEmpty() const;
-	int Capacity() const { return -1; };
-	int OwnerLockEmpty();
+  bool GetIsBlockedPending() const;
+  bool SignalPendingRequest();
 
-	bool GetIsBlockedPending() const;
-	bool SignalPendingRequest();
+  /**
+   * You can set a ThreadEvent from outside which is signaled
+   * whenever the m_pQueueNotEmptyEvent is signaled.
+   * This is useful if you do not want to block
+   * on PullPacket, but on your own event.
+   */
+  void SetOutsideThreadEvent(VistaThreadEvent*);
 
-	/**
-	 * You can set a ThreadEvent from outside which is signaled
-	 * whenever the m_pQueueNotEmptyEvent is signaled.
-	 * This is useful if you do not want to block
-	 * on PullPacket, but on your own event.
-	 */
-	void SetOutsideThreadEvent (VistaThreadEvent*);
+  void SetDoesBlockOnReturnPacket(bool b);
+  bool GetDoesBlockOnReturnPacket() const;
 
-	void SetDoesBlockOnReturnPacket(bool b);
-	bool GetDoesBlockOnReturnPacket() const;
+ private:
+  std::deque<IDLVistaDataPacket*>* m_pquInQueue;
+  std::deque<IDLVistaDataPacket*>* m_pquRecycleQueue;
 
-private:
-	std::deque<IDLVistaDataPacket *> *m_pquInQueue;
-	std::deque<IDLVistaDataPacket *> *m_pquRecycleQueue;
+  VistaMutex *      m_pMutexIn, *m_pMutexOut, *m_pLockEmpty;
+  VistaThreadEvent* m_pRecycleEvent;
+  VistaThreadEvent* m_pQueueNotEmptyEvent;
+  VistaThreadEvent* m_pOutsideEvent;
 
-	VistaMutex *m_pMutexIn, *m_pMutexOut, *m_pLockEmpty;
-	VistaThreadEvent *m_pRecycleEvent;
-	VistaThreadEvent *m_pQueueNotEmptyEvent;
-	VistaThreadEvent *m_pOutsideEvent;
+  VistaMutex* GrabMutex(VistaMutex* pMutex, bool bBlock);
 
-	VistaMutex *GrabMutex(VistaMutex *pMutex, bool bBlock);
+  bool m_bCanRecycle, m_bBlockedPending, m_bDoesBlockOnReturn;
 
-	bool m_bCanRecycle, m_bBlockedPending, m_bDoesBlockOnReturn;
-
-	int m_iNumDownstreamPackets;
-
+  int m_iNumDownstreamPackets;
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //DLVISTARAMQUEUEPIPE_H
-
+#endif // DLVISTARAMQUEUEPIPE_H

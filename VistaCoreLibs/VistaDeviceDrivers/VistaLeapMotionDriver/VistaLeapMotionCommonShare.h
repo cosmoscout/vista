@@ -21,171 +21,142 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTALEAPMOTIONCOMMONSHARE_H
 #define _VISTALEAPMOTIONCOMMONSHARE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
+#include <VistaBase/VistaAutoBuffer.h>
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaBase/VistaVector3D.h>
-#include <VistaBase/VistaAutoBuffer.h>
 
 #define LEAPMEASURES_MAX_FINGERS 20
-#define LEAPMEASURES_MAX_TOOLS   10
+#define LEAPMEASURES_MAX_TOOLS 10
 
+namespace VistaLeapMotionMeasures {
+struct Base {
+  Base()
+      : m_driver_timestamp(0)
+      , m_bVisible(false)
+      , m_nId(-1)
+      , m_nTimeVisible(0) {
+  }
 
-namespace VistaLeapMotionMeasures
-{
-	struct Base
-	{
-		Base()
-		: m_driver_timestamp(0)
-		, m_bVisible( false )
-		, m_nId( -1 )
-		, m_nTimeVisible( 0 )
-		{
-		}
+  VistaType::uint64 m_driver_timestamp; // in us since device start
+  bool              m_bVisible;
+  int               m_nId;
+  float             m_nTimeVisible;
+};
 
-		VistaType::uint64 m_driver_timestamp; // in us since device start
-		bool              m_bVisible;
-		int               m_nId;
-		float             m_nTimeVisible;
-	};
+struct Pointable : public Base {
+  Pointable()
+      : Base()
+      , m_nWidth(0)
+      , m_nLength(0)
+      , m_nHandId(-1)
+      , m_nTouchDistance(1) {
+  }
 
-	struct Pointable : public Base
-	{
-		Pointable()
-		: Base()
-		, m_nWidth( 0 )
-		, m_nLength( 0 )
-		, m_nHandId( -1 )
-		, m_nTouchDistance( 1 )
-		{
-		}
+  int           m_nHandId;
+  float         m_nWidth;
+  float         m_nLength;
+  VistaVector3D m_v3TipPosition;
+  VistaVector3D m_v3StabilizedTipPosition;
+  VistaVector3D m_v3TipVelocity;
+  VistaVector3D m_v3Direction;
+  float         m_nTouchDistance;
+};
 
-		int m_nHandId;
-		float m_nWidth;
-		float m_nLength;
-		VistaVector3D m_v3TipPosition;
-		VistaVector3D m_v3StabilizedTipPosition;
-		VistaVector3D m_v3TipVelocity;
-		VistaVector3D m_v3Direction;
-		float m_nTouchDistance;
-	};
+struct Finger : public Pointable {
+  Finger()
+      : Pointable()
+      , m_bExtended(false)
+      , m_nFingerType(-1) {
+  }
 
-	struct Finger : public Pointable
-	{
-		Finger()
-		: Pointable()
-		, m_bExtended( false )
-		, m_nFingerType( -1 )
-		{
-		}
+  bool          m_bExtended;
+  int           m_nFingerType; // 0: thumb, 1: index, ..., 4: pinky
+  VistaVector3D m_v3MetacarpalBoneStartPoint;
+  VistaVector3D m_v3ProximalBoneStartPoint;
+  VistaVector3D m_v3IntermediateBoneStartPoint;
+  VistaVector3D m_v3DistalBoneStartPoint;
+};
 
-		bool m_bExtended;
-		int m_nFingerType; // 0: thumb, 1: index, ..., 4: pinky
-		VistaVector3D m_v3MetacarpalBoneStartPoint;
-		VistaVector3D m_v3ProximalBoneStartPoint;
-		VistaVector3D m_v3IntermediateBoneStartPoint;
-		VistaVector3D m_v3DistalBoneStartPoint;
-	};
+struct Tool : public Pointable {};
 
-	struct Tool : public Pointable
-	{
-	};
+struct HandMeasure : public Base {
+  HandMeasure()
+      : Base()
+      , m_nPalmWidth(0)
+      , m_nConfidence(0)
+      , m_bIsLeft(false)
+      , m_bIsRight(false) {
+  }
 
-	struct HandMeasure : public Base
-	{
-		HandMeasure()
-		: Base()
-		, m_nPalmWidth( 0 )
-		, m_nConfidence(0)
-		, m_bIsLeft(false)
-		, m_bIsRight(false)
-		{
-		}
+  Finger        m_a5oFingers[5];
+  Tool          m_a2oTools[2];
+  VistaVector3D m_v3PalmPosition;
+  VistaVector3D m_v3StabilizedPalmPosition;
+  VistaVector3D m_v3PalmVelocity;
+  VistaVector3D m_v3PalmNormal;
+  VistaVector3D m_v3PalmDirection;
+  float         m_nPalmWidth;
 
-		Finger m_a5oFingers[5];
-		Tool m_a2oTools[2];
-		VistaVector3D m_v3PalmPosition;
-		VistaVector3D m_v3StabilizedPalmPosition;
-		VistaVector3D m_v3PalmVelocity;
-		VistaVector3D m_v3PalmNormal;
-		VistaVector3D m_v3PalmDirection;
-		float m_nPalmWidth;
-		
-		VistaVector3D m_v3ElbowPosition;
-		VistaVector3D m_v3WristPostion;
-		float m_nArmWidth;
+  VistaVector3D m_v3ElbowPosition;
+  VistaVector3D m_v3WristPostion;
+  float         m_nArmWidth;
 
+  float m_nConfidence;
 
-		float m_nConfidence;
+  bool m_bIsLeft;
+  bool m_bIsRight;
+};
 
-		bool m_bIsLeft;
-		bool m_bIsRight;
-	};
+struct FingersMeasure {
+  //		static const int MAX_FINGERS = 20;
+  int    m_nNumFingers;
+  Finger m_aFingers[LEAPMEASURES_MAX_FINGERS];
+};
 
+struct ToolsMeasure {
+  //		static const int MAX_TOOLS = 10;
+  int  m_nNumTools;
+  Tool m_aTools[LEAPMEASURES_MAX_TOOLS];
+};
 
+struct GestureMeasure {
+  VistaType::uint64    m_driver_timestamp;
+  VistaType::microtime m_nDuration;
+  int                  m_nId;
+  int                  m_nPerformingPointableId;
 
-	struct FingersMeasure
-	{
-//		static const int MAX_FINGERS = 20;
-		int m_nNumFingers;
-		Finger m_aFingers[LEAPMEASURES_MAX_FINGERS];
-	};
+  enum Type {
+    TP_SWIPE,
+    TP_SCREEN_TAP,
+    TP_KEY_TAP,
+    TP_CIRCLE,
+  };
 
-	struct ToolsMeasure
-	{
-//		static const int MAX_TOOLS = 10;
-		int m_nNumTools;
-		Tool m_aTools[LEAPMEASURES_MAX_TOOLS];
-	};
+  Type m_eType;
 
-	struct GestureMeasure
-	{
-		VistaType::uint64    m_driver_timestamp;
-		VistaType::microtime m_nDuration;
-		int m_nId;
-		int m_nPerformingPointableId;
-		
-		
-		enum Type
-		{
-			TP_SWIPE,
-			TP_SCREEN_TAP,
-			TP_KEY_TAP,
-			TP_CIRCLE,
-		};
+  VistaVector3D m_v3Position;
+  VistaVector3D m_v3Direction;
+  float         m_nLength;
+};
 
+struct ImageMeasure : public Base {
+  VistaType::uint32 m_format, // 0 = INFRARED
+      m_bytes_per_pixel;
 
-		Type m_eType;
+  VistaType::uint32 m_width, m_height;
 
-		VistaVector3D m_v3Position;
-		VistaVector3D m_v3Direction;
-		float         m_nLength;
-	};
+  VistaType::float32 m_ray_offset_x, m_ray_offset_y, m_ray_scale_x, m_ray_scale_y;
 
-	struct ImageMeasure : public Base
-	{
-		VistaType::uint32 m_format,  // 0 = INFRARED
-			              m_bytes_per_pixel;
-
-		VistaType::uint32 m_width,
-			              m_height;
-
-		VistaType::float32 m_ray_offset_x,
-			               m_ray_offset_y,
-						   m_ray_scale_x,
-						   m_ray_scale_y;
-
-		// @TODO: serialization
-		VistaAutoBuffer   m_data;
-	};
-}
-
+  // @TODO: serialization
+  VistaAutoBuffer m_data;
+};
+} // namespace VistaLeapMotionMeasures
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

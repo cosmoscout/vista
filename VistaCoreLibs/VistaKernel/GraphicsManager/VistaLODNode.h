@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTALODNODE_H
 #define _VISTALODNODE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include "VistaKernel/GraphicsManager/VistaGroupNode.h"
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -43,44 +42,40 @@ class IVistaNodeData;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaLODNode : public VistaGroupNode
-{
-	friend class VistaSceneGraph;
-	friend class IVistaNodeBridge;
-public:
+class VISTAKERNELAPI VistaLODNode : public VistaGroupNode {
+  friend class VistaSceneGraph;
+  friend class IVistaNodeBridge;
 
-	/** Set the the LOD spring values. If there is 3 level of details,
-	*   it should be given 2 values. The list should be sorted from lowest
-	*   to largest range. If you have 2 models and you want to show
-	*   the second one at a distance larger than 4 units, the range
-	*   list should comprise of the single value "4", so between 0 and
-	*   4 will be matched with model / child 0
-	*/
-	virtual bool SetRange(const std::vector<float> &rangeList);
-	/** Get the the LOD spring values.
-	*/
-	virtual bool GetRange(std::vector<float> &rangeList) const;
+ public:
+  /** Set the the LOD spring values. If there is 3 level of details,
+   *   it should be given 2 values. The list should be sorted from lowest
+   *   to largest range. If you have 2 models and you want to show
+   *   the second one at a distance larger than 4 units, the range
+   *   list should comprise of the single value "4", so between 0 and
+   *   4 will be matched with model / child 0
+   */
+  virtual bool SetRange(const std::vector<float>& rangeList);
+  /** Get the the LOD spring values.
+   */
+  virtual bool GetRange(std::vector<float>& rangeList) const;
 
-	/**
-	 * Set the center of the object (for the distance calculation).
-	 * This is relative to the childrens outline, most probably.
-	 * SetCenter(VistaVector3D(0,0,0)) means to determine distance
-	 * according to the center of the children's bounding box
-	 */
-	virtual bool SetCenter(const VistaVector3D &center);
-	/**Get the center of the object
-	*/
-	virtual bool GetCenter(VistaVector3D& center) const;
+  /**
+   * Set the center of the object (for the distance calculation).
+   * This is relative to the childrens outline, most probably.
+   * SetCenter(VistaVector3D(0,0,0)) means to determine distance
+   * according to the center of the children's bounding box
+   */
+  virtual bool SetCenter(const VistaVector3D& center);
+  /**Get the center of the object
+   */
+  virtual bool GetCenter(VistaVector3D& center) const;
 
-	virtual ~VistaLODNode();
-protected:
-	VistaLODNode();
-	VistaLODNode(	VistaGroupNode*				pParent,
-						IVistaNodeBridge*				pBridge,
-						IVistaNodeData*					pData,
-						std::string						strName="");
+  virtual ~VistaLODNode();
 
-
+ protected:
+  VistaLODNode();
+  VistaLODNode(VistaGroupNode* pParent, IVistaNodeBridge* pBridge, IVistaNodeData* pData,
+      std::string strName = "");
 };
 
 /*============================================================================*/

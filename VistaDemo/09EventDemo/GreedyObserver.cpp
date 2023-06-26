@@ -21,11 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "GreedyObserver.h"
 #include <VistaKernel/InteractionManager/VistaInteractionEvent.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -33,26 +32,24 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-GreedyObserver::GreedyObserver()
-{
-	cout << "[GreedyObserver] I might listen to all events" << endl;
-	cout << "                 and log them to disk ;-)" << endl;
+GreedyObserver::GreedyObserver() {
+  cout << "[GreedyObserver] I might listen to all events" << endl;
+  cout << "                 and log them to disk ;-)" << endl;
 
 // the log can get very big
 #ifdef INSANE
-	m_pOuputFileStream = new ofstream( "events.log" );
+  m_pOuputFileStream = new ofstream("events.log");
 #else
-	m_pOuputFileStream = new ofstream( "/dev/null" );
+  m_pOuputFileStream = new ofstream("/dev/null");
 #endif
 
-	*m_pOuputFileStream << "event log file:" << endl;
+  *m_pOuputFileStream << "event log file:" << endl;
 }
 
-GreedyObserver::~GreedyObserver()
-{
-	m_pOuputFileStream->close();
+GreedyObserver::~GreedyObserver() {
+  m_pOuputFileStream->close();
 
-	delete m_pOuputFileStream;
+  delete m_pOuputFileStream;
 }
 
 /*============================================================================*/
@@ -64,13 +61,10 @@ GreedyObserver::~GreedyObserver()
 /*  NAME      :   Notify                                                      */
 /*                                                                            */
 /*============================================================================*/
-void GreedyObserver::Notify(const VistaEvent *pEvent)
-{
-	if (pEvent->GetType() == VistaInteractionEvent::GetTypeId())
-	{
-		//std::cout << "Got an InteractionEvent!" << std::endl;
-		*m_pOuputFileStream << *pEvent;
-		*m_pOuputFileStream << "----" << endl;
-	}
+void GreedyObserver::Notify(const VistaEvent* pEvent) {
+  if (pEvent->GetType() == VistaInteractionEvent::GetTypeId()) {
+    // std::cout << "Got an InteractionEvent!" << std::endl;
+    *m_pOuputFileStream << *pEvent;
+    *m_pOuputFileStream << "----" << endl;
+  }
 }
-

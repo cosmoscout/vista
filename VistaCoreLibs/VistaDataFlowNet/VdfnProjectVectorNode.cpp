@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnProjectVectorNode.h" 
+#include "VdfnProjectVectorNode.h"
 #include <VistaAspects/VistaAspectsUtils.h>
 #include <VistaAspects/VistaPropertyAwareable.h>
 #include <VistaBase/VistaExceptionBase.h>
@@ -34,70 +33,56 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnProjectVectorNode::VdfnProjectVectorNode( eProject ePrj )
-: IVdfnNode(), m_ePrj(ePrj),
-  m_pVecIn(NULL),
-  m_pValOut( new TVdfnPort<float> )
-{
-    RegisterInPortPrototype( "vec", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> > );
-    RegisterOutPort("out", m_pValOut);
+VdfnProjectVectorNode::VdfnProjectVectorNode(eProject ePrj)
+    : IVdfnNode()
+    , m_ePrj(ePrj)
+    , m_pVecIn(NULL)
+    , m_pValOut(new TVdfnPort<float>) {
+  RegisterInPortPrototype("vec", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterOutPort("out", m_pValOut);
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-bool VdfnProjectVectorNode::GetIsValid() const
-{
-    return (m_ePrj != PRJ_NONE) && IVdfnNode::GetIsValid();
+bool VdfnProjectVectorNode::GetIsValid() const {
+  return (m_ePrj != PRJ_NONE) && IVdfnNode::GetIsValid();
 }
 
-bool VdfnProjectVectorNode::PrepareEvaluationRun()
-{
-    m_pVecIn = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort( "vec" ));
-    return GetIsValid();
+bool VdfnProjectVectorNode::PrepareEvaluationRun() {
+  m_pVecIn = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("vec"));
+  return GetIsValid();
 }
 
-bool VdfnProjectVectorNode::DoEvalNode()
-{
-    m_pValOut->SetValue( m_pVecIn->GetValueConstRef()[m_ePrj], GetUpdateTimeStamp() );
-    return true;
+bool VdfnProjectVectorNode::DoEvalNode() {
+  m_pValOut->SetValue(m_pVecIn->GetValueConstRef()[m_ePrj], GetUpdateTimeStamp());
+  return true;
 }
 
 // #############################################################################
 
-IVdfnNode *VdfnProjectVectorNodeCreate::CreateNode( const VistaPropertyList &oParams ) const
-{
-    try
-    {
-        const VistaPropertyList &subs = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
+IVdfnNode* VdfnProjectVectorNodeCreate::CreateNode(const VistaPropertyList& oParams) const {
+  try {
+    const VistaPropertyList& subs = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
 
-        VdfnProjectVectorNode::eProject ePrj = VdfnProjectVectorNode::PRJ_NONE;
+    VdfnProjectVectorNode::eProject ePrj = VdfnProjectVectorNode::PRJ_NONE;
 
-        std::string strProject;
-		if( subs.GetValue("component", strProject ) )
-		{
-			if(VistaAspectsComparisonStuff::StringEquals("X", strProject, false))
-				ePrj = VdfnProjectVectorNode::PRJ_X;
-			else if(VistaAspectsComparisonStuff::StringEquals("Y", strProject, false))
-				ePrj = VdfnProjectVectorNode::PRJ_Y;
-			else if(VistaAspectsComparisonStuff::StringEquals("Z", strProject, false))
-				ePrj = VdfnProjectVectorNode::PRJ_Z;
-		}
-
-        return new VdfnProjectVectorNode(ePrj);
-
-
+    std::string strProject;
+    if (subs.GetValue("component", strProject)) {
+      if (VistaAspectsComparisonStuff::StringEquals("X", strProject, false))
+        ePrj = VdfnProjectVectorNode::PRJ_X;
+      else if (VistaAspectsComparisonStuff::StringEquals("Y", strProject, false))
+        ePrj = VdfnProjectVectorNode::PRJ_Y;
+      else if (VistaAspectsComparisonStuff::StringEquals("Z", strProject, false))
+        ePrj = VdfnProjectVectorNode::PRJ_Z;
     }
-    catch( VistaExceptionBase & )
-    {
 
-    }
-    return NULL;
+    return new VdfnProjectVectorNode(ePrj);
+
+  } catch (VistaExceptionBase&) {}
+  return NULL;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

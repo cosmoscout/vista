@@ -21,11 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
+#include "DriverAspects/VistaDeviceDriverAspectRegistry.h"
 #include "Drivers/VistaKeyboardDriver.h"
 #include "Drivers/VistaMouseDriver.h"
 #include "VistaDeviceSensor.h"
-#include "DriverAspects/VistaDeviceDriverAspectRegistry.h"
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
@@ -38,48 +37,39 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 #if defined(WIN32)
 
 #include <windows.h>
 
 static void ReleaseProperties();
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch( ul_reason_for_call )
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-		break;
-	case DLL_PROCESS_DETACH:
-		if( lpReserved == 0 )
-			ReleaseProperties();
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+    break;
+  case DLL_PROCESS_DETACH:
+    if (lpReserved == 0)
+      ReleaseProperties();
+    break;
+  }
+  return TRUE;
 }
 
 #else
-	static void ReleaseProperties() __attribute__ ((destructor));
+static void ReleaseProperties() __attribute__((destructor));
 #endif
 
-static void ReleaseProperties()
-{
-	VistaKeyboardDriverUtil::ReleaseProperties();
-	VistaMouseDriverUtil::ReleaseProperties();
+static void ReleaseProperties() {
+  VistaKeyboardDriverUtil::ReleaseProperties();
+  VistaMouseDriverUtil::ReleaseProperties();
 
-	VistaDeviceSensorUtil::ReleaseProperties();
+  VistaDeviceSensorUtil::ReleaseProperties();
 
-	delete VistaDeviceDriverAspectRegistry::GetSingleton();
+  delete VistaDeviceDriverAspectRegistry::GetSingleton();
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATEXTENTITY_H
 #define _VISTATEXTENTITY_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaBase/VistaColor.h>
+#include <VistaKernel/VistaKernelConfig.h>
 //#include <VistaKernel/GraphicsManager/VistaGeometry.h>
 
 /*============================================================================*/
@@ -48,75 +47,97 @@
  * independent settings like font family and font size. The toolkit specific
  * methods are implemented in the subclasses.
  */
-class VISTAKERNELAPI IVistaTextEntity
-{
-public:
-	IVistaTextEntity(){};
-	virtual ~IVistaTextEntity(){ /* No pointer no cleanup */ };
+class VISTAKERNELAPI IVistaTextEntity {
+ public:
+  IVistaTextEntity(){};
+  virtual ~IVistaTextEntity(){/* No pointer no cleanup */};
 
-	/*
-	 * Interface stuff
-	 */
-	/**
-	 * The font is given by String and int as
-	 * fontfamily and size.
-	 * \param fontfamily
-	 * \param size
-	 */
-	virtual void SetFont( const std::string& sFamily, int iTextSize ) = 0;
-	/**
-	 * Returns the real fontsize.
-	 * Note: If your SetFont method has an best-fit
-	 * algorithm for non-existing font sizes, the
-	 * size you get from the getter may be different
-	 * from the setter.
-	 * \return size
-	 */
-	virtual int GetFontSize() const = 0;
-	/**
-	 * Returns the real fontfamily.
-	 * Note: If your SetFont method has an best-fit
-	 * algorithm for non-existing font families, the
-	 * family you get from the getter may be different
-	 * from the setter.
-	 * \return fontfamily
-	 */
-	virtual std::string GetFontFamily() const = 0;
+  /*
+   * Interface stuff
+   */
+  /**
+   * The font is given by String and int as
+   * fontfamily and size.
+   * \param fontfamily
+   * \param size
+   */
+  virtual void SetFont(const std::string& sFamily, int iTextSize) = 0;
+  /**
+   * Returns the real fontsize.
+   * Note: If your SetFont method has an best-fit
+   * algorithm for non-existing font sizes, the
+   * size you get from the getter may be different
+   * from the setter.
+   * \return size
+   */
+  virtual int GetFontSize() const = 0;
+  /**
+   * Returns the real fontfamily.
+   * Note: If your SetFont method has an best-fit
+   * algorithm for non-existing font families, the
+   * family you get from the getter may be different
+   * from the setter.
+   * \return fontfamily
+   */
+  virtual std::string GetFontFamily() const = 0;
 
-	/**
-	 * Draws the individual characters. Does, however, not
-	 * care about position or projection setup
-	*/
-	virtual void DrawCharacters() = 0;
+  /**
+   * Draws the individual characters. Does, however, not
+   * care about position or projection setup
+   */
+  virtual void DrawCharacters() = 0;
 
-	/**
-	 * Getter and Setter for common attributes
-	 */
-	inline float GetXPos() const { return m_nXPos; };
-	inline float GetYPos() const { return m_nYPos; };
-	inline float GetZPos() const { return m_nZPos; };
+  /**
+   * Getter and Setter for common attributes
+   */
+  inline float GetXPos() const {
+    return m_nXPos;
+  };
+  inline float GetYPos() const {
+    return m_nYPos;
+  };
+  inline float GetZPos() const {
+    return m_nZPos;
+  };
 
-	inline void SetXPos( float f ) { m_nXPos = f; };
-	inline void SetYPos( float f ) { m_nYPos = f; };
-	inline void SetZPos( float f ) { m_nZPos = f; };
+  inline void SetXPos(float f) {
+    m_nXPos = f;
+  };
+  inline void SetYPos(float f) {
+    m_nYPos = f;
+  };
+  inline void SetZPos(float f) {
+    m_nZPos = f;
+  };
 
-	inline bool GetEnabled() const { return m_bEnabled; };
-	inline void SetEnabled( bool b ) { m_bEnabled = b; };
+  inline bool GetEnabled() const {
+    return m_bEnabled;
+  };
+  inline void SetEnabled(bool b) {
+    m_bEnabled = b;
+  };
 
-	inline VistaColor GetColor() const { return m_oColor; };
-	inline void SetColor( VistaColor c ) { m_oColor = c; };
+  inline VistaColor GetColor() const {
+    return m_oColor;
+  };
+  inline void SetColor(VistaColor c) {
+    m_oColor = c;
+  };
 
-	inline std::string GetText() { return m_sText; };
-	inline void SetText( const std::string& sText ) { m_sText = sText; };
+  inline std::string GetText() {
+    return m_sText;
+  };
+  inline void SetText(const std::string& sText) {
+    m_sText = sText;
+  };
 
-protected:
+ protected:
+  float m_nXPos, m_nYPos, m_nZPos;
 
-	float m_nXPos, m_nYPos, m_nZPos;
+  bool m_bEnabled;
 
-	bool m_bEnabled;
-
-	VistaColor  m_oColor;
-	std::string m_sText;
+  VistaColor  m_oColor;
+  std::string m_sText;
 };
 
 /*============================================================================*/

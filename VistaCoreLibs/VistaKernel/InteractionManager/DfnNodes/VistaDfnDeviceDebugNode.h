@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNDEVICEDEBUGNODE_H
 #define _VISTADFNDEVICEDEBUGNODE_H
 
@@ -30,10 +29,10 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
+#include <VistaDataFlowNet/VdfnHistoryPort.h>
 #include <VistaDataFlowNet/VdfnNode.h>
 #include <VistaDataFlowNet/VdfnNodeCreators.h>
 #include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnHistoryPort.h>
 
 #include <list>
 /*============================================================================*/
@@ -55,57 +54,54 @@ class IVistaTextEntity;
 
 /**
  * Overlays the current stats of the history to a defined DisplaySystem and viewport.
- * 
+ *
  * @ingroup VdfnNodes
  *
  * @inport{history, HistoryPort, yes, the history of a driver sensor to output on screen}
  */
-class VISTAKERNELAPI VistaDfnDeviceDebugNode : public IVdfnNode
-{
-public:
-	VistaDfnDeviceDebugNode( VistaDisplayManager* pDisplayManager,
-			              const std::string &strDriverName,
-			              const std::list<std::string> &strShowList,
-						  const std::string& sViewport = "" );
+class VISTAKERNELAPI VistaDfnDeviceDebugNode : public IVdfnNode {
+ public:
+  VistaDfnDeviceDebugNode(VistaDisplayManager* pDisplayManager, const std::string& strDriverName,
+      const std::list<std::string>& strShowList, const std::string& sViewport = "");
 
-	~VistaDfnDeviceDebugNode();
+  ~VistaDfnDeviceDebugNode();
 
-	virtual void OnActivation( double dTs );
-	virtual void OnDeactivation( double dTs );
+  virtual void OnActivation(double dTs);
+  virtual void OnDeactivation(double dTs);
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-	bool GetShowType() const;
-	void SetShowType( bool bShowType );
+  bool GetShowType() const;
+  void SetShowType(bool bShowType);
 
-	void SetColor( float r, float g, float b);
-	void GetColor( float &r, float &g, float &b) const;
-protected:
-	bool DoEvalNode();
-private:
+  void SetColor(float r, float g, float b);
+  void GetColor(float& r, float& g, float& b) const;
 
-	std::string FormatLabel(const std::string &strLabel,
-			                const std::string &strType);
-	void UpdateStaticLabels();
-	void UpdateDynamicLabels();
+ protected:
+  bool DoEvalNode();
 
-	IVistaTextEntity *CreateText(int nY, const std::string &str) const;
-private:
+ private:
+  std::string FormatLabel(const std::string& strLabel, const std::string& strType);
+  void        UpdateStaticLabels();
+  void        UpdateDynamicLabels();
 
-	HistoryPort*				m_pHistory;
-	VistaDisplayManager*		m_pDisplayManager;
-	VistaSimpleTextOverlay*		m_pOverlay;
-	std::string					m_strDriverName;
-	bool						m_bShowType;
+  IVistaTextEntity* CreateText(int nY, const std::string& str) const;
 
-	IVistaTextEntity*			m_pNewMeasures;
-	IVistaTextEntity*			m_pUpdateTime;
-	IVistaTextEntity*			m_pFreq;
+ private:
+  HistoryPort*            m_pHistory;
+  VistaDisplayManager*    m_pDisplayManager;
+  VistaSimpleTextOverlay* m_pOverlay;
+  std::string             m_strDriverName;
+  bool                    m_bShowType;
 
-	typedef std::map<std::string, IVistaTextEntity*> LABMAP;
-	LABMAP m_mpDynamicLabels;
-	std::list<std::string> m_liShowList;
-	float m_r, m_g, m_b;
+  IVistaTextEntity* m_pNewMeasures;
+  IVistaTextEntity* m_pUpdateTime;
+  IVistaTextEntity* m_pFreq;
+
+  typedef std::map<std::string, IVistaTextEntity*> LABMAP;
+  LABMAP                                           m_mpDynamicLabels;
+  std::list<std::string>                           m_liShowList;
+  float                                            m_r, m_g, m_b;
 };
 
 /*============================================================================*/
@@ -113,4 +109,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNDEVICEDEBUGNODE_H
-

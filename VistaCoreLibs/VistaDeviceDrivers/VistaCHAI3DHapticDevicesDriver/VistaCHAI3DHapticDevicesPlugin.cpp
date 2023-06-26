@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -43,69 +42,62 @@
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTACHAI3DHapticDevicesDRIVERCONFIG_H
 
-namespace
-{
-	VistaCHAI3DHapticDevicesDriverFactory *SpFactory = NULL;
+namespace {
+VistaCHAI3DHapticDevicesDriverFactory* SpFactory = NULL;
 
-	/*
+/*
 IVistaDriverCreationMethod *VistaCHAI3DHapticDevicesDriver::GetDriverFactoryMethod()
 {
-	if(SpFactory == NULL)
-	{
-		SpFactory = new VistaCHAI3DHapticDevicesDriverFactory;
-		SpFactory->RegisterSensorType( "", sizeof(VistaCHAI3DHapticDevicesDriverHelper::_sCHAI3DHapticDevicesMeasure), 1000,
-			new VistaCHAI3DHapticDevicesTranscoderFactory,
-			VistaCHAI3DHapticDevicesDriverMeasureTranscode::GetTypeString() );
-	}
-	return SpFactory;
+if(SpFactory == NULL)
+{
+        SpFactory = new VistaCHAI3DHapticDevicesDriverFactory;
+        SpFactory->RegisterSensorType( "",
+sizeof(VistaCHAI3DHapticDevicesDriverHelper::_sCHAI3DHapticDevicesMeasure), 1000, new
+VistaCHAI3DHapticDevicesTranscoderFactory,
+                VistaCHAI3DHapticDevicesDriverMeasureTranscode::GetTypeString() );
+}
+return SpFactory;
 }
 */
+} // namespace
+
+extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaCHAI3DHapticDevicesDriver(crm);
 }
 
-extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaCHAI3DHapticDevicesDriver(crm);
+extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaCHAI3DHapticDevicesDriverFactory(fac);
+
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaCHAI3DHapticDevicesDriverFactory(fac);
-
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI const char* GetDeviceClassName() {
+  return "CHAI3DHapticDevices";
 }
 
-extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI const char *GetDeviceClassName()
-{
-	return "CHAI3DHapticDevices";
-}
-
-extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTACHAI3DHAPTICDEVICESPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
 /*============================================================================*/

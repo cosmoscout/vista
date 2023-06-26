@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaKernel/GraphicsManager/VistaLODNode.h"
 #include "VistaKernel/GraphicsManager/VistaNodeBridge.h"
 /*============================================================================*/
@@ -32,50 +31,40 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaLODNode::VistaLODNode()
-{
-	m_nType = VISTA_LODNODE;
+VistaLODNode::VistaLODNode() {
+  m_nType = VISTA_LODNODE;
 }
 
-VistaLODNode::VistaLODNode(	    VistaGroupNode*			pParent, 
-									IVistaNodeBridge*			pBridge,
-									IVistaNodeData*				pData,
-									std::string					strName) 
-: VistaGroupNode(pParent, pBridge, pData, strName)
-{
-	m_nType = VISTA_LODNODE;
+VistaLODNode::VistaLODNode(
+    VistaGroupNode* pParent, IVistaNodeBridge* pBridge, IVistaNodeData* pData, std::string strName)
+    : VistaGroupNode(pParent, pBridge, pData, strName) {
+  m_nType = VISTA_LODNODE;
 }
 
-
-VistaLODNode::~VistaLODNode()
-{
+VistaLODNode::~VistaLODNode() {
 }
 
 /** Set the the LOD spring values. If there is 3 level of details,
-*   it should be given 2 values
-*/
-bool VistaLODNode::SetRange(const std::vector<float> &rangeList)
-{
-	return m_pBridge->SetRange(rangeList,m_pData);
+ *   it should be given 2 values
+ */
+bool VistaLODNode::SetRange(const std::vector<float>& rangeList) {
+  return m_pBridge->SetRange(rangeList, m_pData);
 }
 /** Get the the LOD spring values.
-*/
-bool VistaLODNode::GetRange(std::vector<float> &rangeList) const
-{
-	return m_pBridge->GetRange(rangeList,m_pData);
+ */
+bool VistaLODNode::GetRange(std::vector<float>& rangeList) const {
+  return m_pBridge->GetRange(rangeList, m_pData);
 }
 
 /**Set the center of the object (for the distance calculation)
-*/
-bool VistaLODNode::SetCenter(const VistaVector3D &center)
-{
-	return m_pBridge->SetCenter(center,m_pData);
+ */
+bool VistaLODNode::SetCenter(const VistaVector3D& center) {
+  return m_pBridge->SetCenter(center, m_pData);
 }
 /**Get the center of the object
-*/
-bool VistaLODNode::GetCenter(VistaVector3D& center) const
-{
-	return m_pBridge->GetCenter(center,m_pData);
+ */
+bool VistaLODNode::GetCenter(VistaVector3D& center) const {
+  return m_pBridge->GetCenter(center, m_pData);
 }
 // ============================================================================
 // ============================================================================

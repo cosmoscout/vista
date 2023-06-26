@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADFUNCTION_H
 #define _VISTATHREADFUNCTION_H
 
@@ -42,7 +41,6 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
 /**
  * A thread function objects servers the purpose of a simplified way to run
  * a function concurrently. Remember that a function is not bound to a class.
@@ -62,63 +60,57 @@
  * * [...]
  * * func.Join(); // join with MyFunction (make sure, it terminates)
  */
-template<class T>
-class VistaThreadFunction : public VistaThread
-{
-public:
-	/**
-	 * @param pfc pointer of a function to run as a thread
-	 * @param data pointer to the data that the function might need
-	 */
-	VistaThreadFunction<T>( void (*pfc)(T*), T *data, IVistaThreadImp *pImp = NULL )
-		: VistaThread(pImp),
-		  m_pfc(pfc),
-		  m_pFctData(data)
-	{
-	}
+template <class T>
+class VistaThreadFunction : public VistaThread {
+ public:
+  /**
+   * @param pfc pointer of a function to run as a thread
+   * @param data pointer to the data that the function might need
+   */
+  VistaThreadFunction<T>(void (*pfc)(T*), T* data, IVistaThreadImp* pImp = NULL)
+      : VistaThread(pImp)
+      , m_pfc(pfc)
+      , m_pFctData(data) {
+  }
 
-	/**
-	 * Note that we do not assume that the thread already stopped. Take
-	 * care of that yourself.
-	 */
-	~VistaThreadFunction()
-	{
-	}
+  /**
+   * Note that we do not assume that the thread already stopped. Take
+   * care of that yourself.
+   */
+  ~VistaThreadFunction() {
+  }
 
+  /**
+   * Simply calls the function and passes the arguments. When this call returns,
+   * the thread will cease to exists (after returning from ThreadBody())
+   */
+  void ThreadBody() {
+    (*m_pfc)(m_pFctData);
+  }
 
-	/**
-	 * Simply calls the function and passes the arguments. When this call returns,
-	 * the thread will cease to exists (after returning from ThreadBody())
-	 */
-	void ThreadBody   ()
-	{
-		(*m_pfc)(m_pFctData);
-	}
+  /**
+   * returns the function/local data that was passed to the function.
+   * Can be handy, for example when statistics or return values are
+   * to be retrieved.
+   * @return the function data that was passed upon creation.
+   * @see VistaThreadFunction()
+   */
+  T* GetThreadFctData() const {
+    return m_pFctData;
+  }
 
-	/**
-	 * returns the function/local data that was passed to the function.
-	 * Can be handy, for example when statistics or return values are
-	 * to be retrieved.
-	 * @return the function data that was passed upon creation.
-	 * @see VistaThreadFunction()
-	 */
-	T *GetThreadFctData() const
-	{
-		return m_pFctData;
-	}
-protected:
-private:
-	/**
-	 * A pointer to the function to execute.
-	 */
-	void (*m_pfc)(T*);
+ protected:
+ private:
+  /**
+   * A pointer to the function to execute.
+   */
+  void (*m_pfc)(T*);
 
-	/**
-	 * Pointer to the data to pass to the function upon execution.
-	 */
-	T *m_pFctData;
+  /**
+   * Pointer to the data to pass to the function upon execution.
+   */
+  T* m_pFctData;
 };
-
 
 /**
  * A simple typedef to run threaded functions as they are often

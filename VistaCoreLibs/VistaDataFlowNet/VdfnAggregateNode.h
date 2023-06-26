@@ -21,22 +21,19 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNAGGREGATENODE_H
 #define _VDFNAGGREGATENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
 
-#include "VdfnNode.h"
 #include "VdfnHistoryPort.h"
+#include "VdfnNode.h"
 
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaSensorReadState.h>
-
 
 #include <string>
 #include <vector>
@@ -72,92 +69,84 @@
  * a vector of proper type. That vector is available as outport of the node.
  */
 template <class T>
-class TVdfnAggregateNode : public IVdfnNode
-{
-public:
-	/**
-	 * @param strInValue the name of the property to query the transcoder of the history for.
-	 */
-	TVdfnAggregateNode( const std::string &strInValue,
-						const bool bStoreNewestEntryLast )
-		: m_pInPort(NULL),
-		m_pOutPort(new TVdfnPort<std::vector<T> >),
-		m_strInValue(strInValue),
-		m_pGetFunctor(NULL),
-		m_bStoreNewestEntryLast( bStoreNewestEntryLast )
-	{
-		RegisterInPortPrototype("history", new HistoryPortCompare(&m_pInPort));
-		RegisterOutPort( "values", m_pOutPort );
-	}
+class TVdfnAggregateNode : public IVdfnNode {
+ public:
+  /**
+   * @param strInValue the name of the property to query the transcoder of the history for.
+   */
+  TVdfnAggregateNode(const std::string& strInValue, const bool bStoreNewestEntryLast)
+      : m_pInPort(NULL)
+      , m_pOutPort(new TVdfnPort<std::vector<T>>)
+      , m_strInValue(strInValue)
+      , m_pGetFunctor(NULL)
+      , m_bStoreNewestEntryLast(bStoreNewestEntryLast) {
+    RegisterInPortPrototype("history", new HistoryPortCompare(&m_pInPort));
+    RegisterOutPort("values", m_pOutPort);
+  }
 
+  /**
+   * is valid when the inport is connected, a get functor for the property read
+   * was found in the history (and had the proper type)
+   */
+  virtual bool GetIsValid() const {
+    return IVdfnNode::GetIsValid() && (m_pGetFunctor != 0);
+  }
 
-	/**
-	 * is valid when the inport is connected, a get functor for the property read
-	 * was found in the history (and had the proper type)
-	 */
-	virtual bool GetIsValid() const
-	{
-		return IVdfnNode::GetIsValid() && (m_pGetFunctor != 0);
-	}
+  virtual bool PrepareEvaluationRun() {
+    if (m_pInPort && m_pInPort->GetValueConstRef()->m_pTranscode)
+      m_pGetFunctor = dynamic_cast<IVistaMeasureTranscode::TTranscodeValueGet<T>*>(
+          m_pInPort->GetValueConstRef()->m_pTranscode->GetMeasureProperty(m_strInValue));
+    return true;
+  }
 
-	virtual bool PrepareEvaluationRun()
-	{
-		if(m_pInPort && m_pInPort->GetValueConstRef()->m_pTranscode )
-			m_pGetFunctor = dynamic_cast<IVistaMeasureTranscode::TTranscodeValueGet<T>*>(
-							   m_pInPort->GetValueConstRef()->m_pTranscode->GetMeasureProperty(m_strInValue));
-		return true;
-	}
+ protected:
+  virtual bool DoEvalNode() {
+    // get history port
+    const VdfnHistoryPortData* pData = m_pInPort->GetValueConstRef();
 
-protected:
-	virtual bool DoEvalNode()
-	{
-		// get history port
-		const        VdfnHistoryPortData *pData = m_pInPort->GetValueConstRef();
+    // this is the "official way"(tm) to find out about new samples in the
+    // history. The history took care of
+    // - fixing the number of new samples for this run
+    // - checking that we can not get more than we wanted (user-read size)
+    // - finding the correct amount of newly incoming samples
+    //
+    /** @todo still check for a cleaner way to access the number */
+    //       of new samples in the history (make it a method?)
 
-		// this is the "official way"(tm) to find out about new samples in the
-		// history. The history took care of
-		// - fixing the number of new samples for this run
-		// - checking that we can not get more than we wanted (user-read size)
-		// - finding the correct amount of newly incoming samples
-		//
-		/** @todo still check for a cleaner way to access the number */
-		//       of new samples in the history (make it a method?)
+    unsigned int nNewMeasureCount = pData->m_nNewMeasures;
 
-		unsigned int nNewMeasureCount = pData->m_nNewMeasures;
+    // get memory managed by outport (avoids a copy)
+    std::vector<T>& vec = m_pOutPort->GetValueRef();
 
-        // get memory managed by outport (avoids a copy)
-		std::vector<T> &vec = m_pOutPort->GetValueRef();
+    // resize to a proper width.
+    vec.resize(nNewMeasureCount);
 
-		// resize to a proper width.
-		vec.resize(nNewMeasureCount);
+    // now we copy in
+    for (unsigned int n = 0; n < nNewMeasureCount; ++n) {
+      // claim a "past" measure (copy in from most-current to oldest)
+      const VistaSensorMeasure* pMeasure = pData->m_pReadState->GetPastMeasure(n);
+      if (pMeasure) // can be 0 in case no data was delivered, yet, but driver signalled update
+      {
+        // get value using the transcoder, store in vector
+        if (m_bStoreNewestEntryLast)
+          vec[nNewMeasureCount - n - 1] = m_pGetFunctor->GetValue(pMeasure);
+        else
+          vec[n] = m_pGetFunctor->GetValue(pMeasure);
+      }
+    }
+    // trigger change for the outport, as we have directly written to the memory
+    // managed by the m_pOutPort.
+    m_pOutPort->IncUpdateCounter();
 
-		// now we copy in
-		for(unsigned int n=0; n < nNewMeasureCount; ++n)
-		{
-			// claim a "past" measure (copy in from most-current to oldest)
-			const VistaSensorMeasure *pMeasure = pData->m_pReadState->GetPastMeasure( n );
-			if( pMeasure ) // can be 0 in case no data was delivered, yet, but driver signalled update
-			{
-				// get value using the transcoder, store in vector
-				if( m_bStoreNewestEntryLast )
-					vec[ nNewMeasureCount - n - 1 ] = m_pGetFunctor->GetValue(pMeasure);
-				else
-					vec[n] = m_pGetFunctor->GetValue(pMeasure);
-			}
-		}
-		// trigger change for the outport, as we have directly written to the memory
-		// managed by the m_pOutPort.
-		m_pOutPort->IncUpdateCounter();
+    return true;
+  }
 
-		return true;
-	}
-
-private:
-	HistoryPort                                   *m_pInPort;
-	IVistaMeasureTranscode::TTranscodeValueGet<T> *m_pGetFunctor;
-	TVdfnPort<std::vector<T> >                    *m_pOutPort;
-	std::string m_strInValue;
-	bool		m_bStoreNewestEntryLast;
+ private:
+  HistoryPort*                                   m_pInPort;
+  IVistaMeasureTranscode::TTranscodeValueGet<T>* m_pGetFunctor;
+  TVdfnPort<std::vector<T>>*                     m_pOutPort;
+  std::string                                    m_strInValue;
+  bool                                           m_bStoreNewestEntryLast;
 };
 
 /*============================================================================*/

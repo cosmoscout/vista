@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VRMLEVENTHANDLER_H
 #define _VRMLEVENTHANDLER_H
 
@@ -51,35 +50,32 @@ class VistaSystemEvent;
  * The CVrmlEventHandler is registered on the PREGRAPHICS event
  * and invokes the applications Update() method.
  */
-class VrmlEventHandler : public VistaEventHandler
-{
-public:
-	
-	/**
-	 * Constructor
-	 * Give the Constructor an instance of the app.
-	 */
-    VrmlEventHandler ( VrmlVisualizer *app );
+class VrmlEventHandler : public VistaEventHandler {
+ public:
+  /**
+   * Constructor
+   * Give the Constructor an instance of the app.
+   */
+  VrmlEventHandler(VrmlVisualizer* app);
 
-	/**
-	 * Destructor
-	 * Nothing to do here.
-	 */
-    virtual ~VrmlEventHandler ();
-	
-	/**
-	 * HandleEvent
-	 * This method is inherited from VistaEventHandler and is
-	 * called by the VistaSystem on an PREGRAPHICS event.
-	 */
-    void HandleEvent(VistaEvent *pEvent);
+  /**
+   * Destructor
+   * Nothing to do here.
+   */
+  virtual ~VrmlEventHandler();
 
-private:
+  /**
+   * HandleEvent
+   * This method is inherited from VistaEventHandler and is
+   * called by the VistaSystem on an PREGRAPHICS event.
+   */
+  void HandleEvent(VistaEvent* pEvent);
 
-	/**
-	 * Pointer to the instance of the app.
-	 */
-	VrmlVisualizer *m_pApp;
+ private:
+  /**
+   * Pointer to the instance of the app.
+   */
+  VrmlVisualizer* m_pApp;
 };
 
 /*============================================================================*/

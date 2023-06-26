@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATIMEOUTHANDLER_H
 #define _VISTATIMEOUTHANDLER_H
 
@@ -33,11 +32,11 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEventHandler.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
-#include <vector>
 #include <list>
+#include <vector>
 
 /*============================================================================*/
 /*  MACROS AND DEFINES                                                        */
@@ -61,128 +60,121 @@ class VistaClusterMode;
  * As simple as that.
  * @see VistaTickTimer()
  */
-class VISTAKERNELAPI VistaTimeoutHandler : public VistaEventHandler
-{
-public:
-	/**
-	 * HD_TIMERs are simply a pointer to a tick timer, but no one
-	 * should rely on this (could change to an index in an array
-	 * of tick-timers). So consider this a handle only.
-	 */
-	typedef VistaTickTimer* HD_TIMER;
+class VISTAKERNELAPI VistaTimeoutHandler : public VistaEventHandler {
+ public:
+  /**
+   * HD_TIMERs are simply a pointer to a tick timer, but no one
+   * should rely on this (could change to an index in an array
+   * of tick-timers). So consider this a handle only.
+   */
+  typedef VistaTickTimer* HD_TIMER;
 
-public:
-	VistaTimeoutHandler(VistaEventManager *pEvMgr,
-						 VistaClusterMode *pClusterMode);
-	virtual ~VistaTimeoutHandler();
+ public:
+  VistaTimeoutHandler(VistaEventManager* pEvMgr, VistaClusterMode* pClusterMode);
+  virtual ~VistaTimeoutHandler();
 
-	// ########################################################################
-	// TIMER HANDLE ROUTINES
-	// ########################################################################
-	/**
-	 * Resets a timer for a given handle. Running timers will keep
-	 * running, but be reset to their starting point.
-	 * @param tim a valid handle to a timer object
-	 * @precondition IsValidHandle(tim) == true
-	 */
-	void ResetTimeout(HD_TIMER tim);
+  // ########################################################################
+  // TIMER HANDLE ROUTINES
+  // ########################################################################
+  /**
+   * Resets a timer for a given handle. Running timers will keep
+   * running, but be reset to their starting point.
+   * @param tim a valid handle to a timer object
+   * @precondition IsValidHandle(tim) == true
+   */
+  void ResetTimeout(HD_TIMER tim);
 
-	/**
-	 * Change (set) the timeout value for an already existing timer
-	 * handle.
-	 * @param tim a valid handle to a timer object
-	 * @precondition IsValidHandle(tim) == true
-	 * @postcondition tim has new timeout-value
-	 */
-	void SetTimeout(HD_TIMER tim, double dNewTimeout);
+  /**
+   * Change (set) the timeout value for an already existing timer
+   * handle.
+   * @param tim a valid handle to a timer object
+   * @precondition IsValidHandle(tim) == true
+   * @postcondition tim has new timeout-value
+   */
+  void SetTimeout(HD_TIMER tim, double dNewTimeout);
 
-	/**
-	 * Create and add a tick timer, set its timeout value to dTimeout,
-	 * make it pulsing, create a handle and return this to the user
-	 * for future identification.
-	 * @return a handle for a timeout that will 'ping' after dTimeout
-	 * @param dTimeout the timeout value (defaults to msecs, change this with the returned handle
-	 */
-	virtual HD_TIMER AddTimeout(double dTimeout);
+  /**
+   * Create and add a tick timer, set its timeout value to dTimeout,
+   * make it pulsing, create a handle and return this to the user
+   * for future identification.
+   * @return a handle for a timeout that will 'ping' after dTimeout
+   * @param dTimeout the timeout value (defaults to msecs, change this with the returned handle
+   */
+  virtual HD_TIMER AddTimeout(double dTimeout);
 
-	/**
-	 * Remove means: do not use tim after this call, it might(!) be pointing
-	 * to a deleted object.
-	 * @return true iff the handle was registered and was removed from the active list
-	 */
-	virtual bool RemoveTimeout(HD_TIMER tim);
+  /**
+   * Remove means: do not use tim after this call, it might(!) be pointing
+   * to a deleted object.
+   * @return true iff the handle was registered and was removed from the active list
+   */
+  virtual bool RemoveTimeout(HD_TIMER tim);
 
+  // ########################################################################
+  // MAINTENANCE ROUTINES
+  // ########################################################################
 
-	// ########################################################################
-	// MAINTENANCE ROUTINES
-	// ########################################################################
+  /**
+   * Conversion method: switch from handle to VistaTickTimer object<br>
+   * Note: this is a simple cast right now, but might change in the future,
+   * so you better do not rely on HD_TIMER being a pointer.
+   * @return a pointer to a VistaTickTimer (null for invalid handles)
+   * @param tim a valid handle to a timeout
+   */
+  VistaTickTimer* GetTimerForHandle(HD_TIMER tim) const;
 
-	/**
-	 * Conversion method: switch from handle to VistaTickTimer object<br>
-	 * Note: this is a simple cast right now, but might change in the future,
-	 * so you better do not rely on HD_TIMER being a pointer.
-	 * @return a pointer to a VistaTickTimer (null for invalid handles)
-	 * @param tim a valid handle to a timeout
-	 */
-	VistaTickTimer *GetTimerForHandle(HD_TIMER tim) const;
+  /**
+   * Check, whether a handle is registered with this handler
+   * @param tim a valid timout handle
+   * @return true iff tim is a registered timout for this handler
+   */
+  bool IsValidHandle(HD_TIMER tim) const;
 
-	/**
-	 * Check, whether a handle is registered with this handler
-	 * @param tim a valid timout handle
-	 * @return true iff tim is a registered timout for this handler
-	 */
-	bool IsValidHandle(HD_TIMER tim) const;
+  /**
+   * Finds an *arbitrary* timer that suits a given timeout value and returns
+   * a handle to it. Check its validity with IsValidHandle()
+   * @return a handle to a timer for this handler
+   * @param dTimeout a timeout value to be matched
+   * @see IsValidHandle()
+   */
+  HD_TIMER FindTimer(double dTimeout) const;
 
-	/**
-	 * Finds an *arbitrary* timer that suits a given timeout value and returns
-	 * a handle to it. Check its validity with IsValidHandle()
-	 * @return a handle to a timer for this handler
-	 * @param dTimeout a timeout value to be matched
-	 * @see IsValidHandle()
-	 */
-	HD_TIMER FindTimer(double dTimeout) const;
+  // ########################################################################
+  // PROCESSING ROUTINES
+  // ########################################################################
+  /**
+   * This method is registered for the handling of tick-timer events and will be
+   * called by the VistaEventManager. Non-pulsing timers will not be reenqueed
+   * to be processed
+   * @param pEvent a pointer to the event to be processed
+   * @see VistaEventManager()
+   * @see VistaEventHandler()
+   */
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-	// ########################################################################
-	// PROCESSING ROUTINES
-	// ########################################################################
-	/**
-	 * This method is registered for the handling of tick-timer events and will be
-	 * called by the VistaEventManager. Non-pulsing timers will not be reenqueed
-	 * to be processed
-	 * @param pEvent a pointer to the event to be processed
-	 * @see VistaEventManager()
-	 * @see VistaEventHandler()
-	 */
-	virtual void HandleEvent(VistaEvent *pEvent);
+  /**
+   * SUBCLASSES MUST OVERLOAD THIS. You can chose your path of execution by
+   * checking the handle that is passed to this method (tim).
+   * @param tim the timeout to be handled right now
+   */
+  virtual void HandleTimeout(HD_TIMER tim) = 0;
 
+ private:
+  VistaTickTimer* ConvertFromHandle(HD_TIMER tim) const;
 
-	/**
-	 * SUBCLASSES MUST OVERLOAD THIS. You can chose your path of execution by
-	 * checking the handle that is passed to this method (tim).
-	 * @param tim the timeout to be handled right now
-	 */
-	virtual void HandleTimeout(HD_TIMER tim) = 0;
+ protected:
+  VistaEventManager*           m_pEventManager; /**< handy pointer to the EvMgr */
+  VistaClusterMode*            m_pClusterAux;
+  std::vector<VistaTickTimer*> m_veWatches; /** the current active handle vector */
 
-
-private:
-	VistaTickTimer *ConvertFromHandle(HD_TIMER tim) const;
-
-protected:
-	VistaEventManager *m_pEventManager; /**< handy pointer to the EvMgr */
-	VistaClusterMode *m_pClusterAux;
-	std::vector<VistaTickTimer *> m_veWatches; /** the current active handle vector */
-
-	/**
-	  * we do reuse old handles as creation might take some time, and hey...
-	  * it's time, we are talking about, right?
-	  */
-	std::list<VistaTickTimer*> m_liGarbage;
+  /**
+   * we do reuse old handles as creation might take some time, and hey...
+   * it's time, we are talking about, right?
+   */
+  std::list<VistaTickTimer*> m_liGarbage;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
 
 #endif // _VISTATIMEOUTHANDLER_H

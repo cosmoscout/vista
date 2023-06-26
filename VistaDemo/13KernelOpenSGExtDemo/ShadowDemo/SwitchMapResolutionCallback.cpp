@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "SwitchMapResolutionCallback.h"
 #include "ShadowDemo.h"
 
@@ -37,22 +36,21 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-SwitchMapResolutionCallback::SwitchMapResolutionCallback(  ShadowDemo* pShadowDemo, float nFactor  )
-:   m_pShadowDemo( pShadowDemo )
-,   m_nFactor( nFactor )
-{
+SwitchMapResolutionCallback::SwitchMapResolutionCallback(ShadowDemo* pShadowDemo, float nFactor)
+    : m_pShadowDemo(pShadowDemo)
+    , m_nFactor(nFactor) {
 }
 
-SwitchMapResolutionCallback::~SwitchMapResolutionCallback(){}
+SwitchMapResolutionCallback::~SwitchMapResolutionCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool SwitchMapResolutionCallback::Do()
-{
-	m_pShadowDemo->ScaleShadowMapResolution( m_nFactor );
-	return true;
+bool SwitchMapResolutionCallback::Do() {
+  m_pShadowDemo->ScaleShadowMapResolution(m_nFactor);
+  return true;
 }
 
 /*============================================================================*/

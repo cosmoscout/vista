@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEVENTOBSERVER_H
 #define _VISTAEVENTOBSERVER_H
 
@@ -46,31 +45,29 @@ class VistaEventManager;
 /**
  * VistaEventObserver - the mother of all observers ;-)
  */
-class VISTAKERNELAPI VistaEventObserver
-{
-	friend class VistaEventManager;
-private:
-	bool m_bIsDef;
-public:
-	VistaEventObserver()
-	{
-		m_bIsDef = false;
-	}
+class VISTAKERNELAPI VistaEventObserver {
+  friend class VistaEventManager;
 
-	virtual ~VistaEventObserver()
-	{
-	}
-	/**
-	 * Notify the observer of the given event.
-	 *
-	 * @param   VistaEvent * pEvent    (MUST NOT BE NULL!)
-	 * @RETURN  --
-	 */
-	virtual void Notify(const VistaEvent *pEvent) = 0;
+ private:
+  bool m_bIsDef;
+
+ public:
+  VistaEventObserver() {
+    m_bIsDef = false;
+  }
+
+  virtual ~VistaEventObserver() {
+  }
+  /**
+   * Notify the observer of the given event.
+   *
+   * @param   VistaEvent * pEvent    (MUST NOT BE NULL!)
+   * @RETURN  --
+   */
+  virtual void Notify(const VistaEvent* pEvent) = 0;
 };
 
 /*============================================================================*/
 /* INLINE FUNCTIONS                                                           */
 /*============================================================================*/
 #endif // _VISTAEVENTOBSERVER_H
-

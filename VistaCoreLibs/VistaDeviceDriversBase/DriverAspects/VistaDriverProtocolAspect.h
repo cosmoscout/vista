@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERPROTOCOLASPECT_H
 #define _VISTADRIVERPROTOCOLASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaDLVTypes.h>
 #include <list>
 #include <string>
@@ -57,56 +55,51 @@ class IVistaDeviceDriver;
  * as it is not quite clear which one is used on a per-driver level.
  * @todo think about this
  */
-class VISTADEVICEDRIVERSAPI IVistaDriverProtocolAspect : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	IVistaDriverProtocolAspect();
-	virtual ~IVistaDriverProtocolAspect();
+class VISTADEVICEDRIVERSAPI IVistaDriverProtocolAspect
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  IVistaDriverProtocolAspect();
+  virtual ~IVistaDriverProtocolAspect();
 
+  class _cVersionTag {
+   public:
+    _cVersionTag() {
+    }
+    _cVersionTag(const std::string& strName, const std::string& strRevision)
+        : m_strProtocolName(strName)
+        , m_strProtocolRevision(strRevision) {
+    }
 
-	class _cVersionTag
-	{
-	public:
-		_cVersionTag() {}
-		_cVersionTag( const std::string &strName,
-			const std::string &strRevision )
-			: m_strProtocolName(strName),
-			  m_strProtocolRevision(strRevision)
-		{
-		}
+    bool operator==(const _cVersionTag& oOther) const {
+      return (m_strProtocolName == oOther.m_strProtocolName) &&
+             (m_strProtocolRevision == oOther.m_strProtocolRevision);
+    }
 
-		bool operator==(const _cVersionTag &oOther) const
-		{
-			return (m_strProtocolName == oOther.m_strProtocolName)
-				&& (m_strProtocolRevision == oOther.m_strProtocolRevision);
-		}
+    std::string m_strProtocolName;
+    std::string m_strProtocolRevision;
+  };
 
-		std::string m_strProtocolName;
-		std::string m_strProtocolRevision;
-	};
+  bool RegisterProtocol(const _cVersionTag&);
+  bool GetHasProtocol(const _cVersionTag&) const;
+  bool UnregisterProtocol(const _cVersionTag&);
 
-	bool RegisterProtocol( const _cVersionTag & );
-	bool GetHasProtocol( const _cVersionTag & ) const;
-	bool UnregisterProtocol( const _cVersionTag & );
+  /**
+   * override in subclass iff you want to intercept a protocol set
+   * e.g., for setting a specific protocol handler or actor
+   */
+  virtual bool SetProtocol(const _cVersionTag&);
+  bool         GetProtocol(_cVersionTag& oTag) const;
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-	/**
-	 * override in subclass iff you want to intercept a protocol set
-	 * e.g., for setting a specific protocol handler or actor
-	 */
-	virtual bool SetProtocol( const _cVersionTag & );
-	bool GetProtocol(_cVersionTag &oTag) const;
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
-
-protected:
-
-private:
-	std::list<_cVersionTag> m_liProtocols;
-	std::list<_cVersionTag>::iterator m_oCurrent;
-	static int m_nAspectId;
+ protected:
+ private:
+  std::list<_cVersionTag>           m_liProtocols;
+  std::list<_cVersionTag>::iterator m_oCurrent;
+  static int                        m_nAspectId;
 };
 
 /*============================================================================*/
@@ -114,5 +107,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADRIVERLOGGINGASPECT_H
-
-

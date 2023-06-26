@@ -21,88 +21,72 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnNodeFactory.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
-namespace
-{
-	VdfnNodeFactory *SSingleton = NULL;
+namespace {
+VdfnNodeFactory* SSingleton = NULL;
 }
 
-VdfnNodeFactory *VdfnNodeFactory::GetSingleton()
-{
-	if(SSingleton == NULL)
-		SSingleton = new VdfnNodeFactory;
+VdfnNodeFactory* VdfnNodeFactory::GetSingleton() {
+  if (SSingleton == NULL)
+    SSingleton = new VdfnNodeFactory;
 
-	return SSingleton;
+  return SSingleton;
 }
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnNodeFactory::VdfnNodeFactory()
-{
+VdfnNodeFactory::VdfnNodeFactory() {
 }
 
-VdfnNodeFactory::~VdfnNodeFactory()
-{
-	for(CRMAP::iterator it = m_mpCreators.begin();
-		it != m_mpCreators.end(); ++it)
-	{
-		delete (*it).second;
-	}
+VdfnNodeFactory::~VdfnNodeFactory() {
+  for (CRMAP::iterator it = m_mpCreators.begin(); it != m_mpCreators.end(); ++it) {
+    delete (*it).second;
+  }
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-IVdfnNode *VdfnNodeFactory::CreateNode( const std::string &strTypeSymbol,
-										 const VistaPropertyList &oParams ) const
-{
-	CRMAP::const_iterator it = m_mpCreators.find(strTypeSymbol);
-	if(it == m_mpCreators.end())
-		return NULL;
+IVdfnNode* VdfnNodeFactory::CreateNode(
+    const std::string& strTypeSymbol, const VistaPropertyList& oParams) const {
+  CRMAP::const_iterator it = m_mpCreators.find(strTypeSymbol);
+  if (it == m_mpCreators.end())
+    return NULL;
 
-	return (*it).second->CreateNode( oParams );
+  return (*it).second->CreateNode(oParams);
 }
 
-
-bool VdfnNodeFactory::SetNodeCreator( const std::string &strTypeSymbol, IVdfnNodeCreator *pCreator )
-{
-	m_mpCreators[strTypeSymbol] = pCreator;
-	return true;
+bool VdfnNodeFactory::SetNodeCreator(const std::string& strTypeSymbol, IVdfnNodeCreator* pCreator) {
+  m_mpCreators[strTypeSymbol] = pCreator;
+  return true;
 }
 
+bool VdfnNodeFactory::UnSetNodeCreator(const std::string& strTypeSymbol) {
+  CRMAP::iterator it = m_mpCreators.find(strTypeSymbol);
+  if (it != m_mpCreators.end()) {
+    delete (*it).second;
+    m_mpCreators.erase(it);
+    return true;
+  }
 
-bool VdfnNodeFactory::UnSetNodeCreator( const std::string &strTypeSymbol )
-{
-	CRMAP::iterator it = m_mpCreators.find(strTypeSymbol);
-	if(it != m_mpCreators.end())
-	{
-		delete (*it).second;
-		m_mpCreators.erase( it );
-		return true;
-	}
-
-	return false;
+  return false;
 }
 
-std::list<std::string> VdfnNodeFactory::GetNodeCreators() const
-{
-	std::list<std::string> liRet;
-	for(CRMAP::const_iterator cit = m_mpCreators.begin(); cit != m_mpCreators.end(); ++cit)
-		liRet.push_back( (*cit).first );
-	return liRet;
+std::list<std::string> VdfnNodeFactory::GetNodeCreators() const {
+  std::list<std::string> liRet;
+  for (CRMAP::const_iterator cit = m_mpCreators.begin(); cit != m_mpCreators.end(); ++cit)
+    liRet.push_back((*cit).first);
+  return liRet;
 }
 
-bool VdfnNodeFactory::GetHasCreator( const std::string &strCreatorName ) const
-{
-	return ( m_mpCreators.find( strCreatorName ) != m_mpCreators.end() );
+bool VdfnNodeFactory::GetHasCreator(const std::string& strCreatorName) const {
+  return (m_mpCreators.find(strCreatorName) != m_mpCreators.end());
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaKernel/GraphicsManager/VistaLeafNode.h"
 #include "VistaKernel/GraphicsManager/VistaNodeBridge.h"
 #include "VistaKernel/GraphicsManager/VistaTransformNode.h"
@@ -36,46 +35,38 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaLeafNode::VistaLeafNode()
-{
-	m_nType = VISTA_LEAFNODE;
+VistaLeafNode::VistaLeafNode() {
+  m_nType = VISTA_LEAFNODE;
 }
 
-VistaLeafNode::VistaLeafNode(	VistaGroupNode*				pParent, 
-								IVistaNodeBridge*				pBridge,
-								IVistaNodeData*					pData,
-								const std::string	&strName) 
-: VistaNode(pParent,pBridge,pData,strName)
-{
-	m_nType = VISTA_LEAFNODE;
+VistaLeafNode::VistaLeafNode(VistaGroupNode* pParent, IVistaNodeBridge* pBridge,
+    IVistaNodeData* pData, const std::string& strName)
+    : VistaNode(pParent, pBridge, pData, strName) {
+  m_nType = VISTA_LEAFNODE;
 }
 
-VistaLeafNode::~VistaLeafNode()
-{
-	// IAR: is alread done by VistaNode
-	//if(m_pParent)
-	//    m_pParent->DisconnectChild(this);
+VistaLeafNode::~VistaLeafNode() {
+  // IAR: is alread done by VistaNode
+  // if(m_pParent)
+  //    m_pParent->DisconnectChild(this);
 }
 
-void VistaLeafNode::Debug( std::ostream& oOut, int nLevel /*= 0 */ ) const
-{
-	VistaNode::Debug( oOut, nLevel );
-	
-	VistaVector3D v3Position;
-	GetWorldPosition( v3Position );
-	VistaVector3D v3Min, v3Max;
-	GetWorldBoundingBox( v3Min, v3Max );
-	oOut << vstr::indent;
-	for(int j=0; j<nLevel; j++)
-		oOut << "  ";
-	oOut << "   Leaf Position: "
-		<< v3Position << "\n";
-	oOut << vstr::indent;
-	for(int j=0; j<nLevel; j++)
-		oOut << "  ";
-	oOut << "   Leaf Global Bounds: ( "
-		<< v3Min[0] << ", " << v3Min[1] << ", " << v3Min[2] << " ) - ( "
-		<< v3Max[0] << ", " << v3Max[1] << ", " << v3Max[2] << " )" << std::endl;
+void VistaLeafNode::Debug(std::ostream& oOut, int nLevel /*= 0 */) const {
+  VistaNode::Debug(oOut, nLevel);
+
+  VistaVector3D v3Position;
+  GetWorldPosition(v3Position);
+  VistaVector3D v3Min, v3Max;
+  GetWorldBoundingBox(v3Min, v3Max);
+  oOut << vstr::indent;
+  for (int j = 0; j < nLevel; j++)
+    oOut << "  ";
+  oOut << "   Leaf Position: " << v3Position << "\n";
+  oOut << vstr::indent;
+  for (int j = 0; j < nLevel; j++)
+    oOut << "  ";
+  oOut << "   Leaf Global Bounds: ( " << v3Min[0] << ", " << v3Min[1] << ", " << v3Min[2]
+       << " ) - ( " << v3Max[0] << ", " << v3Max[1] << ", " << v3Max[2] << " )" << std::endl;
 }
 
 // ============================================================================

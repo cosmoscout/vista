@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPRIORITY_H
 #define _VISTAPRIORITY_H
 
@@ -45,42 +44,34 @@ class IVistaPriorityImp;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaPriority
-{
-public:
+class VISTAINTERPROCCOMMAPI VistaPriority {
+ public:
+  enum PRIORITY_RANGE {
+    VISTA_MIN_PRIORITY = 0,
+    VISTA_MID_PRIORITY = 16383,
+    VISTA_MAX_PRIORITY = 32767
+  };
 
-	enum PRIORITY_RANGE
-	{
-		VISTA_MIN_PRIORITY  =     0,
-		VISTA_MID_PRIORITY  = 16383,
-		VISTA_MAX_PRIORITY  = 32767
-	};
+  VistaPriority(int iPrio = VISTA_MID_PRIORITY);
+  VistaPriority(const VistaPriority&);
+  virtual ~VistaPriority();
 
+  int  GetVistaPriority() const;
+  void SetVistaPriority(int);
 
-	VistaPriority(int iPrio=VISTA_MID_PRIORITY);
-	VistaPriority(const VistaPriority &);
-	virtual ~VistaPriority();
+  int GetSystemPriority() const;
 
+  int GetVistaPriorityForSystemPriority(int iSysPrio) const;
 
-	int GetVistaPriority() const;
-	void SetVistaPriority(int);
+  VistaPriority& operator=(const VistaPriority&);
 
-
-	int GetSystemPriority() const;
-
-	int GetVistaPriorityForSystemPriority( int iSysPrio ) const;
-
-	VistaPriority &operator=(const VistaPriority &);
-
-private:
-	IVistaPriorityImp *m_pPriorityImp;
-	int m_iVistaPriority;
+ private:
+  IVistaPriorityImp* m_pPriorityImp;
+  int                m_iVistaPriority;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAPRIORITY_H
-

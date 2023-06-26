@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNTYPECONVERTNODE_H
 #define _VDFNTYPECONVERTNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,8 +30,8 @@
 #include "VdfnConfig.h"
 
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
 #include "VdfnUtil.h"
 #include <VistaAspects/VistaConversion.h>
 
@@ -64,50 +62,45 @@
  * name. The conversion function can be free floating function and is performed
  * by a copy-in, so it can be expensive.
  */
-template<class tFrom, class tTo>
-class TVdfnTypeConvertNode : public IVdfnNode
-{
-public:
-	typedef tTo (*CFAssign)( const tFrom& );
-	typedef TVdfnPort<tFrom> FromPort;
-	typedef TVdfnPort<tTo>   ToPort;
+template <class tFrom, class tTo>
+class TVdfnTypeConvertNode : public IVdfnNode {
+ public:
+  typedef tTo (*CFAssign)(const tFrom&);
+  typedef TVdfnPort<tFrom> FromPort;
+  typedef TVdfnPort<tTo>   ToPort;
 
-	TVdfnTypeConvertNode( CFAssign assign )
-		: IVdfnNode(),
-		  m_pFrom(NULL),
-		  m_pTo(new TVdfnPort<tTo>),
-		  m_CfAssign(assign)
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<tFrom> >);
-		RegisterOutPort( "out", m_pTo );
-	}
+  TVdfnTypeConvertNode(CFAssign assign)
+      : IVdfnNode()
+      , m_pFrom(NULL)
+      , m_pTo(new TVdfnPort<tTo>)
+      , m_CfAssign(assign) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<tFrom>>);
+    RegisterOutPort("out", m_pTo);
+  }
 
+  ~TVdfnTypeConvertNode() {
+  }
 
-	~TVdfnTypeConvertNode() {}
+  bool PrepareEvaluationRun() {
+    m_pFrom = VdfnUtil::GetInPortTyped<FromPort*>("in", this);
+    return GetIsValid();
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pFrom = VdfnUtil::GetInPortTyped<FromPort*>("in", this);
-		return GetIsValid();
-	}
-protected:
-	bool DoEvalNode()
-	{
-		const tFrom &vIn = m_pFrom->GetValueConstRef();
-		m_pTo->SetValue( m_CfAssign(vIn), GetUpdateTimeStamp() );
-		return true;
-	}
-private:
-	FromPort *m_pFrom;
-	ToPort   *m_pTo;
-	CFAssign  m_CfAssign;
+ protected:
+  bool DoEvalNode() {
+    const tFrom& vIn = m_pFrom->GetValueConstRef();
+    m_pTo->SetValue(m_CfAssign(vIn), GetUpdateTimeStamp());
+    return true;
+  }
+
+ private:
+  FromPort* m_pFrom;
+  ToPort*   m_pTo;
+  CFAssign  m_CfAssign;
 };
-
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNTYPECONVERTNODE_H
-

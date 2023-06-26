@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnShallowNode.h"
 #include "VdfnPort.h"
 
@@ -33,35 +32,28 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VdfnShallowNode::VdfnShallowNode()
-: IVdfnNode()
-{
+    : IVdfnNode() {
 }
 
-VdfnShallowNode::~VdfnShallowNode()
-{
+VdfnShallowNode::~VdfnShallowNode() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnShallowNode::SetInPort(const std::string &sName, IVdfnPort *pPort)
-{
-	// set in port, regardless  of type (avoid type checking)
-	// the memory belongs to the shallow node afterwards (it is collected
-	// upon destruction of this shallow node)
-	m_mpInPrototypes[ sName ] = pPort->GetPortTypeCompare();
-	return DoSetInPort(sName, pPort);
+bool VdfnShallowNode::SetInPort(const std::string& sName, IVdfnPort* pPort) {
+  // set in port, regardless  of type (avoid type checking)
+  // the memory belongs to the shallow node afterwards (it is collected
+  // upon destruction of this shallow node)
+  m_mpInPrototypes[sName] = pPort->GetPortTypeCompare();
+  return DoSetInPort(sName, pPort);
 }
 
-void VdfnShallowNode::SetOutPort( const std::string &sName, IVdfnPort *pPort )
-{
-	RegisterOutPort( sName, pPort );
+void VdfnShallowNode::SetOutPort(const std::string& sName, IVdfnPort* pPort) {
+  RegisterOutPort(sName, pPort);
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

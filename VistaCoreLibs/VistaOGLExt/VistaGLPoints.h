@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef VISTA_GL_POINTS_H
 #define VISTA_GL_POINTS_H
 
@@ -42,35 +41,33 @@ class VistaTexture;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-namespace VistaGLPoints
-{
-	enum
-	{
-		POINTS_WITH_HALOS,
-		SPHERE_WITH_PHONG_LIGTHING,
-		SPHERE_WITH_GOOCH_SHADING,
-		CONE_WITH_PHONG_LIGTHING,
-		CONE_WITH_GOOCH_SHADING,
-		NUM_TYPES
-	};
-
-	VISTAOGLEXTAPI void SetPointSize( float fSize );
-	VISTAOGLEXTAPI void SetHaloSize( float fHaloSize );
-
-	VISTAOGLEXTAPI void SetDirection( const VistaVector3D& v3Dir, bool bDirInViewCoord = true );
-
-	VISTAOGLEXTAPI bool Enable( int iType = POINTS_WITH_HALOS );
-	VISTAOGLEXTAPI bool Disable();
-
-	VISTAOGLEXTAPI bool PushAttrib();
-	VISTAOGLEXTAPI bool PopAttrib();
-
-	VISTAOGLEXTAPI int AddCustomPointType(
-		VistaGLSLShader* pShader, const std::vector<VistaTexture*>& vecTextures );
-
-	VISTAOGLEXTAPI VistaGLSLShader* GetShader( int iType = POINTS_WITH_HALOS );
-	VISTAOGLEXTAPI const std::vector<VistaTexture*>* GetTextures( int iType = POINTS_WITH_HALOS );
+namespace VistaGLPoints {
+enum {
+  POINTS_WITH_HALOS,
+  SPHERE_WITH_PHONG_LIGTHING,
+  SPHERE_WITH_GOOCH_SHADING,
+  CONE_WITH_PHONG_LIGTHING,
+  CONE_WITH_GOOCH_SHADING,
+  NUM_TYPES
 };
+
+VISTAOGLEXTAPI void SetPointSize(float fSize);
+VISTAOGLEXTAPI void SetHaloSize(float fHaloSize);
+
+VISTAOGLEXTAPI void SetDirection(const VistaVector3D& v3Dir, bool bDirInViewCoord = true);
+
+VISTAOGLEXTAPI bool Enable(int iType = POINTS_WITH_HALOS);
+VISTAOGLEXTAPI bool Disable();
+
+VISTAOGLEXTAPI bool PushAttrib();
+VISTAOGLEXTAPI bool PopAttrib();
+
+VISTAOGLEXTAPI int AddCustomPointType(
+    VistaGLSLShader* pShader, const std::vector<VistaTexture*>& vecTextures);
+
+VISTAOGLEXTAPI VistaGLSLShader* GetShader(int iType = POINTS_WITH_HALOS);
+VISTAOGLEXTAPI const std::vector<VistaTexture*>* GetTextures(int iType = POINTS_WITH_HALOS);
+};     // namespace VistaGLPoints
 #endif // Include guard.
 /*============================================================================*/
 /* END OF FILE                                                                */

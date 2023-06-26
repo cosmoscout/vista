@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 #ifndef __VistaVolumeRenderingCore_h
 #define __VistaVolumeRenderingCore_h
 
@@ -30,32 +28,30 @@
 
 class VistaTexture;
 
+class VISTAOGLEXTAPI IVistaVolumeRenderingCore {
+ public:
+  virtual ~IVistaVolumeRenderingCore();
 
-class VISTAOGLEXTAPI IVistaVolumeRenderingCore
-{
-public:
-	virtual ~IVistaVolumeRenderingCore();
+  // *** Data specification ***
+  virtual bool          SetVolumeTexture(VistaTexture* pVolumeTexture, int iVolumeId) = 0;
+  virtual VistaTexture* GetVolumeTexture(int iVolumeId) const                         = 0;
 
-	// *** Data specification ***
-	virtual bool SetVolumeTexture( VistaTexture* pVolumeTexture, int iVolumeId ) = 0;
-	virtual VistaTexture* GetVolumeTexture( int iVolumeId ) const = 0;
+  virtual bool SetExtents(float aDataExtents[3]) = 0;
+  virtual void GetExtents(float aDataExtents[3]) = 0;
 
-	virtual bool SetExtents( float aDataExtents[3] ) = 0;
-	virtual void GetExtents( float aDataExtents[3] ) = 0;
+  // *** Lookup table specification ***
+  virtual bool          SetLookupTexture(VistaTexture* pLookupTexture, int iLookupId) = 0;
+  virtual VistaTexture* GetLookupTexture(int iLookupId) const                         = 0;
 
-	// *** Lookup table specification ***
-	virtual bool SetLookupTexture( VistaTexture* pLookupTexture, int iLookupId ) = 0;
-	virtual VistaTexture* GetLookupTexture( int iLookupId ) const = 0;
+  virtual bool SetLookupRange(float* pLookupRange, int iRangeId, unsigned int uiNumComponents,
+      unsigned int uiNumVectors)       = 0;
+  virtual bool GetLookupRange(float* pLookupRange, int iRangeId, unsigned int uiNumComponents,
+      unsigned int uiNumVectors) const = 0;
 
-	virtual bool SetLookupRange( float* pLookupRange, int iRangeId,
-			unsigned int uiNumComponents, unsigned int uiNumVectors ) = 0;
-	virtual bool GetLookupRange( float* pLookupRange, int iRangeId,
-			unsigned int uiNumComponents, unsigned int uiNumVectors ) const = 0;
+  virtual void Draw() = 0;
 
-	virtual void Draw() = 0;
-
-protected:
-	IVistaVolumeRenderingCore();
+ protected:
+  IVistaVolumeRenderingCore();
 };
 
 #endif // Include guard.

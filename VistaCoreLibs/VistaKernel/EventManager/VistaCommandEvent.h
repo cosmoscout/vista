@@ -21,14 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACOMMANDEVENT_H
 #define _VISTACOMMANDEVENT_H
 
 #include <VistaAspects/VistaPropertyAwareable.h>
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEvent.h>
-
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -48,64 +46,56 @@ class VistaMsg;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaCommandEvent : public VistaEvent,
-										  public IVistaPropertyAwareable
-{
-public:
-	enum
-	{
-		VEIDC_CMD=0,
-		VEIDC_LAST
-	};
+class VISTAKERNELAPI VistaCommandEvent : public VistaEvent, public IVistaPropertyAwareable {
+ public:
+  enum { VEIDC_CMD = 0, VEIDC_LAST };
 
-	VistaCommandEvent();
-	virtual ~VistaCommandEvent();
+  VistaCommandEvent();
+  virtual ~VistaCommandEvent();
 
+  virtual int Serialize(IVistaSerializer&) const;
+  virtual int DeSerialize(IVistaDeSerializer&);
 
-	virtual int Serialize(IVistaSerializer &) const;
-	virtual int DeSerialize(IVistaDeSerializer &);
+  virtual std::string GetSignature() const;
 
-	virtual std::string GetSignature() const;
+  int  GetMethodToken() const;
+  void SetMethodToken(int iMethodToken);
 
-	int  GetMethodToken() const;
-	void SetMethodToken(int iMethodToken);
+  int  GetMessageTicket() const;
+  void SetMessageTicket(int iMethodTicket);
 
-	int  GetMessageTicket() const;
-	void SetMessageTicket(int iMethodTicket);
+  VistaPropertyList GetPropertyList() const;
+  bool              UsesPropertyListAnswer() const;
+  void              ClearPropertyList();
 
-	VistaPropertyList GetPropertyList() const;
-		bool     UsesPropertyListAnswer() const;
-		void     ClearPropertyList();
+  virtual int           SetProperty(const VistaProperty&);
+  virtual int           GetProperty(VistaProperty&);
+  virtual VistaProperty GetPropertyByName(const std::string& sPropName);
+  virtual bool SetPropertyByName(const std::string& sPropName, const std::string& sPropValue);
+  virtual int  SetPropertiesByList(const VistaPropertyList&);
+  virtual int  GetPropertiesByList(VistaPropertyList&);
 
-	virtual int SetProperty(const VistaProperty &)    ;
-	virtual int GetProperty(VistaProperty &)          ;
-	virtual VistaProperty GetPropertyByName(const std::string &sPropName) ;
-	virtual bool SetPropertyByName(const std::string &sPropName,
-								   const std::string &sPropValue) ;
-	virtual int SetPropertiesByList(const VistaPropertyList &) ;
-	virtual int GetPropertiesByList(VistaPropertyList &)       ;
+  virtual int         GetPropertySymbolList(std::list<std::string>& rStorageList);
+  virtual std::string GetPropertyDescription(const std::string& sPropName);
 
-	virtual int GetPropertySymbolList(std::list<std::string> &rStorageList) ;
-	virtual std::string GetPropertyDescription(const std::string &sPropName);
+  // ###############################################
 
+  void      SetCommandMsg(VistaMsg*);
+  VistaMsg* GetCommandMsg() const;
 
-	// ###############################################
+  static int         GetTypeId();
+  static void        SetTypeId(int nId);
+  static std::string GetIdString(int nId);
 
-	void SetCommandMsg(VistaMsg *);
-	VistaMsg *GetCommandMsg() const;
+ protected:
+ private:
+  int m_iMethodToken;
+  int m_iMessageTicket;
 
-	static int GetTypeId();
-	static void SetTypeId(int nId);
-	static std::string GetIdString(int nId);
-protected:
-private:
-	int m_iMethodToken;
-	int m_iMessageTicket;
+  VistaPropertyList m_mpPropertyList;
+  VistaMsg*         m_pMsg;
 
-	VistaPropertyList m_mpPropertyList;
-	VistaMsg *m_pMsg;
-
-	static int m_nEventId;
+  static int m_nEventId;
 };
 
 /*============================================================================*/
@@ -113,4 +103,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTACOMMANDEVENT_H
-

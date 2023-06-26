@@ -21,64 +21,51 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTickTimerEvent.h"
 
 #include "VistaEventManager.h"
 
 int VistaTickTimerEvent::m_nEventId = VistaEvent::VET_INVALID;
 
-
-VistaTickTimerEvent::VistaTickTimerEvent(VistaTickTimer *watch)
-{
-	SetType(VistaTickTimerEvent::GetTypeId());
-	m_pSource = watch;
+VistaTickTimerEvent::VistaTickTimerEvent(VistaTickTimer* watch) {
+  SetType(VistaTickTimerEvent::GetTypeId());
+  m_pSource = watch;
 }
 
-VistaTickTimerEvent::~VistaTickTimerEvent()
-{}
-
-
-std::string VistaTickTimerEvent::GetName() const
-{
-	return "TickTimerEvent";
+VistaTickTimerEvent::~VistaTickTimerEvent() {
 }
 
-
-std::string VistaTickTimerEvent::GetIdString(int nId) 
-{
-	switch(nId)
-	{
-	case TTID_TIMEOUT:
-		return "TTID_TIMEOUT";
-	case TTID_UPPER_BOUND:
-		return "TTID_UPPER_BOUND";
-	default:
-		return VistaEvent::GetIdString(nId);
-	}
+std::string VistaTickTimerEvent::GetName() const {
+  return "TickTimerEvent";
 }
 
-
-int VistaTickTimerEvent::GetTypeId()
-{
-	return VistaTickTimerEvent::m_nEventId;
+std::string VistaTickTimerEvent::GetIdString(int nId) {
+  switch (nId) {
+  case TTID_TIMEOUT:
+    return "TTID_TIMEOUT";
+  case TTID_UPPER_BOUND:
+    return "TTID_UPPER_BOUND";
+  default:
+    return VistaEvent::GetIdString(nId);
+  }
 }
 
-void VistaTickTimerEvent::SetTypeId(int nId)
-{
-	if(VistaTickTimerEvent::m_nEventId == VistaEvent::VET_INVALID)
-		VistaTickTimerEvent::m_nEventId = nId;
+int VistaTickTimerEvent::GetTypeId() {
+  return VistaTickTimerEvent::m_nEventId;
 }
 
-void VistaTickTimerEvent::SetTickEventTime( double dTime )
-{
-	m_nTime = dTime;
+void VistaTickTimerEvent::SetTypeId(int nId) {
+  if (VistaTickTimerEvent::m_nEventId == VistaEvent::VET_INVALID)
+    VistaTickTimerEvent::m_nEventId = nId;
 }
 
-void VistaTickTimerEvent::RegisterEventTypes( VistaEventManager* pEventManager )
-{
-	VistaEventManager::EVENTTYPE eTp = pEventManager->RegisterEventType( "VET_TICK" );
-	SetTypeId( eTp );
-	pEventManager->RegisterEventId( eTp, VistaTickTimerEvent::GetIdString( VistaTickTimerEvent::TTID_TIMEOUT ) );
+void VistaTickTimerEvent::SetTickEventTime(double dTime) {
+  m_nTime = dTime;
 }
 
+void VistaTickTimerEvent::RegisterEventTypes(VistaEventManager* pEventManager) {
+  VistaEventManager::EVENTTYPE eTp = pEventManager->RegisterEventType("VET_TICK");
+  SetTypeId(eTp);
+  pEventManager->RegisterEventId(
+      eTp, VistaTickTimerEvent::GetIdString(VistaTickTimerEvent::TTID_TIMEOUT));
+}

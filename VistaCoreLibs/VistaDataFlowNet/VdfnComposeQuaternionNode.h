@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCOMPOSEQUATERNIONNODE
 #define _VDFNCOMPOSEQUATERNIONNODE
 
@@ -60,23 +59,22 @@
  *
  * @outport{out,VistaVector3D, assembled quaternion (normalized)}
  */
-class VISTADFNAPI VdfnComposeQuaternionNode : public IVdfnNode
-{
-public:
-	VdfnComposeQuaternionNode();
-	virtual ~VdfnComposeQuaternionNode();
-	
-	bool PrepareEvaluationRun();
+class VISTADFNAPI VdfnComposeQuaternionNode : public IVdfnNode {
+ public:
+  VdfnComposeQuaternionNode();
+  virtual ~VdfnComposeQuaternionNode();
 
-protected:
-	virtual bool DoEvalNode();
+  bool PrepareEvaluationRun();
 
-private:
-	TVdfnPort<float>*				m_pInX;
-	TVdfnPort<float>*				m_pInY;
-	TVdfnPort<float>*				m_pInZ;
-	TVdfnPort<float>*				m_pInW;
-	TVdfnPort<VistaQuaternion>*		m_pOut;
+ protected:
+  virtual bool DoEvalNode();
+
+ private:
+  TVdfnPort<float>*           m_pInX;
+  TVdfnPort<float>*           m_pInY;
+  TVdfnPort<float>*           m_pInZ;
+  TVdfnPort<float>*           m_pInW;
+  TVdfnPort<VistaQuaternion>* m_pOut;
 };
 
 /*============================================================================*/

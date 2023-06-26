@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNOBJECTREGISTRY_H
 #define _VDFNOBJECTREGISTRY_H
 
@@ -70,74 +69,70 @@ class IVistaNameable;
  * All pointers stored in the registry must outlive the registry or be
  * unregistered before deleting them using RemObject().
  */
-class VISTADFNAPI VdfnObjectRegistry : public VistaObjectRegistry
-{
-public:
-	VdfnObjectRegistry();
+class VISTADFNAPI VdfnObjectRegistry : public VistaObjectRegistry {
+ public:
+  VdfnObjectRegistry();
 
-	/**
-	 * does <i>not</i> release memory on any instance that was registered.
-	 */
-	virtual ~VdfnObjectRegistry();
+  /**
+   * does <i>not</i> release memory on any instance that was registered.
+   */
+  virtual ~VdfnObjectRegistry();
 
-	/**
-	 * @return the transformable pointer to an object named strName or NULL
-	 */
-	IVistaTransformable *GetObjectTransform( const std::string &strName ) const;
+  /**
+   * @return the transformable pointer to an object named strName or NULL
+   */
+  IVistaTransformable* GetObjectTransform(const std::string& strName) const;
 
-	/**
-	 * @return the nameable pointer to an object named strName or NULL
-	 */
-	IVistaNameable      *GetObject( const std::string &strName ) const;
+  /**
+   * @return the nameable pointer to an object named strName or NULL
+   */
+  IVistaNameable* GetObject(const std::string& strName) const;
 
-	template<class T>
-	T *GetObject( const std::string &strName ) const
-	{
-		return dynamic_cast<T*>(GetObject(strName));
-	}
+  template <class T>
+  T* GetObject(const std::string& strName) const {
+    return dynamic_cast<T*>(GetObject(strName));
+  }
 
-	/**
-	 * claim possibly both: the nameable interface and the transformable interface,
-	 * if it was registered.
-	 * @param strName the name to look up
-	 * @param pObj a reference to a pointer to store the nameable interface to
-	 * @param pTrans a  reference to a pointer to store the transformable interface to
-	 * @return true if any of the two was found using strName
-	 */
-	bool GetObject( const std::string &strName,
-					IVistaNameable *&pObj,
-					IVistaTransformable *&pTrans ) const;
+  /**
+   * claim possibly both: the nameable interface and the transformable interface,
+   * if it was registered.
+   * @param strName the name to look up
+   * @param pObj a reference to a pointer to store the nameable interface to
+   * @param pTrans a  reference to a pointer to store the transformable interface to
+   * @return true if any of the two was found using strName
+   */
+  bool GetObject(
+      const std::string& strName, IVistaNameable*& pObj, IVistaTransformable*& pTrans) const;
 
-	/**
-	 * sets the nameable and transformable interface to match the name strName.
-	 * The method checks whether strName was already registered beforehand.
-	 * If nameable has an empty name, its name will be set to strName
-	 * @return false when strName already points to an object, true else
-	 * @param nameable
-	 * @param strName the name to register in this registry
-	 */
-	bool SetObject( const std::string &strName,
-					IVistaNameable *nameable,
-					IVistaTransformable *transformable );
+  /**
+   * sets the nameable and transformable interface to match the name strName.
+   * The method checks whether strName was already registered beforehand.
+   * If nameable has an empty name, its name will be set to strName
+   * @return false when strName already points to an object, true else
+   * @param nameable
+   * @param strName the name to register in this registry
+   */
+  bool SetObject(
+      const std::string& strName, IVistaNameable* nameable, IVistaTransformable* transformable);
 
-	/**
-	 * clear the bindings for strName
-	 * @return false if no binding existed the could be cleared.
-	 */
-	bool RemObject( const std::string &strName );
+  /**
+   * clear the bindings for strName
+   * @return false if no binding existed the could be cleared.
+   */
+  bool RemObject(const std::string& strName);
 
-	bool HasObject( const std::string &strName ) const;
+  bool HasObject(const std::string& strName) const;
 
+ protected:
+ private:
+  VdfnObjectRegistry(const VdfnObjectRegistry&) {
+  }
+  VdfnObjectRegistry& operator()(const VdfnObjectRegistry&); // unimplemented
+  VdfnObjectRegistry& operator=(const VdfnObjectRegistry&);  // unimplemented
 
-protected:
-private:
-	VdfnObjectRegistry( const VdfnObjectRegistry & ) {}
-	VdfnObjectRegistry &operator()( const VdfnObjectRegistry & ); // unimplemented
-	VdfnObjectRegistry &operator=( const VdfnObjectRegistry & ); // unimplemented
+  typedef std::map<std::string, IVistaTransformable*> OBJMAP;
 
-	typedef std::map<std::string, IVistaTransformable*> OBJMAP;
-
-	OBJMAP m_mpObjects;
+  OBJMAP m_mpObjects;
 };
 
 /*============================================================================*/
@@ -145,4 +140,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNOBJECTREGISTRY_H
-

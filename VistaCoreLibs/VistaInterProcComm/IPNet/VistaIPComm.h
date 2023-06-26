@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIPCOMM_H
 #define _VISTAIPCOMM_H
 
@@ -31,7 +30,6 @@
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <string>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -53,33 +51,31 @@
  * the programm was loaded AUTOMATICALLY. Do not expect win32-sockets to work prior to
  * the call to main()!
  */
-class VISTAINTERPROCCOMMAPI VistaIPComm
-{
-public:
+class VISTAINTERPROCCOMMAPI VistaIPComm {
+ public:
+  /**
+   * This will call UseIPComm
+   */
+  VistaIPComm();
 
-	/**
-	 * This will call UseIPComm
-	 */
-	VistaIPComm();
+  /**
+   * This will call CloseIPComm
+   */
+  ~VistaIPComm();
 
-	/**
-	 * This will call CloseIPComm
-	 */
-	~VistaIPComm();
+  /**
+   * This will open winsock once and then simply increment a reference count after each call.
+   * @return the value of the reference count.
+   */
+  static int UseIPComm();
 
-	/**
-	 * This will open winsock once and then simply increment a reference count after each call.
-	 * @return the value of the reference count.
-	 */
-	static int UseIPComm();
+  /**
+   * This will decrease the reference-counter and close winsock iff that count is zero.
+   * @return the value of the reference counter.
+   */
+  static int CloseIPComm();
 
-	/**
-	 * This will decrease the reference-counter and close winsock iff that count is zero.
-	 * @return the value of the reference counter.
-	 */
-	static int CloseIPComm();
-
-	static std::string GetHostname();
+  static std::string GetHostname();
 };
 
 /*============================================================================*/
@@ -87,4 +83,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

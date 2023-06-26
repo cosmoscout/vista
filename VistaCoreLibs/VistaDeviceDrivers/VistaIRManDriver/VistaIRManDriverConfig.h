@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIRMANDRIVERCONFIG_H_
 #define _VISTAIRMANDRIVERCONFIG_H_
 
@@ -34,13 +33,13 @@
 /*============================================================================*/
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTAIRMANDRIVER_STATIC)
-	#ifdef VISTAIRMANDRIVER_EXPORTS
-		#define VISTAIRMANDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTAIRMANDRIVERAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAIRMANDRIVER_EXPORTS
+#define VISTAIRMANDRIVERAPI __declspec(dllexport)
+#else
+#define VISTAIRMANDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAIRMANDRIVERAPI
+#define VISTAIRMANDRIVERAPI
 #endif
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -50,4 +49,4 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-#endif //VISTAIRMANDRIVERCONFIG_H_
+#endif // VISTAIRMANDRIVERCONFIG_H_

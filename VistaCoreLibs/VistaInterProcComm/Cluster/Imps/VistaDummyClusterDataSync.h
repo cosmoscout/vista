@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADUMMYCLUSTERSYNC_H
 #define _VISTADUMMYCLUSTERSYNC_H
 
@@ -43,32 +42,27 @@
 /**
  * Dummy implementation that does nothing - useful for example in Standalone
  */
-class VISTAINTERPROCCOMMAPI VistaDummyClusterDataSync : public IVistaClusterDataSync
-{
-public:
-	VistaDummyClusterDataSync();
-	virtual ~VistaDummyClusterDataSync();
+class VISTAINTERPROCCOMMAPI VistaDummyClusterDataSync : public IVistaClusterDataSync {
+ public:
+  VistaDummyClusterDataSync();
+  virtual ~VistaDummyClusterDataSync();
 
-	virtual VistaType::systemtime GetSyncTime();
+  virtual VistaType::systemtime GetSyncTime();
 
-	virtual bool SyncTime( VistaType::systemtime& nTime );
-	virtual bool SyncData( std::string& sData );
-	virtual bool SyncData( VistaPropertyList& oList );
-	virtual bool SyncData( IVistaSerializable& oSerializable );
-	virtual bool SyncData( VistaType::byte* pData, 
-							const int iDataSize );
-	virtual bool SyncData( VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							int& iDataSize );
-	virtual bool SyncData( std::vector<VistaType::byte>& vecData );
+  virtual bool SyncTime(VistaType::systemtime& nTime);
+  virtual bool SyncData(std::string& sData);
+  virtual bool SyncData(VistaPropertyList& oList);
+  virtual bool SyncData(IVistaSerializable& oSerializable);
+  virtual bool SyncData(VistaType::byte* pData, const int iDataSize);
+  virtual bool SyncData(VistaType::byte* pDataBuffer, const int iBufferSize, int& iDataSize);
+  virtual bool SyncData(std::vector<VistaType::byte>& vecData);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
-
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 };
 
 /*============================================================================*/

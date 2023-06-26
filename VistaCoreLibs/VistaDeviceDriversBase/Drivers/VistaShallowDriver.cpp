@@ -21,58 +21,46 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaShallowDriver.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-class VistaShallowDriverCreation : public IVistaDriverCreationMethod
-{
-public:
-	VistaShallowDriverCreation()
-	: IVistaDriverCreationMethod(NULL)
-	{
+class VistaShallowDriverCreation : public IVistaDriverCreationMethod {
+ public:
+  VistaShallowDriverCreation()
+      : IVistaDriverCreationMethod(NULL) {
+  }
 
-	}
-
-	virtual IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaShallowDriver(this);
-	}
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaShallowDriver(this);
+  }
 };
 
-
-namespace
-{
-	VistaShallowDriverCreation *SpFactory = NULL;
+namespace {
+VistaShallowDriverCreation* SpFactory = NULL;
 }
 
-IVistaDriverCreationMethod *VistaShallowDriver::GetDriverFactoryMethod()
-{
-	if(SpFactory == NULL)
-		SpFactory = new VistaShallowDriverCreation;
-	return SpFactory;
+IVistaDriverCreationMethod* VistaShallowDriver::GetDriverFactoryMethod() {
+  if (SpFactory == NULL)
+    SpFactory = new VistaShallowDriverCreation;
+  return SpFactory;
 }
-
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaShallowDriver::VistaShallowDriver(IVistaDriverCreationMethod *crm)
-: IVistaDeviceDriver(crm)
-{
-	SetUpdateType( IVistaDeviceDriver::UPDATE_EXPLICIT_POLL );
+VistaShallowDriver::VistaShallowDriver(IVistaDriverCreationMethod* crm)
+    : IVistaDeviceDriver(crm) {
+  SetUpdateType(IVistaDeviceDriver::UPDATE_EXPLICIT_POLL);
 }
 
-VistaShallowDriver::~VistaShallowDriver()
-{
+VistaShallowDriver::~VistaShallowDriver() {
 }
 
-bool VistaShallowDriver::DoSensorUpdate(VistaType::microtime dTs)
-{
-	return true;
+bool VistaShallowDriver::DoSensorUpdate(VistaType::microtime dTs) {
+  return true;
 }
 
 /*============================================================================*/
@@ -82,5 +70,3 @@ bool VistaShallowDriver::DoSensorUpdate(VistaType::microtime dTs)
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

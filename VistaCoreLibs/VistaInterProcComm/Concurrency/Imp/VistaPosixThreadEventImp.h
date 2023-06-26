@@ -21,12 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAPOSIXTHREADEVENTIMPL_H
 #define _VISTAPOSIXTHREADEVENTIMPL_H
-
 
 #include "VistaThreadEventImp.h"
 
@@ -36,31 +34,28 @@
 
 class VistaThreadEventImp;
 
-class VISTAINTERPROCCOMMAPI VistaPosixThreadEventImp : public IVistaThreadEventImp
-{
-private:
-	int m_fd[2];
+class VISTAINTERPROCCOMMAPI VistaPosixThreadEventImp : public IVistaThreadEventImp {
+ private:
+  int m_fd[2];
 
-protected:
-public:
-	VistaPosixThreadEventImp( );
-	virtual ~VistaPosixThreadEventImp();
+ protected:
+ public:
+  VistaPosixThreadEventImp();
+  virtual ~VistaPosixThreadEventImp();
 
-	void SignalEvent();
+  void SignalEvent();
 
-	bool WaitForEvent(bool bBlock);
-	bool WaitForEvent(int iTimeoutMSecs);
+  bool WaitForEvent(bool bBlock);
+  bool WaitForEvent(int iTimeoutMSecs);
 
-	virtual HANDLE GetEventSignalHandle() const;
-	virtual HANDLE GetEventWaitHandle() const;
+  virtual HANDLE GetEventSignalHandle() const;
+  virtual HANDLE GetEventWaitHandle() const;
 
-	bool ResetThisEvent( ResetBehavior reset_behavior );
+  bool ResetThisEvent(ResetBehavior reset_behavior);
 };
-
 
 /*============================================================================*/
 
 #endif // _VISTAITERATIONTHREAD_H
 
 #endif // VISTA_THREADING_WIN32
-

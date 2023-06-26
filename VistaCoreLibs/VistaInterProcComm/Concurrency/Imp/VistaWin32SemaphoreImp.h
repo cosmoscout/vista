@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAWIN32SEMAPHOREIMP_H
@@ -49,22 +48,21 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaWin32SemaphoreImp : public IVistaSemaphoreImp
-{
-public:
-	VistaWin32SemaphoreImp(int iCnt, IVistaSemaphoreImp::eSemType eType);
-	virtual ~VistaWin32SemaphoreImp();
+class VISTAINTERPROCCOMMAPI VistaWin32SemaphoreImp : public IVistaSemaphoreImp {
+ public:
+  VistaWin32SemaphoreImp(int iCnt, IVistaSemaphoreImp::eSemType eType);
+  virtual ~VistaWin32SemaphoreImp();
 
+  virtual void Wait();
+  virtual bool TryWait();
+  virtual void Post();
 
-	virtual void Wait    ();
-	virtual bool TryWait ();
-	virtual void Post    ();
-protected:
-private:
-	IVistaSemaphoreImp::eSemType m_eType;
-	CRITICAL_SECTION             m_cs;
-	bool                         m_bCs;
-	HANDLE                       m_hs;
+ protected:
+ private:
+  IVistaSemaphoreImp::eSemType m_eType;
+  CRITICAL_SECTION             m_cs;
+  bool                         m_bCs;
+  HANDLE                       m_hs;
 };
 
 /*============================================================================*/
@@ -74,5 +72,3 @@ private:
 #endif
 
 #endif // VISTA_THREADING_WIN32
-
-

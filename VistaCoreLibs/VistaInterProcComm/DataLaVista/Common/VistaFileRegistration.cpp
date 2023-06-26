@@ -21,21 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
 #include "VistaFileRegistration.h"
 
-
 #include <fstream>
 using namespace std;
 
-#include <cstring>
 #include <cstdio>
-
+#include <cstring>
 
 #define BUFFERSIZE 1024
 
@@ -43,50 +39,39 @@ using namespace std;
 /* STATICS                                                                    */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DLVistaFileRegistration::DLVistaFileRegistration(const string &SFName)
-{
-	m_iPacketTypeCount = 0;
-	ifstream infile;
-	
-	infile.open(SFName.c_str());
-	if(infile.good())
-	{
-		printf("DLVistaFileRegistration::DLVistaFileRegistration(%s) -- OPENED\n", SFName.c_str());
-		char buffer[BUFFERSIZE];
-		
-		while(!infile.eof())
-		{
-			memset(buffer, 0, BUFFERSIZE);
-			infile.getline(buffer,BUFFERSIZE, '\n');
-			printf("read buffer: %s\n", buffer);
-			if(strlen(buffer) && buffer[0] != '\n')			
-				RegisterPacketType(buffer, ++m_iPacketTypeCount);
-		}
-		printf("-- READING DONE.\n");
-	}
-	
-	infile.close();
+DLVistaFileRegistration::DLVistaFileRegistration(const string& SFName) {
+  m_iPacketTypeCount = 0;
+  ifstream infile;
+
+  infile.open(SFName.c_str());
+  if (infile.good()) {
+    printf("DLVistaFileRegistration::DLVistaFileRegistration(%s) -- OPENED\n", SFName.c_str());
+    char buffer[BUFFERSIZE];
+
+    while (!infile.eof()) {
+      memset(buffer, 0, BUFFERSIZE);
+      infile.getline(buffer, BUFFERSIZE, '\n');
+      printf("read buffer: %s\n", buffer);
+      if (strlen(buffer) && buffer[0] != '\n')
+        RegisterPacketType(buffer, ++m_iPacketTypeCount);
+    }
+    printf("-- READING DONE.\n");
+  }
+
+  infile.close();
 }
 
-
-DLVistaFileRegistration::~DLVistaFileRegistration()
-{
-
+DLVistaFileRegistration::~DLVistaFileRegistration() {
 }
-
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-int DLVistaFileRegistration::CreateTypeIdForName(const string &SName)
-{
-	return -1;
+int DLVistaFileRegistration::CreateTypeIdForName(const string& SName) {
+  return -1;
 }
-
-

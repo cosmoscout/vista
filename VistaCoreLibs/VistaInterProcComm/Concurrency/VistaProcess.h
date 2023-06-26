@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROCESS_H
 #define _VISTAPROCESS_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -39,52 +37,49 @@
 class IVistaProcessImp;
 class VistaPriority;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
 /**
  * @todo is this needed anywhere?
  */
-class VISTAINTERPROCCOMMAPI VistaProcess : public VistaFork
-{
-public:
-	VistaProcess ();
-	virtual ~VistaProcess ();
+class VISTAINTERPROCCOMMAPI VistaProcess : public VistaFork {
+ public:
+  VistaProcess();
+  virtual ~VistaProcess();
 
-	bool Run( const std::string & inCommand );
-	bool Suspend();
-	bool Resume();
-	bool Join();
-	bool Abort();
+  bool Run(const std::string& inCommand);
+  bool Suspend();
+  bool Resume();
+  bool Join();
+  bool Abort();
 
-	bool SetPriority( const VistaPriority & );
-	void GetPriority( VistaPriority & ) const;
+  bool SetPriority(const VistaPriority&);
+  void GetPriority(VistaPriority&) const;
 
-	virtual void PreRun();
-	virtual void PostRun();
+  virtual void PreRun();
+  virtual void PostRun();
 
-	/**
-	 * A suspended process IS running (but not executing)
-	 * A non-RUN process is NOT running (and not executing)
-	 */
-	int GetIsRunning() const;
+  /**
+   * A suspended process IS running (but not executing)
+   * A non-RUN process is NOT running (and not executing)
+   */
+  int GetIsRunning() const;
 
-	std::string GetProcessCommand() const;
+  std::string GetProcessCommand() const;
 
-	virtual bool GetIsFinished() const;
+  virtual bool GetIsFinished() const;
 
-private:
-	/**
-	 * Defines the platform specific implementation for this process
-	 */
-	IVistaProcessImp     *m_pProcessImp;
-	std::string m_sProcessCommand;
+ private:
+  /**
+   * Defines the platform specific implementation for this process
+   */
+  IVistaProcessImp* m_pProcessImp;
+  std::string       m_sProcessCommand;
 
-	bool m_bIsFinished;
-	bool m_bRunning;
+  bool m_bIsFinished;
+  bool m_bRunning;
 };
 
 #endif // _VISTAPROCESS_H
