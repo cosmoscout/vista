@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTABASECONFIG_H
 #define _VISTABASECONFIG_H
 
 // Windows DLL build
-#if (defined WIN32) && !(defined VISTABASE_STATIC) 
-	#ifdef VISTABASE_EXPORTS
-		#define VISTABASEAPI __declspec(dllexport)
-	#else
-		#define VISTABASEAPI __declspec(dllimport)
-	#endif
+#if (defined WIN32) && !(defined VISTABASE_STATIC)
+#ifdef VISTABASE_EXPORTS
+#define VISTABASEAPI __declspec(dllexport)
+#else
+#define VISTABASEAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTABASEAPI
+#define VISTABASEAPI
 #endif
 
 #endif //_VISTABASECONFIG_H

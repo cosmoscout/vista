@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASEMAPHOREIMP_H
 #define _VISTASEMAPHOREIMP_H
 
@@ -42,53 +41,45 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IVistaSemaphoreImp
-{
+class VISTAINTERPROCCOMMAPI IVistaSemaphoreImp {
 
-public:
+ public:
+  enum eSemType { SEM_TYPE_FASTEST = 0, SEM_TYPE_COMPATIBLE };
 
-	enum eSemType
-	{
-		SEM_TYPE_FASTEST=0,
-		SEM_TYPE_COMPATIBLE
-	};
+  virtual ~IVistaSemaphoreImp();
 
-	virtual ~IVistaSemaphoreImp();	
+  /**
+   * if semaphore value is > 0 then decrement it and carry on. If it's
+   * already 0 then block.
+   */
+  virtual void Wait() = 0;
 
-	/**
-	 * if semaphore value is > 0 then decrement it and carry on. If it's
-	 * already 0 then block.
-	 */
-	virtual void Wait    () = 0;	
+  /**
+   * if semaphore value is > 0 then decrement it and return true.
+   * If it's already 0 then return false.
+   */
+  virtual bool TryWait() = 0;
 
-	/**
-	 * if semaphore value is > 0 then decrement it and return true.
-	 * If it's already 0 then return false.
-	 */
-	virtual bool TryWait () = 0;	
+  /**
+   * if any threads are blocked in wait(), wake one of them up. Otherwise
+   * increment the value of the semaphore.
+   */
+  virtual void Post() = 0;
 
-	/**
-	 * if any threads are blocked in wait(), wake one of them up. Otherwise
-	 * increment the value of the semaphore.
-	 */
-	virtual void Post    () = 0;
+  static IVistaSemaphoreImp* CreateSemaphoreImp(int iCnt, eSemType eType);
 
+ protected:
+  IVistaSemaphoreImp();
 
-	static IVistaSemaphoreImp *CreateSemaphoreImp(int iCnt, eSemType eType);
-
-protected:
-	IVistaSemaphoreImp  ( ) ;
-private:
-	IVistaSemaphoreImp ( const IVistaSemaphoreImp & ) {};
-	IVistaSemaphoreImp & operator=       ( const IVistaSemaphoreImp & ) { return *this; };
-
+ private:
+  IVistaSemaphoreImp(const IVistaSemaphoreImp&){};
+  IVistaSemaphoreImp& operator=(const IVistaSemaphoreImp&) {
+    return *this;
+  };
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASEMAPHOREIMP_H
-
-

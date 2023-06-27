@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTATEEFILTER_H
 #define IDLVISTATEEFILTER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaInPlaceFilter.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <deque>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -49,39 +47,34 @@ class VistaThreadEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI IDLVistaTeeFilter : public IDLVistaInPlaceFilter {
+ public:
+  IDLVistaTeeFilter();
+  ~IDLVistaTeeFilter();
 
-class VISTAINTERPROCCOMMAPI IDLVistaTeeFilter : public IDLVistaInPlaceFilter
-{
-public:
-	IDLVistaTeeFilter();
-	~IDLVistaTeeFilter();
+  virtual bool AttachOutputComponent(IDLVistaPipeComponent* pComp);
+  virtual bool DetachOutputComponent(IDLVistaPipeComponent* pComp);
 
+  virtual int GetNumberOfOutbounds() const;
 
-	virtual bool AttachOutputComponent(IDLVistaPipeComponent * pComp);
-	virtual bool DetachOutputComponent(IDLVistaPipeComponent * pComp);
+  virtual IDLVistaPipeComponent* GetOutboundByIndex(int iIndex) const;
 
-	virtual int GetNumberOfOutbounds() const;
+ protected:
+  VistaMutex* GrabMutex(VistaMutex* pMutex, bool bBlock);
+  int         GetPacketIndex(IDLVistaDataPacket*) const;
 
-	virtual IDLVistaPipeComponent *GetOutboundByIndex(int iIndex) const;
+  void UpdatePacketIndex(IDLVistaDataPacket* pPacket, int iIndex);
 
-protected:
-	VistaMutex *GrabMutex(VistaMutex *pMutex, bool bBlock);
-	int GetPacketIndex(IDLVistaDataPacket *) const;
+ protected:
+  VistaMutex *      m_pMutexIn, *m_pMutexOut, *m_pLockEmpty, *m_pModifyOutbounds;
+  VistaThreadEvent* m_pRecycleEvent;
 
-	void UpdatePacketIndex(IDLVistaDataPacket *pPacket, int iIndex);
-
-protected:
-	VistaMutex *m_pMutexIn, *m_pMutexOut, *m_pLockEmpty, *m_pModifyOutbounds;
-	VistaThreadEvent *m_pRecycleEvent;
-
-private:
-	std::deque<IDLVistaPipeComponent *> *m_pOutbounds;
+ private:
+  std::deque<IDLVistaPipeComponent*>* m_pOutbounds;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //DLVISTATEEPIPE_H
-
+#endif // DLVISTATEEPIPE_H

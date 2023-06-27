@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTAFILEWRITER_H
 #define DLVISTAFILEWRITER_H
 
@@ -32,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaDataSink.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <cstdio>
 #include <string>
 
@@ -41,57 +40,54 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 class IDLVistaPacket;
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI DLVistaFileWriter : public DLVistaDataSink {
+ private:
+  FILE* m_pOutputFile;
+  FILE* OpenOutputFile(const char*);
+  int   m_iRecordCount;
 
-class VISTAINTERPROCCOMMAPI DLVistaFileWriter : public DLVistaDataSink
-{
-private:
-	FILE * m_pOutputFile;
-	FILE *OpenOutputFile(const char *);
-	int m_iRecordCount;
+  bool m_bPutEndline, m_bDBWait;
 
-	bool m_bPutEndline, m_bDBWait;
+ public:
+  DLVistaFileWriter();
+  DLVistaFileWriter(const char* pcFileName);
+  DLVistaFileWriter(const std::string& SFileName);
+  virtual ~DLVistaFileWriter();
 
-public:
-	DLVistaFileWriter();
-	DLVistaFileWriter(const char *pcFileName);
-	DLVistaFileWriter(const std::string &SFileName);
-	virtual ~DLVistaFileWriter();
+  bool ConsumePacket(IDLVistaPacket*);
 
-	bool ConsumePacket(IDLVistaPacket * );
+  bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
+  bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
+  bool ConsumePacket(IDLVistaDataPacket*);
 
-	bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock = false);
-	bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
-	bool ConsumePacket(IDLVistaDataPacket *);
+  IDLVistaDataPacket* GivePacket(bool bBlock);
 
-	IDLVistaDataPacket *GivePacket(bool bBlock);
+  IDLVistaDataPacket* CreatePacket();
+  void                DeletePacket(IDLVistaDataPacket* pPacket);
 
-	IDLVistaDataPacket *CreatePacket();
-	void DeletePacket(IDLVistaDataPacket *pPacket);
+  bool InitPacketMgmt();
 
-	bool InitPacketMgmt();
+  virtual int GetInputPacketType() const;
 
-	virtual int GetInputPacketType() const;
+  bool GetPutEndline() const;
 
+  void SetPutEndline(bool bPutEndline);
 
-	bool GetPutEndline() const;
-
-	void SetPutEndline(bool bPutEndline);
-
-	void SetDebugWait(bool bDBWait) { m_bDBWait = bDBWait; };
-
+  void SetDebugWait(bool bDBWait) {
+    m_bDBWait = bDBWait;
+  };
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //DLVISTAFILEWRITER_H
-
+#endif // DLVISTAFILEWRITER_H

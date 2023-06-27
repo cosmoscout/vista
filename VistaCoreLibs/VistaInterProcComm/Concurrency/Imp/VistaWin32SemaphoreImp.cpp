@@ -21,13 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 #if defined(VISTA_THREADING_WIN32)
 #define _WIN32_WINNT 0x0500 // we need this for the try call
 
-#include "VistaWin32SemaphoreImp.h" 
+#include "VistaWin32SemaphoreImp.h"
 
 #include <VistaBase/VistaStreamUtils.h>
 
@@ -41,88 +40,66 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaWin32SemaphoreImp::VistaWin32SemaphoreImp(int iCnt, IVistaSemaphoreImp::eSemType eType)
-: IVistaSemaphoreImp(), m_eType(eType), m_hs(NULL), m_bCs(false)
-{
+    : IVistaSemaphoreImp()
+    , m_eType(eType)
+    , m_hs(NULL)
+    , m_bCs(false) {
 
-	if((iCnt == 1) && (m_eType == IVistaSemaphoreImp::SEM_TYPE_FASTEST))
-	{
-		InitializeCriticalSection(&m_cs);
-		m_bCs = true;
-	}
-	else
-	{
-		m_hs = CreateSemaphore(NULL, iCnt, iCnt, NULL);
-	}
+  if ((iCnt == 1) && (m_eType == IVistaSemaphoreImp::SEM_TYPE_FASTEST)) {
+    InitializeCriticalSection(&m_cs);
+    m_bCs = true;
+  } else {
+    m_hs = CreateSemaphore(NULL, iCnt, iCnt, NULL);
+  }
 }
 
-VistaWin32SemaphoreImp::~VistaWin32SemaphoreImp()
-{
-	if(m_bCs)
-		DeleteCriticalSection(&m_cs);
-	else
-	{
-		CloseHandle(m_hs);
-	}
+VistaWin32SemaphoreImp::~VistaWin32SemaphoreImp() {
+  if (m_bCs)
+    DeleteCriticalSection(&m_cs);
+  else {
+    CloseHandle(m_hs);
+  }
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-void VistaWin32SemaphoreImp::Wait    ()
-{
-	if(m_bCs)
-	{
-		EnterCriticalSection(&m_cs);
-	}
-	else
-	{
-		DWORD hr = WaitForSingleObject(m_hs, INFINITE);
-		if(hr == WAIT_ABANDONED)
-		{
-			vstr::errp() << "[VSemWin32]: Semaphore @ " << this
-				<< ", wait was abandoned" << std::endl;
-		}
-	}
+void VistaWin32SemaphoreImp::Wait() {
+  if (m_bCs) {
+    EnterCriticalSection(&m_cs);
+  } else {
+    DWORD hr = WaitForSingleObject(m_hs, INFINITE);
+    if (hr == WAIT_ABANDONED) {
+      vstr::errp() << "[VSemWin32]: Semaphore @ " << this << ", wait was abandoned" << std::endl;
+    }
+  }
 }
 
-bool VistaWin32SemaphoreImp::TryWait ()
-{
-	if(m_bCs)
-	{
-		return (TryEnterCriticalSection( & m_cs ) != 0);
-	}
-	else
-	{
-		DWORD hr = WaitForSingleObject(m_hs, 0);
-		if(hr == WAIT_ABANDONED)
-		{
-			vstr::errp() << "[VSemWin32]: Semaphore @ " << this
-					<< ", trywait was abandoned" << std::endl;
-			return false;
-		}
-		
-		return (hr == WAIT_OBJECT_0);
-	}
+bool VistaWin32SemaphoreImp::TryWait() {
+  if (m_bCs) {
+    return (TryEnterCriticalSection(&m_cs) != 0);
+  } else {
+    DWORD hr = WaitForSingleObject(m_hs, 0);
+    if (hr == WAIT_ABANDONED) {
+      vstr::errp() << "[VSemWin32]: Semaphore @ " << this << ", trywait was abandoned" << std::endl;
+      return false;
+    }
+
+    return (hr == WAIT_OBJECT_0);
+  }
 }
 
-void VistaWin32SemaphoreImp::Post    ()
-{
-	if(m_bCs)
-	{
-		LeaveCriticalSection(&m_cs);
-	}
-	else
-	{
-		ReleaseSemaphore(m_hs, 1, NULL);
-	}
+void VistaWin32SemaphoreImp::Post() {
+  if (m_bCs) {
+    LeaveCriticalSection(&m_cs);
+  } else {
+    ReleaseSemaphore(m_hs, 1, NULL);
+  }
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif // VISTA_THREADING_WIN32
-
-

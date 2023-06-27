@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTCPIPClusterBarrier.h"
 
-#include <VistaInterProcComm/IPNet/VistaUDPSocket.h>
 #include <VistaInterProcComm/Connections/VistaConnectionIP.h>
+#include <VistaInterProcComm/IPNet/VistaUDPSocket.h>
 
-#include <VistaBase/VistaStreamUtils.h>
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaSerializingToolset.h>
+#include <VistaBase/VistaStreamUtils.h>
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -39,79 +38,64 @@
 /* LEADER                                                                     */
 /*============================================================================*/
 
-VistaTCPIPClusterLeaderBarrier::VistaTCPIPClusterLeaderBarrier(
-												const bool bVerbose )
-: VistaClusterLeaderBarrierIPBase( bVerbose )
-{
+VistaTCPIPClusterLeaderBarrier::VistaTCPIPClusterLeaderBarrier(const bool bVerbose)
+    : VistaClusterLeaderBarrierIPBase(bVerbose) {
 }
 
-VistaTCPIPClusterLeaderBarrier::~VistaTCPIPClusterLeaderBarrier()
-{
+VistaTCPIPClusterLeaderBarrier::~VistaTCPIPClusterLeaderBarrier() {
 }
 
-bool VistaTCPIPClusterLeaderBarrier::BarrierWait( int iTimeOut )
-{
-	if( GetIsValid() == false )
-		return false;
+bool VistaTCPIPClusterLeaderBarrier::BarrierWait(int iTimeOut) {
+  if (GetIsValid() == false)
+    return false;
 
-	if( VistaClusterLeaderBarrierIPBase::WaitForAllFollowers( iTimeOut ) == false )
-		return false;
+  if (VistaClusterLeaderBarrierIPBase::WaitForAllFollowers(iTimeOut) == false)
+    return false;
 
-	// send out go signal
-	// ip is not well suited for this, but if there is no alternative...
-	std::vector<Follower*> vecDiedFollowers;
-	std::vector<Follower*>& vecFollowers = GetFollowersRef();
-	for( std::vector<Follower*>::iterator itFollower = vecFollowers.begin();
-			itFollower != vecFollowers.end(); ++itFollower )
-	{
-		try
-		{
-			VistaType::sint32 nBarrierCount = GetBarrierWaitCount();
-			if( (*itFollower)->m_pLeaderConn->WriteInt32( nBarrierCount ) != sizeof(VistaType::uint32) )
-			{
-				if( GetIsVerbose() )
-				{
-					vstr::warnp() << "[" << GetBarrierType() << "]: "
-								<< "Writing Go-Token for follower [" << (*itFollower)->m_sName
-								<< "] failed - removing it from sync list" << std::endl;
-				}
-				vecDiedFollowers.push_back( (*itFollower) );
-				continue;
-			}			
-		}
-		catch( VistaExceptionBase& )
-		{
-			if( GetIsVerbose() )
-			{
-				vstr::warnp() << "[" << GetBarrierType() << "]: "
-							<< "Exception while writing go-token for follower [" << (*itFollower)->m_sName
-							<< "] - removing it from sync list" << std::endl;
-			}
-			vecDiedFollowers.push_back( (*itFollower) );
-			continue;
-		}		
-	}
+  // send out go signal
+  // ip is not well suited for this, but if there is no alternative...
+  std::vector<Follower*>  vecDiedFollowers;
+  std::vector<Follower*>& vecFollowers = GetFollowersRef();
+  for (std::vector<Follower*>::iterator itFollower = vecFollowers.begin();
+       itFollower != vecFollowers.end(); ++itFollower) {
+    try {
+      VistaType::sint32 nBarrierCount = GetBarrierWaitCount();
+      if ((*itFollower)->m_pLeaderConn->WriteInt32(nBarrierCount) != sizeof(VistaType::uint32)) {
+        if (GetIsVerbose()) {
+          vstr::warnp() << "[" << GetBarrierType() << "]: "
+                        << "Writing Go-Token for follower [" << (*itFollower)->m_sName
+                        << "] failed - removing it from sync list" << std::endl;
+        }
+        vecDiedFollowers.push_back((*itFollower));
+        continue;
+      }
+    } catch (VistaExceptionBase&) {
+      if (GetIsVerbose()) {
+        vstr::warnp() << "[" << GetBarrierType() << "]: "
+                      << "Exception while writing go-token for follower [" << (*itFollower)->m_sName
+                      << "] - removing it from sync list" << std::endl;
+      }
+      vecDiedFollowers.push_back((*itFollower));
+      continue;
+    }
+  }
 
-	// kill dead followers
-	for( std::vector<Follower*>::iterator itDied = vecDiedFollowers.begin();
-			itDied != vecDiedFollowers.end(); ++itDied )
-	{
-		RemoveFollower( (*itDied) );
-	}
-	vecDiedFollowers.clear();
+  // kill dead followers
+  for (std::vector<Follower*>::iterator itDied = vecDiedFollowers.begin();
+       itDied != vecDiedFollowers.end(); ++itDied) {
+    RemoveFollower((*itDied));
+  }
+  vecDiedFollowers.clear();
 
-
-	return GetIsValid();
+  return GetIsValid();
 }
 
-bool VistaTCPIPClusterLeaderBarrier::GetIsValid() const
-{
-	return VistaClusterLeaderBarrierIPBase::GetIsValid();
+bool VistaTCPIPClusterLeaderBarrier::GetIsValid() const {
+  return VistaClusterLeaderBarrierIPBase::GetIsValid();
 }
 
-std::string VistaTCPIPClusterLeaderBarrier::GetBarrierType() const
-{
-	return "TCPIPLeaderBarrier";
+std::string VistaTCPIPClusterLeaderBarrier::GetBarrierType() const {
+  return "TCPIPLeaderBarrier";
 }
 
 /*============================================================================*/
@@ -119,80 +103,62 @@ std::string VistaTCPIPClusterLeaderBarrier::GetBarrierType() const
 /*============================================================================*/
 
 VistaTCPIPClusterFollowerBarrier::VistaTCPIPClusterFollowerBarrier(
-												VistaConnectionIP* pLeaderConn,
-												const bool bManageDeletion,
-												const bool bVerbose )
-: VistaClusterFollowerBarrierIPBase( pLeaderConn, bManageDeletion, bVerbose )
-{
+    VistaConnectionIP* pLeaderConn, const bool bManageDeletion, const bool bVerbose)
+    : VistaClusterFollowerBarrierIPBase(pLeaderConn, bManageDeletion, bVerbose) {
 }
 
-
-VistaTCPIPClusterFollowerBarrier::~VistaTCPIPClusterFollowerBarrier()
-{
+VistaTCPIPClusterFollowerBarrier::~VistaTCPIPClusterFollowerBarrier() {
 }
 
-
-bool VistaTCPIPClusterFollowerBarrier::GetIsValid() const
-{
-	return VistaClusterFollowerBarrierIPBase::GetIsValid();
+bool VistaTCPIPClusterFollowerBarrier::GetIsValid() const {
+  return VistaClusterFollowerBarrierIPBase::GetIsValid();
 }
 
-bool VistaTCPIPClusterFollowerBarrier::BarrierWait( int iTimeOut )
-{
-	if( GetIsValid() == false )
-		return false;
+bool VistaTCPIPClusterFollowerBarrier::BarrierWait(int iTimeOut) {
+  if (GetIsValid() == false)
+    return false;
 
-	if( VistaClusterFollowerBarrierIPBase::SendReadyTokenToLeader( iTimeOut ) == false )
-		return false;
+  if (VistaClusterFollowerBarrierIPBase::SendReadyTokenToLeader(iTimeOut) == false)
+    return false;
 
-	VistaType::sint32 nReceive;
-	try
-	{	
-		VistaConnectionIP* pConnection = GetConnection();
-		pConnection->SetReadTimeout( iTimeOut );
-		int nReturn = pConnection->ReadInt32( nReceive );
-		pConnection->SetReadTimeout( 0 );
-		if( nReturn != sizeof( VistaType::sint32) )
-		{
-			if( GetIsVerbose() )
-			{
-				vstr::warnp() << "[" << GetBarrierType() << "]: "
-						<< "Error receiving go token from leader" << std::endl;
-			}
-			ProcessError();
-			return false;
-		}
+  VistaType::sint32 nReceive;
+  try {
+    VistaConnectionIP* pConnection = GetConnection();
+    pConnection->SetReadTimeout(iTimeOut);
+    int nReturn = pConnection->ReadInt32(nReceive);
+    pConnection->SetReadTimeout(0);
+    if (nReturn != sizeof(VistaType::sint32)) {
+      if (GetIsVerbose()) {
+        vstr::warnp() << "[" << GetBarrierType() << "]: "
+                      << "Error receiving go token from leader" << std::endl;
+      }
+      ProcessError();
+      return false;
+    }
 
-		if( GetDoesSwap() )
-			VistaSerializingToolset::Swap( &nReceive, sizeof(VistaType::uint64) );
+    if (GetDoesSwap())
+      VistaSerializingToolset::Swap(&nReceive, sizeof(VistaType::uint64));
 
-		if( nReceive != GetBarrierWaitCount() )
-		{
-			if( GetIsVerbose() )
-			{
-				vstr::warnp() << "[" << GetBarrierType() << "]: "
-						<< "Received BarrierCounter is [" << nReceive << "], but expected ["
-						<< GetBarrierWaitCount() << "]" << std::endl;
-			}
-			SetBarrierWaitCount( nReceive );
-			return false;
-		}
-	}
-	catch( VistaExceptionBase& )
-	{
-		if( GetIsVerbose() )
-		{
-			vstr::warnp() << "[" << GetBarrierType() << "]: "
-				<< "Exception during syncing" << std::endl;
-		}
-		ProcessError();
-		return false;
-	}	
-	return true;
+    if (nReceive != GetBarrierWaitCount()) {
+      if (GetIsVerbose()) {
+        vstr::warnp() << "[" << GetBarrierType() << "]: "
+                      << "Received BarrierCounter is [" << nReceive << "], but expected ["
+                      << GetBarrierWaitCount() << "]" << std::endl;
+      }
+      SetBarrierWaitCount(nReceive);
+      return false;
+    }
+  } catch (VistaExceptionBase&) {
+    if (GetIsVerbose()) {
+      vstr::warnp() << "[" << GetBarrierType() << "]: "
+                    << "Exception during syncing" << std::endl;
+    }
+    ProcessError();
+    return false;
+  }
+  return true;
 }
 
-
-std::string VistaTCPIPClusterFollowerBarrier::GetBarrierType() const
-{
-	return "TCPIPFollowerBarrier";
+std::string VistaTCPIPClusterFollowerBarrier::GetBarrierType() const {
+  return "TCPIPFollowerBarrier";
 }

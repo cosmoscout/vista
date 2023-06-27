@@ -45,43 +45,39 @@ class IVistaSharedCore;
 /*============================================================================*/
 
 /**
- * 
+ *
  */
-class VISTAASPECTSAPI IVistaSharedCoreOwner
-{
-public:
-	enum DataHandling
-	{
-		DH_ALWAYS_COPY,
-		DH_ALWAYS_SHARE,
-		DH_COPY_ON_WRITE,
-	};
-	DataHandling GetDataHandlingMode() const;
-	void SetDataHandlingMode( const DataHandling eMode );
+class VISTAASPECTSAPI IVistaSharedCoreOwner {
+ public:
+  enum DataHandling {
+    DH_ALWAYS_COPY,
+    DH_ALWAYS_SHARE,
+    DH_COPY_ON_WRITE,
+  };
+  DataHandling GetDataHandlingMode() const;
+  void         SetDataHandlingMode(const DataHandling eMode);
 
-	const IVistaSharedCore* GetCore() const;
-	IVistaSharedCore* GetCoreForWriting();
+  const IVistaSharedCore* GetCore() const;
+  IVistaSharedCore*       GetCoreForWriting();
 
-protected:
-	void PrepareCoreForWriting();
-	void MakeCoreUniquelyUsed();
+ protected:
+  void PrepareCoreForWriting();
+  void MakeCoreUniquelyUsed();
 
-	IVistaSharedCoreOwner& operator= ( const IVistaSharedCoreOwner& oOther );
+  IVistaSharedCoreOwner& operator=(const IVistaSharedCoreOwner& oOther);
 
-protected:
-	IVistaSharedCoreOwner( IVistaSharedCore* pCore,
-							const DataHandling eDataHandlingMode );
-	IVistaSharedCoreOwner( const IVistaSharedCoreOwner& oCopy );
-	virtual ~IVistaSharedCoreOwner();
-protected: // @IMGTODO: temporarily un-privated for swattextures
-	DataHandling m_eDataHandlingMode;
-	IVistaSharedCore* m_pCore;
+ protected:
+  IVistaSharedCoreOwner(IVistaSharedCore* pCore, const DataHandling eDataHandlingMode);
+  IVistaSharedCoreOwner(const IVistaSharedCoreOwner& oCopy);
+  virtual ~IVistaSharedCoreOwner();
+
+ protected: // @IMGTODO: temporarily un-privated for swattextures
+  DataHandling      m_eDataHandlingMode;
+  IVistaSharedCore* m_pCore;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASHAREDCOREOWNER_H
-

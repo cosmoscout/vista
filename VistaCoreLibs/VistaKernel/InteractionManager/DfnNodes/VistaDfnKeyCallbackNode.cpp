@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDfnKeyCallbackNode.h" 
+#include "VistaDfnKeyCallbackNode.h"
 
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
@@ -30,7 +29,6 @@
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
@@ -40,83 +38,65 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 VistaDfnKeyCallbackNode::VistaDfnKeyCallbackNode()
-: IVdfnNode()
-, m_pCallbackCountPort( new TVdfnPort<int> )
-, m_pKeyboard( NULL )
-, m_nCounter(0)
-{
-	m_pCallbackKeyDown = new CounterCallback(this);
-	RegisterOutPort( "value", m_pCallbackCountPort );
+    : IVdfnNode()
+    , m_pCallbackCountPort(new TVdfnPort<int>)
+    , m_pKeyboard(NULL)
+    , m_nCounter(0) {
+  m_pCallbackKeyDown = new CounterCallback(this);
+  RegisterOutPort("value", m_pCallbackCountPort);
 }
 
-VistaDfnKeyCallbackNode::~VistaDfnKeyCallbackNode()
-{
-	if( m_pCallbackKeyDown )
-		m_pKeyboard->UnbindAction( m_pCallbackKeyDown );
-	delete m_pCallbackKeyDown;
-}
- 
-bool VistaDfnKeyCallbackNode::PrepareEvaluationRun()
-{
-	return GetIsValid();
+VistaDfnKeyCallbackNode::~VistaDfnKeyCallbackNode() {
+  if (m_pCallbackKeyDown)
+    m_pKeyboard->UnbindAction(m_pCallbackKeyDown);
+  delete m_pCallbackKeyDown;
 }
 
-bool VistaDfnKeyCallbackNode::GetIsValid() const
-{
-	return ( m_pCallbackKeyDown != NULL );
+bool VistaDfnKeyCallbackNode::PrepareEvaluationRun() {
+  return GetIsValid();
 }
 
-bool VistaDfnKeyCallbackNode::DoEvalNode()
-{
-	if (m_pCallbackCountPort->GetValue () != (int)m_nCounter)
-		m_pCallbackCountPort->SetValue( (int)m_nCounter, GetUpdateTimeStamp() );
-	return true;
+bool VistaDfnKeyCallbackNode::GetIsValid() const {
+  return (m_pCallbackKeyDown != NULL);
 }
 
-unsigned int VistaDfnKeyCallbackNode::CalcUpdateNeededScore() const
-{
-	// we return counter value plus 1, because else with 0 no-count gets lost
-	return m_nCounter + 1;
+bool VistaDfnKeyCallbackNode::DoEvalNode() {
+  if (m_pCallbackCountPort->GetValue() != (int)m_nCounter)
+    m_pCallbackCountPort->SetValue((int)m_nCounter, GetUpdateTimeStamp());
+  return true;
 }
 
-void VistaDfnKeyCallbackNode::SetupKeyboardCallback(  
-	  VistaKeyboardSystemControl* pKeyboard
-	, const int nKeyCode
-	, const int nModCode
-	, const std::string& sDescription
-	, const bool bForce )
-{
-	if (m_pKeyboard == NULL)
-	{
-		m_pKeyboard = pKeyboard;
-		if( m_pKeyboard->BindAction( nKeyCode, nModCode, m_pCallbackKeyDown, sDescription, false, true, bForce ) == false )
-		{
-			delete m_pCallbackKeyDown;
-			m_pCallbackKeyDown = NULL;
-		}
-	}
+unsigned int VistaDfnKeyCallbackNode::CalcUpdateNeededScore() const {
+  // we return counter value plus 1, because else with 0 no-count gets lost
+  return m_nCounter + 1;
 }
 
-void VistaDfnKeyCallbackNode::Callback( const CounterCallback* pCallback )
-{
-	if (pCallback == m_pCallbackKeyDown)
-		++m_nCounter;
+void VistaDfnKeyCallbackNode::SetupKeyboardCallback(VistaKeyboardSystemControl* pKeyboard,
+    const int nKeyCode, const int nModCode, const std::string& sDescription, const bool bForce) {
+  if (m_pKeyboard == NULL) {
+    m_pKeyboard = pKeyboard;
+    if (m_pKeyboard->BindAction(
+            nKeyCode, nModCode, m_pCallbackKeyDown, sDescription, false, true, bForce) == false) {
+      delete m_pCallbackKeyDown;
+      m_pCallbackKeyDown = NULL;
+    }
+  }
+}
+
+void VistaDfnKeyCallbackNode::Callback(const CounterCallback* pCallback) {
+  if (pCallback == m_pCallbackKeyDown)
+    ++m_nCounter;
 }
 
 VistaDfnKeyCallbackNode::CounterCallback::CounterCallback(VistaDfnKeyCallbackNode* pOwner)
-	: m_pOwner(pOwner)
-{
+    : m_pOwner(pOwner) {
 }
 
-bool VistaDfnKeyCallbackNode::CounterCallback::Do()
-{
-	m_pOwner->Callback (this);
-	return true;
+bool VistaDfnKeyCallbackNode::CounterCallback::Do() {
+  m_pOwner->Callback(this);
+  return true;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

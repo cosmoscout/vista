@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNVIEWERSOURCENODE_H
 #define _VISTADFNVIEWERSOURCENODE_H
 
@@ -31,13 +30,12 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
-#include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnNodeFactory.h>
 #include <VistaBase/VistaVectorMath.h>
-
+#include <VistaDataFlowNet/VdfnNode.h>
+#include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -50,69 +48,62 @@
 class VistaDisplayManager;
 class VistaDisplaySystem;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
- * Retrieves the current viewer's position and orientation as outputs, plus 
+ * Retrieves the current viewer's position and orientation as outputs, plus
  * auxilliary information on the user.
  *
  *
  * @ingroup VdfnNodes
- * @outport{position, VistaVector3D, the viewer position in world} 
- * @outport{orientation, VistaQuaternion, the viewer orientation in world} 
- * @outport{translation, VistaVector3D, the viewer translation on the viewer platform} 
- * @outport{rotation, VistaQuaternion, the viewer rotation on the viewer platform} 
- * @outport{platform_position, VistaVector3D, the platform position in world} 
- * @outport{platform_orientation, VistaQuaternion, the platform orientation in world} 
- * @outport{left_eye, VistaVector3D, left eye offset in world} 
- * @outport{right_eye, VistaVector3D, right eye offset in world} 
- 
+ * @outport{position, VistaVector3D, the viewer position in world}
+ * @outport{orientation, VistaQuaternion, the viewer orientation in world}
+ * @outport{translation, VistaVector3D, the viewer translation on the viewer platform}
+ * @outport{rotation, VistaQuaternion, the viewer rotation on the viewer platform}
+ * @outport{platform_position, VistaVector3D, the platform position in world}
+ * @outport{platform_orientation, VistaQuaternion, the platform orientation in world}
+ * @outport{left_eye, VistaVector3D, left eye offset in world}
+ * @outport{right_eye, VistaVector3D, right eye offset in world}
+
  */
-class VISTAKERNELAPI VistaDfnViewerSourceNode : public IVdfnNode
-{
-public:
-	VistaDfnViewerSourceNode(VistaDisplaySystem *pSys);
-	~VistaDfnViewerSourceNode();
+class VISTAKERNELAPI VistaDfnViewerSourceNode : public IVdfnNode {
+ public:
+  VistaDfnViewerSourceNode(VistaDisplaySystem* pSys);
+  ~VistaDfnViewerSourceNode();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	VistaDisplaySystem *GetDisplaySystem() const;
-	void SetDisplaySystem(VistaDisplaySystem *);
-protected:
-	virtual bool   DoEvalNode();
-	unsigned int   CalcUpdateNeededScore() const;
+  VistaDisplaySystem* GetDisplaySystem() const;
+  void                SetDisplaySystem(VistaDisplaySystem*);
 
-private:
-	TVdfnPort<VistaVector3D> *m_pPosition,
-		*m_pLeftEye,
-		*m_pRightEye,
-		*m_pTranslation;
-	TVdfnPort<VistaQuaternion> *m_pOrientation,
-	                            *m_pRotation;
-	TVdfnPort<VistaVector3D> *m_pPlatformPosition;
-	TVdfnPort<VistaQuaternion> *m_pPlatformOrientation;
+ protected:
+  virtual bool DoEvalNode();
+  unsigned int CalcUpdateNeededScore() const;
 
-	VistaDisplaySystem *m_pSystem;
+ private:
+  TVdfnPort<VistaVector3D>*   m_pPosition, *m_pLeftEye, *m_pRightEye, *m_pTranslation;
+  TVdfnPort<VistaQuaternion>* m_pOrientation, *m_pRotation;
+  TVdfnPort<VistaVector3D>*   m_pPlatformPosition;
+  TVdfnPort<VistaQuaternion>* m_pPlatformOrientation;
 
-	class DispObserver;
-	friend class DispObserver;
+  VistaDisplaySystem* m_pSystem;
 
-	DispObserver *m_pObs;
+  class DispObserver;
+  friend class DispObserver;
 
-	mutable unsigned int m_nUpdateCount;
+  DispObserver* m_pObs;
+
+  mutable unsigned int m_nUpdateCount;
 };
 
+class VISTAKERNELAPI VistaDfnViewerSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnViewerSourceNodeCreate(VistaDisplayManager* pMgr);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-class VISTAKERNELAPI VistaDfnViewerSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnViewerSourceNodeCreate( VistaDisplayManager *pMgr );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-
-private:
-	VistaDisplayManager *m_pMgr;
+ private:
+  VistaDisplayManager* m_pMgr;
 };
 
 /*============================================================================*/
@@ -120,4 +111,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNVIEWERSOURCENODE_H
-

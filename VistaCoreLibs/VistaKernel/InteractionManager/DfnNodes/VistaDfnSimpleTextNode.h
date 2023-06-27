@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNSIMPLETEXTNODE_H
 #define _VISTADFNSIMPLETEXTNODE_H
 
@@ -30,10 +29,10 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaDataFlowNet/VdfnShallowNode.h>
+#include <VistaDataFlowNet/VdfnHistoryPort.h>
 #include <VistaDataFlowNet/VdfnNodeCreators.h>
 #include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnHistoryPort.h>
+#include <VistaDataFlowNet/VdfnShallowNode.h>
 
 #include <vector>
 /*============================================================================*/
@@ -55,43 +54,43 @@ class IVistaTextEntity;
 /**
  * Overlays all  inputs on the main display system, as long as they offer a to-string
  * conversion.
- * 
+ *
  * @ingroup VdfnNodes
  * @inport{TextEnabled, bool, optional, toggles text visibility on or off}
  * @inport{-any-, -any-, optional, any in-port that offers to-string conversion will be displayed}
  */
-class VISTAKERNELAPI VistaDfnSimpleTextNode : public VdfnShallowNode
-{
-public:
-	VistaDfnSimpleTextNode( VistaDisplayManager* pDisplayManager );
-	~VistaDfnSimpleTextNode();
+class VISTAKERNELAPI VistaDfnSimpleTextNode : public VdfnShallowNode {
+ public:
+  VistaDfnSimpleTextNode(VistaDisplayManager* pDisplayManager);
+  ~VistaDfnSimpleTextNode();
 
-	virtual void OnActivation( double dTs );
-	virtual void OnDeactivation( double dTs );
+  virtual void OnActivation(double dTs);
+  virtual void OnDeactivation(double dTs);
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-	int GetTextSize() const;
-	void SetTextSize( const int& oValue );
-	VistaColor GetColor() const;
-	void SetColor( const VistaColor& oValue );
-	int GetCaptionColumnWidth() const;
-	void SetCaptionColumnWidth( const int& oValue );
-protected:
-	bool DoEvalNode();
+  int        GetTextSize() const;
+  void       SetTextSize(const int& oValue);
+  VistaColor GetColor() const;
+  void       SetColor(const VistaColor& oValue);
+  int        GetCaptionColumnWidth() const;
+  void       SetCaptionColumnWidth(const int& oValue);
 
-	virtual bool SetInPort( const std::string &sName, IVdfnPort *pPort );
+ protected:
+  bool DoEvalNode();
 
-private:
-	VistaDisplayManager* m_pDisplayManager;
-	TVdfnPort<bool>*		m_pEnablePort;
-	struct PortTextData;
-	std::vector<PortTextData*> m_vecPortTexts;
-	VistaSimpleTextOverlay* m_pOverlay;
+  virtual bool SetInPort(const std::string& sName, IVdfnPort* pPort);
 
-	VistaColor m_oColor;
-	int m_nTextSize;
-	int m_nCaptionColumnWidth;
+ private:
+  VistaDisplayManager* m_pDisplayManager;
+  TVdfnPort<bool>*     m_pEnablePort;
+  struct PortTextData;
+  std::vector<PortTextData*> m_vecPortTexts;
+  VistaSimpleTextOverlay*    m_pOverlay;
+
+  VistaColor m_oColor;
+  int        m_nTextSize;
+  int        m_nCaptionColumnWidth;
 };
 
 /*============================================================================*/
@@ -99,4 +98,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNSIMPLETEXTNODE_H
-

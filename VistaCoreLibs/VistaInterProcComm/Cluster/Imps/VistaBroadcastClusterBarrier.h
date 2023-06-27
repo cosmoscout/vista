@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTABROADCASTCLUSTERBARRIER_H
 #define _VISTABROADCASTCLUSTERBARRIER_H
 
@@ -30,11 +29,11 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBarrierIPBase.h>
+#include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,67 +43,57 @@ class VistaUDPSocket;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaBroadcastClusterLeaderBarrier : public VistaClusterLeaderBarrierIPBase
-{
-public:
-	VistaBroadcastClusterLeaderBarrier( const std::string& sBroadcastIP,
-									const int nBroadcastPort,
-									const bool bVerbose = true );
-	VistaBroadcastClusterLeaderBarrier( const std::string& sBroadcastIP,
-									const std::vector<int>& nBroadcastPorts,
-									const bool bVerbose = true );
-	explicit VistaBroadcastClusterLeaderBarrier( VistaUDPSocket* pBroadcastSocket,
-									const bool bManageDeletion = true,
-									const bool bVerbose = true );
-	explicit VistaBroadcastClusterLeaderBarrier( const std::vector<VistaUDPSocket*>& vecSockets,
-									const bool bManageDeletion = true,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaBroadcastClusterLeaderBarrier
+    : public VistaClusterLeaderBarrierIPBase {
+ public:
+  VistaBroadcastClusterLeaderBarrier(
+      const std::string& sBroadcastIP, const int nBroadcastPort, const bool bVerbose = true);
+  VistaBroadcastClusterLeaderBarrier(const std::string& sBroadcastIP,
+      const std::vector<int>& nBroadcastPorts, const bool bVerbose = true);
+  explicit VistaBroadcastClusterLeaderBarrier(VistaUDPSocket* pBroadcastSocket,
+      const bool bManageDeletion = true, const bool bVerbose = true);
+  explicit VistaBroadcastClusterLeaderBarrier(const std::vector<VistaUDPSocket*>& vecSockets,
+      const bool bManageDeletion = true, const bool bVerbose = true);
 
-	virtual ~VistaBroadcastClusterLeaderBarrier();
+  virtual ~VistaBroadcastClusterLeaderBarrier();
 
-	bool AddBroadcast( const std::string& sBroadcastIP,
-						const int nBroadcastPort );
-	bool AddBroadcast( VistaUDPSocket* pBroadcastSocket,
-						const bool bManageDeletion = true );
+  bool AddBroadcast(const std::string& sBroadcastIP, const int nBroadcastPort);
+  bool AddBroadcast(VistaUDPSocket* pBroadcastSocket, const bool bManageDeletion = true);
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-	int GetNumberOfBroadcasts() const;
+  int GetNumberOfBroadcasts() const;
 
-private:
-	std::vector<VistaUDPSocket*>	m_vecBroadcastSockets;
-	std::vector<bool>				m_vecDeleteBroadcastSocket;
+ private:
+  std::vector<VistaUDPSocket*> m_vecBroadcastSockets;
+  std::vector<bool>            m_vecDeleteBroadcastSocket;
 };
 
-class VISTAINTERPROCCOMMAPI VistaBroadcastClusterFollowerBarrier : public VistaClusterFollowerBarrierIPBase
-{
-public:
-	VistaBroadcastClusterFollowerBarrier( const std::string& sBroadcastIP,
-									const int nBroadcastPort,
-									VistaConnectionIP* pLeaderConnection,
-									const bool bManageConnection = true,
-									const bool bVerbose = true );
-	VistaBroadcastClusterFollowerBarrier( VistaUDPSocket* pBroadcastSocket,
-									VistaConnectionIP* pLeaderConnection,
-									const bool bManageSocket = true,
-									const bool bManageConnection = true,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaBroadcastClusterFollowerBarrier
+    : public VistaClusterFollowerBarrierIPBase {
+ public:
+  VistaBroadcastClusterFollowerBarrier(const std::string& sBroadcastIP, const int nBroadcastPort,
+      VistaConnectionIP* pLeaderConnection, const bool bManageConnection = true,
+      const bool bVerbose = true);
+  VistaBroadcastClusterFollowerBarrier(VistaUDPSocket* pBroadcastSocket,
+      VistaConnectionIP* pLeaderConnection, const bool bManageSocket = true,
+      const bool bManageConnection = true, const bool bVerbose = true);
 
-	virtual ~VistaBroadcastClusterFollowerBarrier();
+  virtual ~VistaBroadcastClusterFollowerBarrier();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-private:
-	VistaUDPSocket*		m_pBroadcastSocket;
-	bool				m_bManageSocket;
+ private:
+  VistaUDPSocket* m_pBroadcastSocket;
+  bool            m_bManageSocket;
 };
 
 /*============================================================================*/

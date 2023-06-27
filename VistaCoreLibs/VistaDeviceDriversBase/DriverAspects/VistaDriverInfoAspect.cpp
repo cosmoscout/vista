@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDriverInfoAspect.h" 
+#include "VistaDriverInfoAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
 
 #include <cassert>
@@ -31,56 +30,46 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int VistaDriverInfoAspect::m_nAspectId  = -1;
+int VistaDriverInfoAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaDriverInfoAspect::VistaDriverInfoAspect()
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(false)
-{
-	if(VistaDriverInfoAspect::GetAspectId() == -1) // unregistered
-		VistaDriverInfoAspect::SetAspectId( 
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("INFO"));
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(false) {
+  if (VistaDriverInfoAspect::GetAspectId() == -1) // unregistered
+    VistaDriverInfoAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("INFO"));
 
-	SetId(VistaDriverInfoAspect::GetAspectId());
+  SetId(VistaDriverInfoAspect::GetAspectId());
 }
 
-VistaDriverInfoAspect::~VistaDriverInfoAspect()
-{
+VistaDriverInfoAspect::~VistaDriverInfoAspect() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaPropertyList &VistaDriverInfoAspect::GetInfoPropsWrite()
-{
-	return m_oProps;
+VistaPropertyList& VistaDriverInfoAspect::GetInfoPropsWrite() {
+  return m_oProps;
 }
 
-
-VistaPropertyList VistaDriverInfoAspect::GetInfoProps() const
-{
-	return m_oProps;
+VistaPropertyList VistaDriverInfoAspect::GetInfoProps() const {
+  return m_oProps;
 }
-
 
 // #########################################
 // OVERWRITE IN SUBCLASSES
 // #########################################
-int  VistaDriverInfoAspect::GetAspectId()
-{
-	return VistaDriverInfoAspect::m_nAspectId;
+int VistaDriverInfoAspect::GetAspectId() {
+  return VistaDriverInfoAspect::m_nAspectId;
 }
 
-void VistaDriverInfoAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
+void VistaDriverInfoAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

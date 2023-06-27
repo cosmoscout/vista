@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32)
 #ifndef _VISTAWIN32SERIALPORTIMP_H
 #define _VISTAWIN32SERIALPORTIMP_H
@@ -30,9 +29,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaSerialPortImp.h"
-
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #if !defined(_WINDOWS_)
 #include <Windows.h>
@@ -50,60 +48,53 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaWin32SerialPortImp : public VistaSerialPortImp
-{
-public:
-	VistaWin32SerialPortImp();
-	virtual ~VistaWin32SerialPortImp();
+class VISTAINTERPROCCOMMAPI VistaWin32SerialPortImp : public VistaSerialPortImp {
+ public:
+  VistaWin32SerialPortImp();
+  virtual ~VistaWin32SerialPortImp();
 
+  virtual bool OpenSerialPort();
+  virtual bool CloseSerialPort();
 
-	virtual bool          OpenSerialPort() ;
-	virtual bool          CloseSerialPort();
+  /**
+   * Timeout-feature is currently NOT supported on win32
+   */
+  virtual int Receive(void* buffer, const int length, int iTimeout = 0);
+  virtual int Send(const void* buffer, const int length);
 
-	/**
-	 * Timeout-feature is currently NOT supported on win32
-	 */
-	virtual int           Receive(void *buffer, const int length, int iTimeout = 0) ;
-	virtual int           Send(const void *buffer, const int length) ;
+  virtual bool SetBlockingMode(
+      unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant);
 
+  /**
+   * Timeout-feature is currently NOT supported on win32
+   * THIS CALL (WIN32) WILL BLOCK FOREVER IF THERE IS NO INCOMING DATA ON A VALID PORT!
+   * @todo fix timout feature on win32
+   */
+  virtual unsigned long WaitForIncomingData(int timeout = 0);
 
-	virtual bool          SetBlockingMode ( unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant );
+  virtual unsigned long PendingDataSize() const;
 
-	/**
-	 * Timeout-feature is currently NOT supported on win32
-	 * THIS CALL (WIN32) WILL BLOCK FOREVER IF THERE IS NO INCOMING DATA ON A VALID PORT!
-	 * @todo fix timout feature on win32
-	 */
-	virtual unsigned long WaitForIncomingData(int timeout=0);
+  virtual void SetIsBlocking(bool bBlocking);
 
-	virtual unsigned long PendingDataSize() const;
+  virtual HANDLE GetDescriptor() const;
 
-	virtual void          SetIsBlocking(bool bBlocking);
+ protected:
+  bool SetHardwareState();
+  bool GetHardwareState();
 
-	virtual HANDLE        GetDescriptor() const;
+  virtual void Delay(int iMsecs) const;
 
-protected:
-	bool SetHardwareState();
-	bool GetHardwareState();
-
-	virtual void Delay(int iMsecs) const;
-private:
-	DCB    m_myDcb;
-	HANDLE m_hanPort;
-	DWORD    m_iReadMultiplier,
-			 m_iReadTimeout,
-			 m_iReadConstant;
-	OVERLAPPED m_hOverlap;
-
+ private:
+  DCB        m_myDcb;
+  HANDLE     m_hanPort;
+  DWORD      m_iReadMultiplier, m_iReadTimeout, m_iReadConstant;
+  OVERLAPPED m_hOverlap;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif //_VISTACONNECTIONSERIALWIN32
 
 #endif // WIN32
-

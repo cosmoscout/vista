@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDfnPortChangeHandlerBase.h" 
+#include "VistaDfnPortChangeHandlerBase.h"
 
 #include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/InteractionManager/VistaInteractionEvent.h>
@@ -34,55 +33,41 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaDfnPortChangeHandlerBase::VistaDfnPortChangeHandlerBase(VistaEventManager *pEvMgr)
-	: VistaEventHandler(),
-	  m_pEvMgr(pEvMgr)
-{
-	m_pEvMgr->AddEventHandler(this, 
-				  VistaInteractionEvent::GetTypeId(), 
-				  VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE);
+VistaDfnPortChangeHandlerBase::VistaDfnPortChangeHandlerBase(VistaEventManager* pEvMgr)
+    : VistaEventHandler()
+    , m_pEvMgr(pEvMgr) {
+  m_pEvMgr->AddEventHandler(
+      this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE);
 }
 
-VistaDfnPortChangeHandlerBase::~VistaDfnPortChangeHandlerBase()
-{
-	m_pEvMgr->RemEventHandler(this, 
-				  VistaInteractionEvent::GetTypeId(), 
-				  VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE);
+VistaDfnPortChangeHandlerBase::~VistaDfnPortChangeHandlerBase() {
+  m_pEvMgr->RemEventHandler(
+      this, VistaInteractionEvent::GetTypeId(), VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE);
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-void VistaDfnPortChangeHandlerBase::HandleEvent(VistaEvent *pEvent)
-{
-	VistaInteractionEvent *pInEv = dynamic_cast<VistaInteractionEvent*>(pEvent);
-	pEvent->SetHandled(HandlePortChange( pInEv, pInEv->GetPortMapRead() ));
-
-
+void VistaDfnPortChangeHandlerBase::HandleEvent(VistaEvent* pEvent) {
+  VistaInteractionEvent* pInEv = dynamic_cast<VistaInteractionEvent*>(pEvent);
+  pEvent->SetHandled(HandlePortChange(pInEv, pInEv->GetPortMapRead()));
 }
 
-
-bool VistaDfnPortChangeHandlerBase::HandlePortChange( VistaInteractionEvent *pInEv,
-												   const VistaInteractionEvent::PortList &liPorts )
-{
-	bool bRet = false; // do not swallow by default
-	for(VistaInteractionEvent::PortList::const_iterator cit = liPorts.begin();
-		cit != liPorts.end(); ++cit )
-	{
-		bRet = bRet || HandlePortChange( pInEv, *cit );
-	}
-	return bRet; 
+bool VistaDfnPortChangeHandlerBase::HandlePortChange(
+    VistaInteractionEvent* pInEv, const VistaInteractionEvent::PortList& liPorts) {
+  bool bRet = false; // do not swallow by default
+  for (VistaInteractionEvent::PortList::const_iterator cit = liPorts.begin(); cit != liPorts.end();
+       ++cit) {
+    bRet = bRet || HandlePortChange(pInEv, *cit);
+  }
+  return bRet;
 }
 
-
-bool VistaDfnPortChangeHandlerBase::HandlePortChange( VistaInteractionEvent *pInEv,
-												   const std::string &strPort )
-{
-	return false; // do not swallow by default
+bool VistaDfnPortChangeHandlerBase::HandlePortChange(
+    VistaInteractionEvent* pInEv, const std::string& strPort) {
+  return false; // do not swallow by default
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

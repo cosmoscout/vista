@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(LINUX)
 
 #include <cstdio>
@@ -34,22 +33,20 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaHIDDriverForceFeedbackAspect::VistaHIDDriverForceFeedbackAspect( VistaConnection *pCon ) 
-	: IVistaDriverForceFeedbackAspect()
-{
-	m_pCon = pCon;
-	
-	m_effect.type = FF_PERIODIC;
-	m_effect.id = -1;
-	m_effect.u.periodic.waveform = FF_SQUARE;
-	m_effect.u.periodic.period = 0x100;
-	m_effect.u.periodic.magnitude = 0x8000;
-	m_effect.u.periodic.offset = 0x0000;
-	m_effect.u.periodic.phase = 0;
+VistaHIDDriverForceFeedbackAspect::VistaHIDDriverForceFeedbackAspect(VistaConnection* pCon)
+    : IVistaDriverForceFeedbackAspect() {
+  m_pCon = pCon;
+
+  m_effect.type                 = FF_PERIODIC;
+  m_effect.id                   = -1;
+  m_effect.u.periodic.waveform  = FF_SQUARE;
+  m_effect.u.periodic.period    = 0x100;
+  m_effect.u.periodic.magnitude = 0x8000;
+  m_effect.u.periodic.offset    = 0x0000;
+  m_effect.u.periodic.phase     = 0;
 
 #if 0 // check version of linux kernel?
 	m_effect.direction = 0x8000;
@@ -58,65 +55,55 @@ VistaHIDDriverForceFeedbackAspect::VistaHIDDriverForceFeedbackAspect( VistaConne
 	m_effect.u.periodic.envelope.fade_length = 0x000;
 	m_effect.u.periodic.envelope.fade_level = 0;
 #endif
-	m_effect.trigger.button = 0;
-	m_effect.trigger.interval = 0;
-	m_effect.replay.length = 1000;
-	m_effect.replay.delay = 0;
-	
-	if (ioctl(pCon->GetConnectionDescriptor(), EVIOCSFF, &m_effect) == -1) {
-		perror("Upload effect");
-	}
+  m_effect.trigger.button   = 0;
+  m_effect.trigger.interval = 0;
+  m_effect.replay.length    = 1000;
+  m_effect.replay.delay     = 0;
+
+  if (ioctl(pCon->GetConnectionDescriptor(), EVIOCSFF, &m_effect) == -1) {
+    perror("Upload effect");
+  }
 }
 
-VistaHIDDriverForceFeedbackAspect::~VistaHIDDriverForceFeedbackAspect()
-{
+VistaHIDDriverForceFeedbackAspect::~VistaHIDDriverForceFeedbackAspect() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-bool VistaHIDDriverForceFeedbackAspect::SetForce( const VistaVector3D & force,
-												   const VistaVector3D & )
-{
-	input_event start_ff ;
+bool VistaHIDDriverForceFeedbackAspect::SetForce(const VistaVector3D& force, const VistaVector3D&) {
+  input_event start_ff;
 
-	start_ff.type = EV_FF;
-	start_ff.code = 0;
-	start_ff.value = 1;
+  start_ff.type  = EV_FF;
+  start_ff.code  = 0;
+  start_ff.value = 1;
 
-	int nRet = m_pCon->Send( &start_ff, sizeof(start_ff) );
-	return ( nRet == sizeof(start_ff) );
+  int nRet = m_pCon->Send(&start_ff, sizeof(start_ff));
+  return (nRet == sizeof(start_ff));
 }
 
-int VistaHIDDriverForceFeedbackAspect::GetNumInputDOF() const
-{
-	return 0;
+int VistaHIDDriverForceFeedbackAspect::GetNumInputDOF() const {
+  return 0;
 }
 
-int VistaHIDDriverForceFeedbackAspect::GetNumOutputDOF() const
-{
-	return 0;
+int VistaHIDDriverForceFeedbackAspect::GetNumOutputDOF() const {
+  return 0;
 }
 
-bool VistaHIDDriverForceFeedbackAspect::SetForcesEnabled(bool bEnabled)
-{
-	return false; 
+bool VistaHIDDriverForceFeedbackAspect::SetForcesEnabled(bool bEnabled) {
+  return false;
 }
 
-
-bool VistaHIDDriverForceFeedbackAspect::GetForcesEnabled() const
-{
-	return false;
+bool VistaHIDDriverForceFeedbackAspect::GetForcesEnabled() const {
+  return false;
 }
 
-float VistaHIDDriverForceFeedbackAspect::GetMaximumStiffness() const
-{
-    return 0.0f;
+float VistaHIDDriverForceFeedbackAspect::GetMaximumStiffness() const {
+  return 0.0f;
 }
 
-float VistaHIDDriverForceFeedbackAspect::GetMaximumForce() const
-{
-    return 0.0f;
+float VistaHIDDriverForceFeedbackAspect::GetMaximumForce() const {
+  return 0.0f;
 }
 
 /*============================================================================*/
@@ -124,5 +111,3 @@ float VistaHIDDriverForceFeedbackAspect::GetMaximumForce() const
 /*============================================================================*/
 
 #endif
-
-

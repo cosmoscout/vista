@@ -21,27 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "OglDemoAppl.h"
 
 #include <VistaBase/VistaExceptionBase.h>
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		OglDemoAppl demoAppl( argc, argv );
-		// start universe as an endless loop
-		demoAppl.Run ();
-	}
-	catch ( VistaExceptionBase &eException )
-	{
-		eException.PrintException();
-	}
-	catch ( std::exception &eException )
-	{
-		std::cerr << "Exception:" << eException.what() << std::endl;
-	}
+int main(int argc, char* argv[]) {
+  try {
+    OglDemoAppl demoAppl(argc, argv);
+    // start universe as an endless loop
+    demoAppl.Run();
+  } catch (VistaExceptionBase& eException) {
+    eException.PrintException();
+  } catch (std::exception& eException) {
+    std::cerr << "Exception:" << eException.what() << std::endl;
+  }
 }
-
-

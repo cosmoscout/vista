@@ -21,19 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNAXISROTATENODE_H
 #define _VDFNAXISROTATENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
 
-#include "VdfnSerializer.h"
 #include "VdfnNode.h"
 #include "VdfnPort.h"
+#include "VdfnSerializer.h"
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -62,37 +60,36 @@
  *         an VistaAxisAndAngle value to convert}
  * @outport{out,VistaQuaternion,the resulting quat}
  */
-class VISTADFNAPI VdfnAxisRotateNode : public IVdfnNode
-{
-public:
-	VdfnAxisRotateNode();
+class VISTADFNAPI VdfnAxisRotateNode : public IVdfnNode {
+ public:
+  VdfnAxisRotateNode();
 
-	/**
-	 * @return either axisandangle is non-null and (angle and axis) are null OR
-	           axisandangle is null and (angle and axis) are non-NULL
-	 */
-	bool GetIsValid() const;
+  /**
+   * @return either axisandangle is non-null and (angle and axis) are null OR
+             axisandangle is null and (angle and axis) are non-NULL
+   */
+  bool GetIsValid() const;
 
-	/**
-	 * @return GetIsValid()
-	 */
-	bool PrepareEvaluationRun();
-protected:
-	/**
-	 * @return true
-	 */
-	bool DoEvalNode();
-private:
-	TVdfnPort<VistaAxisAndAngle> *m_pAxisAndAngle;
-	TVdfnPort<float>            *m_pAngle;
-	TVdfnPort<VistaVector3D>   *m_pAxis;
-	TVdfnPort<VistaQuaternion> *m_pOut;
+  /**
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun();
+
+ protected:
+  /**
+   * @return true
+   */
+  bool DoEvalNode();
+
+ private:
+  TVdfnPort<VistaAxisAndAngle>* m_pAxisAndAngle;
+  TVdfnPort<float>*             m_pAngle;
+  TVdfnPort<VistaVector3D>*     m_pAxis;
+  TVdfnPort<VistaQuaternion>*   m_pOut;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNAXISROTATENODE_H
-

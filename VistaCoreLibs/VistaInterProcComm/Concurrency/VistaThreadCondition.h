@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADCONDITION_H
 #define _VISTATHREADCONDITION_H
 
@@ -38,7 +37,6 @@
 /*============================================================================*/
 class IVistaThreadConditionImp;
 class VistaMutex;
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -63,56 +61,54 @@ class VistaMutex;
  * <tr><td>{thread 1 will continue now}</td><td></td><tr>
  * </table>
  */
-class VISTAINTERPROCCOMMAPI VistaThreadCondition
-{
-public:
-	VistaThreadCondition();
-	virtual ~VistaThreadCondition();
+class VISTAINTERPROCCOMMAPI VistaThreadCondition {
+ public:
+  VistaThreadCondition();
+  virtual ~VistaThreadCondition();
 
-	/**
-	 * The caller will indicate that a specific condition (e.g. state)
-	 * is met. A waiting thread for this condition will be woken up and
-	 * continue their job. Note that the order (meaning: which thread
-	 * is going to continue) is not guaranteed! Do NOT assume a kind of
-	 * FIFO strategy here.
-	 * @return 0 iff no error, a system specific error code else
-	 */
-	int SignalCondition();
+  /**
+   * The caller will indicate that a specific condition (e.g. state)
+   * is met. A waiting thread for this condition will be woken up and
+   * continue their job. Note that the order (meaning: which thread
+   * is going to continue) is not guaranteed! Do NOT assume a kind of
+   * FIFO strategy here.
+   * @return 0 iff no error, a system specific error code else
+   */
+  int SignalCondition();
 
-	/**
-	 * The caller will signal to ALL waiting threads that a specific
-	 * condition is met. All waiting threads will be allowed to continue
-	 * their work.
-	 * @return 0 iff no error happened, else a system specific error code
-	 */
-	int BroadcastCondition();
+  /**
+   * The caller will signal to ALL waiting threads that a specific
+   * condition is met. All waiting threads will be allowed to continue
+   * their work.
+   * @return 0 iff no error happened, else a system specific error code
+   */
+  int BroadcastCondition();
 
-	/**
-	 * The caller will be blocked until some other thread calls
-	 * Signal- or BroadcastCondition. Note: the mutex passed to
-	 * this method MUST BE LOCKED <b>before</b> calling this
-	 * method. It will be released while waiting for the signal,
-	 * but it will be locked again before returning from this call!!
-	 * @param rMutex the mutex to release while waiting for this condition.
-	 * @return 0 iff the wait succeeded, else it will return a system-specific error code != 0
-	 * @see SignalCondition()
-	 * @see BroadcastCondition()
-	 */
-	int WaitForCondition(VistaMutex &rMutex);
+  /**
+   * The caller will be blocked until some other thread calls
+   * Signal- or BroadcastCondition. Note: the mutex passed to
+   * this method MUST BE LOCKED <b>before</b> calling this
+   * method. It will be released while waiting for the signal,
+   * but it will be locked again before returning from this call!!
+   * @param rMutex the mutex to release while waiting for this condition.
+   * @return 0 iff the wait succeeded, else it will return a system-specific error code != 0
+   * @see SignalCondition()
+   * @see BroadcastCondition()
+   */
+  int WaitForCondition(VistaMutex& rMutex);
 
-	/**
-	 * AWARE: currently NOT implemented. DO NOT USE.
-	 */
-	int WaitForConditionWithTimeout(VistaMutex &, int iMsecs);
-protected:
-private:
-	IVistaThreadConditionImp *m_pConditionImp;
+  /**
+   * AWARE: currently NOT implemented. DO NOT USE.
+   */
+  int WaitForConditionWithTimeout(VistaMutex&, int iMsecs);
+
+ protected:
+ private:
+  IVistaThreadConditionImp* m_pConditionImp;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTATHREADCONDITION_H
-

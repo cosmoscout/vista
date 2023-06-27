@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDTrackDriver.h"
 
 #if defined(WIN32) && !defined(VISTADTRACKDRIVERPLUGIN_STATIC)
@@ -34,57 +33,45 @@
 #define VISTADTRACKPLUGINAPI
 #endif
 
-namespace
-{
-	VistaDTrackCreationMethod *SpFactory = NULL;
+namespace {
+VistaDTrackCreationMethod* SpFactory = NULL;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-extern "C" VISTADTRACKPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaDTrackDriver(crm);
+extern "C" VISTADTRACKPLUGINAPI IVistaDeviceDriver* CreateDevice(IVistaDriverCreationMethod* crm) {
+  return new VistaDTrackDriver(crm);
 }
 
-extern "C" VISTADTRACKPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaDTrackCreationMethod(fac);
+extern "C" VISTADTRACKPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaDTrackCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTADTRACKPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTADTRACKPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTADTRACKPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTADTRACKPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-
-extern "C" VISTADTRACKPLUGINAPI const char *GetDeviceClassName()
-{
-	return "DTRACK";
+extern "C" VISTADTRACKPLUGINAPI const char* GetDeviceClassName() {
+  return "DTRACK";
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

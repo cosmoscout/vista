@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTANETWORKINFO_H
 #define _VISTANETWORKINFO_H
 
@@ -54,62 +53,55 @@ class VistaIPAddress;
  * Note that EnumVistaNetworkInfo() can take some time to complete ;)
  * @see VistaNetworkInfo::EnumVistaNetworkInfo()
  */
-class VISTAINTERPROCCOMMAPI VistaNetworkInfo
-{
-protected:
-	VistaNetworkInfo(
-					const std::string & name,
-					const VistaIPAddress& addr,
-					const VistaIPAddress& broadcast,
-					const VistaIPAddress& netmask,
-					int mtu
-					);
+class VISTAINTERPROCCOMMAPI VistaNetworkInfo {
+ protected:
+  VistaNetworkInfo(const std::string& name, const VistaIPAddress& addr,
+      const VistaIPAddress& broadcast, const VistaIPAddress& netmask, int mtu);
 
-public:
-	VistaNetworkInfo(const VistaNetworkInfo& ndi);
-	~VistaNetworkInfo();
+ public:
+  VistaNetworkInfo(const VistaNetworkInfo& ndi);
+  ~VistaNetworkInfo();
 
-	/**
-	 * Returns the Name of the network device
-	 */
-	const std::string& GetName() const;
+  /**
+   * Returns the Name of the network device
+   */
+  const std::string& GetName() const;
 
-	/**
-	 * Returns the Address of the network device
-	 */
-	const VistaIPAddress GetAddress() const;
+  /**
+   * Returns the Address of the network device
+   */
+  const VistaIPAddress GetAddress() const;
 
-	/**
-	 * Returns the Broadcast address of the network device
-	 */
-	const VistaIPAddress GetBroadcastAddress() const;
+  /**
+   * Returns the Broadcast address of the network device
+   */
+  const VistaIPAddress GetBroadcastAddress() const;
 
-	/**
-	 * Returns the Netmask of the network device
-	 */
-	const VistaIPAddress GetNetmask() const;
+  /**
+   * Returns the Netmask of the network device
+   */
+  const VistaIPAddress GetNetmask() const;
 
-	/**
-	 * Returns the MTU
-	 */
-	int GetMTU() const;
+  /**
+   * Returns the MTU
+   */
+  int GetMTU() const;
 
-	/**
-	 * Enumerate all available network devices
-	 */
-	static bool EnumVistaNetworkInfo(std::vector<VistaNetworkInfo>& devs);
+  /**
+   * Enumerate all available network devices
+   */
+  static bool EnumVistaNetworkInfo(std::vector<VistaNetworkInfo>& devs);
 
-private:
-	std::string m_sName;
-	VistaIPAddress *m_pipAddr;
-	VistaIPAddress *m_pipBroadcast;
-	VistaIPAddress *m_pipNetmask;
-	int m_iMtu;
+ private:
+  std::string     m_sName;
+  VistaIPAddress* m_pipAddr;
+  VistaIPAddress* m_pipBroadcast;
+  VistaIPAddress* m_pipNetmask;
+  int             m_iMtu;
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //VISTANETWORKINFO_H
-
+#endif // VISTANETWORKINFO_H

@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -36,53 +34,45 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-
-DLVistaDataSink::DLVistaDataSink()
-{
+DLVistaDataSink::DLVistaDataSink() {
 }
 
-
-DLVistaDataSink::~DLVistaDataSink()
-{}
+DLVistaDataSink::~DLVistaDataSink() {
+}
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-bool DLVistaDataSink::PullPacket(bool bBlock)
-{
-	IDLVistaDataPacket *pPacket = this->m_pDataInput->GivePacket(bBlock);
-	if(pPacket)
-		return this->ConsumePacket(pPacket);
-	
-	return false;
+bool DLVistaDataSink::PullPacket(bool bBlock) {
+  IDLVistaDataPacket* pPacket = this->m_pDataInput->GivePacket(bBlock);
+  if (pPacket)
+    return this->ConsumePacket(pPacket);
+
+  return false;
 }
 
-bool DLVistaDataSink::AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock)
-{
-	return ConsumePacket(pPacket);
+bool DLVistaDataSink::AcceptDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock) {
+  return ConsumePacket(pPacket);
 }
 
-bool DLVistaDataSink::RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock)
-{
-	return m_pDataInput->RecycleDataPacket(pPacket, this, bBlock);
+bool DLVistaDataSink::RecycleDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock) {
+  return m_pDataInput->RecycleDataPacket(pPacket, this, bBlock);
 }
 
-
-IDLVistaDataPacket *DLVistaDataSink::GivePacket(bool bBlock)
-{
-	return 0;
+IDLVistaDataPacket* DLVistaDataSink::GivePacket(bool bBlock) {
+  return 0;
 }
 
-bool DLVistaDataSink::InitPacketMgmt()
-{
-	return true;
+bool DLVistaDataSink::InitPacketMgmt() {
+  return true;
 }
 
-IDLVistaDataPacket *DLVistaDataSink::CreatePacket()
-{
-	return NULL;
+IDLVistaDataPacket* DLVistaDataSink::CreatePacket() {
+  return NULL;
 }
 
-void DLVistaDataSink::DeletePacket(IDLVistaDataPacket *)
-{}
+void DLVistaDataSink::DeletePacket(IDLVistaDataPacket*) {
+}

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADEVENTIMP_H
 #define _VISTATHREADEVENTIMP_H
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -34,30 +32,24 @@
 
 #include <VistaBase/VistaBaseTypes.h>
 
-class VISTAINTERPROCCOMMAPI IVistaThreadEventImp
-{
-public:
-	IVistaThreadEventImp( );
-	virtual ~IVistaThreadEventImp();
+class VISTAINTERPROCCOMMAPI IVistaThreadEventImp {
+ public:
+  IVistaThreadEventImp();
+  virtual ~IVistaThreadEventImp();
 
-	virtual void SignalEvent() = 0;
+  virtual void SignalEvent() = 0;
 
-	virtual bool WaitForEvent(bool bBlock) = 0;
-	virtual bool WaitForEvent(int iTimeoutMSecs) = 0;
+  virtual bool WaitForEvent(bool bBlock)       = 0;
+  virtual bool WaitForEvent(int iTimeoutMSecs) = 0;
 
-	virtual HANDLE GetEventSignalHandle() const = 0;
-	virtual HANDLE GetEventWaitHandle() const = 0;
+  virtual HANDLE GetEventSignalHandle() const = 0;
+  virtual HANDLE GetEventWaitHandle() const   = 0;
 
-	enum ResetBehavior
-	{
-		RESET_ALL_EVENTS = 0,
-		RESET_JUST_ONE_EVENT
-	};
-	virtual bool ResetThisEvent( ResetBehavior reset_behavior ) = 0;
+  enum ResetBehavior { RESET_ALL_EVENTS = 0, RESET_JUST_ONE_EVENT };
+  virtual bool ResetThisEvent(ResetBehavior reset_behavior) = 0;
 
-	static IVistaThreadEventImp *CreateThreadEventImp(bool bUsePipes=false);
+  static IVistaThreadEventImp* CreateThreadEventImp(bool bUsePipes = false);
 };
-
 
 /*============================================================================*/
 

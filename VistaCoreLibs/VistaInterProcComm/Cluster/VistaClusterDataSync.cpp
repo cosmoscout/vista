@@ -21,9 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaBase/VistaTimeUtils.h>
+#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -32,23 +31,19 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaClusterDataSync::IVistaClusterDataSync( const bool bVerbose, const bool bIsLeader )
-: IVistaClusterSyncEntity( bVerbose, bIsLeader )
-{
+IVistaClusterDataSync::IVistaClusterDataSync(const bool bVerbose, const bool bIsLeader)
+    : IVistaClusterSyncEntity(bVerbose, bIsLeader) {
 }
 
-IVistaClusterDataSync::~IVistaClusterDataSync()
-{
+IVistaClusterDataSync::~IVistaClusterDataSync() {
 }
 
-VistaType::systemtime IVistaClusterDataSync::GetSyncTime()
-{
-	VistaType::systemtime nTime = VistaTimeUtils::GetStandardTimer().GetSystemTime();
-	SyncTime( nTime );
-	return nTime;
+VistaType::systemtime IVistaClusterDataSync::GetSyncTime() {
+  VistaType::systemtime nTime = VistaTimeUtils::GetStandardTimer().GetSystemTime();
+  SyncTime(nTime);
+  return nTime;
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-

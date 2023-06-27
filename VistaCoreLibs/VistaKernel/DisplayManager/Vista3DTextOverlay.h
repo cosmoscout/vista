@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA3DTEXTOVERLAY_H
 #define _VISTA3DTEXTOVERLAY_H
 
@@ -29,9 +28,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/DisplayManager/VistaSceneOverlay.h>
 #include <VistaKernel/GraphicsManager/VistaGeometry.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 #include <list>
 /*============================================================================*/
@@ -50,30 +49,27 @@ class IVistaTextEntity;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI Vista3DTextOverlay : public IVistaSceneOverlay
-{
-public:
-	Vista3DTextOverlay( VistaDisplayManager* pDisplayManager,
-							const std::string& sViewportName = "" );
-	Vista3DTextOverlay( VistaViewport* pViewport );
-	virtual ~Vista3DTextOverlay();
+class VISTAKERNELAPI Vista3DTextOverlay : public IVistaSceneOverlay {
+ public:
+  Vista3DTextOverlay(VistaDisplayManager* pDisplayManager, const std::string& sViewportName = "");
+  Vista3DTextOverlay(VistaViewport* pViewport);
+  virtual ~Vista3DTextOverlay();
 
-	virtual bool Do ();
+  virtual bool Do();
 
-	bool AddText( IVistaTextEntity *pText, bool bManageDeletion = false );
-	bool RemText( IVistaTextEntity *pText );
+  bool AddText(IVistaTextEntity* pText, bool bManageDeletion = false);
+  bool RemText(IVistaTextEntity* pText);
 
-	bool GetIsEnabled() const;
-	void SetIsEnabled( bool bEnabled );
+  bool GetIsEnabled() const;
+  void SetIsEnabled(bool bEnabled);
 
-	virtual void UpdateOnViewportChange( int iWidth, int iHeight, int iPosX, int iPosY );
+  virtual void UpdateOnViewportChange(int iWidth, int iHeight, int iPosX, int iPosY);
 
-private:
-	std::list<IVistaTextEntity*> m_liTexts;
-	std::list<IVistaTextEntity*> m_liMemoryManagedTexts;
-	bool m_bEnabled;
+ private:
+  std::list<IVistaTextEntity*> m_liTexts;
+  std::list<IVistaTextEntity*> m_liMemoryManagedTexts;
+  bool                         m_bEnabled;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

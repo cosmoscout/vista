@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDfnKeyStateNode.h" 
+#include "VistaDfnKeyStateNode.h"
 
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
@@ -39,83 +38,67 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 VistaDfnKeyStateNode::VistaDfnKeyStateNode()
-: VistaDfnKeyCallbackNode()
-, m_pKeyState( new TVdfnPort<bool> )
-, m_bKeyState(false)
-, m_uiUpdateScore(1)
-{
-	m_pCallbackKeyUp = new CounterCallback(this);
-	RegisterOutPort( "state", m_pKeyState);
+    : VistaDfnKeyCallbackNode()
+    , m_pKeyState(new TVdfnPort<bool>)
+    , m_bKeyState(false)
+    , m_uiUpdateScore(1) {
+  m_pCallbackKeyUp = new CounterCallback(this);
+  RegisterOutPort("state", m_pKeyState);
 }
 
-VistaDfnKeyStateNode::~VistaDfnKeyStateNode()
-{
-	if( m_pCallbackKeyUp )
-		m_pKeyboard->UnbindAction( m_pCallbackKeyUp );
-	delete m_pCallbackKeyUp;
-}
- 
-bool VistaDfnKeyStateNode::PrepareEvaluationRun()
-{
-	return GetIsValid();
+VistaDfnKeyStateNode::~VistaDfnKeyStateNode() {
+  if (m_pCallbackKeyUp)
+    m_pKeyboard->UnbindAction(m_pCallbackKeyUp);
+  delete m_pCallbackKeyUp;
 }
 
-bool VistaDfnKeyStateNode::GetIsValid() const
-{
-	return ( m_pCallbackKeyUp != NULL && VistaDfnKeyCallbackNode::GetIsValid ());
+bool VistaDfnKeyStateNode::PrepareEvaluationRun() {
+  return GetIsValid();
 }
 
-bool VistaDfnKeyStateNode::DoEvalNode()
-{
-	VistaDfnKeyCallbackNode::DoEvalNode();
-	if (m_pKeyState->GetValue () != m_bKeyState)
-		m_pKeyState->SetValue( m_bKeyState, GetUpdateTimeStamp() );
-	return true;
+bool VistaDfnKeyStateNode::GetIsValid() const {
+  return (m_pCallbackKeyUp != NULL && VistaDfnKeyCallbackNode::GetIsValid());
 }
 
-unsigned int VistaDfnKeyStateNode::CalcUpdateNeededScore() const
-{
-	return m_uiUpdateScore;
+bool VistaDfnKeyStateNode::DoEvalNode() {
+  VistaDfnKeyCallbackNode::DoEvalNode();
+  if (m_pKeyState->GetValue() != m_bKeyState)
+    m_pKeyState->SetValue(m_bKeyState, GetUpdateTimeStamp());
+  return true;
 }
 
-void VistaDfnKeyStateNode::Callback( const CounterCallback* pCallback )
-{
-	VistaDfnKeyCallbackNode::Callback (pCallback);
-
-	if (pCallback == m_pCallbackKeyDown)
-		m_bKeyState = true;
-	else if (pCallback == m_pCallbackKeyUp)
-		m_bKeyState = false;
-	++m_uiUpdateScore;
+unsigned int VistaDfnKeyStateNode::CalcUpdateNeededScore() const {
+  return m_uiUpdateScore;
 }
 
-void VistaDfnKeyStateNode::SetupKeyboardCallback(  
-	VistaKeyboardSystemControl* pKeyboard
-	, const int nKeyCode
-	, const int nModCode
-	, const std::string& sDescription
-	, const bool bForce )
-{
-	if (m_pKeyboard == NULL)
-	{
-		m_pKeyboard = pKeyboard;
-		if( m_pKeyboard->BindAction( nKeyCode, nModCode, m_pCallbackKeyDown, sDescription, false, false, bForce ) == false )
-		{
-			delete m_pCallbackKeyDown;
-			m_pCallbackKeyDown = NULL;
-		}
+void VistaDfnKeyStateNode::Callback(const CounterCallback* pCallback) {
+  VistaDfnKeyCallbackNode::Callback(pCallback);
 
-		if( m_pKeyboard->BindAction( -nKeyCode, nModCode, m_pCallbackKeyUp, sDescription, false, false, bForce ) == false )
-		{
-			delete m_pCallbackKeyUp;
-			m_pCallbackKeyUp = NULL;
-		}
-	}
+  if (pCallback == m_pCallbackKeyDown)
+    m_bKeyState = true;
+  else if (pCallback == m_pCallbackKeyUp)
+    m_bKeyState = false;
+  ++m_uiUpdateScore;
 }
 
+void VistaDfnKeyStateNode::SetupKeyboardCallback(VistaKeyboardSystemControl* pKeyboard,
+    const int nKeyCode, const int nModCode, const std::string& sDescription, const bool bForce) {
+  if (m_pKeyboard == NULL) {
+    m_pKeyboard = pKeyboard;
+    if (m_pKeyboard->BindAction(
+            nKeyCode, nModCode, m_pCallbackKeyDown, sDescription, false, false, bForce) == false) {
+      delete m_pCallbackKeyDown;
+      m_pCallbackKeyDown = NULL;
+    }
+
+    if (m_pKeyboard->BindAction(
+            -nKeyCode, nModCode, m_pCallbackKeyUp, sDescription, false, false, bForce) == false) {
+      delete m_pCallbackKeyUp;
+      m_pCallbackKeyUp = NULL;
+    }
+  }
+}
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTASERIALTEEFILTER_H
 #define DLVISTASERIALTEEFILTER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaTeeFilter.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <map>
 /*============================================================================*/
@@ -50,37 +48,31 @@ class VistaThreadEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI DLVistaSerialTeeFilter : public IDLVistaTeeFilter {
+ public:
+  DLVistaSerialTeeFilter();
 
-class VISTAINTERPROCCOMMAPI DLVistaSerialTeeFilter : public IDLVistaTeeFilter
-{
-public:
+  ~DLVistaSerialTeeFilter();
 
-	DLVistaSerialTeeFilter();
+  IDLVistaDataPacket* FilterPacketL(IDLVistaDataPacket*);
 
-	~DLVistaSerialTeeFilter();
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	IDLVistaDataPacket *FilterPacketL(IDLVistaDataPacket *);
+  virtual IDLVistaDataPacket* ReturnPacket();
 
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+ protected:
+  int  GetPacketIndex(IDLVistaDataPacket*) const;
+  void UpdatePacketIndex(IDLVistaDataPacket* pPacket, int iIndex);
 
-	virtual IDLVistaDataPacket * ReturnPacket();
-
-
-protected:
-	int GetPacketIndex(IDLVistaDataPacket *) const;
-	void UpdatePacketIndex(IDLVistaDataPacket *pPacket, int iIndex);
-
-private:
-	typedef std::map<IDLVistaDataPacket *, int> PACKETMAP;
-	PACKETMAP *m_mpPacketMap;
-	VistaMutex *m_pMapMutex;
-
+ private:
+  typedef std::map<IDLVistaDataPacket*, int> PACKETMAP;
+  PACKETMAP*                                 m_mpPacketMap;
+  VistaMutex*                                m_pMapMutex;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTATEEPIPE_H
+#endif // DLVISTATEEPIPE_H

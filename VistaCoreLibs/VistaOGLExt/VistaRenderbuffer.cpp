@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaBase/VistaStreamUtils.h>
 
 #include "VistaRenderbuffer.h"
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -39,39 +38,34 @@ GLuint VistaRenderbuffer::s_iCurrentlyBoundRenderbuffer = 0;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 VistaRenderbuffer::VistaRenderbuffer()
-: m_iId(0)
-{
-	if (!GLEW_EXT_framebuffer_object)
-	{
-		vstr::errp() << " [VistaRenderbuffer] missing EXT_framebuffer_object extension..." << endl;
-		return;
-	}
+    : m_iId(0) {
+  if (!GLEW_EXT_framebuffer_object) {
+    vstr::errp() << " [VistaRenderbuffer] missing EXT_framebuffer_object extension..." << endl;
+    return;
+  }
 
-	// generate buffer id and create buffer
-	glGenRenderbuffersEXT(1, &m_iId);
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_iId);
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, s_iCurrentlyBoundRenderbuffer);
+  // generate buffer id and create buffer
+  glGenRenderbuffersEXT(1, &m_iId);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_iId);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, s_iCurrentlyBoundRenderbuffer);
 }
 
 VistaRenderbuffer::VistaRenderbuffer(GLenum eFormat, int iWidth, int iHeight)
-: m_iId(0)
-{
-	if (!GLEW_EXT_framebuffer_object)
-	{
-		vstr::errp() << " [VistaRenderbuffer] missing EXT_framebuffer_object extension..." << endl;
-		return;
-	}
+    : m_iId(0) {
+  if (!GLEW_EXT_framebuffer_object) {
+    vstr::errp() << " [VistaRenderbuffer] missing EXT_framebuffer_object extension..." << endl;
+    return;
+  }
 
-	glGenRenderbuffersEXT(1, &m_iId);
+  glGenRenderbuffersEXT(1, &m_iId);
 
-	Init(eFormat, iWidth, iHeight);
+  Init(eFormat, iWidth, iHeight);
 }
 
-VistaRenderbuffer::~VistaRenderbuffer()
-{
-	if (GLEW_EXT_framebuffer_object && m_iId)
-		glDeleteRenderbuffersEXT(1, &m_iId);
-	m_iId = 0;
+VistaRenderbuffer::~VistaRenderbuffer() {
+  if (GLEW_EXT_framebuffer_object && m_iId)
+    glDeleteRenderbuffersEXT(1, &m_iId);
+  m_iId = 0;
 }
 
 /*============================================================================*/
@@ -83,13 +77,12 @@ VistaRenderbuffer::~VistaRenderbuffer()
 /*  NAME      :   Init                                                        */
 /*                                                                            */
 /*============================================================================*/
-void VistaRenderbuffer::Init(GLenum eFormat, int iWidth, int iHeight)
-{
-	FastBind();
+void VistaRenderbuffer::Init(GLenum eFormat, int iWidth, int iHeight) {
+  FastBind();
 
-	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, eFormat, iWidth, iHeight);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, eFormat, iWidth, iHeight);
 
-	FastRelease();
+  FastRelease();
 }
 
 /*============================================================================*/
@@ -97,19 +90,17 @@ void VistaRenderbuffer::Init(GLenum eFormat, int iWidth, int iHeight)
 /*  NAME      :   Bind                                                        */
 /*                                                                            */
 /*============================================================================*/
-void VistaRenderbuffer::Bind()
-{
-	if(s_iCurrentlyBoundRenderbuffer == m_iId)
-		return;
+void VistaRenderbuffer::Bind() {
+  if (s_iCurrentlyBoundRenderbuffer == m_iId)
+    return;
 
-	if(s_iCurrentlyBoundRenderbuffer != 0)
-	{
-		vstr::warnp() << "[VistaRenderbuffer] An other Render-Buffer is currently bound!" << endl;
-		vstr::warni() << "Old bind state will be overwritten!" << endl;
-	}
+  if (s_iCurrentlyBoundRenderbuffer != 0) {
+    vstr::warnp() << "[VistaRenderbuffer] An other Render-Buffer is currently bound!" << endl;
+    vstr::warni() << "Old bind state will be overwritten!" << endl;
+  }
 
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_iId);
-	s_iCurrentlyBoundRenderbuffer = m_iId;
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_iId);
+  s_iCurrentlyBoundRenderbuffer = m_iId;
 }
 
 /*============================================================================*/
@@ -117,16 +108,14 @@ void VistaRenderbuffer::Bind()
 /*  NAME      :   Disable                                                     */
 /*                                                                            */
 /*============================================================================*/
-void VistaRenderbuffer::Release()
-{
-	if(s_iCurrentlyBoundRenderbuffer != m_iId)
-	{
-		vstr::warnp() << "[VistaRenderbuffer] The Render-Buffer, that should be released,"
-			<< " is not the current bound Render-Buffer!"<< endl;
-	}
+void VistaRenderbuffer::Release() {
+  if (s_iCurrentlyBoundRenderbuffer != m_iId) {
+    vstr::warnp() << "[VistaRenderbuffer] The Render-Buffer, that should be released,"
+                  << " is not the current bound Render-Buffer!" << endl;
+  }
 
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-	s_iCurrentlyBoundRenderbuffer = 0;
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+  s_iCurrentlyBoundRenderbuffer = 0;
 }
 
 /*============================================================================*/
@@ -134,9 +123,8 @@ void VistaRenderbuffer::Release()
 /*  NAME      :   GetId                                                       */
 /*                                                                            */
 /*============================================================================*/
-GLuint VistaRenderbuffer::GetId() const
-{
-	return m_iId;
+GLuint VistaRenderbuffer::GetId() const {
+  return m_iId;
 }
 
 /*============================================================================*/
@@ -144,9 +132,8 @@ GLuint VistaRenderbuffer::GetId() const
 /*  NAME      :   IsSupported                                                 */
 /*                                                                            */
 /*============================================================================*/
-bool VistaRenderbuffer::IsSupported() const
-{
-	return GLEW_EXT_framebuffer_object ? true : false;
+bool VistaRenderbuffer::IsSupported() const {
+  return GLEW_EXT_framebuffer_object ? true : false;
 }
 
 /*============================================================================*/
@@ -154,10 +141,9 @@ bool VistaRenderbuffer::IsSupported() const
 /*  NAME      :   SafeBind                                                    */
 /*                                                                            */
 /*============================================================================*/
-void VistaRenderbuffer::FastBind()
-{
-	if (s_iCurrentlyBoundRenderbuffer != m_iId)
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_iId);
+void VistaRenderbuffer::FastBind() {
+  if (s_iCurrentlyBoundRenderbuffer != m_iId)
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_iId);
 }
 
 /*============================================================================*/
@@ -165,10 +151,9 @@ void VistaRenderbuffer::FastBind()
 /*  NAME      :   SafeRelease                                                 */
 /*                                                                            */
 /*============================================================================*/
-void VistaRenderbuffer::FastRelease()
-{
-	if (s_iCurrentlyBoundRenderbuffer != m_iId)
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, s_iCurrentlyBoundRenderbuffer);
+void VistaRenderbuffer::FastRelease() {
+  if (s_iCurrentlyBoundRenderbuffer != m_iId)
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, s_iCurrentlyBoundRenderbuffer);
 }
 
 /*============================================================================*/

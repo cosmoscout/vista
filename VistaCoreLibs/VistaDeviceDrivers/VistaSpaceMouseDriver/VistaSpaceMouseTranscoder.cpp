@@ -21,137 +21,122 @@
 /*                                                                            */
 /*============================================================================*/
 
-
+#include "VistaSpaceMouseCommonShare.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include "VistaSpaceMouseCommonShare.h"
 
-namespace
-{
-	class VistaSpaceMouseMeasureTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaSpaceMouseMeasureTranscode()
-		{
-			// inherited
-			m_nNumberOfScalars = 9;
-		}
+namespace {
+class VistaSpaceMouseMeasureTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaSpaceMouseMeasureTranscode() {
+    // inherited
+    m_nNumberOfScalars = 9;
+  }
 
-		virtual ~VistaSpaceMouseMeasureTranscode() {}
-		static std::string GetTypeString() { return "VistaSpaceMouseMeasureTranscode"; }
+  virtual ~VistaSpaceMouseMeasureTranscode() {
+  }
+  static std::string GetTypeString() {
+    return "VistaSpaceMouseMeasureTranscode";
+  }
 
-		REFL_INLINEIMP(VistaSpaceMouseMeasureTranscode, IVistaMeasureTranscode);
-	};
+  REFL_INLINEIMP(VistaSpaceMouseMeasureTranscode, IVistaMeasureTranscode);
+};
 
-	class VistaSpaceMousePosTranscode : public IVistaMeasureTranscode::V3Get
-	{
-	public:
-		VistaSpaceMousePosTranscode()
-			: IVistaMeasureTranscode::V3Get("POSITION",
-			VistaSpaceMouseMeasureTranscode::GetTypeString(),
-			"spacemouse axes translational coords") {}
+class VistaSpaceMousePosTranscode : public IVistaMeasureTranscode::V3Get {
+ public:
+  VistaSpaceMousePosTranscode()
+      : IVistaMeasureTranscode::V3Get("POSITION", VistaSpaceMouseMeasureTranscode::GetTypeString(),
+            "spacemouse axes translational coords") {
+  }
 
-		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const VistaSpaceMouseMeasures::sSpaceMouseMeasure *m = pMeasure->getRead< VistaSpaceMouseMeasures::sSpaceMouseMeasure >();
-			return VistaVector3D(m->m_nPos);
-		}
+  virtual VistaVector3D GetValue(const VistaSensorMeasure* pMeasure) const {
+    const VistaSpaceMouseMeasures::sSpaceMouseMeasure* m =
+        pMeasure->getRead<VistaSpaceMouseMeasures::sSpaceMouseMeasure>();
+    return VistaVector3D(m->m_nPos);
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaVector3D &v3Pos) const
-		{
-			v3Pos = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaVector3D& v3Pos) const {
+    v3Pos = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	class VistaSpaceMouseRotAxisTranscode : public IVistaMeasureTranscode::V3Get
-	{
-	public:
-		VistaSpaceMouseRotAxisTranscode()
-			: IVistaMeasureTranscode::V3Get("ROTAXIS",
-			VistaSpaceMouseMeasureTranscode::GetTypeString(),
-			"spacemouse axes for rotation (raw)") {}
+class VistaSpaceMouseRotAxisTranscode : public IVistaMeasureTranscode::V3Get {
+ public:
+  VistaSpaceMouseRotAxisTranscode()
+      : IVistaMeasureTranscode::V3Get("ROTAXIS", VistaSpaceMouseMeasureTranscode::GetTypeString(),
+            "spacemouse axes for rotation (raw)") {
+  }
 
-		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const VistaSpaceMouseMeasures::sSpaceMouseMeasure *m = pMeasure->getRead< VistaSpaceMouseMeasures::sSpaceMouseMeasure >();
-			return VistaVector3D(m->m_nRotAx);
-		}
+  virtual VistaVector3D GetValue(const VistaSensorMeasure* pMeasure) const {
+    const VistaSpaceMouseMeasures::sSpaceMouseMeasure* m =
+        pMeasure->getRead<VistaSpaceMouseMeasures::sSpaceMouseMeasure>();
+    return VistaVector3D(m->m_nRotAx);
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaVector3D &v3Pos) const
-		{
-			v3Pos = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaVector3D& v3Pos) const {
+    v3Pos = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	class VistaSpaceMouseOriTranscode : public IVistaMeasureTranscode::QuatGet
-	{
-	public:
-		VistaSpaceMouseOriTranscode()
-			: IVistaMeasureTranscode::QuatGet("ORIENTATION",
-			VistaSpaceMouseMeasureTranscode::GetTypeString(),
-			"spacemouse axes rotational coords") {}
+class VistaSpaceMouseOriTranscode : public IVistaMeasureTranscode::QuatGet {
+ public:
+  VistaSpaceMouseOriTranscode()
+      : IVistaMeasureTranscode::QuatGet("ORIENTATION",
+            VistaSpaceMouseMeasureTranscode::GetTypeString(), "spacemouse axes rotational coords") {
+  }
 
-		virtual VistaQuaternion    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			const VistaSpaceMouseMeasures::sSpaceMouseMeasure *m = pMeasure->getRead< VistaSpaceMouseMeasures::sSpaceMouseMeasure >();
-			return VistaQuaternion(m->m_nOri[0], m->m_nOri[1], m->m_nOri[2], m->m_nOri[3]);
-		}
+  virtual VistaQuaternion GetValue(const VistaSensorMeasure* pMeasure) const {
+    const VistaSpaceMouseMeasures::sSpaceMouseMeasure* m =
+        pMeasure->getRead<VistaSpaceMouseMeasures::sSpaceMouseMeasure>();
+    return VistaQuaternion(m->m_nOri[0], m->m_nOri[1], m->m_nOri[2], m->m_nOri[3]);
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaQuaternion &v3Pos) const
-		{
-			v3Pos = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaQuaternion& v3Pos) const {
+    v3Pos = GetValue(pMeasure);
+    return true;
+  }
+};
 
+class VistaSpacemouseScalarTranscode : public IVistaMeasureTranscode::ScalarDoubleGet {
+ public:
+  VistaSpacemouseScalarTranscode()
+      : IVistaMeasureTranscode::ScalarDoubleGet(
+            "DSCALAR", VistaSpaceMouseMeasureTranscode::GetTypeString(), "spacemouse keys (0-8)") {
+  }
 
-	class VistaSpacemouseScalarTranscode : public IVistaMeasureTranscode::ScalarDoubleGet
-	{
-	public:
-		VistaSpacemouseScalarTranscode()
-			: IVistaMeasureTranscode::ScalarDoubleGet("DSCALAR",
-			VistaSpaceMouseMeasureTranscode::GetTypeString(),
-			"spacemouse keys (0-8)") {}
+  virtual bool GetValueIndexed(
+      const VistaSensorMeasure* pMeasure, double& dScalar, unsigned int nIndex) const {
+    if (!pMeasure || nIndex > 8)
+      return false;
 
-		virtual bool GetValueIndexed(const VistaSensorMeasure *pMeasure,
-			double &dScalar,
-			unsigned int nIndex ) const
-		{
-			if(!pMeasure || nIndex > 8)
-				return false;
+    const VistaSpaceMouseMeasures::sSpaceMouseMeasure* m =
+        pMeasure->getRead<VistaSpaceMouseMeasures::sSpaceMouseMeasure>();
+    dScalar = m->m_nButtonStates[nIndex];
+    return true;
+  }
+};
 
-			const VistaSpaceMouseMeasures::sSpaceMouseMeasure *m = pMeasure->getRead< VistaSpaceMouseMeasures::sSpaceMouseMeasure >();
-			dScalar = m->m_nButtonStates[nIndex];
-			return true;
-		}
-	};
+static IVistaPropertyGetFunctor* SaGetter[] = {new VistaSpaceMousePosTranscode,
+    new VistaSpaceMouseOriTranscode, new VistaSpacemouseScalarTranscode,
+    new VistaSpaceMouseRotAxisTranscode, NULL};
+} // namespace
 
-	static IVistaPropertyGetFunctor *SaGetter[] =
-	{
-		new VistaSpaceMousePosTranscode,
-		new VistaSpaceMouseOriTranscode,
-		new VistaSpacemouseScalarTranscode,
-		new VistaSpaceMouseRotAxisTranscode,
-		NULL
-	};
-}
-
-class VistaSpacemouseTranscoderFactory : public TDefaultTranscoderFactory<VistaSpaceMouseMeasureTranscode>
-{
-public:
-	VistaSpacemouseTranscoderFactory()
-		: TDefaultTranscoderFactory<VistaSpaceMouseMeasureTranscode>(VistaSpaceMouseMeasureTranscode::GetTypeString())
-	{}
+class VistaSpacemouseTranscoderFactory
+    : public TDefaultTranscoderFactory<VistaSpaceMouseMeasureTranscode> {
+ public:
+  VistaSpacemouseTranscoderFactory()
+      : TDefaultTranscoderFactory<VistaSpaceMouseMeasureTranscode>(
+            VistaSpaceMouseMeasureTranscode::GetTypeString()) {
+  }
 };
 
 #ifdef VISTASPACEMOUSETRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<VistaSpacemouseTranscoderFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaSpacemouseTranscoderFactory>)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<VistaSpacemouseTranscoderFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaSpacemouseTranscoderFactory>)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
 IMPTRANSCODERPLUG_CLEANUP(TSimpleTranscoderFactoryFactory<VistaSpacemouseTranscoderFactory>)
-

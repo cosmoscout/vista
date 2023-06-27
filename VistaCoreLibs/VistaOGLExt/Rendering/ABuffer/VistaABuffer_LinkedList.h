@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef VISTA_A_BUFFER_LINKED_LIST_H
 #define VISTA_A_BUFFER_LINKED_LIST_H
 /*============================================================================*/
@@ -34,45 +33,44 @@
 /*============================================================================*/
 /**
  * This class implements the A-Buffer by using Linked-Lists to store Fragments.
- * Every List-Elements represents one Fragment. For every Pixel a pointer to 
+ * Every List-Elements represents one Fragment. For every Pixel a pointer to
  * the first element of the list of fragments, that are associated with thees
- * pixel, is stored. 
- * All List-Elements are stored in a single storage area, there for the amount of 
+ * pixel, is stored.
+ * All List-Elements are stored in a single storage area, there for the amount of
  * fragments, that can be stored for one Pixel, is only limited by the total
- * size of the storage area. This allows a better use of memory, since no 
+ * size of the storage area. This allows a better use of memory, since no
  * memory is consumed by pixels, to which no fragment is mapped.
  */
-class VISTAOGLEXTAPI VistaABufferLinkedList : public IVistaABuffer
-{
-public: 
-	/**************************************************************************/
-	/* CONSTRUCTORS / DESTRUCTOR                                              */
-	/**************************************************************************/
-	VistaABufferLinkedList();
-	virtual ~VistaABufferLinkedList();
+class VISTAOGLEXTAPI VistaABufferLinkedList : public IVistaABuffer {
+ public:
+  /**************************************************************************/
+  /* CONSTRUCTORS / DESTRUCTOR                                              */
+  /**************************************************************************/
+  VistaABufferLinkedList();
+  virtual ~VistaABufferLinkedList();
 
-	/**************************************************************************/
-	/* PUBLIC INTERFACE                                                       */
-	/**************************************************************************/
-	virtual bool ClearABuffer();
+  /**************************************************************************/
+  /* PUBLIC INTERFACE                                                       */
+  /**************************************************************************/
+  virtual bool ClearABuffer();
 
-	virtual VistaGLSLShader* CreateShaderPrototype() const;
+  virtual VistaGLSLShader* CreateShaderPrototype() const;
 
-protected:
-	virtual bool InitShader();
-	virtual bool InitBuffer();
-	virtual void ResizePerPixelBuffer();
+ protected:
+  virtual bool InitShader();
+  virtual bool InitBuffer();
+  virtual void ResizePerPixelBuffer();
 
-	virtual void AssignUniforms( VistaGLSLShader* pShader );
+  virtual void AssignUniforms(VistaGLSLShader* pShader);
 
-	void CreateAtomicCounter();
-	void ResetAtomicCounter();
+  void CreateAtomicCounter();
+  void ResetAtomicCounter();
 
-private:
-	GLuint			m_uiHeadPointerBuffer;
-	GLuint64EXT		m_addrHeadPointerBuffer;
+ private:
+  GLuint      m_uiHeadPointerBuffer;
+  GLuint64EXT m_addrHeadPointerBuffer;
 
-	GLuint			m_uiAtomicFragCounter;
+  GLuint m_uiAtomicFragCounter;
 };
 #endif // Include guard.
 /*============================================================================*/

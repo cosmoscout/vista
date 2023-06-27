@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNDECOMPOSETRANSFORMMATRIXNODE_H
 #define _VDFNDECOMPOSETRANSFORMMATRIXNODE_H
 
@@ -56,20 +55,19 @@
  *
  * @outport{i_j,float, component (i,j) of the input matrix (i and j from 0 to 3 )}
  */
-class VISTADFNAPI VdfnDecomposeTransformMatrixNode : public IVdfnNode
-{
-public:
-	VdfnDecomposeTransformMatrixNode();
-	virtual ~VdfnDecomposeTransformMatrixNode();
-	
-	bool PrepareEvaluationRun();
+class VISTADFNAPI VdfnDecomposeTransformMatrixNode : public IVdfnNode {
+ public:
+  VdfnDecomposeTransformMatrixNode();
+  virtual ~VdfnDecomposeTransformMatrixNode();
 
-protected:
-	virtual bool DoEvalNode();
+  bool PrepareEvaluationRun();
 
-private:
-	std::vector< TVdfnPort< float >* >		m_vecOutPorts;
-	TVdfnPort< VistaTransformMatrix >*		m_pIn;
+ protected:
+  virtual bool DoEvalNode();
+
+ private:
+  std::vector<TVdfnPort<float>*>   m_vecOutPorts;
+  TVdfnPort<VistaTransformMatrix>* m_pIn;
 };
 
 /*============================================================================*/

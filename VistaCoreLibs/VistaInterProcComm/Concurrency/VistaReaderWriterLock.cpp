@@ -21,40 +21,30 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaReaderWriterLock.h"
 
 #include "Imp/VistaReaderWriterLockImp.h"
 
-
-VistaReaderWriterLock::VistaReaderWriterLock()
-{
-	m_pImp = IVistaReaderWriterLockImp::CreateReaderWriterLock();
+VistaReaderWriterLock::VistaReaderWriterLock() {
+  m_pImp = IVistaReaderWriterLockImp::CreateReaderWriterLock();
 }
 
-VistaReaderWriterLock::~VistaReaderWriterLock()
-{
-	delete m_pImp;
+VistaReaderWriterLock::~VistaReaderWriterLock() {
+  delete m_pImp;
 }
 
-bool VistaReaderWriterLock::ReaderLock()
-{
-	return m_pImp->ReaderLock();
+bool VistaReaderWriterLock::ReaderLock() {
+  return m_pImp->ReaderLock();
 }
 
-bool VistaReaderWriterLock::ReaderUnlock()
-{
-	return m_pImp->ReaderUnlock();
+bool VistaReaderWriterLock::ReaderUnlock() {
+  return m_pImp->ReaderUnlock();
 }
 
-
-bool VistaReaderWriterLock::WriterLock()
-{
-	return m_pImp->WriterLock();
+bool VistaReaderWriterLock::WriterLock() {
+  return m_pImp->WriterLock();
 }
 
-bool VistaReaderWriterLock::WriterUnlock()
-{
-	return m_pImp->WriterUnlock();
+bool VistaReaderWriterLock::WriterUnlock() {
+  return m_pImp->WriterUnlock();
 }
-

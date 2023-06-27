@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGPHONGSHADER_H_
 #define _VISTAOPENSGPHONGSHADER_H_
 
@@ -31,8 +30,8 @@
 
 #include "VistaKernelOpenSGExtConfig.h"
 
-#include <string>
 #include "VistaOpenSGPerMaterialShader.h"
+#include <string>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -49,29 +48,28 @@ class IVistaNode;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGPhongShader : public VistaOpenSGPerMaterialShader
-{
-public:
-	VistaOpenSGPhongShader();
-	VistaOpenSGPhongShader( const std::string& sVertexShaderFile,
-							const std::string& sFragmentShaderFile );
-	~VistaOpenSGPhongShader();
-	
-	bool GetUseFog() const;
-	void SetUseFog( const bool bSet );
-	int GetFogType() const;
-	void SetFogType( const int nGLFogType );
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGPhongShader : public VistaOpenSGPerMaterialShader {
+ public:
+  VistaOpenSGPhongShader();
+  VistaOpenSGPhongShader(
+      const std::string& sVertexShaderFile, const std::string& sFragmentShaderFile);
+  ~VistaOpenSGPhongShader();
 
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pGeometry );
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pMaterial,
-				const std::vector<CShaderUniformParam>& vecUniformParams );
+  bool GetUseFog() const;
+  void SetUseFog(const bool bSet);
+  int  GetFogType() const;
+  void SetFogType(const int nGLFogType);
 
-private:	
-	static const std::string s_sVertexShader;
-	static const std::string s_sFragmentShader;
+  virtual bool ApplyToOSGMaterial(osg::ChunkMaterialPtr& pGeometry);
+  virtual bool ApplyToOSGMaterial(
+      osg::ChunkMaterialPtr& pMaterial, const std::vector<CShaderUniformParam>& vecUniformParams);
 
-	bool m_bUseFog;
-	int m_nFogType;
+ private:
+  static const std::string s_sVertexShader;
+  static const std::string s_sFragmentShader;
+
+  bool m_bUseFog;
+  int  m_nFogType;
 };
 
 /*============================================================================*/

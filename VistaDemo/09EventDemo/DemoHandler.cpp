@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "DemoHandler.h"
 #include "DemoEvent.h"
 //#include <VistaKernel/InteractionManager/VistaInteractionEvent.h>
@@ -33,9 +32,8 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DemoHandler::DemoHandler()
-{
-	cout << "[DemoHandler] I will report all events, that I get notified of..." << endl;
+DemoHandler::DemoHandler() {
+  cout << "[DemoHandler] I will report all events, that I get notified of..." << endl;
 }
 
 /*============================================================================*/
@@ -47,8 +45,6 @@ DemoHandler::DemoHandler()
 /*  NAME      :   Notify                                                      */
 /*                                                                            */
 /*============================================================================*/
-void DemoHandler::HandleEvent(VistaEvent *pEvent)
-{
-	cout << "[DemoHandler] Got one: " << pEvent->GetName() << endl;
+void DemoHandler::HandleEvent(VistaEvent* pEvent) {
+  cout << "[DemoHandler] Got one: " << pEvent->GetName() << endl;
 }
-

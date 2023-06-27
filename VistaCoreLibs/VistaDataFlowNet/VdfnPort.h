@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNPORT_H
 #define _VDFNPORT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,9 +30,9 @@
 #include "VdfnConfig.h"
 #include "VdfnSerializer.h"
 
+#include <VistaAspects/VistaDeSerializer.h>
 #include <VistaAspects/VistaSerializable.h>
 #include <VistaAspects/VistaSerializer.h>
-#include <VistaAspects/VistaDeSerializer.h>
 
 #include <typeinfo>
 
@@ -65,97 +63,97 @@ class IVdfnPortTypeCompare;
  * IVdfnPorts can not be constructed directly, and IVdfnPort does not define
  * an API to actually set the value (besides the AssignFrom() API)
  */
-class VISTADFNAPI IVdfnPort
-{
-	friend class VdfnPortSerializeAdapter;
-public:
-	virtual ~IVdfnPort();
+class VISTADFNAPI IVdfnPort {
+  friend class VdfnPortSerializeAdapter;
 
-	/**
-	 * this is an alias to GetUpdateTimeStamp()
-	 * @todo check whether this API is still needed and where...
-	 * @return the timestamp of the last update
-	 */
-	double GetLastUpdate() const;
+ public:
+  virtual ~IVdfnPort();
 
-	/**
-	 * sets the update timestmap for this port
-	 * @param nTs the update timestamp to be set
-	 */
-	void   SetUpdateTimeStamp(double nTs);
+  /**
+   * this is an alias to GetUpdateTimeStamp()
+   * @todo check whether this API is still needed and where...
+   * @return the timestamp of the last update
+   */
+  double GetLastUpdate() const;
 
-	/**
-	 * @return the update timestamp for this port
-	 * @see SetUpdateTimeStamp()
-	 */
-	double GetUpdateTimeStamp() const;
+  /**
+   * sets the update timestmap for this port
+   * @param nTs the update timestamp to be set
+   */
+  void SetUpdateTimeStamp(double nTs);
 
-	/**
-	 * each port counts its revision, it is incremented on a call
-	 * to IncUpdateCounter(), manually by user code. This enables,
-	 * for example, to write to the memory of the port first and then
-	 * trigger the update revision.
-	 * @return the revision or update counter of this port
-	 * @see IncUpdateCounter()
-	 */
-	unsigned int GetUpdateCounter() const;
+  /**
+   * @return the update timestamp for this port
+   * @see SetUpdateTimeStamp()
+   */
+  double GetUpdateTimeStamp() const;
 
-	/**
-	 * increases the update counter by one, doing this marks the
-	 * port as dirty.
-	 * @see GetUpdateCounter()
-	 */
-	void         IncUpdateCounter();
+  /**
+   * each port counts its revision, it is incremented on a call
+   * to IncUpdateCounter(), manually by user code. This enables,
+   * for example, to write to the memory of the port first and then
+   * trigger the update revision.
+   * @return the revision or update counter of this port
+   * @see IncUpdateCounter()
+   */
+  unsigned int GetUpdateCounter() const;
 
-	/**
-	 * return a pointer to a VdfnPortSerializeAdapter which is used
-	 * when trying to send the port data over the network. Subclasses have
-	 * to decide on this, the default implementation returns here what subclasses
-	 * have set.
-	 * @return a serialize adapter if one was defined, or NULL
-	 * @todo check virtual in this context
-	 */
-	virtual VdfnPortSerializeAdapter *GetSerializeAdapter();
+  /**
+   * increases the update counter by one, doing this marks the
+   * port as dirty.
+   * @see GetUpdateCounter()
+   */
+  void IncUpdateCounter();
 
-	/**
-	 * ports have types. types can be checked using the IVdfnPortTypeCompare
-	 * interface. The memory is assumed to be floating... the caller is
-	 * responsible for cleaning up and managing the pointer
-	 * @return the port type compare instance for this port.
-	 */
-	virtual IVdfnPortTypeCompare *GetPortTypeCompare() const = 0;
+  /**
+   * return a pointer to a VdfnPortSerializeAdapter which is used
+   * when trying to send the port data over the network. Subclasses have
+   * to decide on this, the default implementation returns here what subclasses
+   * have set.
+   * @return a serialize adapter if one was defined, or NULL
+   * @todo check virtual in this context
+   */
+  virtual VdfnPortSerializeAdapter* GetSerializeAdapter();
 
-	/**
-	 * clone the port, results in a copy of this port with the same type.
-	 * the value of the port is undefined; user code can decide to copy it.
-	 * The most important aspect is that the cloned port has the same type.
-	 * @return a clone of this port
-	 * @todo decide about value set during clone
-	 */
-	virtual IVdfnPort *Clone() const = 0;
+  /**
+   * ports have types. types can be checked using the IVdfnPortTypeCompare
+   * interface. The memory is assumed to be floating... the caller is
+   * responsible for cleaning up and managing the pointer
+   * @return the port type compare instance for this port.
+   */
+  virtual IVdfnPortTypeCompare* GetPortTypeCompare() const = 0;
 
+  /**
+   * clone the port, results in a copy of this port with the same type.
+   * the value of the port is undefined; user code can decide to copy it.
+   * The most important aspect is that the cloned port has the same type.
+   * @return a clone of this port
+   * @todo decide about value set during clone
+   */
+  virtual IVdfnPort* Clone() const = 0;
 
-	/**
-	 * defines a function that can be used to assign this port's value from
-	 * a source port.
-	 * @param oOther the port from which the value is to be assigned to this port
-	 * @return false if assignment could not be done, true else
-	 */
-	virtual bool AssignFrom( const IVdfnPort *oOther ) = 0;
+  /**
+   * defines a function that can be used to assign this port's value from
+   * a source port.
+   * @param oOther the port from which the value is to be assigned to this port
+   * @return false if assignment could not be done, true else
+   */
+  virtual bool AssignFrom(const IVdfnPort* oOther) = 0;
 
-	/**
-	 * @return a string'ified type descriptor for this port's </i>value type</i>,
-			   not the type of this port (which is IVdfnPort)
-	 */
-	virtual std::string GetTypeDescriptor() const = 0;
+  /**
+   * @return a string'ified type descriptor for this port's </i>value type</i>,
+                     not the type of this port (which is IVdfnPort)
+   */
+  virtual std::string GetTypeDescriptor() const = 0;
 
-protected:
-	IVdfnPort();
+ protected:
+  IVdfnPort();
 
-	VdfnPortSerializeAdapter *m_pAdapter;
-private:
-	double       m_nLastUpdate;
-	unsigned int m_nUpdateCounter;
+  VdfnPortSerializeAdapter* m_pAdapter;
+
+ private:
+  double       m_nLastUpdate;
+  unsigned int m_nUpdateCounter;
 };
 
 /**
@@ -164,45 +162,43 @@ private:
  * subclass of this class. They override the Serialize() and DeSerialize() methods
  * according to their needs.
  */
-class VISTADFNAPI VdfnPortSerializeAdapter : public IVistaSerializable
-{
-public:
-	/**
-	 * @param pPort the parent port for this serializer
-	 */
-	VdfnPortSerializeAdapter(IVdfnPort *pPort);
-	virtual ~VdfnPortSerializeAdapter();
+class VISTADFNAPI VdfnPortSerializeAdapter : public IVistaSerializable {
+ public:
+  /**
+   * @param pPort the parent port for this serializer
+   */
+  VdfnPortSerializeAdapter(IVdfnPort* pPort);
+  virtual ~VdfnPortSerializeAdapter();
 
-	/**
-	 * writes a header into the stream for the port, containing last update and
-	 * the update counter.
-	 * @return the number of bytes written
-	 */
-	virtual int Serialize(IVistaSerializer &) const;
+  /**
+   * writes a header into the stream for the port, containing last update and
+   * the update counter.
+   * @return the number of bytes written
+   */
+  virtual int Serialize(IVistaSerializer&) const;
 
-	/**
-	 * reads a header from the stream, containing the last update and the update
-	 * counter.
-	 * @return the number of bytes read
-	 */
-	virtual int DeSerialize(IVistaDeSerializer &);
+  /**
+   * reads a header from the stream, containing the last update and the update
+   * counter.
+   * @return the number of bytes read
+   */
+  virtual int DeSerialize(IVistaDeSerializer&);
 
-	/**
-	 * needed for the IVistaSerializable API.
-	 * @return "IVdfnPort"
-	 */
-	virtual std::string GetSignature() const;
-protected:
-	IVdfnPort *m_pPort;
+  /**
+   * needed for the IVistaSerializable API.
+   * @return "IVdfnPort"
+   */
+  virtual std::string GetSignature() const;
+
+ protected:
+  IVdfnPort* m_pPort;
 };
-
 
 /**
  * forward declaration for the definition of TVdfnPort
  */
-template<class T>
+template <class T>
 class TVdfnPortSerializerAdapter;
-
 
 /**
  * TVdfnPort<> describes the current second level of the Port architecture.
@@ -221,318 +217,311 @@ class TVdfnPortSerializerAdapter;
  * Values stored in TVdfnPort must support default construction. If this is not an option
  * for you, subclass or specialize this template.
  */
-template<class T>
-class TVdfnPort : public IVdfnPort
-{
-public:
-	/**
-	 * default constructor, calls default constructor on stored value
-	 */
-	TVdfnPort()
-		: m_oValue()
-	{}
+template <class T>
+class TVdfnPort : public IVdfnPort {
+ public:
+  /**
+   * default constructor, calls default constructor on stored value
+   */
+  TVdfnPort()
+      : m_oValue() {
+  }
 
-	/**
-	 * assignment constructor, initializes the value with the oValue argument.
-	 */
-	TVdfnPort( const T &oValue )
-		: m_oValue(oValue) {}
+  /**
+   * assignment constructor, initializes the value with the oValue argument.
+   */
+  TVdfnPort(const T& oValue)
+      : m_oValue(oValue) {
+  }
 
-	virtual ~TVdfnPort() {}
+  virtual ~TVdfnPort() {
+  }
 
-	/**
-	 * @return the port's value on stack (may be expensive)
-	 */
-	T GetValue() const                { return m_oValue; }
+  /**
+   * @return the port's value on stack (may be expensive)
+   */
+  T GetValue() const {
+    return m_oValue;
+  }
 
-	/**
-	 * @param oVal the place to store the value to
-	 * @return true
-	 */
-	bool GetValue( T &oVal ) const    { oVal = m_oValue; return true; }
+  /**
+   * @param oVal the place to store the value to
+   * @return true
+   */
+  bool GetValue(T& oVal) const {
+    oVal = m_oValue;
+    return true;
+  }
 
-	/**
-	 * Note that the API is non-const, in order to avoid trouble with some
-	 * compilers, which automaticall make T& a const ref.
-	 * @see IncUpdateCounter()
-	 * @return a writeable reference to the storage of this port's value
-	 */
-	T &GetValueRef()                  { return m_oValue; }
+  /**
+   * Note that the API is non-const, in order to avoid trouble with some
+   * compilers, which automaticall make T& a const ref.
+   * @see IncUpdateCounter()
+   * @return a writeable reference to the storage of this port's value
+   */
+  T& GetValueRef() {
+    return m_oValue;
+  }
 
-	/**
-	 * get a read-only reference to the value, useful to avoid stack copies
-	 * @return a read-only reference to the port's value
-	 */
-	const T &GetValueConstRef() const { return m_oValue; }
+  /**
+   * get a read-only reference to the value, useful to avoid stack copies
+   * @return a read-only reference to the port's value
+   */
+  const T& GetValueConstRef() const {
+    return m_oValue;
+  }
 
-	/**
-	 * sets the value using the type's assignment operator
-	 * @param oValue the value to set
-	 * @param nUpdateTimeStamp the timestamp to set.
-			  note that the timestamp is only copied, not interpreted.
-	   @return true
-	 */
-	bool SetValue( const T &oValue, double nUpdateTimeStamp )
-	{
-		m_oValue = oValue;
-		SetUpdateTimeStamp(nUpdateTimeStamp);
-		IncUpdateCounter();
-		return true;
-	}
+  /**
+   * sets the value using the type's assignment operator
+   * @param oValue the value to set
+   * @param nUpdateTimeStamp the timestamp to set.
+                    note that the timestamp is only copied, not interpreted.
+     @return true
+   */
+  bool SetValue(const T& oValue, double nUpdateTimeStamp) {
+    m_oValue = oValue;
+    SetUpdateTimeStamp(nUpdateTimeStamp);
+    IncUpdateCounter();
+    return true;
+  }
 
-	/**
-	 * @return the serializer for TVdfnPort<> instances.
-	 */
-	virtual VdfnPortSerializeAdapter *GetSerializeAdapter();
+  /**
+   * @return the serializer for TVdfnPort<> instances.
+   */
+  virtual VdfnPortSerializeAdapter* GetSerializeAdapter();
 
-	/**
-	 * Note that a call to this method will allocate a new IVdfnPortTypeCompare
-	 * for type T. Be sure to collect the memory after each call or experience
-	 * memory leaks.
-	 * @return a port type compare for TVdfnPort<> instances
-	 */
-	virtual IVdfnPortTypeCompare *GetPortTypeCompare() const;
+  /**
+   * Note that a call to this method will allocate a new IVdfnPortTypeCompare
+   * for type T. Be sure to collect the memory after each call or experience
+   * memory leaks.
+   * @return a port type compare for TVdfnPort<> instances
+   */
+  virtual IVdfnPortTypeCompare* GetPortTypeCompare() const;
 
-	/**
-	 * clones this port, does not assign this node's value to the new
-	 * port
-	 * @todo decide about value cloning
-	 * @return a new port with the same type as this one
-	 */
-	IVdfnPort *Clone() const { return new TVdfnPort<T>( *this ); }
+  /**
+   * clones this port, does not assign this node's value to the new
+   * port
+   * @todo decide about value cloning
+   * @return a new port with the same type as this one
+   */
+  IVdfnPort* Clone() const {
+    return new TVdfnPort<T>(*this);
+  }
 
-	/**
-	 * assignment function, calls SetValue() once the types of pOther and this
-	 * port are identical.
-	 * @param pOther the source port
-	 * @return false if pOther is not of type TVdfnPort<T>, else returns SetValue()
-	 */
-	virtual bool AssignFrom( const IVdfnPort *pOther )
-	{
-		const TVdfnPort<T> *Other = dynamic_cast<const TVdfnPort<T>*>(pOther);
-		if(!Other)
-			return false;
+  /**
+   * assignment function, calls SetValue() once the types of pOther and this
+   * port are identical.
+   * @param pOther the source port
+   * @return false if pOther is not of type TVdfnPort<T>, else returns SetValue()
+   */
+  virtual bool AssignFrom(const IVdfnPort* pOther) {
+    const TVdfnPort<T>* Other = dynamic_cast<const TVdfnPort<T>*>(pOther);
+    if (!Other)
+      return false;
 
-		return SetValue( Other->GetValue(), Other->GetUpdateTimeStamp() );
-	}
+    return SetValue(Other->GetValue(), Other->GetUpdateTimeStamp());
+  }
 
-	/**
-	 * @return the RTTI type name for T
-	 */
-	virtual std::string GetTypeDescriptor() const
-	{
-		return std::string((typeid(T).name() ? typeid(T).name() : "<none>"));
-	}
+  /**
+   * @return the RTTI type name for T
+   */
+  virtual std::string GetTypeDescriptor() const {
+    return std::string((typeid(T).name() ? typeid(T).name() : "<none>"));
+  }
 
-private:
-	T m_oValue;
+ private:
+  T m_oValue;
 };
-
 
 /**
  * the serialize adapter for ports of type TVdfnPort<T>.
  * It uses streaming operators for serialization, so when you introduce a new
  * type T for a port, be sure to provide a valid streaming operator for it, too.
  */
-template<class T>
-class TVdfnPortSerializerAdapter : public VdfnPortSerializeAdapter
-{
-public:
-	TVdfnPortSerializerAdapter(IVdfnPort *pPort)
-		: VdfnPortSerializeAdapter(pPort) {}
-	virtual ~TVdfnPortSerializerAdapter() {};
+template <class T>
+class TVdfnPortSerializerAdapter : public VdfnPortSerializeAdapter {
+ public:
+  TVdfnPortSerializerAdapter(IVdfnPort* pPort)
+      : VdfnPortSerializeAdapter(pPort) {
+  }
+  virtual ~TVdfnPortSerializerAdapter(){};
 
-	/**
-	 * streams first the base-class stream, and then
-	 * the TVdfnPort<>::GetValueConstRef() to oSer. It uses operator<< for this
-	 * on the type T
-	 * @return the number of bytes streamed
-	 */
-	virtual int Serialize(IVistaSerializer &oSer) const
-	{
-		int iRet = VdfnPortSerializeAdapter::Serialize(oSer);
-		oSer << (dynamic_cast<TVdfnPort<T>*>(m_pPort))->GetValueConstRef();
-		return iRet + sizeof(T);
-	}
+  /**
+   * streams first the base-class stream, and then
+   * the TVdfnPort<>::GetValueConstRef() to oSer. It uses operator<< for this
+   * on the type T
+   * @return the number of bytes streamed
+   */
+  virtual int Serialize(IVistaSerializer& oSer) const {
+    int iRet = VdfnPortSerializeAdapter::Serialize(oSer);
+    oSer << (dynamic_cast<TVdfnPort<T>*>(m_pPort))->GetValueConstRef();
+    return iRet + sizeof(T);
+  }
 
+  /**
+   * streams first the base-class stream, and then the TVdfnPort<T>::GetValueRef()
+   * to the port. As the update count is streamed, too, is does <b>not</b> trigger
+   * the update count for this port. It uses operator>> for the streamin on type T.
+   * @return the number of bytes streamed.
+   */
+  virtual int DeSerialize(IVistaDeSerializer& oDeSer) {
+    int iRet = VdfnPortSerializeAdapter::DeSerialize(oDeSer);
 
-	/**
-	 * streams first the base-class stream, and then the TVdfnPort<T>::GetValueRef()
-	 * to the port. As the update count is streamed, too, is does <b>not</b> trigger
-	 * the update count for this port. It uses operator>> for the streamin on type T.
-	 * @return the number of bytes streamed.
-	 */
-	virtual int DeSerialize(IVistaDeSerializer &oDeSer)
-	{
-		int iRet = VdfnPortSerializeAdapter::DeSerialize( oDeSer );
+    oDeSer >> (dynamic_cast<TVdfnPort<T>*>(m_pPort))->GetValueRef();
 
-		oDeSer >> (dynamic_cast<TVdfnPort<T>*>(m_pPort))->GetValueRef();
+    return iRet + sizeof(T);
+  }
 
-		return iRet + sizeof(T);
-	}
-
-	/**
-	 * returns a static string TVdfnPort<T>, as the RTTI decription for T
-	 * may vary from system to system.
-	 * @return "TVdfnPort<T>"
-	 */
-	virtual std::string GetSignature() const
-	{
-		return "TVdfnPort<T>";
-	}
+  /**
+   * returns a static string TVdfnPort<T>, as the RTTI decription for T
+   * may vary from system to system.
+   * @return "TVdfnPort<T>"
+   */
+  virtual std::string GetSignature() const {
+    return "TVdfnPort<T>";
+  }
 };
 
 /**
  * creates a proper serialize adapted to TVdfnPort<T> type ports.
  */
-template<class T>
-VdfnPortSerializeAdapter *TVdfnPort<T>::GetSerializeAdapter()
-{
-	if(m_pAdapter == NULL)
-		return (m_pAdapter = new TVdfnPortSerializerAdapter<T>(this));
+template <class T>
+VdfnPortSerializeAdapter* TVdfnPort<T>::GetSerializeAdapter() {
+  if (m_pAdapter == NULL)
+    return (m_pAdapter = new TVdfnPortSerializerAdapter<T>(this));
 
-	return IVdfnPort::GetSerializeAdapter();
+  return IVdfnPort::GetSerializeAdapter();
 }
 
 /**
  * the port-type compare API which decides on the equality of port types.
  */
-class VISTADFNAPI IVdfnPortTypeCompare
-{
-public:
-	virtual ~IVdfnPortTypeCompare()
-	{
-	}
+class VISTADFNAPI IVdfnPortTypeCompare {
+ public:
+  virtual ~IVdfnPortTypeCompare() {
+  }
 
-	/**
-	 * @param pPort the port to check for type matching
-	 * @return true if pPort has a comparable type to this port type compare
-	 */
-	virtual bool IsTypeOf( const IVdfnPort *pPort ) const = 0;
+  /**
+   * @param pPort the port to check for type matching
+   * @return true if pPort has a comparable type to this port type compare
+   */
+  virtual bool IsTypeOf(const IVdfnPort* pPort) const = 0;
 
-	/**
-	 * clones this port-type compare
-	 * @return a clone of this port type compare
-	 */
-	virtual IVdfnPortTypeCompare *Clone() const = 0;
+  /**
+   * clones this port-type compare
+   * @return a clone of this port type compare
+   */
+  virtual IVdfnPortTypeCompare* Clone() const = 0;
 
-	/**
-	 * utility function to assign pPort to a memory region defined
-	 * by a subclass of IVdfnPortTypeCompare.
-	 * @param pPort the port to assign from
-	 * @return true when the assignment was done, false else
-	 */
-	virtual bool Assign( IVdfnPort *pPort ) = 0;
+  /**
+   * utility function to assign pPort to a memory region defined
+   * by a subclass of IVdfnPortTypeCompare.
+   * @param pPort the port to assign from
+   * @return true when the assignment was done, false else
+   */
+  virtual bool Assign(IVdfnPort* pPort) = 0;
 
+  /**
+   * @return the mangled RTTI name of the port type to expect
+   */
+  virtual std::string GetTypeDescriptor() const = 0;
 
-	/**
-	 * @return the mangled RTTI name of the port type to expect
-	 */
-	virtual std::string GetTypeDescriptor() const = 0;
+  virtual IVdfnPort* CreatePort() const = 0;
 
-	virtual IVdfnPort *CreatePort() const = 0;
-protected:
-	IVdfnPortTypeCompare();
-	IVdfnPortTypeCompare( const IVdfnPortTypeCompare & );
-	IVdfnPortTypeCompare &operator=(const IVdfnPortTypeCompare &);
+ protected:
+  IVdfnPortTypeCompare();
+  IVdfnPortTypeCompare(const IVdfnPortTypeCompare&);
+  IVdfnPortTypeCompare& operator=(const IVdfnPortTypeCompare&);
 };
-
 
 /**
  * a port type compare for TVdfnPort<T> types.
  */
-template<class T>
-class TVdfnPortTypeCompare : public IVdfnPortTypeCompare
-{
-public:
-	/**
-	 * creates a normal port type compare. this port type compare
-	 * can not assign ports to a memory region.
-	 */
-	TVdfnPortTypeCompare()
-	: IVdfnPortTypeCompare(),
-	  m_pPortStore(NULL)
-	{}
+template <class T>
+class TVdfnPortTypeCompare : public IVdfnPortTypeCompare {
+ public:
+  /**
+   * creates a normal port type compare. this port type compare
+   * can not assign ports to a memory region.
+   */
+  TVdfnPortTypeCompare()
+      : IVdfnPortTypeCompare()
+      , m_pPortStore(NULL) {
+  }
 
-	TVdfnPortTypeCompare( const TVdfnPortTypeCompare &other )
-	: IVdfnPortTypeCompare()
-	, m_pPortStore( other.m_pPortStore )
-	{}
+  TVdfnPortTypeCompare(const TVdfnPortTypeCompare& other)
+      : IVdfnPortTypeCompare()
+      , m_pPortStore(other.m_pPortStore) {
+  }
 
-	/**
-	 * @param pPortStore the pointer to the memory region to assign an
-			  incoming port from, can be NULL
-	 * @see Assign()
-	 */
-	TVdfnPortTypeCompare(T **pPortStore)
-	: IVdfnPortTypeCompare(),
-	  m_pPortStore(pPortStore)
-	{}
+  /**
+   * @param pPortStore the pointer to the memory region to assign an
+                    incoming port from, can be NULL
+   * @see Assign()
+   */
+  TVdfnPortTypeCompare(T** pPortStore)
+      : IVdfnPortTypeCompare()
+      , m_pPortStore(pPortStore) {
+  }
 
-	/**
-	 * determines equality based on the ability to downcast pPort to type T.
-	 * This, at the same time, fixes equality on the level of ports, not on the
-	 * level of the types they represent.
-	 * TVdfnPort<int> is thus not equal to TVdfnPort<unsigned int>, although int
-	 * and unsigned int have something in common.
-	 * @todo check the type matching based on ports
-	 * @return true if pPort can be downcasted to T
-	 */
-	bool IsTypeOf( const IVdfnPort *pPort ) const
-	{
-		return (dynamic_cast<const T*>( pPort ) != NULL);
-	}
+  /**
+   * determines equality based on the ability to downcast pPort to type T.
+   * This, at the same time, fixes equality on the level of ports, not on the
+   * level of the types they represent.
+   * TVdfnPort<int> is thus not equal to TVdfnPort<unsigned int>, although int
+   * and unsigned int have something in common.
+   * @todo check the type matching based on ports
+   * @return true if pPort can be downcasted to T
+   */
+  bool IsTypeOf(const IVdfnPort* pPort) const {
+    return (dynamic_cast<const T*>(pPort) != NULL);
+  }
 
-	/**
-	 * @return returns a simple clone of this port type compare.
-	 */
-	IVdfnPortTypeCompare *Clone() const
-	{
-		return new TVdfnPortTypeCompare<T>(*this);
-	}
+  /**
+   * @return returns a simple clone of this port type compare.
+   */
+  IVdfnPortTypeCompare* Clone() const {
+    return new TVdfnPortTypeCompare<T>(*this);
+  }
 
-	/**
-	 * the template port type compare keeps a pointer to the
-	 * storage where this assignment operator points to.
-	 * it will downcast and assign the pointer properly when called.
-	 * @return false when no storage was assigned during construction
-			   returns finally, whether the memory region to assign contains
-			   the same value as the argument
-	 * @param pPort the pointer to assign from
-	 */
-	bool Assign( IVdfnPort *pPort )
-	{
-		if(m_pPortStore == NULL)
-			return false;
-		(*m_pPortStore) = dynamic_cast<T*>(pPort);
-		return ((*m_pPortStore) == pPort);
-	}
+  /**
+   * the template port type compare keeps a pointer to the
+   * storage where this assignment operator points to.
+   * it will downcast and assign the pointer properly when called.
+   * @return false when no storage was assigned during construction
+                     returns finally, whether the memory region to assign contains
+                     the same value as the argument
+   * @param pPort the pointer to assign from
+   */
+  bool Assign(IVdfnPort* pPort) {
+    if (m_pPortStore == NULL)
+      return false;
+    (*m_pPortStore) = dynamic_cast<T*>(pPort);
+    return ((*m_pPortStore) == pPort);
+  }
 
-	/**
-	 * @return the mangled RTTI name of the port type T
-	 */
-	virtual std::string GetTypeDescriptor() const
-	{
-		return std::string((typeid(T).name() ? typeid(T).name() : "<none>"));
-	}
+  /**
+   * @return the mangled RTTI name of the port type T
+   */
+  virtual std::string GetTypeDescriptor() const {
+    return std::string((typeid(T).name() ? typeid(T).name() : "<none>"));
+  }
 
-	IVdfnPort *CreatePort() const
-	{
-		return new T;
-	}
+  IVdfnPort* CreatePort() const {
+    return new T;
+  }
 
-private:
-	T **m_pPortStore; /**< pointer to storage to assign to, can be NULL */
+ private:
+  T** m_pPortStore; /**< pointer to storage to assign to, can be NULL */
 };
 
 /**
  * Define PortType-Compare API for TVdfnPort<T> types
  * @todo check who calls this API and what happens to the memory alloc'ed here
  */
-template<class T>
-IVdfnPortTypeCompare *TVdfnPort<T>::GetPortTypeCompare() const
-{
-	return new TVdfnPortTypeCompare<TVdfnPort<T> >;
+template <class T>
+IVdfnPortTypeCompare* TVdfnPort<T>::GetPortTypeCompare() const {
+  return new TVdfnPortTypeCompare<TVdfnPort<T>>;
 }
 
 /*============================================================================*/

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 ///////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2002, Industrial Light & Magic, a division of Lucas
@@ -59,7 +58,6 @@
 // Primary authors:
 //     Florian Kainz <kainz@ilm.com>
 //     Rod Bogart <rgb@ilm.com>
-
 
 //---------------------------------------------------------------------------
 //
@@ -109,37 +107,27 @@
 
 #include "VistaHalf.h"
 
-
 template <class T>
-class VistaHalfFunction
-{
-public:
+class VistaHalfFunction {
+ public:
+  //------------
+  // Constructor
+  //------------
 
-	//------------
-	// Constructor
-	//------------
+  template <class Function>
+  VistaHalfFunction(Function f, VistaHalf domainMin = std::limits<VistaHalf>::min(),
+      VistaHalf domainMax = std::limits<VistaHalf>::max(), T defaultValue = 0, T posInfValue = 0,
+      T negInfValue = 0, T nanValue = 0);
 
-	template <class Function>
-	VistaHalfFunction (
-		Function f,
-		VistaHalf domainMin =  std::limits<VistaHalf>::min(),
-		VistaHalf domainMax =  std::limits<VistaHalf>::max(),
-		T defaultValue = 0,
-		T posInfValue  = 0,
-		T negInfValue  = 0,
-		T nanValue     = 0);
+  //-----------
+  // Evaluation
+  //-----------
 
-	//-----------
-	// Evaluation
-	//-----------
+  T operator()(VistaHalf x) const;
 
-	T		operator () (VistaHalf x) const;
-
-private:
-
-	T		_lut[1 << 16];
+ private:
+  T _lut[1 << 16];
 };
-
 
 //---------------
 // Implementation
@@ -147,37 +135,26 @@ private:
 
 template <class T>
 template <class Function>
-VistaHalfFunction<T>::VistaHalfFunction (Function f,
-				   VistaHalf domainMin,
-				   VistaHalf domainMax,
-				   T defaultValue,
-				   T posInfValue,
-				   T negInfValue,
-				   T nanValue)
-{
-	for (int i = 0; i < (1 << 16); i++)
-	{
-	VistaHalf x;
-	x.setBits (i);
+VistaHalfFunction<T>::VistaHalfFunction(Function f, VistaHalf domainMin, VistaHalf domainMax,
+    T defaultValue, T posInfValue, T negInfValue, T nanValue) {
+  for (int i = 0; i < (1 << 16); i++) {
+    VistaHalf x;
+    x.setBits(i);
 
-	if (x.isNan())
-		_lut[i] = nanValue;
-	else if (x.isInfinity())
-		_lut[i] = x.isNegative()? negInfValue: posInfValue;
-	else if (x < domainMin || x > domainMax)
-		_lut[i] = defaultValue;
-	else
-		_lut[i] = f (x);
-	}
+    if (x.isNan())
+      _lut[i] = nanValue;
+    else if (x.isInfinity())
+      _lut[i] = x.isNegative() ? negInfValue : posInfValue;
+    else if (x < domainMin || x > domainMax)
+      _lut[i] = defaultValue;
+    else
+      _lut[i] = f(x);
+  }
 }
-
 
 template <class T>
-inline T
-VistaHalfFunction<T>::operator () (VistaHalf x) const
-{
-	return _lut[x.bits()];
+inline T VistaHalfFunction<T>::operator()(VistaHalf x) const {
+  return _lut[x.bits()];
 }
-
 
 #endif

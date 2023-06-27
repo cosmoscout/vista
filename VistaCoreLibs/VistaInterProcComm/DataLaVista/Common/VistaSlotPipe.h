@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTASLOTPIPE_H
 #define DLVISTASLOTPIPE_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaPipe.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <deque>
 
 /*============================================================================*/
@@ -50,48 +48,42 @@ class VistaThreadEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI DLVistaSlotPipe : public IDLVistaPipe {
+ public:
+  DLVistaSlotPipe();
 
-class VISTAINTERPROCCOMMAPI DLVistaSlotPipe : public IDLVistaPipe
-{
-public:
+  ~DLVistaSlotPipe();
 
-	DLVistaSlotPipe();
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	~DLVistaSlotPipe();
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
+  virtual IDLVistaDataPacket* ReturnPacket();
 
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket,
-								  IDLVistaPipeComponent *pSender,
-								  bool bBlock=false);
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket,
-								   IDLVistaPipeComponent *pSender,
-								   bool bBlock=false);
+  bool InitPacketMgmt();
 
-	virtual IDLVistaDataPacket * GivePacket(bool bBlock);
-	virtual IDLVistaDataPacket * ReturnPacket();
+  bool IsFull() const;
+  bool IsEmpty() const;
+  int  Capacity() const {
+    return -1;
+  };
+  int OwnerLockEmpty();
 
-	bool InitPacketMgmt();
+ private:
+  IDLVistaDataPacket* m_pInValue;
 
-	bool IsFull() const;
-	bool IsEmpty() const;
-	int Capacity() const { return -1; };
-	int OwnerLockEmpty();
+  std::deque<IDLVistaDataPacket*>* m_pquRecycleQueue;
 
+  VistaMutex *      m_pMutexIn, *m_pMutexOut, *m_pLockEmpty;
+  VistaThreadEvent* m_pRecycleEvent;
 
-private:
-	IDLVistaDataPacket *m_pInValue;
-
-	std::deque<IDLVistaDataPacket *> *m_pquRecycleQueue;
-
-	VistaMutex *m_pMutexIn, *m_pMutexOut, *m_pLockEmpty;
-	VistaThreadEvent *m_pRecycleEvent;
-
-	VistaMutex *GrabMutex(VistaMutex *pMutex, bool bBlock);
+  VistaMutex* GrabMutex(VistaMutex* pMutex, bool bBlock);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //DLVISTARAMQUEUEPIPE_H
-
+#endif // DLVISTARAMQUEUEPIPE_H

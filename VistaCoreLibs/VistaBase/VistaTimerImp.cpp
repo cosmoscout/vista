@@ -21,11 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTimerImp.h"
 
-#include "VistaTimer.h"
 #include "VistaDefaultTimerImp.h"
+#include "VistaTimer.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -36,8 +35,8 @@
 /*============================================================================*/
 
 #if defined(WIN32)
-#include <windows.h>
 #include <time.h>
+#include <windows.h>
 #else
 #include <sys/time.h>
 #include <time.h>
@@ -45,64 +44,52 @@
 
 #include <iostream>
 
-namespace
-{
-	IVistaTimerImp* STimerImp = NULL;
+namespace {
+IVistaTimerImp* STimerImp = NULL;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
 IVistaTimerImp::IVistaTimerImp()
-: m_iReferenceCount( 0 )
-{
+    : m_iReferenceCount(0) {
 }
 
-IVistaTimerImp::~IVistaTimerImp()
-{
-	//std::cout << "Deleting TimerImp!" << std::endl;
+IVistaTimerImp::~IVistaTimerImp() {
+  // std::cout << "Deleting TimerImp!" << std::endl;
 }
 
-IVistaTimerImp *IVistaTimerImp::GetSingleton( bool bCreateDefaultIfNull )
-{
-	if( ( STimerImp == NULL ) && bCreateDefaultIfNull )
-		SetSingleton( new VistaDefaultTimerImp );
-	return STimerImp;
+IVistaTimerImp* IVistaTimerImp::GetSingleton(bool bCreateDefaultIfNull) {
+  if ((STimerImp == NULL) && bCreateDefaultIfNull)
+    SetSingleton(new VistaDefaultTimerImp);
+  return STimerImp;
 }
 
-void IVistaTimerImp::SetSingleton( IVistaTimerImp *pInterface )
-{
-	// note that WE DO NOT LOCK, so make sure, this
-	// call is not done in a multi-threaded environment!	
-	if( STimerImp != NULL )
-	{
-		STimerImp->DecReferenceCount();
-	}
-	STimerImp = pInterface;
-	if( STimerImp != NULL )
-	{
-		STimerImp->IncReferenceCount();
-	}
+void IVistaTimerImp::SetSingleton(IVistaTimerImp* pInterface) {
+  // note that WE DO NOT LOCK, so make sure, this
+  // call is not done in a multi-threaded environment!
+  if (STimerImp != NULL) {
+    STimerImp->DecReferenceCount();
+  }
+  STimerImp = pInterface;
+  if (STimerImp != NULL) {
+    STimerImp->IncReferenceCount();
+  }
 }
 
-void IVistaTimerImp::IncReferenceCount()
-{
-	++m_iReferenceCount;
+void IVistaTimerImp::IncReferenceCount() {
+  ++m_iReferenceCount;
 }
 
-void IVistaTimerImp::DecReferenceCount()
-{
-	--m_iReferenceCount;
-	if( m_iReferenceCount == 0 )
-		delete this;
+void IVistaTimerImp::DecReferenceCount() {
+  --m_iReferenceCount;
+  if (m_iReferenceCount == 0)
+    delete this;
 }
-
 
 /*============================================================================*/
 /* END OF FILE "MYDEMO.CPP"                                                   */
 /*============================================================================*/
 
 /************************** CR / LF nicht vergessen! **************************/
-

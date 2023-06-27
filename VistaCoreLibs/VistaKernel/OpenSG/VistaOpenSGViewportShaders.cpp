@@ -28,74 +28,65 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-namespace
-{
-	const std::string g_sDefaultVertexShader =
-		"void main() \n"
-		"{ \n"
-		"    gl_TexCoord[0] = gl_MultiTexCoord0; \n"
-		"    gl_TexCoord[1] = gl_MultiTexCoord1; \n"
-		"    gl_Position = ftransform(); \n"
-		"} \n";
+namespace {
+const std::string g_sDefaultVertexShader = "void main() \n"
+                                           "{ \n"
+                                           "    gl_TexCoord[0] = gl_MultiTexCoord0; \n"
+                                           "    gl_TexCoord[1] = gl_MultiTexCoord1; \n"
+                                           "    gl_Position = ftransform(); \n"
+                                           "} \n";
 
-	const std::string g_sAnaglyphCyanMagentaFragmentShader =
-		"uniform sampler2D texture_lefteye; \n"
-		"uniform sampler2D texture_righteye; \n"
-		"void main()\n"
-		"{		 \n"
-		"    vec4 v3LeftColor = texture2D( texture_lefteye, gl_TexCoord[0].st ); \n"
-		"    vec4 v3RightColor = texture2D( texture_righteye, gl_TexCoord[0].st ); \n"
-		"    gl_FragColor = vec4( v3LeftColor.r, v3RightColor.g, v3RightColor.b, 1.0 ); \n"
-		"} \n";
+const std::string g_sAnaglyphCyanMagentaFragmentShader =
+    "uniform sampler2D texture_lefteye; \n"
+    "uniform sampler2D texture_righteye; \n"
+    "void main()\n"
+    "{		 \n"
+    "    vec4 v3LeftColor = texture2D( texture_lefteye, gl_TexCoord[0].st ); \n"
+    "    vec4 v3RightColor = texture2D( texture_righteye, gl_TexCoord[0].st ); \n"
+    "    gl_FragColor = vec4( v3LeftColor.r, v3RightColor.g, v3RightColor.b, 1.0 ); \n"
+    "} \n";
 
-	const std::string g_sAnaglyphCyanMagentaMonochromeFragmentShader =
-		"uniform sampler2D texture_lefteye; \n"
-		"uniform sampler2D texture_righteye; \n"
-		"void main()\n"
-		"{		 \n"
-		"    vec4 v3LeftColor = texture2D( texture_lefteye, gl_TexCoord[0].st ); \n"
-		"    vec4 v3RightColor = texture2D( texture_righteye, gl_TexCoord[0].st ); \n"
-		"    float nLeftAccum = ( v3LeftColor.r + v3LeftColor.g + v3LeftColor.b ) / 3.0; \n"
-		"    float nRightAccum = ( v3RightColor.r + v3RightColor.g + v3RightColor.b ) / 3.0; \n"
-		"    gl_FragColor = vec4( nLeftAccum, nRightAccum, nRightAccum, 1.0 ); \n"
-		"} \n";
-	
-	const std::string g_sANullPostPorcessFragmentShader = 
-		"uniform sampler2D texture; \n"
-		"void main()\n"
-		"{\n"
-		"    vec4 v4Color = texture2D( texture, gl_TexCoord[0].st ); \n"
-		"    gl_FragColor = v4Color;\n"
-		"} \n";
-}
+const std::string g_sAnaglyphCyanMagentaMonochromeFragmentShader =
+    "uniform sampler2D texture_lefteye; \n"
+    "uniform sampler2D texture_righteye; \n"
+    "void main()\n"
+    "{		 \n"
+    "    vec4 v3LeftColor = texture2D( texture_lefteye, gl_TexCoord[0].st ); \n"
+    "    vec4 v3RightColor = texture2D( texture_righteye, gl_TexCoord[0].st ); \n"
+    "    float nLeftAccum = ( v3LeftColor.r + v3LeftColor.g + v3LeftColor.b ) / 3.0; \n"
+    "    float nRightAccum = ( v3RightColor.r + v3RightColor.g + v3RightColor.b ) / 3.0; \n"
+    "    gl_FragColor = vec4( nLeftAccum, nRightAccum, nRightAccum, 1.0 ); \n"
+    "} \n";
+
+const std::string g_sANullPostPorcessFragmentShader =
+    "uniform sampler2D texture; \n"
+    "void main()\n"
+    "{\n"
+    "    vec4 v4Color = texture2D( texture, gl_TexCoord[0].st ); \n"
+    "    gl_FragColor = v4Color;\n"
+    "} \n";
+} // namespace
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-const std::string& VistaOSGViewportShader::GetStandardVertexShader()
-{
-	return g_sDefaultVertexShader;
+const std::string& VistaOSGViewportShader::GetStandardVertexShader() {
+  return g_sDefaultVertexShader;
 }
 
-const std::string& VistaOSGViewportShader::GetAnaglyphCyanMagentaFragmentShader()
-{
-	return g_sAnaglyphCyanMagentaFragmentShader;
+const std::string& VistaOSGViewportShader::GetAnaglyphCyanMagentaFragmentShader() {
+  return g_sAnaglyphCyanMagentaFragmentShader;
 }
 
-const std::string& VistaOSGViewportShader::GetAnaglyphCyanMagentaMonochromeFragmentShader()
-{
-	return g_sAnaglyphCyanMagentaMonochromeFragmentShader;
+const std::string& VistaOSGViewportShader::GetAnaglyphCyanMagentaMonochromeFragmentShader() {
+  return g_sAnaglyphCyanMagentaMonochromeFragmentShader;
 }
 
-const std::string& VistaOSGViewportShader::GetNullPostProcessFragmentShader()
-{
-	return g_sANullPostPorcessFragmentShader;
+const std::string& VistaOSGViewportShader::GetNullPostProcessFragmentShader() {
+  return g_sANullPostPorcessFragmentShader;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

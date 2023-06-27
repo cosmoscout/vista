@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNVIEWERSINKNODE_H
 #define _VISTADFNVIEWERSINKNODE_H
 
@@ -31,13 +30,12 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
-#include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnNodeFactory.h>
 #include <VistaBase/VistaVectorMath.h>
-
+#include <VistaDataFlowNet/VdfnNode.h>
+#include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -50,41 +48,40 @@
 class VistaDisplayManager;
 class VistaDisplaySystem;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
- * Sets the virtual viewer position and orientation, can as well be used to 
+ * Sets the virtual viewer position and orientation, can as well be used to
  * change the left and right eye offset.
  *
  * @ingroup VdfnNodes
- * @inport{position, VistaVector3D, optional if orientation is set, the world position of the viewer}
- * @inport{orientation, VistaQuaternion, optional if position is set, the world orientation of the viewer}
+ * @inport{position, VistaVector3D, optional if orientation is set, the world position of the
+ * viewer}
+ * @inport{orientation, VistaQuaternion, optional if position is set, the world orientation of the
+ * viewer}
  * @inport{left_eye, VistaVector3D, optional, left eye offset value in the display system}
  * @inport{right_eye, VistaVector3D, optional, right eye offset value in the display system}
  */
-class VISTAKERNELAPI VistaDfnViewerSinkNode : public IVdfnNode
-{
-public:
-	VistaDfnViewerSinkNode(VistaDisplaySystem *pSys);
-	~VistaDfnViewerSinkNode();
+class VISTAKERNELAPI VistaDfnViewerSinkNode : public IVdfnNode {
+ public:
+  VistaDfnViewerSinkNode(VistaDisplaySystem* pSys);
+  ~VistaDfnViewerSinkNode();
 
-	virtual bool GetIsValid() const;
-	virtual bool PrepareEvaluationRun();
+  virtual bool GetIsValid() const;
+  virtual bool PrepareEvaluationRun();
 
-	VistaDisplaySystem *GetDisplaySystem() const;
-	void SetDisplaySystem(VistaDisplaySystem *);
-protected:
-	virtual bool   DoEvalNode();
+  VistaDisplaySystem* GetDisplaySystem() const;
+  void                SetDisplaySystem(VistaDisplaySystem*);
 
-private:
-	TVdfnPort<VistaVector3D> *m_pPosition,
-				   *m_pLeftEye,
-				   *m_pRightEye;
-	TVdfnPort<VistaQuaternion> *m_pOrientation;
+ protected:
+  virtual bool DoEvalNode();
 
-	VistaDisplaySystem *m_pSystem;
+ private:
+  TVdfnPort<VistaVector3D>*   m_pPosition, *m_pLeftEye, *m_pRightEye;
+  TVdfnPort<VistaQuaternion>* m_pOrientation;
+
+  VistaDisplaySystem* m_pSystem;
 };
 
 /*============================================================================*/
@@ -92,4 +89,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNWINDOWNODE_H
-

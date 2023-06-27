@@ -21,24 +21,22 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaExceptionBase.h"
 
 #include <VistaBase/VistaStreamUtils.h>
 
-#include <string>
-#include <vector>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 
 #if defined(LINUX)
 #include <execinfo.h>
 #endif
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -47,117 +45,98 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaExceptionBase::VistaExceptionBase(const char *pcExMsg,
-					 const char *pcExSource, int iExLine, int iExNum) throw()
-: std::exception(),
-  m_sExceptionText(pcExMsg),
-  m_sExceptionSource(pcExSource),
-  m_iExceptionLine(iExLine),
-  m_iExceptionNumber(iExNum)
-{
+VistaExceptionBase::VistaExceptionBase(
+    const char* pcExMsg, const char* pcExSource, int iExLine, int iExNum) throw()
+    : std::exception()
+    , m_sExceptionText(pcExMsg)
+    , m_sExceptionSource(pcExSource)
+    , m_iExceptionLine(iExLine)
+    , m_iExceptionNumber(iExNum) {
 #if defined(LINUX)
-	/// @todo integrate with stack walker
-	void *array[25]; // we trace 25 levels
-	int nSize = backtrace(array, 25);
-	char **symbols = backtrace_symbols(array, nSize);
-	for(int i=0; i < nSize; ++i)
-	{
-		m_sBacktrace = m_sBacktrace + std::string(symbols[i]) + std::string("\n");
-	}
+  /// @todo integrate with stack walker
+  void*  array[25]; // we trace 25 levels
+  int    nSize   = backtrace(array, 25);
+  char** symbols = backtrace_symbols(array, nSize);
+  for (int i = 0; i < nSize; ++i) {
+    m_sBacktrace = m_sBacktrace + std::string(symbols[i]) + std::string("\n");
+  }
 
-	free(symbols);
+  free(symbols);
 #endif
 }
 
 // PRIVATE!
 VistaExceptionBase::VistaExceptionBase()
-: std::exception()
-,  m_iExceptionLine( -1 )
-, m_iExceptionNumber( -1 )
-{
+    : std::exception()
+    , m_iExceptionLine(-1)
+    , m_iExceptionNumber(-1) {
 }
 
-
-VistaExceptionBase::~VistaExceptionBase() throw()
-{
+VistaExceptionBase::~VistaExceptionBase() throw() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-const char* VistaExceptionBase::what() const throw()
-{
-	return m_sExceptionText.c_str();
+const char* VistaExceptionBase::what() const throw() {
+  return m_sExceptionText.c_str();
 }
 
-int    VistaExceptionBase::GetExceptionNumber() const
-{
-	return m_iExceptionNumber;
+int VistaExceptionBase::GetExceptionNumber() const {
+  return m_iExceptionNumber;
 }
 
-std::string VistaExceptionBase::GetExceptionText() const
-{
-	return m_sExceptionText;
+std::string VistaExceptionBase::GetExceptionText() const {
+  return m_sExceptionText;
 }
 
-int    VistaExceptionBase::GetExceptionLine() const
-{
-	return m_iExceptionLine;
+int VistaExceptionBase::GetExceptionLine() const {
+  return m_iExceptionLine;
 }
 
-std::string VistaExceptionBase::GetExceptionSource() const
-{
-	return m_sExceptionSource;
+std::string VistaExceptionBase::GetExceptionSource() const {
+  return m_sExceptionSource;
 }
 
-void VistaExceptionBase::PrintException() const
-{
-	PrintException( vstr::err(), true );
+void VistaExceptionBase::PrintException() const {
+  PrintException(vstr::err(), true);
 }
 
-void VistaExceptionBase::PrintException( std::ostream& oStream, bool bAutoIndent ) const
-{
-	if( bAutoIndent == false )
-	{
-		oStream << "VistaExceptionBase() -- Exception [" << GetExceptionNumber() << "]\n"
-				<< "===============================================\n"
-				<< m_sExceptionText << "\n"
-				<< "===============================================\n"
-				<< "Location: " << m_sExceptionSource << "\n"
-				<< "Line:     " << m_iExceptionLine << "\n"
-				<< "===============================================\n";
-	}
-	else
-	{
-		oStream << vstr::indent << "VistaExceptionBase() -- Exception [" << GetExceptionNumber() << "]\n"
-				<< vstr::indent << "===============================================\n"
-				<< vstr::indent << m_sExceptionText << "\n"
-				<< vstr::indent << "===============================================\n"
-				<< vstr::indent << "Location: " << m_sExceptionSource << "\n"
-				<< vstr::indent << "Line:     " << m_iExceptionLine << "\n"
-				<< vstr::indent << "===============================================\n";
-	}
-	oStream.flush();
+void VistaExceptionBase::PrintException(std::ostream& oStream, bool bAutoIndent) const {
+  if (bAutoIndent == false) {
+    oStream << "VistaExceptionBase() -- Exception [" << GetExceptionNumber() << "]\n"
+            << "===============================================\n"
+            << m_sExceptionText << "\n"
+            << "===============================================\n"
+            << "Location: " << m_sExceptionSource << "\n"
+            << "Line:     " << m_iExceptionLine << "\n"
+            << "===============================================\n";
+  } else {
+    oStream << vstr::indent << "VistaExceptionBase() -- Exception [" << GetExceptionNumber()
+            << "]\n"
+            << vstr::indent << "===============================================\n"
+            << vstr::indent << m_sExceptionText << "\n"
+            << vstr::indent << "===============================================\n"
+            << vstr::indent << "Location: " << m_sExceptionSource << "\n"
+            << vstr::indent << "Line:     " << m_iExceptionLine << "\n"
+            << vstr::indent << "===============================================\n";
+  }
+  oStream.flush();
 }
 
-std::string VistaExceptionBase::GetPrintStatement() const
-{
-	std::stringstream oText;
-	PrintException( oText );
-	return oText.str();
+std::string VistaExceptionBase::GetPrintStatement() const {
+  std::stringstream oText;
+  PrintException(oText);
+  return oText.str();
 }
 
-std::string VistaExceptionBase::GetBacktraceString() const
-{
-	return m_sBacktrace;
+std::string VistaExceptionBase::GetBacktraceString() const {
+  return m_sBacktrace;
 }
 
-void   VistaExceptionBase::PrintBacktrace() const
-{
-	vstr::err() << m_sBacktrace << std::endl;
+void VistaExceptionBase::PrintBacktrace() const {
+  vstr::err() << m_sBacktrace << std::endl;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

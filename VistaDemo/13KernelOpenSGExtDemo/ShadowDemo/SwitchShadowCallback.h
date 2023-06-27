@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _SWITCHSHADOWCALLBACK_H
 #define _SWITCHSHADOWCALLBACK_H
 
@@ -49,37 +48,32 @@ class ShadowDemo;
  * CResetCallback
  * This Callback let the application parse the parameters again.
  */
-class SwitchShadowCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	
-	/**
-	 * Constructor
-	 * The CResetCallback needs an instance of ShadowDemo
-	 */
-	SwitchShadowCallback( ShadowDemo *appl, int iDiff );
-	
-	/**
-	 * Destructor
-	 * Nothing todo here yet
-	 */
-	virtual ~SwitchShadowCallback();
+class SwitchShadowCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * The CResetCallback needs an instance of ShadowDemo
+   */
+  SwitchShadowCallback(ShadowDemo* appl, int iDiff);
 
-	/**
-	 * Do
-	 * Invoked by the application
-	 */
-	bool Do();
+  /**
+   * Destructor
+   * Nothing todo here yet
+   */
+  virtual ~SwitchShadowCallback();
 
-private:
+  /**
+   * Do
+   * Invoked by the application
+   */
+  bool Do();
 
-	/**
-	 * The pointer to the instance of the application.
-	 */
-	ShadowDemo *m_pShadowDemo;
-    int         m_iDiff;
-
+ private:
+  /**
+   * The pointer to the instance of the application.
+   */
+  ShadowDemo* m_pShadowDemo;
+  int         m_iDiff;
 };
-
 
 #endif // _SWITCHSHADOWCALLBACK_H

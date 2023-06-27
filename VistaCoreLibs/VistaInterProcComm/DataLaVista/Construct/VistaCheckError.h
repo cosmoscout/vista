@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTACHECKERROR_H
 #define DLVISTACHECKERROR_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <string>
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
+#include <string>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -44,44 +42,39 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaCheckError
-{
+class VISTAINTERPROCCOMMAPI DLVistaCheckError {
 
-private:
+ private:
+  std::string m_SErrorName, m_SErrorText;
 
-	std::string m_SErrorName, m_SErrorText;
+ protected:
+  bool m_bIsNullError;
 
-protected:
+ public:
+  DLVistaCheckError(const std::string& SErrorName, const std::string& SErrorText);
 
-	bool m_bIsNullError;
+  /**
+   * Pure virtual destructor. Does nothing.
+   */
+  virtual ~DLVistaCheckError();
 
+  std::string GetErrorName() const {
+    return m_SErrorName;
+  };
 
-public:
-	DLVistaCheckError(const std::string &SErrorName,
-					   const std::string &SErrorText);
+  std::string GetErrorText() const {
+    return m_SErrorText;
+  };
 
-	/**
-	 * Pure virtual destructor. Does nothing.
-	 */
-	virtual ~DLVistaCheckError();
+  void SetErrorText(const std::string& SErrorText);
 
-
-	std::string GetErrorName() const { return m_SErrorName; };
-
-	std::string GetErrorText() const { return m_SErrorText; };
-
-	void SetErrorText(const std::string &SErrorText);
-
-	bool IsNullError() const { return m_bIsNullError; };
-
+  bool IsNullError() const {
+    return m_bIsNullError;
+  };
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTAACTIVECOMPONENT_H
-
-
+#endif // DLVISTAACTIVECOMPONENT_H

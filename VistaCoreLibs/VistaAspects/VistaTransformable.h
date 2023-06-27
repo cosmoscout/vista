@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATRANSFORMABLE_H
 #define _VISTATRANSFORMABLE_H
 
@@ -42,55 +41,53 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAASPECTSAPI IVistaTransformable : virtual public IVistaLocatable
-{
-public:
-	virtual ~IVistaTransformable();
+class VISTAASPECTSAPI IVistaTransformable : virtual public IVistaLocatable {
+ public:
+  virtual ~IVistaTransformable();
 
-	virtual bool SetTranslation( const VistaVector3D& v3Translation ) = 0;
-	virtual bool SetTranslation( const float fX, const float fY, const float fZ ) = 0;
-	virtual bool SetTranslation( const float a3fTranslation[3] ) = 0;
-	virtual bool SetTranslation( const double a3dTranslation[3] ) = 0;
-	
-	virtual bool Translate( const VistaVector3D& v3Translation ) = 0;
-	virtual bool Translate( const float fX, const float fY, const float fZ ) = 0;
-	virtual bool Translate( const float a3fTranslation[3] ) = 0;
-	virtual bool Translate( const double a3dTranslation[3] ) = 0;
-	
-	virtual bool SetRotation( const VistaQuaternion& qRotation ) = 0;
-	virtual bool SetRotation( const float fX, const float fY, const float fZ, const float fW ) = 0;
-	virtual bool SetRotation( const float a4fRotation[4] ) = 0;
-	virtual bool SetRotation( const double a4dRotation[4] ) = 0;
-	
-	virtual bool Rotate( const VistaQuaternion& qRotation ) = 0;
-	virtual bool Rotate( const float fX, const float fY, const float fZ, const float fW ) = 0;
-	virtual bool Rotate( const float a4fRotation[4] ) = 0;
-	virtual bool Rotate( const double a4dRotation[4] ) = 0;
+  virtual bool SetTranslation(const VistaVector3D& v3Translation)             = 0;
+  virtual bool SetTranslation(const float fX, const float fY, const float fZ) = 0;
+  virtual bool SetTranslation(const float a3fTranslation[3])                  = 0;
+  virtual bool SetTranslation(const double a3dTranslation[3])                 = 0;
 
-	virtual bool SetScale( const VistaVector3D& v3Scale ) = 0;
-	virtual bool SetScale( const float fX, const float fY, const float fZ ) = 0;
-	virtual bool SetScale( const float a3fScale[3] ) = 0;
-	virtual bool SetScale( const double a3dScale[3] ) = 0;
+  virtual bool Translate(const VistaVector3D& v3Translation)             = 0;
+  virtual bool Translate(const float fX, const float fY, const float fZ) = 0;
+  virtual bool Translate(const float a3fTranslation[3])                  = 0;
+  virtual bool Translate(const double a3dTranslation[3])                 = 0;
 
-	virtual bool Scale( const VistaVector3D& v3Scale ) = 0;
-	virtual bool Scale( const float fX, const float fY, const float fZ ) = 0;
-	virtual bool Scale( const float a3fScale[3] ) = 0;
-	virtual bool Scale( const double a3dScale[3] ) = 0;
+  virtual bool SetRotation(const VistaQuaternion& qRotation)                               = 0;
+  virtual bool SetRotation(const float fX, const float fY, const float fZ, const float fW) = 0;
+  virtual bool SetRotation(const float a4fRotation[4])                                     = 0;
+  virtual bool SetRotation(const double a4dRotation[4])                                    = 0;
 
-	virtual bool SetTransform( const VistaTransformMatrix& matTransform ) = 0;
-	virtual bool SetTransform( const float a16fTransform[16], const bool bColumnMajor = false ) = 0;
-	virtual bool SetTransform( const double a16dTransform[16], const bool bColumnMajor = false ) = 0;
+  virtual bool Rotate(const VistaQuaternion& qRotation)                               = 0;
+  virtual bool Rotate(const float fX, const float fY, const float fZ, const float fW) = 0;
+  virtual bool Rotate(const float a4fRotation[4])                                     = 0;
+  virtual bool Rotate(const double a4dRotation[4])                                    = 0;
 
-	virtual bool Transform( const VistaTransformMatrix& matTransform ) = 0;
-	virtual bool Transform( const float a16fTransform[16], const bool bColumnMajor = false ) = 0;
-	virtual bool Transform( const double a16dTransform[16], const bool bColumnMajor = false ) = 0;
+  virtual bool SetScale(const VistaVector3D& v3Scale)                   = 0;
+  virtual bool SetScale(const float fX, const float fY, const float fZ) = 0;
+  virtual bool SetScale(const float a3fScale[3])                        = 0;
+  virtual bool SetScale(const double a3dScale[3])                       = 0;
 
-protected:
-	IVistaTransformable();
-private:
+  virtual bool Scale(const VistaVector3D& v3Scale)                   = 0;
+  virtual bool Scale(const float fX, const float fY, const float fZ) = 0;
+  virtual bool Scale(const float a3fScale[3])                        = 0;
+  virtual bool Scale(const double a3dScale[3])                       = 0;
+
+  virtual bool SetTransform(const VistaTransformMatrix& matTransform)                        = 0;
+  virtual bool SetTransform(const float a16fTransform[16], const bool bColumnMajor = false)  = 0;
+  virtual bool SetTransform(const double a16dTransform[16], const bool bColumnMajor = false) = 0;
+
+  virtual bool Transform(const VistaTransformMatrix& matTransform)                        = 0;
+  virtual bool Transform(const float a16fTransform[16], const bool bColumnMajor = false)  = 0;
+  virtual bool Transform(const double a16dTransform[16], const bool bColumnMajor = false) = 0;
+
+ protected:
+  IVistaTransformable();
+
+ private:
 };
-
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

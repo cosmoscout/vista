@@ -21,22 +21,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAHALF_H_
 #define _VISTAHALF_H_
 
-#include <iostream>
 #include "../VistaBaseConfig.h"
+#include <iostream>
 
 /**
  * @brief VistaHalf - a 16-bit floating point number implementation
  * from Industrial Light & Magic
- * 
+ *
  * Copyright (c) 2002, Industrial Light & Magic, a division of Lucas
  * Digital Ltd. LLC
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:<ul>
@@ -65,7 +64,7 @@
  * <hr/>
  *
  * <h2>half - a 16-bit floating point number class:</h2>
- * 
+ *
  * Type half can represent positive and negative numbers, whose
  * magnitude is between roughly 6.1e-5 and 6.5e+4, with a relative
  * error of 9.8e-4; numbers smaller than 6.1e-5 can be represented
@@ -136,7 +135,7 @@
                 s    -126
         f = (-1)  * 2      * 0.m
    @endverbatim
-  
+
  *  If e and m are both zero, f is zero:
  *
  *      f = 0.0
@@ -168,7 +167,7 @@
         | |   | 9        0 (lsb)
         | |   | |        |
         X XXXXX XXXXXXXXXX
-  
+
         s e     m
    @endverbatim
  *  S is the sign-bit, e is the exponent and m is the significand.
@@ -221,155 +220,140 @@
  *  done using only simple table lookups.
  *
  */
-class VISTABASEAPI VistaHalf
-{
-public:
+class VISTABASEAPI VistaHalf {
+ public:
+  //-------------
+  // Constructors
+  //-------------
 
-	//-------------
-	// Constructors
-	//-------------
+  VistaHalf(); // no initialization
+  VistaHalf(float f);
 
-	VistaHalf ();            // no initialization
-	VistaHalf (float f);
+  //--------------------
+  // Conversion to float
+  //--------------------
 
+  operator float() const;
 
-	//--------------------
-	// Conversion to float
-	//--------------------
+  //------------
+  // Unary minus
+  //------------
 
-	operator        float () const;
+  VistaHalf operator-() const;
 
+  //-----------
+  // Assignment
+  //-----------
 
-	//------------
-	// Unary minus
-	//------------
+  VistaHalf& operator=(VistaHalf h);
+  VistaHalf& operator=(float f);
 
-	VistaHalf        operator - () const;
+  VistaHalf& operator+=(VistaHalf h);
+  VistaHalf& operator+=(float f);
 
+  VistaHalf& operator-=(VistaHalf h);
+  VistaHalf& operator-=(float f);
 
-	//-----------
-	// Assignment
-	//-----------
+  VistaHalf& operator*=(VistaHalf h);
+  VistaHalf& operator*=(float f);
 
-	VistaHalf &        operator = (VistaHalf  h);
-	VistaHalf &        operator = (float f);
+  VistaHalf& operator/=(VistaHalf h);
+  VistaHalf& operator/=(float f);
 
-	VistaHalf &        operator += (VistaHalf  h);
-	VistaHalf &        operator += (float f);
+  //---------------------------------------------------------
+  // Round to n-bit precision (n should be between 0 and 10).
+  // After rounding, the significand's 10-n least significant
+  // bits will be zero.
+  //---------------------------------------------------------
 
-	VistaHalf &        operator -= (VistaHalf  h);
-	VistaHalf &        operator -= (float f);
+  VistaHalf round(unsigned int n) const;
 
-	VistaHalf &        operator *= (VistaHalf  h);
-	VistaHalf &        operator *= (float f);
+  //--------------------------------------------------------------------
+  // Classification:
+  //
+  //    h.isFinite()        returns true if h is a normalized number,
+  //                        a denormalized number or zero
+  //
+  //    h.isNormalized()    returns true if h is a normalized number
+  //
+  //    h.isDenormalized()  returns true if h is a denormalized number
+  //
+  //    h.isZero()          returns true if h is zero
+  //
+  //    h.isNan()           returns true if h is a NAN
+  //
+  //    h.isInfinity()      returns true if h is a positive
+  //                        or a negative infinity
+  //
+  //    h.isNegative()      returns true if the sign bit of h
+  //                        is set (negative)
+  //--------------------------------------------------------------------
 
-	VistaHalf &        operator /= (VistaHalf  h);
-	VistaHalf &        operator /= (float f);
+  bool isFinite() const;
+  bool isNormalized() const;
+  bool isDenormalized() const;
+  bool isZero() const;
+  bool isNan() const;
+  bool isInfinity() const;
+  bool isNegative() const;
 
+  //--------------------------------------------
+  // Special values
+  //
+  //    posInf()    returns +infinity
+  //
+  //    negInf()    returns +infinity
+  //
+  //    qNan()      returns a NAN with the bit
+  //                pattern 0111111111111111
+  //
+  //    sNan()      returns a NAN with the bit
+  //                pattern 0111110111111111
+  //--------------------------------------------
 
-	//---------------------------------------------------------
-	// Round to n-bit precision (n should be between 0 and 10).
-	// After rounding, the significand's 10-n least significant
-	// bits will be zero.
-	//---------------------------------------------------------
+  static VistaHalf posInf();
+  static VistaHalf negInf();
+  static VistaHalf qNan();
+  static VistaHalf sNan();
 
-	VistaHalf        round (unsigned int n) const;
+  //--------------------------------------
+  // Access to the internal representation
+  //--------------------------------------
 
+  unsigned short bits() const;
+  void           setBits(unsigned short bits);
 
-	//--------------------------------------------------------------------
-	// Classification:
-	//
-	//    h.isFinite()        returns true if h is a normalized number,
-	//                        a denormalized number or zero
-	//
-	//    h.isNormalized()    returns true if h is a normalized number
-	//
-	//    h.isDenormalized()  returns true if h is a denormalized number
-	//
-	//    h.isZero()          returns true if h is zero
-	//
-	//    h.isNan()           returns true if h is a NAN
-	//
-	//    h.isInfinity()      returns true if h is a positive
-	//                        or a negative infinity
-	//
-	//    h.isNegative()      returns true if the sign bit of h
-	//                        is set (negative)
-	//--------------------------------------------------------------------
+ public:
+  union uif {
+    unsigned int i;
+    float        f;
+  };
 
-	bool        isFinite () const;
-	bool        isNormalized () const;
-	bool        isDenormalized () const;
-	bool        isZero () const;
-	bool        isNan () const;
-	bool        isInfinity () const;
-	bool        isNegative () const;
+ private:
+  static short convert(int i);
+  static float overflow();
 
+  unsigned short _h;
 
-	//--------------------------------------------
-	// Special values
-	//
-	//    posInf()    returns +infinity
-	//
-	//    negInf()    returns +infinity
-	//
-	//    qNan()      returns a NAN with the bit
-	//                pattern 0111111111111111
-	//
-	//    sNan()      returns a NAN with the bit
-	//                pattern 0111110111111111
-	//--------------------------------------------
-
-	static VistaHalf        posInf ();
-	static VistaHalf        negInf ();
-	static VistaHalf        qNan ();
-	static VistaHalf        sNan ();
-
-
-	//--------------------------------------
-	// Access to the internal representation
-	//--------------------------------------
-
-	unsigned short  bits () const;
-	void            setBits (unsigned short bits);
-
-
-public:
-
-	union uif
-	{
-		unsigned int i;
-		float        f;
-	};
-
-private:
-
-	static short    convert (int i);
-	static float    overflow ();
-
-	unsigned short    _h;
-
-	static const uif            _toFloat[1 << 16];
-	static const unsigned short _eLut[1 << 9];
+  static const uif            _toFloat[1 << 16];
+  static const unsigned short _eLut[1 << 9];
 };
 
 //-----------
 // Stream I/O
 //-----------
 
-VISTABASEAPI std::ostream &        operator << (std::ostream &os, VistaHalf  h);
-VISTABASEAPI std::istream &        operator >> (std::istream &is, VistaHalf &h);
-
+VISTABASEAPI std::ostream& operator<<(std::ostream& os, VistaHalf h);
+VISTABASEAPI std::istream& operator>>(std::istream& is, VistaHalf& h);
 
 //----------
 // Debugging
 //----------
 
-VISTABASEAPI void            printBits   (std::ostream &os, VistaHalf  h);
-VISTABASEAPI void            printBits   (std::ostream &os, float f);
-VISTABASEAPI void            printBits   (char  c[19], VistaHalf  h);
-VISTABASEAPI void            printBits   (char  c[35], float f);
-
+VISTABASEAPI void printBits(std::ostream& os, VistaHalf h);
+VISTABASEAPI void printBits(std::ostream& os, float f);
+VISTABASEAPI void printBits(char c[19], VistaHalf h);
+VISTABASEAPI void printBits(char c[35], float f);
 
 //-------------------------------------------------------------------------
 // Limits
@@ -381,369 +365,307 @@ VISTABASEAPI void            printBits   (char  c[35], float f);
 
 #if (defined _WIN32) && defined _MSC_VER
 
-#define VISTAHALF_MIN    5.96046448e-08f    // Smallest positive half
+#define VISTAHALF_MIN 5.96046448e-08f // Smallest positive half
 
-#define VISTAHALF_NRM_MIN    6.10351562e-05f    // Smallest positive normalized half
+#define VISTAHALF_NRM_MIN 6.10351562e-05f // Smallest positive normalized half
 
-#define VISTAHALF_MAX    65504.0f    // Largest positive half
+#define VISTAHALF_MAX 65504.0f // Largest positive half
 
-#define VISTAHALF_EPSILON    0.00097656f    // Smallest positive e for which
-					// half (1.0 + e) != half (1.0)
+#define VISTAHALF_EPSILON 0.00097656f // Smallest positive e for which
+                                      // half (1.0 + e) != half (1.0)
 #else
 
-#define VISTAHALF_MIN    5.96046448e-08    // Smallest positive half
+#define VISTAHALF_MIN 5.96046448e-08 // Smallest positive half
 
-#define VISTAHALF_NRM_MIN    6.10351562e-05    // Smallest positive normalized half
+#define VISTAHALF_NRM_MIN 6.10351562e-05 // Smallest positive normalized half
 
-#define VISTAHALF_MAX    65504.0        // Largest positive half
+#define VISTAHALF_MAX 65504.0 // Largest positive half
 
-#define VISTAHALF_EPSILON    0.00097656    // Smallest positive e for which
-					// half (1.0 + e) != half (1.0)
+#define VISTAHALF_EPSILON 0.00097656 // Smallest positive e for which
+// half (1.0 + e) != half (1.0)
 #endif
 
+#define VISTAHALF_MANT_DIG                                                                         \
+  11 // Number of digits in mantissa
+     // (significand + hidden leading 1)
 
-#define VISTAHALF_MANT_DIG    11        // Number of digits in mantissa
-					// (significand + hidden leading 1)
+#define VISTAHALF_DIG                                                                              \
+  2 // Number of base 10 digits that
+    // can be represented without change
 
-#define VISTAHALF_DIG    2        // Number of base 10 digits that
-					// can be represented without change
+#define VISTAHALF_RADIX 2 // Base of the exponent
 
-#define VISTAHALF_RADIX    2        // Base of the exponent
+#define VISTAHALF_MIN_EXP                                                                          \
+  -13 // Minimum negative integer such that
+      // VISTAHALF_RADIX raised to the power of
+      // one less than that integer is a
+      // normalized half
 
-#define VISTAHALF_MIN_EXP    -13        // Minimum negative integer such that
-					// VISTAHALF_RADIX raised to the power of
-					// one less than that integer is a
-					// normalized half
+#define VISTAHALF_MAX_EXP                                                                          \
+  16 // Maximum positive integer such that
+     // VISTAHALF_RADIX raised to the power of
+     // one less than that integer is a
+     // normalized half
 
-#define VISTAHALF_MAX_EXP    16        // Maximum positive integer such that
-					// VISTAHALF_RADIX raised to the power of
-					// one less than that integer is a
-					// normalized half
+#define VISTAHALF_MIN_10_EXP -4 // Minimum positive integer such
+                                // that 10 raised to that power is
+                                // a normalized half
 
-#define VISTAHALF_MIN_10_EXP    -4        // Minimum positive integer such
-					// that 10 raised to that power is
-					// a normalized half
-
-#define VISTAHALF_MAX_10_EXP    4        // Maximum positive integer such
-					// that 10 raised to that power is
-					// a normalized half
-
+#define VISTAHALF_MAX_10_EXP 4 // Maximum positive integer such
+                               // that 10 raised to that power is
+                               // a normalized half
 
 //--------------------
 // Simple constructors
 //--------------------
 
-inline VistaHalf::VistaHalf ()
-{
-	// no initialization
+inline VistaHalf::VistaHalf() {
+  // no initialization
 }
-
 
 //----------------------------
 // Half-from-float constructor
 //----------------------------
 
-inline VistaHalf::VistaHalf (float f)
-{
-	if (f == 0)
-	{
-		//
-		// Common special case - zero.
-		// For speed, we don't preserve the zero's sign.
-		//
+inline VistaHalf::VistaHalf(float f) {
+  if (f == 0) {
+    //
+    // Common special case - zero.
+    // For speed, we don't preserve the zero's sign.
+    //
 
-		_h = 0;
-	}
-	else
-	{
-		//
-		// We extract the combined sign and exponent, e, from our
-		// floating-point number, f.  Then we convert e to the sign
-		// and exponent of the half number via a table lookup.
-		//
-		// For the most common case, where a normalized half is produced,
-		// the table lookup returns a non-zero value; in this case, all
-		// we have to do, is round f's significand to 10 bits and combine
-		// the result with e.
-		//
-		// For all other cases (overflow, zeroes, denormalized numbers
-		// resulting from underflow, infinities and NANs), the table
-		// lookup returns zero, and we call a longer, non-inline function
-		// to do the float-to-half conversion.
-		//
+    _h = 0;
+  } else {
+    //
+    // We extract the combined sign and exponent, e, from our
+    // floating-point number, f.  Then we convert e to the sign
+    // and exponent of the half number via a table lookup.
+    //
+    // For the most common case, where a normalized half is produced,
+    // the table lookup returns a non-zero value; in this case, all
+    // we have to do, is round f's significand to 10 bits and combine
+    // the result with e.
+    //
+    // For all other cases (overflow, zeroes, denormalized numbers
+    // resulting from underflow, infinities and NANs), the table
+    // lookup returns zero, and we call a longer, non-inline function
+    // to do the float-to-half conversion.
+    //
 
-		uif x;
+    uif x;
 
-		x.f = f;
+    x.f = f;
 
-		int e = (x.i >> 23) & 0x000001ff;
+    int e = (x.i >> 23) & 0x000001ff;
 
-		e = _eLut[e];
+    e = _eLut[e];
 
-		if (e)
-		{
-			//
-			// Simple case - round the significand and
-			// combine it with the sign and exponent.
-			//
+    if (e) {
+      //
+      // Simple case - round the significand and
+      // combine it with the sign and exponent.
+      //
 
-			_h = e + (((x.i & 0x007fffff) + 0x00001000) >> 13);
-		}
-		else
-		{
-			//
-			// Difficult case - call a function.
-			//
+      _h = e + (((x.i & 0x007fffff) + 0x00001000) >> 13);
+    } else {
+      //
+      // Difficult case - call a function.
+      //
 
-			_h = convert (x.i);
-		}
-	}
+      _h = convert(x.i);
+    }
+  }
 }
-
 
 //------------------------------------------
 // Half-to-float conversion via table lookup
 //------------------------------------------
 
-inline
-VistaHalf::operator float () const
-{
-	return _toFloat[_h].f;
+inline VistaHalf::operator float() const {
+  return _toFloat[_h].f;
 }
-
 
 //-------------------------
 // Round to n-bit precision
 //-------------------------
 
-inline VistaHalf
-VistaHalf::round (unsigned int n) const
-{
-	//
-	// Parameter check.
-	//
+inline VistaHalf VistaHalf::round(unsigned int n) const {
+  //
+  // Parameter check.
+  //
 
-	if (n >= 10)
-	return *this;
+  if (n >= 10)
+    return *this;
 
-	//
-	// Disassemble h into the sign, s,
-	// and the combined exponent and significand, e.
-	//
+  //
+  // Disassemble h into the sign, s,
+  // and the combined exponent and significand, e.
+  //
 
-	unsigned short s = _h & 0x8000;
-	unsigned short e = _h & 0x7fff;
+  unsigned short s = _h & 0x8000;
+  unsigned short e = _h & 0x7fff;
 
-	//
-	// Round the exponent and significand to the nearest value
-	// where ones occur only in the (10-n) most significant bits.
-	// Note that the exponent adjusts automatically if rounding
-	// up causes the significand to overflow.
-	//
+  //
+  // Round the exponent and significand to the nearest value
+  // where ones occur only in the (10-n) most significant bits.
+  // Note that the exponent adjusts automatically if rounding
+  // up causes the significand to overflow.
+  //
 
-	e >>= 9 - n;
-	e  += e & 1;
-	e <<= 9 - n;
+  e >>= 9 - n;
+  e += e & 1;
+  e <<= 9 - n;
 
-	//
-	// Check for exponent overflow.
-	//
+  //
+  // Check for exponent overflow.
+  //
 
-	if (e >= 0x7c00)
-	{
-		//
-		// Overflow occurred -- truncate instead of rounding.
-		//
+  if (e >= 0x7c00) {
+    //
+    // Overflow occurred -- truncate instead of rounding.
+    //
 
-		e = _h;
-		e >>= 10 - n;
-		e <<= 10 - n;
-	}
+    e = _h;
+    e >>= 10 - n;
+    e <<= 10 - n;
+  }
 
-	//
-	// Put the original sign bit back.
-	//
+  //
+  // Put the original sign bit back.
+  //
 
-	VistaHalf h;
-	h._h = s | e;
+  VistaHalf h;
+  h._h = s | e;
 
-	return h;
+  return h;
 }
-
 
 //-----------------------
 // Other inline functions
 //-----------------------
 
-inline VistaHalf VistaHalf::operator - () const
-{
-	VistaHalf h;
-	h._h = _h ^ 0x8000;
-	return h;
+inline VistaHalf VistaHalf::operator-() const {
+  VistaHalf h;
+  h._h = _h ^ 0x8000;
+  return h;
 }
 
-
-inline VistaHalf& VistaHalf::operator = (VistaHalf h)
-{
-	_h = h._h;
-	return *this;
+inline VistaHalf& VistaHalf::operator=(VistaHalf h) {
+  _h = h._h;
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator = (float f)
-{
-	*this = VistaHalf (f);
-	return *this;
+inline VistaHalf& VistaHalf::operator=(float f) {
+  *this = VistaHalf(f);
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator += (VistaHalf h)
-{
-	*this = VistaHalf (float (*this) + float (h));
-	return *this;
+inline VistaHalf& VistaHalf::operator+=(VistaHalf h) {
+  *this = VistaHalf(float(*this) + float(h));
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator += (float f)
-{
-	*this = VistaHalf (float (*this) + f);
-	return *this;
+inline VistaHalf& VistaHalf::operator+=(float f) {
+  *this = VistaHalf(float(*this) + f);
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator -= (VistaHalf h)
-{
-	*this = VistaHalf (float (*this) - float (h));
-	return *this;
+inline VistaHalf& VistaHalf::operator-=(VistaHalf h) {
+  *this = VistaHalf(float(*this) - float(h));
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator -= (float f)
-{
-	*this = VistaHalf (float (*this) - f);
-	return *this;
+inline VistaHalf& VistaHalf::operator-=(float f) {
+  *this = VistaHalf(float(*this) - f);
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator *= (VistaHalf h)
-{
-	*this = VistaHalf (float (*this) * float (h));
-	return *this;
+inline VistaHalf& VistaHalf::operator*=(VistaHalf h) {
+  *this = VistaHalf(float(*this) * float(h));
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator *= (float f)
-{
-	*this = VistaHalf (float (*this) * f);
-	return *this;
+inline VistaHalf& VistaHalf::operator*=(float f) {
+  *this = VistaHalf(float(*this) * f);
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator /= (VistaHalf h)
-{
-	*this = VistaHalf (float (*this) / float (h));
-	return *this;
+inline VistaHalf& VistaHalf::operator/=(VistaHalf h) {
+  *this = VistaHalf(float(*this) / float(h));
+  return *this;
 }
 
-
-inline VistaHalf& VistaHalf::operator /= (float f)
-{
-	*this = VistaHalf (float (*this) / f);
-	return *this;
+inline VistaHalf& VistaHalf::operator/=(float f) {
+  *this = VistaHalf(float(*this) / f);
+  return *this;
 }
 
-
-inline bool VistaHalf::isFinite () const
-{
-	unsigned short e = (_h >> 10) & 0x001f;
-	return e < 31;
+inline bool VistaHalf::isFinite() const {
+  unsigned short e = (_h >> 10) & 0x001f;
+  return e < 31;
 }
 
-
-inline bool VistaHalf::isNormalized () const
-{
-	unsigned short e = (_h >> 10) & 0x001f;
-	return e > 0 && e < 31;
+inline bool VistaHalf::isNormalized() const {
+  unsigned short e = (_h >> 10) & 0x001f;
+  return e > 0 && e < 31;
 }
 
-
-inline bool VistaHalf::isDenormalized () const
-{
-	unsigned short e = (_h >> 10) & 0x001f;
-	unsigned short m =  _h & 0x3ff;
-	return e == 0 && m != 0;
+inline bool VistaHalf::isDenormalized() const {
+  unsigned short e = (_h >> 10) & 0x001f;
+  unsigned short m = _h & 0x3ff;
+  return e == 0 && m != 0;
 }
 
-
-inline bool VistaHalf::isZero () const
-{
-	return (_h & 0x7fff) == 0;
+inline bool VistaHalf::isZero() const {
+  return (_h & 0x7fff) == 0;
 }
 
-
-inline bool VistaHalf::isNan () const
-{
-	unsigned short e = (_h >> 10) & 0x001f;
-	unsigned short m =  _h & 0x3ff;
-	return e == 31 && m != 0;
+inline bool VistaHalf::isNan() const {
+  unsigned short e = (_h >> 10) & 0x001f;
+  unsigned short m = _h & 0x3ff;
+  return e == 31 && m != 0;
 }
 
-
-inline bool VistaHalf::isInfinity () const
-{
-	unsigned short e = (_h >> 10) & 0x001f;
-	unsigned short m =  _h & 0x3ff;
-	return e == 31 && m == 0;
+inline bool VistaHalf::isInfinity() const {
+  unsigned short e = (_h >> 10) & 0x001f;
+  unsigned short m = _h & 0x3ff;
+  return e == 31 && m == 0;
 }
 
-
-inline bool VistaHalf::isNegative () const
-{
-	return (_h & 0x8000) != 0;
+inline bool VistaHalf::isNegative() const {
+  return (_h & 0x8000) != 0;
 }
 
-
-inline VistaHalf VistaHalf::posInf ()
-{
-	VistaHalf h;
-	h._h = 0x7c00;
-	return h;
+inline VistaHalf VistaHalf::posInf() {
+  VistaHalf h;
+  h._h = 0x7c00;
+  return h;
 }
 
-
-inline VistaHalf VistaHalf::negInf ()
-{
-	VistaHalf h;
-	h._h = 0xfc00;
-	return h;
+inline VistaHalf VistaHalf::negInf() {
+  VistaHalf h;
+  h._h = 0xfc00;
+  return h;
 }
 
-
-inline VistaHalf VistaHalf::qNan ()
-{
-	VistaHalf h;
-	h._h = 0x7fff;
-	return h;
+inline VistaHalf VistaHalf::qNan() {
+  VistaHalf h;
+  h._h = 0x7fff;
+  return h;
 }
 
-
-inline VistaHalf VistaHalf::sNan ()
-{
-	VistaHalf h;
-	h._h = 0x7dff;
-	return h;
+inline VistaHalf VistaHalf::sNan() {
+  VistaHalf h;
+  h._h = 0x7dff;
+  return h;
 }
 
-
-inline unsigned short VistaHalf::bits () const
-{
-	return _h;
+inline unsigned short VistaHalf::bits() const {
+  return _h;
 }
 
-
-inline void VistaHalf::setBits (unsigned short nbits)
-{
-	_h = nbits;
+inline void VistaHalf::setBits(unsigned short nbits) {
+  _h = nbits;
 }
 
 #endif

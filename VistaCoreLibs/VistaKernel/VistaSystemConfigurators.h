@@ -21,18 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASYSTEMCONFIGURATORS_H
 #define _VISTASYSTEMCONFIGURATORS_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/VistaDriverPropertyConfigurator.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
+#include <VistaKernel/VistaDriverPropertyConfigurator.h>
+#include <VistaKernel/VistaKernelConfig.h>
 //#include "VistaSensorTransformConfigurator.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -50,187 +48,171 @@ class VistaEventManager;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaWindowConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaWindowConfigurator(VistaDisplayManager *pSys);
-	virtual ~VistaWindowConfigurator();
+class VISTAKERNELAPI VistaWindowConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaWindowConfigurator(VistaDisplayManager* pSys);
+  virtual ~VistaWindowConfigurator();
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaWindowConfigurator, VistaDriverPropertyConfigurator::IConfigurator )
+  REFL_INLINEIMP(VistaWindowConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
 
-private:
-	VistaDriverAbstractWindowAspect::IWindowHandle* GetHandleForWindow( VistaWindow* pWindow );
-private:
-	VistaDisplayManager *m_pDispMgr;
-	std::map< VistaWindow*, VistaDriverAbstractWindowAspect::IWindowHandle* > m_mapHandles;
-	static std::string SsReflectionType;
+ private:
+  VistaDriverAbstractWindowAspect::IWindowHandle* GetHandleForWindow(VistaWindow* pWindow);
+
+ private:
+  VistaDisplayManager*                                                    m_pDispMgr;
+  std::map<VistaWindow*, VistaDriverAbstractWindowAspect::IWindowHandle*> m_mapHandles;
+  static std::string                                                      SsReflectionType;
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-class VISTAKERNELAPI VistaSensorMappingConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaSensorMappingConfigurator();
-	virtual ~VistaSensorMappingConfigurator();
+class VISTAKERNELAPI VistaSensorMappingConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaSensorMappingConfigurator();
+  virtual ~VistaSensorMappingConfigurator();
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaSensorMappingConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
-private:
-	static std::string SsReflectionType;
+  REFL_INLINEIMP(VistaSensorMappingConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
+ private:
+  static std::string SsReflectionType;
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-class VISTAKERNELAPI VistaGenericHistoryConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaGenericHistoryConfigurator();
-	virtual ~VistaGenericHistoryConfigurator();
+class VISTAKERNELAPI VistaGenericHistoryConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaGenericHistoryConfigurator();
+  virtual ~VistaGenericHistoryConfigurator();
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaGenericHistoryConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
-private:
-	static std::string SsReflectionType;
+  REFL_INLINEIMP(VistaGenericHistoryConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
+ private:
+  static std::string SsReflectionType;
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-class VISTAKERNELAPI VistaConnectionConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaConnectionConfigurator();
-	virtual ~VistaConnectionConfigurator();
+class VISTAKERNELAPI VistaConnectionConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaConnectionConfigurator();
+  virtual ~VistaConnectionConfigurator();
 
-	class VISTAKERNELAPI IConnectionFactoryMethod
-	{
-		friend class VistaConnectionConfigurator;
-	public:
-		virtual VistaConnection *CreateConnection(const VistaPropertyList &oProps) = 0;
-	protected:
-		void FailOnConnection(VistaConnection *pCon,
-			const std::string &sReason) const;
-		IConnectionFactoryMethod() {}
-		virtual ~IConnectionFactoryMethod() {}
-	};
+  class VISTAKERNELAPI IConnectionFactoryMethod {
+    friend class VistaConnectionConfigurator;
 
-	typedef std::map<std::string, IConnectionFactoryMethod*>::const_iterator const_iterator;
-	typedef std::map<std::string, IConnectionFactoryMethod*>::iterator iterator;
+   public:
+    virtual VistaConnection* CreateConnection(const VistaPropertyList& oProps) = 0;
 
-	const_iterator begin() const;
-	iterator       begin();
-	const_iterator end() const;
-	iterator       end();
+   protected:
+    void FailOnConnection(VistaConnection* pCon, const std::string& sReason) const;
+    IConnectionFactoryMethod() {
+    }
+    virtual ~IConnectionFactoryMethod() {
+    }
+  };
 
-	bool AddConFacMethod(const std::string &sKey, IConnectionFactoryMethod*);
+  typedef std::map<std::string, IConnectionFactoryMethod*>::const_iterator const_iterator;
+  typedef std::map<std::string, IConnectionFactoryMethod*>::iterator       iterator;
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  const_iterator begin() const;
+  iterator       begin();
+  const_iterator end() const;
+  iterator       end();
 
-	REFL_INLINEIMP( VistaConnectionConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
-public:
-	std::map<std::string, IConnectionFactoryMethod*> m_mpFactories;
+  bool AddConFacMethod(const std::string& sKey, IConnectionFactoryMethod*);
+
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
+
+  REFL_INLINEIMP(VistaConnectionConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
+ public:
+  std::map<std::string, IConnectionFactoryMethod*> m_mpFactories;
 };
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-class VISTAKERNELAPI VistaDriverProtocolConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+class VISTAKERNELAPI VistaDriverProtocolConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaDriverProtocolConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
+  REFL_INLINEIMP(VistaDriverProtocolConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
 };
 
-class VISTAKERNELAPI VistaDriverLoggingConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaDriverLoggingConfigurator();
-	~VistaDriverLoggingConfigurator();
+class VISTAKERNELAPI VistaDriverLoggingConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaDriverLoggingConfigurator();
+  ~VistaDriverLoggingConfigurator();
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaDriverLoggingConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
-private:
+  REFL_INLINEIMP(VistaDriverLoggingConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
+ private:
 };
 
-class VISTAKERNELAPI VistaDriverAttachOnlyConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaDriverAttachOnlyConfigurator();
-	~VistaDriverAttachOnlyConfigurator();
+class VISTAKERNELAPI VistaDriverAttachOnlyConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaDriverAttachOnlyConfigurator();
+  ~VistaDriverAttachOnlyConfigurator();
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaDriverAttachOnlyConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
+  REFL_INLINEIMP(VistaDriverAttachOnlyConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
 };
 
-class VISTAKERNELAPI VistaDeviceIdentificationConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaDeviceIdentificationConfigurator();
-	~VistaDeviceIdentificationConfigurator();
+class VISTAKERNELAPI VistaDeviceIdentificationConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaDeviceIdentificationConfigurator();
+  ~VistaDeviceIdentificationConfigurator();
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	REFL_INLINEIMP( VistaDeviceIdentificationConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
+  REFL_INLINEIMP(
+      VistaDeviceIdentificationConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
 };
 
+class VISTAKERNELAPI VistaDriverReferenceFrameConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaDriverReferenceFrameConfigurator();
+  ~VistaDriverReferenceFrameConfigurator();
 
-class VISTAKERNELAPI VistaDriverReferenceFrameConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaDriverReferenceFrameConfigurator();
-	~VistaDriverReferenceFrameConfigurator();
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
-
-	REFL_INLINEIMP( VistaDriverReferenceFrameConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
+  REFL_INLINEIMP(
+      VistaDriverReferenceFrameConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
 };
 
+class VISTAKERNELAPI VistaDriverParameterConfigurator
+    : public VistaDriverPropertyConfigurator::IConfigurator {
+ public:
+  VistaDriverParameterConfigurator();
+  ~VistaDriverParameterConfigurator();
 
-class VISTAKERNELAPI VistaDriverParameterConfigurator : public VistaDriverPropertyConfigurator::IConfigurator
-{
-public:
-	VistaDriverParameterConfigurator();
-	~VistaDriverParameterConfigurator();
+  bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+      const VistaPropertyList& oConfig);
 
-	bool Configure( IVistaDeviceDriver* pDriver,
-					const VistaPropertyList& oDriverSection,
-					const VistaPropertyList& oConfig );
-
-	REFL_INLINEIMP( VistaDriverParameterConfigurator,
-				   VistaDriverPropertyConfigurator::IConfigurator )
-private:
+  REFL_INLINEIMP(VistaDriverParameterConfigurator, VistaDriverPropertyConfigurator::IConfigurator)
+ private:
 };
 
 /*============================================================================*/

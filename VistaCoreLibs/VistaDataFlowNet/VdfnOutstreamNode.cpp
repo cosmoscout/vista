@@ -21,9 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnOutstreamNode.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -33,60 +31,47 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VdfnOutstreamNode::VdfnOutstreamNode( std::ostream& oOutstream )
-: IVdfnNode()
-, m_oOutstream( oOutstream )
-, m_pTextPort( NULL )
-, m_sPostfix( "\n" )
-{
-	RegisterInPortPrototype( "text", new TVdfnPortTypeCompare<TVdfnPort<std::string> > );
+VdfnOutstreamNode::VdfnOutstreamNode(std::ostream& oOutstream)
+    : IVdfnNode()
+    , m_oOutstream(oOutstream)
+    , m_pTextPort(NULL)
+    , m_sPostfix("\n") {
+  RegisterInPortPrototype("text", new TVdfnPortTypeCompare<TVdfnPort<std::string>>);
 }
 
-VdfnOutstreamNode::~VdfnOutstreamNode()
-{
+VdfnOutstreamNode::~VdfnOutstreamNode() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnOutstreamNode::PrepareEvaluationRun()
-{
-	m_pTextPort = dynamic_cast<TVdfnPort<std::string>*>( GetInPort( "text" ) );
-	return GetIsValid();
+bool VdfnOutstreamNode::PrepareEvaluationRun() {
+  m_pTextPort = dynamic_cast<TVdfnPort<std::string>*>(GetInPort("text"));
+  return GetIsValid();
 }
 
-bool VdfnOutstreamNode::DoEvalNode()
-{
-	m_oOutstream << m_sPrefix << m_pTextPort->GetValueConstRef() << m_sPostfix << std::flush;
-	return true;
+bool VdfnOutstreamNode::DoEvalNode() {
+  m_oOutstream << m_sPrefix << m_pTextPort->GetValueConstRef() << m_sPostfix << std::flush;
+  return true;
 }
 
-std::string VdfnOutstreamNode::GetPrefix() const
-{
-	return m_sPrefix;
+std::string VdfnOutstreamNode::GetPrefix() const {
+  return m_sPrefix;
 }
 
-void VdfnOutstreamNode::SetPrefix( const std::string& oValue )
-{
-	m_sPrefix = oValue;
+void VdfnOutstreamNode::SetPrefix(const std::string& oValue) {
+  m_sPrefix = oValue;
 }
 
-std::string VdfnOutstreamNode::GetPostfix() const
-{
-	return m_sPostfix;
+std::string VdfnOutstreamNode::GetPostfix() const {
+  return m_sPostfix;
 }
 
-void VdfnOutstreamNode::SetPostfix( const std::string& oValue )
-{
-	m_sPostfix = oValue;
+void VdfnOutstreamNode::SetPostfix(const std::string& oValue) {
+  m_sPostfix = oValue;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-
-
-

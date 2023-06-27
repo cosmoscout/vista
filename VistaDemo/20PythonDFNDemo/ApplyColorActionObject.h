@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _APPLYCOLORACTIONOBJECT_H
 #define _APPLYCOLORACTIONOBJECT_H
 
@@ -52,20 +51,19 @@ class VistaGeometry;
  * In contrast to the SetPositionActionObject, it also has a getter, so that
  * a corresponding ActionNode has an outport.
  */
-class ApplyColorActionObject : public IVdfnActionObject
-{
-public:
-	ApplyColorActionObject( VistaGeometry* pTargetGeometry );
-	~ApplyColorActionObject();
+class ApplyColorActionObject : public IVdfnActionObject {
+ public:
+  ApplyColorActionObject(VistaGeometry* pTargetGeometry);
+  ~ApplyColorActionObject();
 
-	bool SetColor( const VistaVector3D& v3Color ); 
-	VistaVector3D GetColor( ) const;
+  bool          SetColor(const VistaVector3D& v3Color);
+  VistaVector3D GetColor() const;
 
-	REFL_DECLARE;
+  REFL_DECLARE;
 
-private:
-	VistaGeometry*		m_pGeometry;
-	VistaVector3D		m_v3Color;
+ private:
+  VistaGeometry* m_pGeometry;
+  VistaVector3D  m_v3Color;
 };
 
 /*============================================================================*/

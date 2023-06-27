@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 #if defined(VISTA_THREADING_POSIX)
 
@@ -36,30 +35,23 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaPthreadsPriorityImp::VistaPthreadsPriorityImp()
-{
+VistaPthreadsPriorityImp::VistaPthreadsPriorityImp() {
 
-	SetSystemPriorityMin( sched_get_priority_min(SCHED_RR) );
-	SetSystemPriorityMax( sched_get_priority_max(SCHED_RR) );
+  SetSystemPriorityMin(sched_get_priority_min(SCHED_RR));
+  SetSystemPriorityMax(sched_get_priority_max(SCHED_RR));
 
-	InitInterval();
+  InitInterval();
 }
 
-
-VistaPthreadsPriorityImp::~VistaPthreadsPriorityImp()
-{
+VistaPthreadsPriorityImp::~VistaPthreadsPriorityImp() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif // VISTA_THREADING_POSIX
-
-

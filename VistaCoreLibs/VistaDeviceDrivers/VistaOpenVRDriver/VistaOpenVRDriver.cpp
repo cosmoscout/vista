@@ -22,22 +22,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <openvr/openvr.h>
 #include <openvr/openvr_capi.h>
 
 #include "VistaOpenVRDriver.h"
 #include "VistaOpenVRDriverConfig.h"
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverThreadAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-/*VistaOpenVRParameterContainerCreate : 
-	public VistaDriverGenericParameterAspect::IContainerCreate
+/*VistaOpenVRParameterContainerCreate :
+        public VistaDriverGenericParameterAspect::IContainerCreate
 {
 public:
-	IParameterContainer *CreateContainer();
-	bool DeleteContainer( IParameterContainer *pContainer );
+        IParameterContainer *CreateContainer();
+        bool DeleteContainer( IParameterContainer *pContainer );
 };
 */
 /*============================================================================*/
@@ -48,275 +47,259 @@ public:
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaOpenVRDriver::VistaOpenVRDriver(IVistaDriverCreationMethod *crm)
-	: IVistaDeviceDriver(crm)
-	, m_pVRSystem(NULL)
-	, m_pThread(NULL)
-{
-	SetUpdateType(IVistaDeviceDriver::UPDATE_CUSTOM_THREADED);
+VistaOpenVRDriver::VistaOpenVRDriver(IVistaDriverCreationMethod* crm)
+    : IVistaDeviceDriver(crm)
+    , m_pVRSystem(NULL)
+    , m_pThread(NULL) {
+  SetUpdateType(IVistaDeviceDriver::UPDATE_CUSTOM_THREADED);
 
-	VistaDeviceSensor *pStickSensor = new VistaDeviceSensor;
-	pStickSensor->SetTypeHint(  "STICK"  );
-	pStickSensor->SetSensorName("STICK0");
-	AddDeviceSensor( pStickSensor );
-	pStickSensor->SetMeasureTranscode(GetFactory()->GetTranscoderFactoryForSensor("STICK")->CreateTranscoder());
+  VistaDeviceSensor* pStickSensor = new VistaDeviceSensor;
+  pStickSensor->SetTypeHint("STICK");
+  pStickSensor->SetSensorName("STICK0");
+  AddDeviceSensor(pStickSensor);
+  pStickSensor->SetMeasureTranscode(
+      GetFactory()->GetTranscoderFactoryForSensor("STICK")->CreateTranscoder());
 
-	VistaDeviceSensor *pHeadSensor = new VistaDeviceSensor;
-	pHeadSensor->SetTypeHint(  "HEAD"  );
-	pHeadSensor->SetSensorName("HEAD0");
-	AddDeviceSensor( pHeadSensor );
-	pHeadSensor->SetMeasureTranscode(GetFactory()->GetTranscoderFactoryForSensor("HEAD")->CreateTranscoder());
+  VistaDeviceSensor* pHeadSensor = new VistaDeviceSensor;
+  pHeadSensor->SetTypeHint("HEAD");
+  pHeadSensor->SetSensorName("HEAD0");
+  AddDeviceSensor(pHeadSensor);
+  pHeadSensor->SetMeasureTranscode(
+      GetFactory()->GetTranscoderFactoryForSensor("HEAD")->CreateTranscoder());
 
-	m_pThread = new VistaDriverThreadAspect(this);
-	RegisterAspect(m_pThread);
+  m_pThread = new VistaDriverThreadAspect(this);
+  RegisterAspect(m_pThread);
 }
 
-VistaOpenVRDriver::~VistaOpenVRDriver()
-{
-	UnregisterAspect(m_pThread,IVistaDeviceDriver::DO_NOT_DELETE_ASPECT );
-	delete m_pThread;
+VistaOpenVRDriver::~VistaOpenVRDriver() {
+  UnregisterAspect(m_pThread, IVistaDeviceDriver::DO_NOT_DELETE_ASPECT);
+  delete m_pThread;
 
-	VistaDeviceSensor *pStickSensor = GetSensorByIndex(0);
-	VistaDeviceSensor *pHeadSensor = GetSensorByIndex(1);
+  VistaDeviceSensor* pStickSensor = GetSensorByIndex(0);
+  VistaDeviceSensor* pHeadSensor  = GetSensorByIndex(1);
 
-	RemDeviceSensor( pStickSensor );
-	RemDeviceSensor( pHeadSensor );
+  RemDeviceSensor(pStickSensor);
+  RemDeviceSensor(pHeadSensor);
 
-	delete pStickSensor;
-	delete pHeadSensor;
+  delete pStickSensor;
+  delete pHeadSensor;
 
-	delete m_pVRSystem;
+  delete m_pVRSystem;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
+bool VistaOpenVRDriver::PhysicalEnable(bool bEnabled) {
+  // TODO: ?
 
-bool VistaOpenVRDriver::PhysicalEnable(bool bEnabled)
-{
-	// TODO: ?
-
-	return true;
+  return true;
 }
 
-bool VistaOpenVRDriver::DoConnect()
-{
-	if(m_pVRSystem)
-		return false; // do not connect on state connected
+bool VistaOpenVRDriver::DoConnect() {
+  if (m_pVRSystem)
+    return false; // do not connect on state connected
 
-	if(!vr::VR_IsHmdPresent()){
-		vstr::errp()<<"Error: No OpenVR HMD present while connecting VistaOpenVRDriver!\n";
-		return false;
-	}
+  if (!vr::VR_IsHmdPresent()) {
+    vstr::errp() << "Error: No OpenVR HMD present while connecting VistaOpenVRDriver!\n";
+    return false;
+  }
 
-	vr::EVRInitError eError = vr::VRInitError_None;
-	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
-	
-	if(eError!=0){
-		vstr::errp()<<"Error while connecting to OpenVR API in VistaOpenVRDriver: "<<vr::VR_GetVRInitErrorAsEnglishDescription(eError)<<std::endl;
-		return false;
-	}
+  vr::EVRInitError eError = vr::VRInitError_None;
+  m_pVRSystem             = vr::VR_Init(&eError, vr::VRApplication_Scene);
 
-	if ( !vr::VRCompositor() )
-	{
-		vstr::errp()<<"Error: OpenVR compositor initialization failed in VistaOpenVRDriver!\n";
-	}
+  if (eError != 0) {
+    vstr::errp() << "Error while connecting to OpenVR API in VistaOpenVRDriver: "
+                 << vr::VR_GetVRInitErrorAsEnglishDescription(eError) << std::endl;
+    return false;
+  }
 
-	return true;
+  if (!vr::VRCompositor()) {
+    vstr::errp() << "Error: OpenVR compositor initialization failed in VistaOpenVRDriver!\n";
+  }
+
+  return true;
 }
 
-bool VistaOpenVRDriver::DoDisconnect()
-{
-	if(m_pVRSystem)
-	{
-		vr::VR_Shutdown();
+bool VistaOpenVRDriver::DoDisconnect() {
+  if (m_pVRSystem) {
+    vr::VR_Shutdown();
 
-		delete m_pVRSystem;
-		m_pVRSystem = 0;
-	}
-	return true;
+    delete m_pVRSystem;
+    m_pVRSystem = 0;
+  }
+  return true;
 }
 
-bool VistaOpenVRDriver::UpdateStickSensor( VistaType::microtime dTs )
-{
-	VistaSensorMeasure *pM = MeasureStart( 0, dTs, IVistaDeviceDriver::RETURN_CURRENT_SLOT );
-	if(pM == NULL)
-		return false; // no measure, no fun
+bool VistaOpenVRDriver::UpdateStickSensor(VistaType::microtime dTs) {
+  VistaSensorMeasure* pM = MeasureStart(0, dTs, IVistaDeviceDriver::RETURN_CURRENT_SLOT);
+  if (pM == NULL)
+    return false; // no measure, no fun
 
-	vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
-    vr::HmdMatrix34_t pose;
-    vr::VRCompositor()->GetLastPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
-    for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
-        if (devices[i].bPoseIsValid) {
-            if (m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_Controller) {
-                pose = devices[i].mDeviceToAbsoluteTracking;
-                break;
-            }
-        }
+  vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
+  vr::HmdMatrix34_t       pose;
+  vr::VRCompositor()->GetLastPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+  for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
+    if (devices[i].bPoseIsValid) {
+      if (m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_Controller) {
+        pose = devices[i].mDeviceToAbsoluteTracking;
+        break;
+      }
     }
+  }
 
-    VistaTransformMatrix orientation( // column or row major????
-    	pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0,
-        pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
-        pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0,
-        pose.m[0][3], pose.m[1][3], pose.m[2][3], 1.0
-    );
+  VistaTransformMatrix orientation( // column or row major????
+      pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0, pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
+      pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0, pose.m[0][3], pose.m[1][3], pose.m[2][3], 1.0);
 
-    orientation = orientation.GetInverted();
+  orientation = orientation.GetInverted();
 
-	// write position and orientation of stick:
-	VistaOpenVRConfig::VISTA_openvr_stick_type *m = (*pM).getWrite<VistaOpenVRConfig::VISTA_openvr_stick_type>();
-	m->orientation = orientation.GetRotationAsQuaternion();
-	m->loc[0]=pose.m[0][3];
-	m->loc[1]=pose.m[1][3];
-	m->loc[2]=pose.m[2][3];
+  // write position and orientation of stick:
+  VistaOpenVRConfig::VISTA_openvr_stick_type* m =
+      (*pM).getWrite<VistaOpenVRConfig::VISTA_openvr_stick_type>();
+  m->orientation = orientation.GetRotationAsQuaternion();
+  m->loc[0]      = pose.m[0][3];
+  m->loc[1]      = pose.m[1][3];
+  m->loc[2]      = pose.m[2][3];
 
-	m->pose = orientation;
+  m->pose = orientation;
 
-	// Button:
-	// Process SteamVR controller state
-	// TODO: Distinguish left and right hand controllers
-	auto trigger_pressed = false;
-	auto trigger_touched = false;
-	auto grip_pressed = false;
-	auto trackpad_pressed = false;
-	auto trackpad_touched = false;
-	auto button_system_pressed = false;
-	auto button_menu_pressed = false;
-	auto button_a_pressed = false;
+  // Button:
+  // Process SteamVR controller state
+  // TODO: Distinguish left and right hand controllers
+  auto trigger_pressed       = false;
+  auto trigger_touched       = false;
+  auto grip_pressed          = false;
+  auto trackpad_pressed      = false;
+  auto trackpad_touched      = false;
+  auto button_system_pressed = false;
+  auto button_menu_pressed   = false;
+  auto button_a_pressed      = false;
 
-	for( vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++ )
-	{
-		vr::VRControllerState_t state;
-		if( m_pVRSystem->GetControllerState( unDevice, &state, sizeof(vr::VRControllerState_t) ) )
-		{
-			uint64_t grip_mask = vr::ButtonMaskFromId(
-				static_cast<vr::EVRButtonId>(vr::k_EButton_Grip));
+  for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount;
+       unDevice++) {
+    vr::VRControllerState_t state;
+    if (m_pVRSystem->GetControllerState(unDevice, &state, sizeof(vr::VRControllerState_t))) {
+      uint64_t grip_mask = vr::ButtonMaskFromId(static_cast<vr::EVRButtonId>(vr::k_EButton_Grip));
 
-			uint64_t button_sys_mask = vr::ButtonMaskFromId(
-				static_cast<vr::EVRButtonId>(vr::k_EButton_System));
-			
-			uint64_t button_menu_mask = vr::ButtonMaskFromId(
-				static_cast<vr::EVRButtonId>(vr::k_EButton_ApplicationMenu));
+      uint64_t button_sys_mask =
+          vr::ButtonMaskFromId(static_cast<vr::EVRButtonId>(vr::k_EButton_System));
 
-			uint64_t button_a_mask = vr::ButtonMaskFromId(
-				static_cast<vr::EVRButtonId>(vr::k_EButton_A));
+      uint64_t button_menu_mask =
+          vr::ButtonMaskFromId(static_cast<vr::EVRButtonId>(vr::k_EButton_ApplicationMenu));
 
-			for (int j = 0; j < vr::k_unControllerStateAxisCount; ++j) {
-	        	int32_t axis_type = m_pVRSystem->GetInt32TrackedDeviceProperty(
-	        		unDevice, static_cast<vr::TrackedDeviceProperty>(vr::Prop_Axis0Type_Int32 + j));
+      uint64_t button_a_mask = vr::ButtonMaskFromId(static_cast<vr::EVRButtonId>(vr::k_EButton_A));
 
-	        	uint64_t button_mask = vr::ButtonMaskFromId(
-	                		static_cast<vr::EVRButtonId>(vr::k_EButton_Axis0 + j));
+      for (int j = 0; j < vr::k_unControllerStateAxisCount; ++j) {
+        int32_t axis_type = m_pVRSystem->GetInt32TrackedDeviceProperty(
+            unDevice, static_cast<vr::TrackedDeviceProperty>(vr::Prop_Axis0Type_Int32 + j));
 
-	        	switch( axis_type ){
+        uint64_t button_mask =
+            vr::ButtonMaskFromId(static_cast<vr::EVRButtonId>(vr::k_EButton_Axis0 + j));
 
-	        		case vr::k_eControllerAxis_Trigger:
-	        			
-						if ((state.ulButtonPressed & button_mask) != 0) {
-							trigger_pressed = true;
-						}
+        switch (axis_type) {
 
-						if ((state.ulButtonTouched & button_mask) != 0) {
-							trigger_touched = true;
-							m->trigger_x = state.rAxis[j].x;
-						}
+        case vr::k_eControllerAxis_Trigger:
 
-						if ((state.ulButtonPressed & grip_mask) != 0) {
-							grip_pressed = true;
-						}
+          if ((state.ulButtonPressed & button_mask) != 0) {
+            trigger_pressed = true;
+          }
 
-						if ((state.ulButtonPressed & button_sys_mask) != 0) {
-							button_system_pressed = true;
-						}
+          if ((state.ulButtonTouched & button_mask) != 0) {
+            trigger_touched = true;
+            m->trigger_x    = state.rAxis[j].x;
+          }
 
-						if ((state.ulButtonPressed & button_menu_mask) != 0) {
-							button_menu_pressed = true;
-						}
+          if ((state.ulButtonPressed & grip_mask) != 0) {
+            grip_pressed = true;
+          }
 
-						if ((state.ulButtonPressed & button_a_mask) != 0) {
-							button_a_pressed = true;
-						}
+          if ((state.ulButtonPressed & button_sys_mask) != 0) {
+            button_system_pressed = true;
+          }
 
-	        			break;
+          if ((state.ulButtonPressed & button_menu_mask) != 0) {
+            button_menu_pressed = true;
+          }
 
-	        		case vr::k_eControllerAxis_TrackPad:
+          if ((state.ulButtonPressed & button_a_mask) != 0) {
+            button_a_pressed = true;
+          }
 
-	        			if((state.ulButtonPressed & button_mask) != 0)
-	        				trackpad_pressed = true;
-	        			
-						if ((state.ulButtonTouched & button_mask) != 0) {
-							trackpad_touched = true;
-							m->trackpad_x = state.rAxis[j].x;
-							m->trackpad_y = state.rAxis[j].y;
-						}
-						break;
-	        	}
-	        }
-    	}
-	}
+          break;
 
-	m->trigger_pressed = trigger_pressed;
-	m->trigger_touched = trigger_touched;
-	m->grip_pressed = grip_pressed;
-	m->trackpad_pressed = trackpad_pressed;
-	m->trackpad_touched = trackpad_touched;
-	m->button_system_pressed = button_system_pressed;
-	m->button_menu_pressed = button_menu_pressed;
-	m->button_a_pressed = button_a_pressed;
+        case vr::k_eControllerAxis_TrackPad:
 
-	MeasureStop(0);
-	return true;
-}
+          if ((state.ulButtonPressed & button_mask) != 0)
+            trackpad_pressed = true;
 
-
-bool VistaOpenVRDriver::UpdateHeadSensor( VistaType::microtime dTs )
-{
-	VistaSensorMeasure *pM = MeasureStart( 1, dTs, IVistaDeviceDriver::RETURN_CURRENT_SLOT );
-	if(pM == NULL)
-		return false; // no measure, no fun
-
-	vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
-    vr::HmdMatrix34_t pose;
-    vr::VRCompositor()->GetLastPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
-    for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
-        if (devices[i].bPoseIsValid) {
-            if (m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_HMD) {
-                pose = devices[i].mDeviceToAbsoluteTracking;
-                break;
-            }
+          if ((state.ulButtonTouched & button_mask) != 0) {
+            trackpad_touched = true;
+            m->trackpad_x    = state.rAxis[j].x;
+            m->trackpad_y    = state.rAxis[j].y;
+          }
+          break;
         }
+      }
     }
+  }
 
-    VistaTransformMatrix orientation( // column or row major????
-    	pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0,
-        pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
-        pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0,
-        pose.m[0][3], pose.m[1][3], pose.m[2][3], 1.0
-    );
+  m->trigger_pressed       = trigger_pressed;
+  m->trigger_touched       = trigger_touched;
+  m->grip_pressed          = grip_pressed;
+  m->trackpad_pressed      = trackpad_pressed;
+  m->trackpad_touched      = trackpad_touched;
+  m->button_system_pressed = button_system_pressed;
+  m->button_menu_pressed   = button_menu_pressed;
+  m->button_a_pressed      = button_a_pressed;
 
-    orientation = orientation.GetInverted();
-
-	// write position and orientation of stick:
-	VistaOpenVRConfig::VISTA_openvr_head_type *m = (*pM).getWrite<VistaOpenVRConfig::VISTA_openvr_head_type>();
-	m->orientation = orientation.GetRotationAsQuaternion();
-	m->loc[0]=pose.m[0][3];
-	m->loc[1]=pose.m[1][3];
-	m->loc[2]=pose.m[2][3];
-
-	m->pose = orientation;
-
-	MeasureStop(1);
-	return true;
+  MeasureStop(0);
+  return true;
 }
 
-bool VistaOpenVRDriver::DoSensorUpdate(VistaType::microtime dTs)
-{
-	UpdateStickSensor(dTs);
-	UpdateHeadSensor(dTs);
+bool VistaOpenVRDriver::UpdateHeadSensor(VistaType::microtime dTs) {
+  VistaSensorMeasure* pM = MeasureStart(1, dTs, IVistaDeviceDriver::RETURN_CURRENT_SLOT);
+  if (pM == NULL)
+    return false; // no measure, no fun
 
-	return true;
+  vr::TrackedDevicePose_t devices[vr::k_unMaxTrackedDeviceCount];
+  vr::HmdMatrix34_t       pose;
+  vr::VRCompositor()->GetLastPoses(devices, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+  for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
+    if (devices[i].bPoseIsValid) {
+      if (m_pVRSystem->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_HMD) {
+        pose = devices[i].mDeviceToAbsoluteTracking;
+        break;
+      }
+    }
+  }
+
+  VistaTransformMatrix orientation( // column or row major????
+      pose.m[0][0], pose.m[1][0], pose.m[2][0], 0.0, pose.m[0][1], pose.m[1][1], pose.m[2][1], 0.0,
+      pose.m[0][2], pose.m[1][2], pose.m[2][2], 0.0, pose.m[0][3], pose.m[1][3], pose.m[2][3], 1.0);
+
+  orientation = orientation.GetInverted();
+
+  // write position and orientation of stick:
+  VistaOpenVRConfig::VISTA_openvr_head_type* m =
+      (*pM).getWrite<VistaOpenVRConfig::VISTA_openvr_head_type>();
+  m->orientation = orientation.GetRotationAsQuaternion();
+  m->loc[0]      = pose.m[0][3];
+  m->loc[1]      = pose.m[1][3];
+  m->loc[2]      = pose.m[2][3];
+
+  m->pose = orientation;
+
+  MeasureStop(1);
+  return true;
+}
+
+bool VistaOpenVRDriver::DoSensorUpdate(VistaType::microtime dTs) {
+  UpdateStickSensor(dTs);
+  UpdateHeadSensor(dTs);
+
+  return true;
 }
 
 /*============================================================================*/
@@ -328,4 +311,3 @@ bool VistaOpenVRDriver::DoSensorUpdate(VistaType::microtime dTs)
 /*============================================================================*/
 
 /************************** CR / LF nicht vergessen! **************************/
-

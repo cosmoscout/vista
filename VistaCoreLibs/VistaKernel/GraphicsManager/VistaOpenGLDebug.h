@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENGLDEBUG_H
 #define _VISTAOPENGLDEBUG_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
+#include <VistaKernel/VistaKernelConfig.h>
 #include <iostream>
 #include <string>
-#include <VistaKernel/VistaKernelConfig.h>
 //#include "VistaStd.h"
 
 /*============================================================================*/
@@ -44,29 +43,28 @@
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaOpenGLDebug
-{
-public:
-	VistaOpenGLDebug();
-	virtual ~VistaOpenGLDebug();
+class VISTAKERNELAPI VistaOpenGLDebug {
+ public:
+  VistaOpenGLDebug();
+  virtual ~VistaOpenGLDebug();
 
-	virtual bool DebugMsg (bool);
-	virtual bool DebugMsg (double);
-	virtual bool DebugMsg (int);
-	virtual bool DebugMsg (const char*);
-	virtual bool DebugMsg (std::string);
+  virtual bool DebugMsg(bool);
+  virtual bool DebugMsg(double);
+  virtual bool DebugMsg(int);
+  virtual bool DebugMsg(const char*);
+  virtual bool DebugMsg(std::string);
 
-	void DebugOglError ();
-	void DebugProjection ();
-	void DebugModelMatrix ();
-	void DebugProjectionMatrix ();
-	void DebugShading ();
-	void DebugBlending ();
-	void DebugLighting ();
-	void DebugLight (int lightNum);
+  void DebugOglError();
+  void DebugProjection();
+  void DebugModelMatrix();
+  void DebugProjectionMatrix();
+  void DebugShading();
+  void DebugBlending();
+  void DebugLighting();
+  void DebugLight(int lightNum);
 
-private:
-	std::ostream *    m_pOutputStream;
+ private:
+  std::ostream* m_pOutputStream;
 };
 
 /*============================================================================*/

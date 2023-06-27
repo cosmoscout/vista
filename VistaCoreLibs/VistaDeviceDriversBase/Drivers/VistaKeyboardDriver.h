@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAKEYBOARDDRIVER_H
 #define _VISTAKEYBOARDDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -58,54 +56,50 @@
  * subclasses can determines semantics of keys and call the UpdateKey() method
  * to store a new key to the history.
  */
-class VISTADEVICEDRIVERSAPI IVistaKeyboardDriver : public IVistaDeviceDriver
-{
-public:
-	virtual ~IVistaKeyboardDriver();
+class VISTADEVICEDRIVERSAPI IVistaKeyboardDriver : public IVistaDeviceDriver {
+ public:
+  virtual ~IVistaKeyboardDriver();
 
-	/**
-	 * memory layout of a keyboard measure. quite plain.
-	 */
-	struct _sKeyboardMeasure
-	{
-		int m_nKey,
-			m_nModifier;
-	};
+  /**
+   * memory layout of a keyboard measure. quite plain.
+   */
+  struct _sKeyboardMeasure {
+    int m_nKey, m_nModifier;
+  };
 
+ protected:
+  IVistaKeyboardDriver(IVistaDriverCreationMethod*);
 
-protected:
-	IVistaKeyboardDriver(IVistaDriverCreationMethod *);
+  /**
+   * shorthand notation, as the keyboard only has 1 sensor :)
+   */
+  void MeasureStart(VistaType::microtime dTs);
 
-	/**
-	 * shorthand notation, as the keyboard only has 1 sensor :)
-	 */
-	void MeasureStart(VistaType::microtime dTs);
+  /**
+   * subclass add-keystroke API. adds a new value for keys and mods
+   * to this keyboard's history
+   * @return false iff no slot was available for writing (history size not set?)
+   */
+  bool UpdateKey(int nKey, int nModifier);
 
-	/**
-	 * subclass add-keystroke API. adds a new value for keys and mods
-	 * to this keyboard's history
-	 * @return false iff no slot was available for writing (history size not set?)
-	 */
-	bool UpdateKey(int nKey, int nModifier);
+  /**
+   * shorthand notation, as the keyboard only has 1 sensor :)
+   */
+  void MeasureStop();
 
-	/**
-	 * shorthand notation, as the keyboard only has 1 sensor :)
-	 */
-	void MeasureStop();
-private:
+ private:
 };
 
-class VISTADEVICEDRIVERSAPI VistaKeyboardDriverTranscodeFactory : public IVistaMeasureTranscoderFactory
-{
-public:
-	virtual IVistaMeasureTranscode *CreateTranscoder();
-	virtual void DestroyTranscoder( IVistaMeasureTranscode *trans );
-	virtual std::string GetTranscoderName() const;
+class VISTADEVICEDRIVERSAPI VistaKeyboardDriverTranscodeFactory
+    : public IVistaMeasureTranscoderFactory {
+ public:
+  virtual IVistaMeasureTranscode* CreateTranscoder();
+  virtual void                    DestroyTranscoder(IVistaMeasureTranscode* trans);
+  virtual std::string             GetTranscoderName() const;
 };
 
-namespace VistaKeyboardDriverUtil
-{
-	void ReleaseProperties();
+namespace VistaKeyboardDriverUtil {
+void ReleaseProperties();
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

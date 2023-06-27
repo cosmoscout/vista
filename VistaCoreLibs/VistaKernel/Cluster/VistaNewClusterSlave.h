@@ -21,24 +21,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTANEWCLUSTERSLAVE_H
 #define _VISTANEWCLUSTERSLAVE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/Cluster/VistaClusterMode.h>
-#include <VistaKernel/Cluster/Utils/VistaMasterSlaveUtils.h>
 #include <VistaBase/VistaBaseTypes.h>
+#include <VistaKernel/Cluster/Utils/VistaMasterSlaveUtils.h>
+#include <VistaKernel/Cluster/VistaClusterMode.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
-
-
-#include <string>
 #include <list>
-#include <vector>
 #include <ostream>
+#include <string>
+#include <vector>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -58,143 +55,138 @@ class VistaMsg;
 class VistaWeightedAverageTimer;
 class VistaByteBufferDeSerializer;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaNewClusterSlave : public VistaClusterMode
-{
-public:
-	VistaNewClusterSlave( VistaSystem* pVistaSystem,
-							const std::string& sSlaveName );
-	~VistaNewClusterSlave();
+class VISTAKERNELAPI VistaNewClusterSlave : public VistaClusterMode {
+ public:
+  VistaNewClusterSlave(VistaSystem* pVistaSystem, const std::string& sSlaveName);
+  ~VistaNewClusterSlave();
 
-	virtual bool Init( const std::string& sClusterSection,
-						const VistaPropertyList& oConfig );
-	virtual bool PostInit();
+  virtual bool Init(const std::string& sClusterSection, const VistaPropertyList& oConfig);
+  virtual bool PostInit();
 
-	virtual int GetClusterMode() const;
-	virtual std::string GetClusterModeName() const;
-	
-	virtual int GetNodeType() const;
-	virtual std::string GetNodeTypeName() const;
-	virtual std::string GetNodeName() const;
-	virtual std::string GetConfigSectionName() const;
-	virtual int GetNodeID() const;
+  virtual int         GetClusterMode() const;
+  virtual std::string GetClusterModeName() const;
 
-	virtual bool GetIsLeader() const;
-	virtual bool GetIsFollower() const;	
+  virtual int         GetNodeType() const;
+  virtual std::string GetNodeTypeName() const;
+  virtual std::string GetNodeName() const;
+  virtual std::string GetConfigSectionName() const;
+  virtual int         GetNodeID() const;
 
-	virtual bool StartFrame();
-	virtual bool ProcessFrame();
-	virtual bool EndFrame();
+  virtual bool GetIsLeader() const;
+  virtual bool GetIsFollower() const;
 
-	virtual void SwapSync();
-	bool CreateDefaultSyncs();
+  virtual bool StartFrame();
+  virtual bool ProcessFrame();
+  virtual bool EndFrame();
 
-	virtual bool CreateConnections( std::vector<VistaConnectionIP*>& vecConnections );
-	virtual bool CreateNamedConnections( std::vector<std::pair<VistaConnectionIP*, std::string> >&
-															vecConnections );
-	virtual IVistaDataTunnel* CreateDataTunnel( IDLVistaDataPacket* pPacketProto );
-	virtual IVistaClusterDataSync* CreateDataSync();
-	virtual IVistaClusterDataSync* GetDefaultDataSync();
-	virtual IVistaClusterBarrier* CreateBarrier();
-	virtual IVistaClusterBarrier* GetDefaultBarrier();
-	virtual IVistaClusterDataCollect* CreateDataCollect();
+  virtual void SwapSync();
+  bool         CreateDefaultSyncs();
 
-	virtual void Debug( std::ostream& oStream ) const;	
-	
-	/**
-	 * returns the next free port that was specified in the slave's configuration
-	 * If no ports were specified, or all have been used already, -1 will be returned
-	 * If a valid port is returned, it will automatically be removed from the list
-	 * of available ports.
-	 */
-	int GetNextFreePort();
+  virtual bool CreateConnections(std::vector<VistaConnectionIP*>& vecConnections);
+  virtual bool CreateNamedConnections(
+      std::vector<std::pair<VistaConnectionIP*, std::string>>& vecConnections);
+  virtual IVistaDataTunnel*         CreateDataTunnel(IDLVistaDataPacket* pPacketProto);
+  virtual IVistaClusterDataSync*    CreateDataSync();
+  virtual IVistaClusterDataSync*    GetDefaultDataSync();
+  virtual IVistaClusterBarrier*     CreateBarrier();
+  virtual IVistaClusterBarrier*     GetDefaultBarrier();
+  virtual IVistaClusterDataCollect* CreateDataCollect();
 
-private:
-	class SyncEntityObserver;
-	friend class SyncEntityObserver;
-	enum ForwardMode
-	{
-		DONT_FORWARD,
-		FORWARD_MASTER,
-		FORWARD_SLAVE,
-	};
+  virtual void Debug(std::ostream& oStream) const;
 
-	bool WaitForClusterMaster( int nPort );
-	bool InitSwapSync();
+  /**
+   * returns the next free port that was specified in the slave's configuration
+   * If no ports were specified, or all have been used already, -1 will be returned
+   * If a valid port is returned, it will automatically be removed from the list
+   * of available ports.
+   */
+  int GetNextFreePort();
 
-	bool ParseParameters( const VistaPropertyList& oSection );
-	void ParseSyncForward(  const VistaPropertyList& oSection,
-								const std::string& sName, ForwardMode& bForwardVariable );
+ private:
+  class SyncEntityObserver;
+  friend class SyncEntityObserver;
+  enum ForwardMode {
+    DONT_FORWARD,
+    FORWARD_MASTER,
+    FORWARD_SLAVE,
+  };
 
-	VistaConnectionIP* CreateConnectionToMaster();
+  bool WaitForClusterMaster(int nPort);
+  bool InitSwapSync();
 
-	IVistaClusterDataSync* CreateTypedDataSync( int nType, bool bUseDefaultConnection );
-	IVistaClusterDataSync* CreateTCPIPDataSync( bool bUseDefaultConnection );
-	IVistaClusterDataSync* CreateZeroMQDataSync();
-	IVistaClusterDataSync* CreateInterProcDataSync();
+  bool ParseParameters(const VistaPropertyList& oSection);
+  void ParseSyncForward(
+      const VistaPropertyList& oSection, const std::string& sName, ForwardMode& bForwardVariable);
 
-	IVistaClusterBarrier* CreateTypedBarrier( int nType, bool bUseDefaultConnection,
-												bool bIsSwapSyncBarrier );
-	IVistaClusterBarrier* CreateTCPBarrier( bool bUseDefaultConnection );
-	IVistaClusterBarrier* CreateBCBarrier( bool bUseDefaultConnection );
-	IVistaClusterBarrier* CreateZeroMQBarrier( bool bUseDefaultConnection );
-	IVistaClusterBarrier* CreateInterProcBarrier();
+  VistaConnectionIP* CreateConnectionToMaster();
 
-	void HandleMasterConnectionDrop();
-	void PrintClusterSetupInfo() const;
+  IVistaClusterDataSync* CreateTypedDataSync(int nType, bool bUseDefaultConnection);
+  IVistaClusterDataSync* CreateTCPIPDataSync(bool bUseDefaultConnection);
+  IVistaClusterDataSync* CreateZeroMQDataSync();
+  IVistaClusterDataSync* CreateInterProcDataSync();
 
-	std::ostream& GetDebugStream();
-private:
-	int							m_nOwnSlaveID;
-	std::string					m_sSlaveName;	
-	std::string					m_sSlaveSectionName;
-	int							m_iDataTunnelQueueSize;
+  IVistaClusterBarrier* CreateTypedBarrier(
+      int nType, bool bUseDefaultConnection, bool bIsSwapSyncBarrier);
+  IVistaClusterBarrier* CreateTCPBarrier(bool bUseDefaultConnection);
+  IVistaClusterBarrier* CreateBCBarrier(bool bUseDefaultConnection);
+  IVistaClusterBarrier* CreateZeroMQBarrier(bool bUseDefaultConnection);
+  IVistaClusterBarrier* CreateInterProcBarrier();
 
-	bool						m_bDoByteSwap;
-	bool						m_bByteSwapSpecified;
-	bool						m_bDoOglFinish;
+  void HandleMasterConnectionDrop();
+  void PrintClusterSetupInfo() const;
 
-	VistaSystem*				m_pVistaSystem;
+  std::ostream& GetDebugStream();
 
-	// the events that are supported
-	VistaSystemEvent*			m_pSystemEvent;
-	VistaExternalMsgEvent*		m_pExternalMsgEvent;
-	VistaMsg*					m_pMsg;
-	VistaInteractionEvent*		m_pInteractionEvent;
+ private:
+  int         m_nOwnSlaveID;
+  std::string m_sSlaveName;
+  std::string m_sSlaveSectionName;
+  int         m_iDataTunnelQueueSize;
 
-	std::string					m_sOwnIP;
-	int							m_nServerPort;
-	VistaMasterSlave::FreePortList	m_vecFreePorts;
+  bool m_bDoByteSwap;
+  bool m_bByteSwapSpecified;
+  bool m_bDoOglFinish;
 
-	VistaConnectionIP*			m_pConnection;
-	VistaConnectionIP*			m_pSyncConnection;
+  VistaSystem* m_pVistaSystem;
 
-	IVistaClusterDataSync*		m_pDefaultDataSync;
-	IVistaClusterBarrier*		m_pDefaultBarrier;
-	IVistaClusterBarrier*		m_pSwapSyncBarrier;
-	
-	int							m_nDataSyncMethod;
-	int							m_nSwapSyncMethod;
-	int							m_nSwapSyncTimeout;
-	int							m_nBarrierWaitMethod;
-	int							m_nBroadcastGroup;
+  // the events that are supported
+  VistaSystemEvent*      m_pSystemEvent;
+  VistaExternalMsgEvent* m_pExternalMsgEvent;
+  VistaMsg*              m_pMsg;
+  VistaInteractionEvent* m_pInteractionEvent;
 
-	VistaMasterSlave::Message	m_oClusterMessage;
+  std::string                    m_sOwnIP;
+  int                            m_nServerPort;
+  VistaMasterSlave::FreePortList m_vecFreePorts;
 
-	SyncEntityObserver*			m_pSyncEntityObserver;
-	
+  VistaConnectionIP* m_pConnection;
+  VistaConnectionIP* m_pSyncConnection;
 
-	ForwardMode					m_eForwardBarrier;
-	ForwardMode					m_eForwardSwapBarrier;
-	ForwardMode					m_eForwardDataSync;
-	
-	std::string					m_sInterProcName;
-	std::vector<std::string>	m_vecInterProcNames;
-	int							m_nUsedInterProcs;
+  IVistaClusterDataSync* m_pDefaultDataSync;
+  IVistaClusterBarrier*  m_pDefaultBarrier;
+  IVistaClusterBarrier*  m_pSwapSyncBarrier;
+
+  int m_nDataSyncMethod;
+  int m_nSwapSyncMethod;
+  int m_nSwapSyncTimeout;
+  int m_nBarrierWaitMethod;
+  int m_nBroadcastGroup;
+
+  VistaMasterSlave::Message m_oClusterMessage;
+
+  SyncEntityObserver* m_pSyncEntityObserver;
+
+  ForwardMode m_eForwardBarrier;
+  ForwardMode m_eForwardSwapBarrier;
+  ForwardMode m_eForwardDataSync;
+
+  std::string              m_sInterProcName;
+  std::vector<std::string> m_vecInterProcNames;
+  int                      m_nUsedInterProcs;
 };
 
 /*============================================================================*/

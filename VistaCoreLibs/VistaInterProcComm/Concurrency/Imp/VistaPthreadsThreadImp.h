@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_POSIX)
 
 #ifndef _VISTAPTHREADTHREADIMP_H
@@ -32,7 +31,6 @@
 /*============================================================================*/
 
 #include "VistaThreadImp.h"
-
 
 #include <pthread.h>
 
@@ -50,60 +48,56 @@ class VistaThread;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaPthreadThreadImp : public IVistaThreadImp
-{
-public:
-	VistaPthreadThreadImp(const VistaThread &);
+class VistaPthreadThreadImp : public IVistaThreadImp {
+ public:
+  VistaPthreadThreadImp(const VistaThread&);
 
-	virtual ~VistaPthreadThreadImp();
-	virtual bool Run( ) ;
-	virtual bool Suspend() ;
-	virtual bool Resume() ;
-	virtual bool Join() ;
-	virtual bool Abort() ;
+  virtual ~VistaPthreadThreadImp();
+  virtual bool Run();
+  virtual bool Suspend();
+  virtual bool Resume();
+  virtual bool Join();
+  virtual bool Abort();
 
-	virtual bool SetPriority( const VistaPriority & ) ;
-	virtual void GetPriority( VistaPriority & ) const ;
+  virtual bool SetPriority(const VistaPriority&);
+  virtual void GetPriority(VistaPriority&) const;
 
-	static IVistaThreadImp *CreateThreadImp( const VistaThread & );
+  static IVistaThreadImp* CreateThreadImp(const VistaThread&);
 
-	void YieldThread();
+  void YieldThread();
 
+  void SetCancelAbility(const bool bOkToCancel);
+  bool CanBeCancelled() const;
 
-	void SetCancelAbility( const bool bOkToCancel );
-	bool CanBeCancelled() const;
+  /**
+   * Method that is to be performed BEFORE departed fork starts execution
+   * DO NOT CALL THIS METHOD AT ANY COST!
+   */
+  virtual void PreRun();
 
-	/**
-	 * Method that is to be performed BEFORE departed fork starts execution
-	 * DO NOT CALL THIS METHOD AT ANY COST!
-	 */
-	virtual void PreRun() ;
+  /**
+   * Method that is to be performed AFTER forked work is done
+   * DO NOT CALL THIS METHOD AT ANY COST!
+   */
+  virtual void PostRun();
 
-	/**
-	 * Method that is to be performed AFTER forked work is done
-	 * DO NOT CALL THIS METHOD AT ANY COST!
-	 */
-	virtual void PostRun();
+  virtual bool Equals(const IVistaThreadImp&) const;
 
-	virtual bool Equals(const IVistaThreadImp &) const;
+  virtual long GetThreadIdentity() const;
+  static long  GetCallingThreadIdentity();
 
-	virtual long GetThreadIdentity() const;
-	static long GetCallingThreadIdentity();
+  static bool SetCallingThreadPriority(const VistaPriority& oPrio);
+  static bool GetCallingThreadPriority(VistaPriority& oPrio);
 
-	static bool SetCallingThreadPriority( const VistaPriority& oPrio );
-	static bool GetCallingThreadPriority( VistaPriority& oPrio );
+  virtual bool SetProcessorAffinity(int iProcessorNum);
+  virtual int  GetCpu() const;
 
-	virtual bool SetProcessorAffinity(int iProcessorNum);
-	virtual int  GetCpu() const;
-
-
-protected:
-	const VistaThread  &m_rThread; /**< @todo think about this */
-	bool     m_bCanBeCancelled;
-	pthread_t   posixThreadID;
-	pthread_attr_t m_ptAttr;
-	int m_nPriority;
-
+ protected:
+  const VistaThread& m_rThread; /**< @todo think about this */
+  bool               m_bCanBeCancelled;
+  pthread_t          posixThreadID;
+  pthread_attr_t     m_ptAttr;
+  int                m_nPriority;
 };
 
 /*============================================================================*/
@@ -112,6 +106,4 @@ protected:
 
 #endif //_VISTAWIN32THREADMP_H
 
-
 #endif // VISTA_THREADING_POSIX
-

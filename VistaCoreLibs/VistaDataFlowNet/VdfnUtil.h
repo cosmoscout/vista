@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNUTIL_H
 #define _VDFNUTIL_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -45,7 +43,6 @@
  * tend to have generic names and can be free floating.
  */
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -61,36 +58,30 @@ class VdfnObjectRegistry;
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-namespace VdfnUtil
-{
-	/**
-	 * templated function to save typing when getting an inport.
-	 */
-	template<class T> T GetInPortTyped( const std::string &strInPortName,
-										const IVdfnNode *pNode )
-	{
-		return dynamic_cast<T>( pNode->GetInPort(strInPortName) );
-	}
-
-
-	/**
-	 * management API, registers the basically available port setters for the
-	 * action node interface and other nodes that work on the introspective feature
-	 * of the Vdfn. This methods is called by InitVdfn(), so usually there is no
-	 * need to call it yourself, unless you have special plans and you know what you
-	 * are doing.
-	 * @return true
-	 */
-	VISTADFNAPI bool RegisterBasicPortSetters();
-
-	/**
-	 * calls RegisterBasicPortSetters() and RegisterBasicNodeCreators()
-	 * @return true
-	 */
-	VISTADFNAPI bool InitVdfn(VistaDriverMap *pDrivers,
-							   VdfnObjectRegistry *pObjRegistry);
+namespace VdfnUtil {
+/**
+ * templated function to save typing when getting an inport.
+ */
+template <class T>
+T GetInPortTyped(const std::string& strInPortName, const IVdfnNode* pNode) {
+  return dynamic_cast<T>(pNode->GetInPort(strInPortName));
 }
 
+/**
+ * management API, registers the basically available port setters for the
+ * action node interface and other nodes that work on the introspective feature
+ * of the Vdfn. This methods is called by InitVdfn(), so usually there is no
+ * need to call it yourself, unless you have special plans and you know what you
+ * are doing.
+ * @return true
+ */
+VISTADFNAPI bool RegisterBasicPortSetters();
+
+/**
+ * calls RegisterBasicPortSetters() and RegisterBasicNodeCreators()
+ * @return true
+ */
+VISTADFNAPI bool InitVdfn(VistaDriverMap* pDrivers, VdfnObjectRegistry* pObjRegistry);
+} // namespace VdfnUtil
 
 #endif //_VDFNUTIL_H
-

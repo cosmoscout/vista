@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
@@ -42,7 +41,7 @@
 /*============================================================================*/
 
 #ifdef VISTAOSGKEYBOARDTRANSCODER_EXPORTS
-	DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<VistaKeyboardDriverTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaKeyboardDriverTranscodeFactory>)
 #else
-	DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<VistaKeyboardDriverTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaKeyboardDriverTranscodeFactory>)
 #endif

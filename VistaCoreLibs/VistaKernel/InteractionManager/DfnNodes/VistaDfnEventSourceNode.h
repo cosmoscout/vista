@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNEVENTSOURCENODE_H
 #define _VISTADFNEVENTSOURCENODE_H
 
@@ -31,9 +30,9 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnShallowNode.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnShallowNode.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -52,37 +51,35 @@ class VistaInteractionEvent;
 /*============================================================================*/
 /**
  * Pushes a VistaEvent of type 'VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE'
- * to the EventManager. 
+ * to the EventManager.
  * The node is passed in as back-reference to query the ports/values of this node.
  *
  * @ingroup VdfnNodes
  *
- * @inport{ANY, ANY, n/a, this node accepts all inports.} 
+ * @inport{ANY, ANY, n/a, this node accepts all inports.}
  */
-class VISTAKERNELAPI VistaDfnEventSourceNode : public VdfnShallowNode
-{
-public:
-	VistaDfnEventSourceNode( VistaEventManager *pEvMgr,
-					  VistaInteractionManager *pInMa,
-					  const std::string &strSourceTag);
+class VISTAKERNELAPI VistaDfnEventSourceNode : public VdfnShallowNode {
+ public:
+  VistaDfnEventSourceNode(
+      VistaEventManager* pEvMgr, VistaInteractionManager* pInMa, const std::string& strSourceTag);
 
-	~VistaDfnEventSourceNode();
+  ~VistaDfnEventSourceNode();
 
-	bool PrepareEvaluationRun();
-protected:
-	bool DoEvalNode();
+  bool PrepareEvaluationRun();
 
+ protected:
+  bool DoEvalNode();
 
-private:
-	VistaEventManager *m_pEvMgr;
-	VistaInteractionEvent *m_pEvent;
-	VistaInteractionManager *m_pInMa;
+ private:
+  VistaEventManager*       m_pEvMgr;
+  VistaInteractionEvent*   m_pEvent;
+  VistaInteractionManager* m_pInMa;
 
-	typedef std::map<IVdfnPort *, unsigned int> RevisionMap;
+  typedef std::map<IVdfnPort*, unsigned int> RevisionMap;
 
-	RevisionMap m_mpRevision;
+  RevisionMap m_mpRevision;
 
-	std::string m_strSourceTag;
+  std::string m_strSourceTag;
 };
 
 /*============================================================================*/
@@ -90,4 +87,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNEVENTSOURCE_H
-

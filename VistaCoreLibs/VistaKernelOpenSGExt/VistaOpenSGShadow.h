@@ -21,21 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGSHADOW_H
 #define _VISTAOPENSGSHADOW_H
-
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VistaKernelOpenSGExtConfig.h"
 
-#include <string>
-#include <vector>
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -55,140 +52,132 @@ class tShadowViewPortNameMap;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGShadow
-{
-public:
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGShadow {
+ public:
+  /**
+   * Constructor/destructor
+   *
+   * Init the shadow object. This automatically creates a shadow viewport
+   * for all existing viewports and adds all lights specified in the vista.ini
+   * as light source to the shadow-viewports.
+   * Use AddLight to add lights after Init () was called. You can't add Viewports afterwards.
+   *
+   * Shadows start with the following default values:
+   *	- shadows enabled
+   *  - perspecitve shadows
+   *	- light's shadow intensity 1.0
+   *  - global  shadow intensity 0.0 (use per-light settings)
+   *
+   */
+  VistaOpenSGShadow(VistaDisplayManager* pMgr, VistaGraphicsManager* pGrMgr);
 
-	/**
-	 * Constructor/destructor
-         *
-	 * Init the shadow object. This automatically creates a shadow viewport
-	 * for all existing viewports and adds all lights specified in the vista.ini
-	 * as light source to the shadow-viewports.
-	 * Use AddLight to add lights after Init () was called. You can't add Viewports afterwards.
-	 *
-	 * Shadows start with the following default values:
-	 *	- shadows enabled
-	 *  - perspecitve shadows
-	 *	- light's shadow intensity 1.0
-	 *  - global  shadow intensity 0.0 (use per-light settings)
-	 *
-	 */
-	VistaOpenSGShadow(VistaDisplayManager *pMgr,
-					   VistaGraphicsManager *pGrMgr);
+  ~VistaOpenSGShadow();
 
-	~VistaOpenSGShadow();
+  enum VISTAKERNELOPENSGEXTAPI eShadowMode {
+    VOSGSHADOW_ERROR = -1,
+    VOSGSHADOW_FIRST = 0, // OSG::ShadowViewport::NO_SHADOW,
 
-	enum VISTAKERNELOPENSGEXTAPI eShadowMode
-	{
-		VOSGSHADOW_ERROR                  = -1,
-		VOSGSHADOW_FIRST                  = 0,  // OSG::ShadowViewport::NO_SHADOW,
+    VOSGSHADOW_NO_SHADOW = 0,              // OSG::ShadowViewport::NO_SHADOW,
+    VOSGSHADOW_STD_SHADOW_MAP = 1,         // OSG::ShadowViewport::STD_SHADOW_MAP,
+    VOSGSHADOW_PERSPECTIVE_SHADOW_MAP = 2, // OSG::ShadowViewport::PERSPECTIVE_SHADOW_MAP,
+    VOSGSHADOW_DITHER_SHADOW_MAP = 3,      // OSG::ShadowViewport::DITHER_SHADOW_MAP,
+    VOSGSHADOW_PCF_SHADOW_MAP = 4,         // OSG::ShadowViewport::PCF_SHADOW_MAP,
+    VOSGSHADOW_PCSS_SHADOW_MAP = 5,        // OSG::ShadowViewport::PCSS_SHADOW_MAP,
+    VOSGSHADOW_VARIANCE_SHADOW_MAP = 6,    // OSG::ShadowViewport::VARIANCE_SHADOW_MAP,
 
-		VOSGSHADOW_NO_SHADOW              = 0,  //OSG::ShadowViewport::NO_SHADOW,
-		VOSGSHADOW_STD_SHADOW_MAP         = 1,  //OSG::ShadowViewport::STD_SHADOW_MAP,
-		VOSGSHADOW_PERSPECTIVE_SHADOW_MAP = 2,  //OSG::ShadowViewport::PERSPECTIVE_SHADOW_MAP,
-		VOSGSHADOW_DITHER_SHADOW_MAP      = 3,  //OSG::ShadowViewport::DITHER_SHADOW_MAP,
-		VOSGSHADOW_PCF_SHADOW_MAP         = 4,  //OSG::ShadowViewport::PCF_SHADOW_MAP,
-		VOSGSHADOW_PCSS_SHADOW_MAP        = 5,  //OSG::ShadowViewport::PCSS_SHADOW_MAP,
-		VOSGSHADOW_VARIANCE_SHADOW_MAP    = 6,  //OSG::ShadowViewport::VARIANCE_SHADOW_MAP,
+    VOSGSHADOW_LAST = 6 // OSG::ShadowViewport::VARIANCE_SHADOW_MAP
+  };
 
-		VOSGSHADOW_LAST                   = 6   //OSG::ShadowViewport::VARIANCE_SHADOW_MAP
-	};
+  /**
+   * Add an additonal light to all shadow viewports.
+   */
+  bool AddLight(VistaLightNode* pLight);
 
-	/**
-	 * Add an additonal light to all shadow viewports.
-	 */
-	bool AddLight (VistaLightNode* pLight);
+  /**
+   * Remove a light from all shadow viewports.
+   */
+  bool RemoveLight(VistaLightNode* pLight);
 
-	/**
-	 * Remove a light from all shadow viewports.
-	 */
-	bool RemoveLight (VistaLightNode* pLight);
+  bool ClearAllLights();
 
-	bool ClearAllLights();
+  /**
+   * Add a node to the exclude-from-shadowing-functionality list.
+   */
+  bool AddExcludeNode(IVistaNode* pNode);
 
-	/**
-	 * Add a node to the exclude-from-shadowing-functionality list.
-	 */
-	bool AddExcludeNode (IVistaNode* pNode);
+  /**
+   * Remove a node from the exclude-from-shadowing-functionality list.
+   */
+  bool RemoveExcludeNode(IVistaNode* pNode);
 
-	/**
-	 * Remove a node from the exclude-from-shadowing-functionality list.
-	 */
-	bool RemoveExcludeNode (IVistaNode* pNode);
+  /**
+   * Clears the exclude-from-shadowing-functionality list.
+   */
+  bool ClearExcludeNodes();
 
-	/**
-	 * Clears the exclude-from-shadowing-functionality list.
-	 */
-	bool ClearExcludeNodes ();
+  /**
+   * Shadow parameters
+   */
+  bool  SetOffBias(float fBias);
+  float GetOffBias() const;
+  bool  SetOffFactor(float fFactor);
+  float GetOffFactor() const;
 
-	/**
-	 * Shadow parameters
-	 */
-	bool SetOffBias (float fBias);
-	float GetOffBias() const;
-	bool SetOffFactor (float fFactor);
-	float GetOffFactor() const;
+  bool  SetSmoothness(float fSmooth);
+  float GetSmoothness() const;
+  bool  SetMapSize(int iMapSize);
+  int   GetMapSize() const;
 
-	bool SetSmoothness (float fSmooth);
-	float GetSmoothness() const;
-	bool SetMapSize (int iMapSize);
-	int GetMapSize() const;
+  // set the shadow intensity of a specific light
+  bool  SetLightShadowIntensity(VistaLightNode* pLight, float fIntensity);
+  float GetLightShadowIntensity(const VistaLightNode* pLight) const;
 
-	// set the shadow intensity of a specific light
-	bool SetLightShadowIntensity(VistaLightNode* pLight, float fIntensity);
-	float GetLightShadowIntensity( const VistaLightNode* pLight ) const;
+  // set the shadow intensity of all shadowing lights
+  bool SetLightsShadowIntensity(float fIntensity);
 
-	// set the shadow intensity of all shadowing lights
-	bool SetLightsShadowIntensity(float fIntensity);
+  // set the ShadowViewport's global shadow-intensity
+  // if set != 0.0, the individual shadow intensities of light nodes is ignored!
+  void  SetGlobalShadowIntensity(float fIntensity);
+  float GetGlobalShadowIntensity() const;
 
-	// set the ShadowViewport's global shadow-intensity
-	// if set != 0.0, the individual shadow intensities of light nodes is ignored!
-	void SetGlobalShadowIntensity(float fIntensity);
-	float GetGlobalShadowIntensity() const;
+  /**
+   * Enable/Disable shadows.
+   * This turns all shadow viewports on/off
+   *
+   */
+  void EnableShadow();
+  void DisableShadow();
+  bool GetIsShadowEnabled();
 
-	/**
-	 * Enable/Disable shadows.
-	 * This turns all shadow viewports on/off
-	 *
-	 */
-	void EnableShadow ();
-	void DisableShadow ();
-	bool GetIsShadowEnabled ();
+  /**
+   * Set shadow mode
+   */
+  void SetShadowMode(const eShadowMode& eShadowMode);
 
+  /**
+   * Get shadow mode
+   */
+  eShadowMode GetShadowMode() const;
 
-	/**
-	 * Set shadow mode
-	 */
-	void SetShadowMode(const eShadowMode &eShadowMode);
+ private:
+  /**
+   * init a specific window
+   */
 
-	/**
-	 * Get shadow mode
-	 */
-	eShadowMode GetShadowMode() const;
+  bool InitWindow(const std::string& strName, VistaWindow* pWindow, VistaGraphicsManager* pGrMgr);
 
-private:
-	/**
-	 * init a specific window
-	 */
+  /**
+   * members
+   */
 
-	bool InitWindow (const std::string & strName,
-		VistaWindow* pWindow,
-		VistaGraphicsManager *pGrMgr);
+  tShadowViewPortNameMap*      m_pShadowVPs;
+  std::vector<VistaLightNode*> m_vecLights;
 
-	/**
-	 * members
-	 */
+  bool m_bInit;
+  bool m_bEnabled;
 
-
-	tShadowViewPortNameMap               *m_pShadowVPs;
-	std::vector<VistaLightNode*>        m_vecLights;
-
-	bool m_bInit;
-	bool m_bEnabled;
-
-	VistaDisplayManager  *m_pDispMgr;
-	VistaGraphicsManager *m_pGrMgr;
+  VistaDisplayManager*  m_pDispMgr;
+  VistaGraphicsManager* m_pGrMgr;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

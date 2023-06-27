@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -38,39 +37,32 @@
 
 #include "VistaSpaceNavigatorDriver.h"
 
-
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule, 
-					   DWORD  ul_reason_for_call, 
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTASPACENAVIGATORCONFIG_H
 
-namespace
-{
-	/**
-	 * creates a VistaSpaceMouse driver
-	 */
-	VistaSpaceNavigatorCreationMethod *SpFactory = NULL;
+namespace {
+/**
+ * creates a VistaSpaceMouse driver
+ */
+VistaSpaceNavigatorCreationMethod* SpFactory = NULL;
 
-}
+} // namespace
 
-//IVistaDriverCreationMethod *VistaSpaceNavigator::GetDriverFactoryMethod()
+// IVistaDriverCreationMethod *VistaSpaceNavigator::GetDriverFactoryMethod()
 //{
 //	if(SpFactory == NULL)
 //	{
@@ -88,45 +80,39 @@ namespace
 //	return SpFactory;
 //}
 
-extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaSpaceNavigator(crm);
+extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaSpaceNavigator(crm);
 }
 
-extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaSpaceNavigatorCreationMethod(fac);
+extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaSpaceNavigatorCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI void DisposeCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-
-extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-
-extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "VISTASPACENAVIGATOR";
+extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI const char* GetDeviceClassName() {
+  return "VISTASPACENAVIGATOR";
 }
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -139,8 +125,3 @@ extern "C" VISTASPACENAVIGATORDRIVERPLUGINAPI const char *GetDeviceClassName()
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-
-
-
-

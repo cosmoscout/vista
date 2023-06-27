@@ -25,138 +25,129 @@
 #include "VistaBase/VistaTimeUtils.h"
 #include "VistaBase/VistaTimer.h"
 
-namespace
-{
-	class VistaTestDriverMeasureTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaTestDriverMeasureTranscode() {}
-		virtual ~VistaTestDriverMeasureTranscode() {}
-		static std::string GetTypeString() { return "VistaTestDriverMeasureTranscode"; }
-	
-		class Get : public IVistaMeasureTranscode::IntGet
-		{
-		public:
-			Get() : IVistaMeasureTranscode::IntGet( "VALUE", VistaTestDriverMeasureTranscode::GetTypeString(), "value" )	{}
+namespace {
+class VistaTestDriverMeasureTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaTestDriverMeasureTranscode() {
+  }
+  virtual ~VistaTestDriverMeasureTranscode() {
+  }
+  static std::string GetTypeString() {
+    return "VistaTestDriverMeasureTranscode";
+  }
 
-			virtual int GetValue( const VistaSensorMeasure* pMeasure ) const
-			{
-				const VistaTestDriverMeasure* pMeasureData = pMeasure->getRead< VistaTestDriverMeasure >();
-				return pMeasureData->m_nValue;
-			}
+  class Get : public IVistaMeasureTranscode::IntGet {
+   public:
+    Get()
+        : IVistaMeasureTranscode::IntGet(
+              "VALUE", VistaTestDriverMeasureTranscode::GetTypeString(), "value") {
+    }
 
-			virtual bool GetValue( const VistaSensorMeasure* pMeasure, int& nValue ) const
-			{
-				const VistaTestDriverMeasure* pMeasureData = pMeasure->getRead< VistaTestDriverMeasure >();
-				nValue = pMeasureData->m_nValue;
-				return true;
-			}
-		};
-	
-		REFL_INLINEIMP( VistaTestDriverMeasureTranscode, IVistaMeasureTranscode );
-	};
-	static IVistaPropertyGetFunctor* s_pTranscodeGetter = new VistaTestDriverMeasureTranscode::Get();
+    virtual int GetValue(const VistaSensorMeasure* pMeasure) const {
+      const VistaTestDriverMeasure* pMeasureData = pMeasure->getRead<VistaTestDriverMeasure>();
+      return pMeasureData->m_nValue;
+    }
 
-	class TestDriverTranscoderFactory : public IVistaMeasureTranscoderFactory
-	{
-		virtual IVistaMeasureTranscode* CreateTranscoder() override
-		{
-			return new VistaTestDriverMeasureTranscode();
-		}
+    virtual bool GetValue(const VistaSensorMeasure* pMeasure, int& nValue) const {
+      const VistaTestDriverMeasure* pMeasureData = pMeasure->getRead<VistaTestDriverMeasure>();
+      nValue                                     = pMeasureData->m_nValue;
+      return true;
+    }
+  };
 
-		virtual void DestroyTranscoder( IVistaMeasureTranscode* pTranscode ) override
-		{
-			delete pTranscode;
-		}
-		virtual std::string GetTranscoderName() const override { return "TestDriverTranscoderFactory"; }
-	};
-}
-class VistaTestDriver::CreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	CreationMethod( IVistaTranscoderFactoryFactory* pMetaFactory )
-	: IVistaDriverCreationMethod( pMetaFactory )
-	{
-		RegisterSensorType( "", sizeof( VistaTestDriverMeasure), 1000, pMetaFactory->CreateFactoryForType( "")  );
-	}
+  REFL_INLINEIMP(VistaTestDriverMeasureTranscode, IVistaMeasureTranscode);
+};
+static IVistaPropertyGetFunctor* s_pTranscodeGetter = new VistaTestDriverMeasureTranscode::Get();
 
-	virtual IVistaDeviceDriver* CreateDriver()
-	{
-		return new VistaTestDriver( this );
-	}
+class TestDriverTranscoderFactory : public IVistaMeasureTranscoderFactory {
+  virtual IVistaMeasureTranscode* CreateTranscoder() override {
+    return new VistaTestDriverMeasureTranscode();
+  }
+
+  virtual void DestroyTranscoder(IVistaMeasureTranscode* pTranscode) override {
+    delete pTranscode;
+  }
+  virtual std::string GetTranscoderName() const override {
+    return "TestDriverTranscoderFactory";
+  }
+};
+} // namespace
+class VistaTestDriver::CreationMethod : public IVistaDriverCreationMethod {
+ public:
+  CreationMethod(IVistaTranscoderFactoryFactory* pMetaFactory)
+      : IVistaDriverCreationMethod(pMetaFactory) {
+    RegisterSensorType(
+        "", sizeof(VistaTestDriverMeasure), 1000, pMetaFactory->CreateFactoryForType(""));
+  }
+
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaTestDriver(this);
+  }
 };
 
-VistaTestDriver::VistaTestDriver( IVistaDriverCreationMethod* pCreationMethod )
-: IVistaDeviceDriver( pCreationMethod )
-, m_nReadBuffer( 0 )
-{
-	SetUpdateType( IVistaDeviceDriver::UPDATE_CUSTOM_THREADED );
-	VistaDeviceSensor* pSensor = new VistaDeviceSensor();
-	pSensor->SetMeasureTranscode( pCreationMethod->GetTranscoderFactoryForSensor( "" )->CreateTranscoder() );
-	pSensor->SetTypeHint( "" );
-	AddDeviceSensor( pSensor );
+VistaTestDriver::VistaTestDriver(IVistaDriverCreationMethod* pCreationMethod)
+    : IVistaDeviceDriver(pCreationMethod)
+    , m_nReadBuffer(0) {
+  SetUpdateType(IVistaDeviceDriver::UPDATE_CUSTOM_THREADED);
+  VistaDeviceSensor* pSensor = new VistaDeviceSensor();
+  pSensor->SetMeasureTranscode(
+      pCreationMethod->GetTranscoderFactoryForSensor("")->CreateTranscoder());
+  pSensor->SetTypeHint("");
+  AddDeviceSensor(pSensor);
 }
 
-bool VistaTestDriver::DoSensorUpdate( VistaType::microtime dTs )
-{
-	VistaDeviceSensor* pSensor = GetSensorByIndex( 0 );
+bool VistaTestDriver::DoSensorUpdate(VistaType::microtime dTs) {
+  VistaDeviceSensor* pSensor = GetSensorByIndex(0);
 
-	assert( pSensor != NULL );
+  assert(pSensor != NULL);
 
-	MeasureStart( 0, dTs );
-	VistaSensorMeasure* pMeasure = m_pHistoryAspect->GetCurrentSlot( pSensor );
-	VistaTestDriverMeasure* pMeasureData = pMeasure->getWrite< VistaTestDriverMeasure >();
+  MeasureStart(0, dTs);
+  VistaSensorMeasure*     pMeasure     = m_pHistoryAspect->GetCurrentSlot(pSensor);
+  VistaTestDriverMeasure* pMeasureData = pMeasure->getWrite<VistaTestDriverMeasure>();
 
-	pMeasureData->m_nValue = m_nReadBuffer;
+  pMeasureData->m_nValue = m_nReadBuffer;
 
-	MeasureStop( 0 );
-	return true;
+  MeasureStop(0);
+  return true;
 }
 
-void VistaTestDriver::PushValue( int nValue )
-{
-	m_nReadBuffer = nValue;
-	DoSensorUpdate( VistaTimeUtils::GetStandardTimer().GetSystemTime() );
+void VistaTestDriver::PushValue(int nValue) {
+  m_nReadBuffer = nValue;
+  DoSensorUpdate(VistaTimeUtils::GetStandardTimer().GetSystemTime());
 }
 
-bool VistaTestDriver::DoConnect()
-{
-	return true;
+bool VistaTestDriver::DoConnect() {
+  return true;
 }
 
-bool VistaTestDriver::DoDisconnect()
-{
-	return true;
+bool VistaTestDriver::DoDisconnect() {
+  return true;
 }
 
 VistaTestDriverWrapper::VistaTestDriverWrapper()
-: m_pMetaFactory( new TSimpleTranscoderFactoryFactory< TestDriverTranscoderFactory >() )
-{	
-	m_pCreationMethod = std::unique_ptr< VistaTestDriver::CreationMethod >( new VistaTestDriver::CreationMethod( m_pMetaFactory.get() ) );
-	m_pDriver = std::unique_ptr< VistaTestDriver >( new VistaTestDriver( m_pCreationMethod.get() ) );
-	m_pSensor = m_pDriver->GetSensorByIndex( 0 );
-	m_pDriver->SetupSensorHistory( m_pSensor, 100, 1.0 / 60.0 );
+    : m_pMetaFactory(new TSimpleTranscoderFactoryFactory<TestDriverTranscoderFactory>()) {
+  m_pCreationMethod = std::unique_ptr<VistaTestDriver::CreationMethod>(
+      new VistaTestDriver::CreationMethod(m_pMetaFactory.get()));
+  m_pDriver = std::unique_ptr<VistaTestDriver>(new VistaTestDriver(m_pCreationMethod.get()));
+  m_pSensor = m_pDriver->GetSensorByIndex(0);
+  m_pDriver->SetupSensorHistory(m_pSensor, 100, 1.0 / 60.0);
 }
-VistaTestDriverWrapper::~VistaTestDriverWrapper()
-{
-}
-
-VistaTestDriver* VistaTestDriverWrapper::GetDriver()
-{
-	return m_pDriver.get();
+VistaTestDriverWrapper::~VistaTestDriverWrapper() {
 }
 
-VistaDeviceSensor* VistaTestDriverWrapper::GetSensor()
-{
-	return m_pSensor;
+VistaTestDriver* VistaTestDriverWrapper::GetDriver() {
+  return m_pDriver.get();
 }
 
-const VistaMeasureHistory& VistaTestDriverWrapper::GetHistory()
-{
-	return m_pSensor->GetMeasures();
+VistaDeviceSensor* VistaTestDriverWrapper::GetSensor() {
+  return m_pSensor;
 }
 
-IVistaMeasureTranscode::IntGet* VistaTestDriverWrapper::GetTranscodeGet()
-{
-	return dynamic_cast<IVistaMeasureTranscode::IntGet*>( m_pSensor->GetMeasureTranscode()->GetMeasureProperty( "VALUE" ) );
+const VistaMeasureHistory& VistaTestDriverWrapper::GetHistory() {
+  return m_pSensor->GetMeasures();
+}
+
+IVistaMeasureTranscode::IntGet* VistaTestDriverWrapper::GetTranscodeGet() {
+  return dynamic_cast<IVistaMeasureTranscode::IntGet*>(
+      m_pSensor->GetMeasureTranscode()->GetMeasureProperty("VALUE"));
 }

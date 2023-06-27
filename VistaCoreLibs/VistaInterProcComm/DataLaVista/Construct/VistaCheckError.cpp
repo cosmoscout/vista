@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -38,21 +36,15 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DLVistaCheckError::DLVistaCheckError(const string &SErrorName,
-									   const string &SErrorText)
-{
-	m_SErrorName = SErrorName;
-	m_SErrorText = SErrorText;
-	m_bIsNullError = false;
+DLVistaCheckError::DLVistaCheckError(const string& SErrorName, const string& SErrorText) {
+  m_SErrorName   = SErrorName;
+  m_SErrorText   = SErrorText;
+  m_bIsNullError = false;
 }
 
-DLVistaCheckError::~DLVistaCheckError()
-{}
-
-
-void DLVistaCheckError::SetErrorText(const string &SErrorText)
-{
-	m_SErrorText = SErrorText;
+DLVistaCheckError::~DLVistaCheckError() {
 }
 
-
+void DLVistaCheckError::SetErrorText(const string& SErrorText) {
+  m_SErrorText = SErrorText;
+}

@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 #ifndef _VISTADEFAULTTIMERIMP_H
 #define _VISTADEFAULTTIMERIMP_H
 
@@ -57,32 +55,31 @@
  * Should not be used directly - use VistaTimer instead, which automatically
  * retrieves the TimerImpl singleton
  */
-class VISTABASEAPI VistaDefaultTimerImp : public IVistaTimerImp
-{
-public:
-	VistaDefaultTimerImp();	
+class VISTABASEAPI VistaDefaultTimerImp : public IVistaTimerImp {
+ public:
+  VistaDefaultTimerImp();
 
-	virtual VistaType::microtime  GetMicroTime()   const;
-	virtual VistaType::microstamp GetMicroStamp()  const;
-	virtual VistaType::microtime  GetSystemTime()  const;
-	virtual VistaType::systemtime ConvertToSystemTime( const VistaType::microtime mtTime ) const;
+  virtual VistaType::microtime  GetMicroTime() const;
+  virtual VistaType::microstamp GetMicroStamp() const;
+  virtual VistaType::microtime  GetSystemTime() const;
+  virtual VistaType::systemtime ConvertToSystemTime(const VistaType::microtime mtTime) const;
 
-protected:
-	~VistaDefaultTimerImp();
-protected:
+ protected:
+  ~VistaDefaultTimerImp();
+
+ protected:
 #ifdef WIN32
-	mutable VistaType::microstamp		m_nInitialStamp;
-	mutable VistaType::microstamp		m_nLastStamp;	
-	mutable DWORD						m_nLastTickCount;
-	VistaType::microtime				m_nFrequencyDenom;
-	VistaType::microtime				m_nInitialSystemTime;
+  mutable VistaType::microstamp m_nInitialStamp;
+  mutable VistaType::microstamp m_nLastStamp;
+  mutable DWORD                 m_nLastTickCount;
+  VistaType::microtime          m_nFrequencyDenom;
+  VistaType::microtime          m_nInitialSystemTime;
 #elif defined DARWIN
-	mach_timebase_info_data_t			m_sTimebaseInfo;
+  mach_timebase_info_data_t m_sTimebaseInfo;
 #else
-	double								m_nInitialTime;
+  double m_nInitialTime;
 #endif
 };
-
 
 /*============================================================================*/
 /* END OF FILE                                                                */

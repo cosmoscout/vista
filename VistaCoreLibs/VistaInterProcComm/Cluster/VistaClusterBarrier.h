@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACLUSTERBARRIER_H
 #define _VISTACLUSTERBARRIER_H
 
@@ -34,8 +33,8 @@
 
 #include <VistaBase/VistaBaseTypes.h>
 
-#include <string>
 #include <iostream>
+#include <string>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -49,35 +48,34 @@ class IVistaSerializable;
 /**
  * VistaNetworkSync is an abstract base class for a barrier wait among
  * several nodes in a cluster.
- * It is observable purely for 
+ * It is observable purely for
  */
-class VISTAINTERPROCCOMMAPI IVistaClusterBarrier : public IVistaClusterSyncEntity
-{
-public:
-	virtual ~IVistaClusterBarrier();
+class VISTAINTERPROCCOMMAPI IVistaClusterBarrier : public IVistaClusterSyncEntity {
+ public:
+  virtual ~IVistaClusterBarrier();
 
-	/**
-	 * Call this routine to wait until all nodes reach the sync
-	 * The network leader as well as all nodes will wait until all
-	 * nodes reach the sync, so that all return at about the
-	 * same time
-	 * @return true if sync went on without problems
-	 *         false if something went wrong (e.g. timeout was hit)
-	 */
-	virtual bool BarrierWait( int iTimeOut = 0 ) = 0;
+  /**
+   * Call this routine to wait until all nodes reach the sync
+   * The network leader as well as all nodes will wait until all
+   * nodes reach the sync, so that all return at about the
+   * same time
+   * @return true if sync went on without problems
+   *         false if something went wrong (e.g. timeout was hit)
+   */
+  virtual bool BarrierWait(int iTimeOut = 0) = 0;
 
-	virtual std::string GetBarrierType() const = 0;
+  virtual std::string GetBarrierType() const = 0;
 
-protected:
-	IVistaClusterBarrier( const bool bVerbose, const bool bLeader );
-	
-private:
-	// prevent copying
-	IVistaClusterBarrier( const IVistaClusterBarrier& );
-	IVistaClusterBarrier& operator= ( const IVistaClusterBarrier& );
+ protected:
+  IVistaClusterBarrier(const bool bVerbose, const bool bLeader);
 
-protected:
-	bool m_bVerbose;
+ private:
+  // prevent copying
+  IVistaClusterBarrier(const IVistaClusterBarrier&);
+  IVistaClusterBarrier& operator=(const IVistaClusterBarrier&);
+
+ protected:
+  bool m_bVerbose;
 };
 
 /*============================================================================*/

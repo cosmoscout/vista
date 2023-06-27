@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNREEVALNODE_H
 #define _VDFNREEVALNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include "VdfnNode.h"
 #include "VdfnConfig.h"
+#include "VdfnNode.h"
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -59,48 +57,45 @@ class IVdfnPortTypeCompare;
  * GetIsValid() : (see IVdfnNode)
  * @ingroup VdfnNodes
  */
-class VISTADFNAPI IVdfnReEvalNode : public IVdfnNode
-{
-public:
-	IVdfnReEvalNode();
-	~IVdfnReEvalNode();
+class VISTADFNAPI IVdfnReEvalNode : public IVdfnNode {
+ public:
+  IVdfnReEvalNode();
+  ~IVdfnReEvalNode();
 
-	/**
-	 * Extents IVdfnNode::NeedsEval to special check whether or not a
-	 * ReEvaluation run is required( which is determined by the
-	 * GetNeedsReEvaluation() function.
-	 * @see GetNeedsReEvaluation()
-	 */
-	virtual bool NeedsEval() const;
+  /**
+   * Extents IVdfnNode::NeedsEval to special check whether or not a
+   * ReEvaluation run is required( which is determined by the
+   * GetNeedsReEvaluation() function.
+   * @see GetNeedsReEvaluation()
+   */
+  virtual bool NeedsEval() const;
 
+  /**
+   * EvalNode Re-implementation, which allows to handle specifics
+   * of the reevaluation call. Should not be implemented by derived classes.
+   * Overloading this API is on expert level, so normal users should not touch
+   * it, but overload DoEvalNode()
+   * @see DoEvalNode()
+   */
+  virtual bool EvalNode(double nTimeStamp);
 
-	/**
-	 * EvalNode Re-implementation, which allows to handle specifics
-	 * of the reevaluation call. Should not be implemented by derived classes.
-	 * Overloading this API is on expert level, so normal users should not touch
-	 * it, but overload DoEvalNode()
-	 * @see DoEvalNode()
-	 */
-	virtual bool EvalNode( double nTimeStamp );
+ protected:
+  /**
+   * Implement as for a normal IVdfnNode, but keep in mind that it is
+   * called once during normal graph traversal, and then repeatedly until
+   * GetNeedsReEvaluation returns false. During reevaluation, the input
+   * ports don't change
+   */
+  virtual bool DoEvalNode() = 0;
 
-protected:
-	/**
-	 * Implement as for a normal IVdfnNode, but keep in mind that it is
-	 * called once during normal graph traversal, and then repeatedly until
-	 * GetNeedsReEvaluation returns false. During reevaluation, the input
-	 * ports don't change
-	 */
-	virtual bool DoEvalNode() = 0;
-
-	/**
-	 * Implement this function to tell whether or not another evaluation run is needed.
-	 * @see NeedsEval()
-	 */
-	virtual bool GetNeedsReEvaluation() const = 0;
+  /**
+   * Implement this function to tell whether or not another evaluation run is needed.
+   * @see NeedsEval()
+   */
+  virtual bool GetNeedsReEvaluation() const = 0;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNREEVALNODE_H
-

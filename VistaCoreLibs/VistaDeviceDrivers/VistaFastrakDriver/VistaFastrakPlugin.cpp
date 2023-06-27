@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaFastrakDriver.h"
 #include "VistaFastrakCommonShare.h"
+#include "VistaFastrakDriver.h"
 
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaTimeUtils.h>
 
-
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 
 #include <string>
 
@@ -52,67 +50,58 @@
 // FASTRAK COMMANDSET VARIANTS INTERFACE
 // ############################################################################
 
-namespace
-{
-	FastrackCreationMethod *SpFactory = NULL;
+namespace {
+FastrackCreationMethod* SpFactory = NULL;
 
-	// SHADOWED FROM DRIVER API
-	//IVistaDriverCreationMethod *VistaFastrakDriver::GetDriverFactoryMethod()
-	//{
-	//	if(SpFactory == NULL)
-	//	{
-	//		SpFactory = new FastrackCreationMethod;
-	//		SpFactory->RegisterSensorType( "BODY", sizeof(_sFastrakButtonSample),
-	//			120,
-	//			new VistaFastrakBodyFactory,
-	//			VistaFastrakBodyTranscoder::GetTypeString() );
-	//		SpFactory->RegisterSensorType( "WAND",
-	//			sizeof(_sFastrakSample),
-	//			120,
-	//			new VistaFastrakWandFactory,
-	//			VistaFastrakWandTranscoder::GetTypeString() );
-	//	}
-	//	return SpFactory;
-	//}
+// SHADOWED FROM DRIVER API
+// IVistaDriverCreationMethod *VistaFastrakDriver::GetDriverFactoryMethod()
+//{
+//	if(SpFactory == NULL)
+//	{
+//		SpFactory = new FastrackCreationMethod;
+//		SpFactory->RegisterSensorType( "BODY", sizeof(_sFastrakButtonSample),
+//			120,
+//			new VistaFastrakBodyFactory,
+//			VistaFastrakBodyTranscoder::GetTypeString() );
+//		SpFactory->RegisterSensorType( "WAND",
+//			sizeof(_sFastrakSample),
+//			120,
+//			new VistaFastrakWandFactory,
+//			VistaFastrakWandTranscoder::GetTypeString() );
+//	}
+//	return SpFactory;
+//}
+} // namespace
+
+extern "C" VISTAFASTRAKDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaFastrakDriver(crm);
 }
 
-extern "C" VISTAFASTRAKDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaFastrakDriver(crm);
+extern "C" VISTAFASTRAKDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new FastrackCreationMethod(fac);
+
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAFASTRAKDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new FastrackCreationMethod(fac);
-
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+extern "C" VISTAFASTRAKDRIVERPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTAFASTRAKDRIVERPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTAFASTRAKDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-extern "C" VISTAFASTRAKDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTAFASTRAKDRIVERPLUGINAPI const char* GetDeviceClassName() {
+  return "FASTRAK";
 }
-
-
-extern "C" VISTAFASTRAKDRIVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "FASTRAK";
-}
-

@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERREFERENCEFRAMEASPECT_H
 #define _VISTADRIVERREFERENCEFRAMEASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaDLVTypes.h>
 #include <list>
 #include <string>
@@ -58,53 +56,41 @@ struct VistaEulerAngles;
  * frame aspect and make it accessible for client code. At the same time, it
  * can be used to adjust a hemisphere of the tracker.
  */
-class VISTADEVICEDRIVERSAPI IVistaDriverReferenceFrameAspect : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	IVistaDriverReferenceFrameAspect();
-	virtual ~IVistaDriverReferenceFrameAspect();
+class VISTADEVICEDRIVERSAPI IVistaDriverReferenceFrameAspect
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  IVistaDriverReferenceFrameAspect();
+  virtual ~IVistaDriverReferenceFrameAspect();
 
-	// #########################################
-	// REFERENCE FRAME API
-	// #########################################
+  // #########################################
+  // REFERENCE FRAME API
+  // #########################################
 
-	// hemisphere code is given in the standard right-handed
-	// coordinate system, seen in the "target frame"
-	enum eHemisphereCode
-	{
-		HS_UP = 0,
-		HS_DOWN,
-		HS_LEFT,
-		HS_RIGHT,
-		HS_FRONT,
-		HS_AFT
-	};
+  // hemisphere code is given in the standard right-handed
+  // coordinate system, seen in the "target frame"
+  enum eHemisphereCode { HS_UP = 0, HS_DOWN, HS_LEFT, HS_RIGHT, HS_FRONT, HS_AFT };
 
-	virtual bool SetHemisphere ( eHemisphereCode eHs ) = 0;
-	virtual bool GetHemisphere ( eHemisphereCode &eHs ) = 0;
+  virtual bool SetHemisphere(eHemisphereCode eHs)  = 0;
+  virtual bool GetHemisphere(eHemisphereCode& eHs) = 0;
 
-	virtual bool SetEmitterAlignment( const VistaTransformMatrix &mat ) = 0;
-	virtual bool GetEmitterAlignment( VistaTransformMatrix &max ) = 0;
+  virtual bool SetEmitterAlignment(const VistaTransformMatrix& mat) = 0;
+  virtual bool GetEmitterAlignment(VistaTransformMatrix& max)       = 0;
 
-	virtual bool SetEmitterAlignment( const VistaEulerAngles &angles ) = 0;
-	virtual bool GetEmitterAlignment( VistaEulerAngles &angles ) = 0;
+  virtual bool SetEmitterAlignment(const VistaEulerAngles& angles) = 0;
+  virtual bool GetEmitterAlignment(VistaEulerAngles& angles)       = 0;
 
-	virtual bool SetSensorAlignment( const VistaTransformMatrix &mat,
-		                             unsigned int nSensorId ) = 0;
-	virtual bool GetSensorAlignment( VistaTransformMatrix &mat,
-		                             unsigned int nSensorId ) = 0;
+  virtual bool SetSensorAlignment(const VistaTransformMatrix& mat, unsigned int nSensorId) = 0;
+  virtual bool GetSensorAlignment(VistaTransformMatrix& mat, unsigned int nSensorId)       = 0;
 
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
-
-protected:
-
-private:
-	static int m_nAspectId;
+ protected:
+ private:
+  static int m_nAspectId;
 };
 
 /*============================================================================*/
@@ -112,5 +98,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADRIVERREFERENCEFRAMEASPECT_H
-
-

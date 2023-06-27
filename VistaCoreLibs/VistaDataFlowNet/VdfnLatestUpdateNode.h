@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNLATESTUPDATENODE_H
 #define _VDFNLATESTUPDATENODE_H
 
@@ -30,13 +29,13 @@
 /*============================================================================*/
 #include "VdfnConfig.h"
 #include "VdfnNode.h"
+#include "VdfnNodeFactory.h"
 #include "VdfnPort.h"
 #include "VdfnSerializer.h"
-#include "VdfnNodeFactory.h"
 
+#include <VistaAspects/VistaAspectsConfig.h>
 #include <VistaAspects/VistaPropertyAwareable.h>
 #include <VistaBase/VistaExceptionBase.h>
-#include <VistaAspects/VistaAspectsConfig.h>
 
 #include <vector>
 
@@ -61,66 +60,55 @@
  * @outport{out, T, the latest value}
  */
 template <class T>
-class TVdfnLatestUpdateNode : public IVdfnNode
-{
-public:
-	TVdfnLatestUpdateNode()
-	: m_pOut( new TVdfnPort<T> )
-	{
-		RegisterOutPort( "out", m_pOut );
-	}
+class TVdfnLatestUpdateNode : public IVdfnNode {
+ public:
+  TVdfnLatestUpdateNode()
+      : m_pOut(new TVdfnPort<T>) {
+    RegisterOutPort("out", m_pOut);
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		return GetIsValid();
-	}
+  bool PrepareEvaluationRun() {
+    return GetIsValid();
+  }
 
-	/**
-	 * Register every inport like the shallow node, but with type
-	 * checking.
-	 */
-	bool SetInPort(const std::string &sName, IVdfnPort *pPort)
-	{
-		if( pPort->GetPortTypeCompare()->IsTypeOf(m_pOut) )
-		{
-			m_mpInPrototypes[ sName ] = pPort->GetPortTypeCompare();
-			return DoSetInPort(sName, pPort);
-		}
-		else
-		{
-			return false;
-		}
-	}
+  /**
+   * Register every inport like the shallow node, but with type
+   * checking.
+   */
+  bool SetInPort(const std::string& sName, IVdfnPort* pPort) {
+    if (pPort->GetPortTypeCompare()->IsTypeOf(m_pOut)) {
+      m_mpInPrototypes[sName] = pPort->GetPortTypeCompare();
+      return DoSetInPort(sName, pPort);
+    } else {
+      return false;
+    }
+  }
 
-protected:
+ protected:
+  /**
+   * Iterates over each in port and set the outports value to the one with the
+   * highest timestamp.
+   */
+  bool DoEvalNode() {
+    double     latestStamp = -1;
+    IVdfnPort* latestPort  = NULL;
+    for (PortMap::const_iterator it = m_mpInPorts.begin(); it != m_mpInPorts.end(); ++it) {
+      double d = it->second->GetUpdateTimeStamp();
+      if (d > latestStamp) {
+        latestStamp = d;
+        latestPort  = it->second;
+      }
+    }
 
-	/**
-	 * Iterates over each in port and set the outports value to the one with the
-	 * highest timestamp.
-	 */
-	bool DoEvalNode()
-	{
-		double latestStamp = -1;
-		IVdfnPort* latestPort = NULL;
-		for( PortMap::const_iterator it = m_mpInPorts.begin(); it != m_mpInPorts.end(); ++it )
-		{
-			double d = it->second->GetUpdateTimeStamp();
-			if(d > latestStamp)
-			{
-				latestStamp = d;
-				latestPort = it->second;
-			}
-		}
+    if (latestPort)
+      m_pOut->SetValue(
+          dynamic_cast<TVdfnPort<T>*>(latestPort)->GetValueConstRef(), GetUpdateTimeStamp());
 
-		if( latestPort )
-			m_pOut->SetValue(dynamic_cast<TVdfnPort<T>*>(latestPort)->GetValueConstRef(),GetUpdateTimeStamp());
+    return true;
+  }
 
-		return true;
-	}
-
-private:
-	TVdfnPort<T> *m_pOut;
-
+ private:
+  TVdfnPort<T>* m_pOut;
 };
 
 /*============================================================================*/
@@ -128,4 +116,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNLATESTUPDATENODE_H
-

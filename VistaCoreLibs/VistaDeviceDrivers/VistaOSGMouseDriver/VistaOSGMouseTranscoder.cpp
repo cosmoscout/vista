@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 /*============================================================================*/
@@ -41,7 +40,7 @@
 /*============================================================================*/
 
 #ifdef VISTAOSGMOUSETRANSCODER_EXPORTS
-	DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<VistaMouseDriverTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaMouseDriverTranscodeFactory>)
 #else
-	DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<VistaMouseDriverTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaMouseDriverTranscodeFactory>)
 #endif

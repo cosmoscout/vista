@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASTREAMMANAGEREXT_H
 #define _VISTASTREAMMANAGEREXT_H
 
@@ -34,9 +33,9 @@
 #include <VistaBase/VistaStreamManager.h>
 #include <VistaKernel/EventManager/VistaEventObserver.h>
 
+#include <list>
 #include <ostream>
 #include <vector>
-#include <list>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -49,41 +48,38 @@ class VistaSystem;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaKernelStreamInfoInterface : public VistaStreamManager::IInfoInterface
-{
-public:
-	VistaKernelStreamInfoInterface( VistaSystem* pVistaSystem );
-	virtual ~VistaKernelStreamInfoInterface();
+class VISTAKERNELAPI VistaKernelStreamInfoInterface : public VistaStreamManager::IInfoInterface {
+ public:
+  VistaKernelStreamInfoInterface(VistaSystem* pVistaSystem);
+  virtual ~VistaKernelStreamInfoInterface();
 
-	virtual VistaType::systemtime		GetFrameClock() const;
-	virtual std::string		GetNodeName() const;
-	virtual unsigned int	GetFrameCount() const;
-	virtual float			GetFrameRate() const;
+  virtual VistaType::systemtime GetFrameClock() const;
+  virtual std::string           GetNodeName() const;
+  virtual unsigned int          GetFrameCount() const;
+  virtual float                 GetFrameRate() const;
 
-private:
-	VistaSystem* m_pVistaSystem;	
+ private:
+  VistaSystem* m_pVistaSystem;
 };
 
-class VISTAKERNELAPI VistaSystemEventLogger : public VistaEventObserver
-{
-public:
-	VistaSystemEventLogger( VistaEventManager* pManager );
-	virtual ~VistaSystemEventLogger();
+class VISTAKERNELAPI VistaSystemEventLogger : public VistaEventObserver {
+ public:
+  VistaSystemEventLogger(VistaEventManager* pManager);
+  virtual ~VistaSystemEventLogger();
 
-	/**
-	 * Register for SystemEvents using the mask, with entries for SystemEvent VSE_XYZ
-	 * beeing 1 << VSE_XYZ (i.e. 2^VSE_XYZ), use ~0 to register for all events
-	 */
-	void SetStreamEventMask( std::ostream& oStream, unsigned int iEventMask );
-	void UnregisterStream(  std::ostream& oStream );
+  /**
+   * Register for SystemEvents using the mask, with entries for SystemEvent VSE_XYZ
+   * beeing 1 << VSE_XYZ (i.e. 2^VSE_XYZ), use ~0 to register for all events
+   */
+  void SetStreamEventMask(std::ostream& oStream, unsigned int iEventMask);
+  void UnregisterStream(std::ostream& oStream);
 
-	virtual void Notify( const VistaEvent *pEvent );
+  virtual void Notify(const VistaEvent* pEvent);
 
-protected:
-	std::vector<std::list<std::ostream*> > m_vecLogStreams;
-	VistaEventManager* m_pManager;	
-	bool m_bRegistered;
+ protected:
+  std::vector<std::list<std::ostream*>> m_vecLogStreams;
+  VistaEventManager*                    m_pManager;
+  bool                                  m_bRegistered;
 };
 
 #endif // _VISTASTREAMMANAGEREXT_H
-

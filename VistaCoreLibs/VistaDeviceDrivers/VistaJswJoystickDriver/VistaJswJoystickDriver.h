@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAJSWJOYSTICKDRIVER_H
 #define __VISTAJSWJOYSTICKDRIVER_H
 
 #ifndef LINUX
-	#error VistaJswJoystickDriver only works under LINUX
+#error VistaJswJoystickDriver only works under LINUX
 #endif
 
 /*============================================================================*/
@@ -50,46 +49,43 @@ class VistaDriverInfoAspect;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaJswJoystickDriver : public IVistaDeviceDriver
-{
-public:
-	struct _sJoyMeasure
-	{
-		time_t m_nAxesTs[16];
-		int    m_nAxes[16];
-		time_t m_nButtonsTs[32];
-		bool   m_nButtons[32];
-	};
+class VistaJswJoystickDriver : public IVistaDeviceDriver {
+ public:
+  struct _sJoyMeasure {
+    time_t m_nAxesTs[16];
+    int    m_nAxes[16];
+    time_t m_nButtonsTs[32];
+    bool   m_nButtons[32];
+  };
 
-	VistaJswJoystickDriver(IVistaDriverCreationMethod *);
-	virtual ~VistaJswJoystickDriver();
-	
-protected:
-	bool DoSensorUpdate(VistaType::microtime nTs);
-	/**
-	 * Connects to the libjsw joystick representation.
-	 * Use a ProtocolAspect to change calibration file (protocol-revision tag) and device name
-	 * configuration (protocol-name) for this device.
-	 * @todo change this to a proper Aspect.
-	 */
-	bool DoConnect();
-	bool DoDisconnect();
-private:
-	js_data_struct 				  m_jsd;
-	bool 						  m_bOpened;
-	_sJoyMeasure                  m_nState;
+  VistaJswJoystickDriver(IVistaDriverCreationMethod*);
+  virtual ~VistaJswJoystickDriver();
 
-	VistaDriverWorkspaceAspect  *m_pWorkspace;
-	IVistaDriverProtocolAspect   *m_pProtocol;
-	VistaDriverInfoAspect       *m_pInfo;
+ protected:
+  bool DoSensorUpdate(VistaType::microtime nTs);
+  /**
+   * Connects to the libjsw joystick representation.
+   * Use a ProtocolAspect to change calibration file (protocol-revision tag) and device name
+   * configuration (protocol-name) for this device.
+   * @todo change this to a proper Aspect.
+   */
+  bool DoConnect();
+  bool DoDisconnect();
+
+ private:
+  js_data_struct m_jsd;
+  bool           m_bOpened;
+  _sJoyMeasure   m_nState;
+
+  VistaDriverWorkspaceAspect* m_pWorkspace;
+  IVistaDriverProtocolAspect* m_pProtocol;
+  VistaDriverInfoAspect*      m_pInfo;
 };
 
-
-class VistaJswJoystickDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaJswJoystickDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
+class VistaJswJoystickDriverCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaJswJoystickDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/
@@ -101,4 +97,3 @@ public:
 /*============================================================================*/
 
 #endif //__VISTAJSWJOYSTICK_H
-

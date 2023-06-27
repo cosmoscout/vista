@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*
 #if !defined(_isnan)
 #define _isnan(A) (A != A)
@@ -30,9 +29,9 @@
 #include <cstring>
 
 #include "VistaSpaceNavigatorDriver.h"
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverConnectionAspect.h>
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #include <VistaInterProcComm/Connections/VistaConnection.h>
 
@@ -40,85 +39,73 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaSpaceNavigator::VistaSpaceNavigator(IVistaDriverCreationMethod *crm)
-	: IVistaDeviceDriver(crm)
-{
-	VistaDeviceSensor *pSensor = new VistaDeviceSensor;
-	AddDeviceSensor( pSensor );
-	pSensor->SetMeasureTranscode( GetFactory()->GetTranscoderFactoryForSensor("")->CreateTranscoder() );
+VistaSpaceNavigator::VistaSpaceNavigator(IVistaDriverCreationMethod* crm)
+    : IVistaDeviceDriver(crm) {
+  VistaDeviceSensor* pSensor = new VistaDeviceSensor;
+  AddDeviceSensor(pSensor);
+  pSensor->SetMeasureTranscode(GetFactory()->GetTranscoderFactoryForSensor("")->CreateTranscoder());
 
-	// using the USB connection we have to poll explicitly,
-	// since there is no activity on the file handle, but we
-	// use ioctls to make the read/write requests.
-	SetUpdateType(IVistaDeviceDriver::UPDATE_EXPLICIT_POLL);
-	m_pConAsp = new VistaDriverConnectionAspect;
-	RegisterAspect( m_pConAsp );
+  // using the USB connection we have to poll explicitly,
+  // since there is no activity on the file handle, but we
+  // use ioctls to make the read/write requests.
+  SetUpdateType(IVistaDeviceDriver::UPDATE_EXPLICIT_POLL);
+  m_pConAsp = new VistaDriverConnectionAspect;
+  RegisterAspect(m_pConAsp);
 
-	m_pConAsp->SetConnection( 0, NULL, "MAIN", true );
+  m_pConAsp->SetConnection(0, NULL, "MAIN", true);
 }
 
-VistaSpaceNavigator::~VistaSpaceNavigator()
-{
-	VistaDeviceSensor *pSensor = GetSensorByIndex(0);
-	RemDeviceSensor( pSensor );
-	delete pSensor;
+VistaSpaceNavigator::~VistaSpaceNavigator() {
+  VistaDeviceSensor* pSensor = GetSensorByIndex(0);
+  RemDeviceSensor(pSensor);
+  delete pSensor;
 
-	delete m_pConAsp;
+  delete m_pConAsp;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VistaSpaceNavigator::DoSensorUpdate(VistaType::microtime dTs)
-{
-	// TODO: check
-	bool bNewState = true;
+bool VistaSpaceNavigator::DoSensorUpdate(VistaType::microtime dTs) {
+  // TODO: check
+  bool bNewState = true;
 
-	static _sMeasure measure;
+  static _sMeasure measure;
 
-	VistaConnection *pCon = m_pConAsp->GetConnection(0);
+  VistaConnection* pCon = m_pConAsp->GetConnection(0);
 
-	int read = 1;
-	unsigned char report[7];
-	while( read > 0 )
-	{
-		// read one full report of 7 bytes
-		read = pCon->Receive( report, 7, 0 );
+  int           read = 1;
+  unsigned char report[7];
+  while (read > 0) {
+    // read one full report of 7 bytes
+    read = pCon->Receive(report, 7, 0);
 
-		std::cout << "bytes read: " << read << std::endl;
-	}
+    std::cout << "bytes read: " << read << std::endl;
+  }
 
+  if (bNewState) {
+    MeasureStart(0, dTs);
+    VistaSensorMeasure* pM = m_pHistoryAspect->GetCurrentSlot(GetSensorByIndex(0));
 
+    if (pM == NULL) {
+      MeasureStop(0);
+      return false;
+    }
 
-	if(bNewState)
-	{
-		MeasureStart( 0, dTs );
-		VistaSensorMeasure *pM = m_pHistoryAspect->GetCurrentSlot(GetSensorByIndex(0));
+    _sMeasure* m = (_sMeasure*)&(*pM).m_vecMeasures[0];
+    std::memcpy(m, &measure, sizeof(_sMeasure));
 
-		if(pM == NULL)
-		{
-			MeasureStop(0);
-			return false;
-		}
+    MeasureStop(0);
 
-		_sMeasure *m = (_sMeasure*)&(*pM).m_vecMeasures[0];
-		std::memcpy( m, &measure, sizeof(_sMeasure) );
+    GetSensorByIndex(0)->SetUpdateTimeStamp(dTs);
+  }
 
-		MeasureStop(0);
-
-		GetSensorByIndex(0)->SetUpdateTimeStamp( dTs );
-	}
-
-
-	return true;
+  return true;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -129,4 +116,3 @@ bool VistaSpaceNavigator::DoSensorUpdate(VistaType::microtime dTs)
 /*============================================================================*/
 
 /************************** CR / LF nicht vergessen! **************************/
-

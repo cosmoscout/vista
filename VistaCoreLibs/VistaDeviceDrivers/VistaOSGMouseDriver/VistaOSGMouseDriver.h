@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOSGMOUSEDRIVER_H
 #define _VISTAOSGMOUSEDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 #include <vector>
 
@@ -39,7 +37,7 @@
 /*============================================================================*/
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAOSGMOUSEDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTAOSGMOUSEDRIVER_STATIC)
 #ifdef VISTAOSGMOUSEDRIVER_EXPORTS
 #define VISTAOSGMOUSEDRIVERAPI __declspec(dllexport)
 #else
@@ -62,45 +60,42 @@ class VistaOSGWindowingToolkit;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAOSGMOUSEDRIVERAPI VistaOSGMouseDriver : public IVistaMouseDriver
-{
-public:
-	VistaOSGMouseDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaOSGMouseDriver();
+class VISTAOSGMOUSEDRIVERAPI VistaOSGMouseDriver : public IVistaMouseDriver {
+ public:
+  VistaOSGMouseDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaOSGMouseDriver();
 
-	bool RegisterWindow( VistaWindow* pWindow );
-	bool UnregisterWindow( VistaWindow* pWindow );
+  bool RegisterWindow(VistaWindow* pWindow);
+  bool UnregisterWindow(VistaWindow* pWindow);
 
-protected:
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+ protected:
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-private:
-	VistaDriverAbstractWindowAspect*	m_pWindowAspect;
-	VistaOSGWindowingToolkit*			m_pWindowingToolkit;
-	struct WindowInfo
-	{
-		unsigned int m_nSensorIndex;
-		bool m_nButtonStates[3];
-		int m_nWheelNumber;
-		int m_nWheelDirection;
-	};
-	typedef std::map<VistaWindow*, WindowInfo> WindowMap;
-	WindowMap m_mapWindows;
-	bool m_bGrabCursorChanged;
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+
+ private:
+  VistaDriverAbstractWindowAspect* m_pWindowAspect;
+  VistaOSGWindowingToolkit*        m_pWindowingToolkit;
+  struct WindowInfo {
+    unsigned int m_nSensorIndex;
+    bool         m_nButtonStates[3];
+    int          m_nWheelNumber;
+    int          m_nWheelDirection;
+  };
+  typedef std::map<VistaWindow*, WindowInfo> WindowMap;
+  WindowMap                                  m_mapWindows;
+  bool                                       m_bGrabCursorChanged;
 };
 
+class VISTAOSGMOUSEDRIVERAPI VistaOSGMouseDriverCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaOSGMouseDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 
-class VISTAOSGMOUSEDRIVERAPI VistaOSGMouseDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaOSGMouseDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
-protected:
-private:
+ protected:
+ private:
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

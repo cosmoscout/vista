@@ -21,133 +21,119 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAPARTICLERENDERINGPROPERTIES_H
 #define __VISTAPARTICLERENDERINGPROPERTIES_H
 
 #include "../VistaOGLExtConfig.h"
 
-#include <VistaBase/VistaColor.h>
 #include <VistaAspects/VistaObserveable.h>
+#include <VistaBase/VistaColor.h>
 
-class VISTAOGLEXTAPI VistaParticleRenderingProperties : public IVistaObserveable
-{
-public:
-	VistaParticleRenderingProperties();
-	virtual ~VistaParticleRenderingProperties();
+class VISTAOGLEXTAPI VistaParticleRenderingProperties : public IVistaObserveable {
+ public:
+  VistaParticleRenderingProperties();
+  virtual ~VistaParticleRenderingProperties();
 
-	enum
-	{
-		MSG_DRAW_MODE_CHANGED,
-		MSG_BLEND_MODE_CHANGED,
-		MSG_LIGHTING_MODE_CHANGED,
-		MSG_RENDER_HALOS_CHANGED,
-		MSG_HALO_SIZE_CHANGED,
-		MSG_HALO_COLOR_CHANGED,
-		MSG_TEXTURE_RESOLUTION_CHANGED,
-		MSG_GENERATE_MIPMAPS_CHANGED
-		
-	};
+  enum {
+    MSG_DRAW_MODE_CHANGED,
+    MSG_BLEND_MODE_CHANGED,
+    MSG_LIGHTING_MODE_CHANGED,
+    MSG_RENDER_HALOS_CHANGED,
+    MSG_HALO_SIZE_CHANGED,
+    MSG_HALO_COLOR_CHANGED,
+    MSG_TEXTURE_RESOLUTION_CHANGED,
+    MSG_GENERATE_MIPMAPS_CHANGED
 
-	enum DRAW_MODE
-	{
-		// draw Particles using OpenGL primitives (GL_LINES, GL_POINS)
-		DM_SIMPLE,
-		// draw Particles as transparent Billboards using a GaussianBlendingTexture
-		DM_SMOKE,
-		// draw Particles as Billboards using a SphereIlluminationTexture
-		DM_BILLBOARDS,
-		// draw Particles as Billboards and compute lighting based on a SphereNormalsTexture
-		DM_BUMPED_BILLBOARDS,
-		// draw Particles as Billboards and compute lighting and correct depth values based on a SphereNormalsTexture
-		DM_BUMPED_BILLBOARDS_DEPTH_REPLACE,
+  };
 
-		DM_LAST
-	};
+  enum DRAW_MODE {
+    // draw Particles using OpenGL primitives (GL_LINES, GL_POINS)
+    DM_SIMPLE,
+    // draw Particles as transparent Billboards using a GaussianBlendingTexture
+    DM_SMOKE,
+    // draw Particles as Billboards using a SphereIlluminationTexture
+    DM_BILLBOARDS,
+    // draw Particles as Billboards and compute lighting based on a SphereNormalsTexture
+    DM_BUMPED_BILLBOARDS,
+    // draw Particles as Billboards and compute lighting and correct depth values based on a
+    // SphereNormalsTexture
+    DM_BUMPED_BILLBOARDS_DEPTH_REPLACE,
 
-	enum BLEND_MODE
-	{
-		ADDITIVE_BLENDING,
-		ALPHA_BLENDING
-	};
+    DM_LAST
+  };
 
-	enum LIGHTING_MODE
-	{
-		LIGHTING_DIFFUSE, 
-		LIGHTING_PHONG,
-		LIGHTING_GOOCH
-	};
+  enum BLEND_MODE { ADDITIVE_BLENDING, ALPHA_BLENDING };
 
-	/**
-	 * Sets the Draw mode with is used to display the particles.
-	 */
-	bool SetDrawMode( int iMode );
-	int  GetDrawMode() const;
+  enum LIGHTING_MODE { LIGHTING_DIFFUSE, LIGHTING_PHONG, LIGHTING_GOOCH };
 
-	/**
-	 * Sets the blending mode witch is used to blend transparent Billboards.
-	 * Can be set to ADDITIVE_BLENDING or ALPHA_BLENDING.
-	 * The BlendingMode only affects the DM_SMOKE draw mode.
-	 * If ALPHA_BLENDING is used, the particles should be sorted according 
-	 * to their distance to the viewer.
-	 */
-	bool SetBlendingMode( int iMode );
-	int  GetBlendingMode() const;
+  /**
+   * Sets the Draw mode with is used to display the particles.
+   */
+  bool SetDrawMode(int iMode);
+  int  GetDrawMode() const;
 
-	/**
-	 * Sets the lighting mode witch is used for the draw modes
-	 * DM_BUMPED_BILLBOARDS  and DM_BUMPED_BILLBOARDS_DEPTH_REPLACE
-	 */
-	bool SetLightingMode( int iMode );
-	int  GetLightingMode() const;
+  /**
+   * Sets the blending mode witch is used to blend transparent Billboards.
+   * Can be set to ADDITIVE_BLENDING or ALPHA_BLENDING.
+   * The BlendingMode only affects the DM_SMOKE draw mode.
+   * If ALPHA_BLENDING is used, the particles should be sorted according
+   * to their distance to the viewer.
+   */
+  bool SetBlendingMode(int iMode);
+  int  GetBlendingMode() const;
 
-	/**
-	 * Sets whether halos should be render or not.
-	 * If BlendingMode != NO_BLENDING or DrawMode == DM_SIMPLE,
-	 * no halos will be rendered even if RenderHalos is set to true.
-	 */
-	bool SetRenderHalos( bool bRenderHalos );
-	bool GetRenderHalos() const;
+  /**
+   * Sets the lighting mode witch is used for the draw modes
+   * DM_BUMPED_BILLBOARDS  and DM_BUMPED_BILLBOARDS_DEPTH_REPLACE
+   */
+  bool SetLightingMode(int iMode);
+  int  GetLightingMode() const;
 
-	/**
-	 * Sets the size of of the Halo. This size will be multiplied with the
-	 * particle radius.
-	 */
-	bool  SetHaloSize( float fSize );
-	float GetHaloSize() const;
+  /**
+   * Sets whether halos should be render or not.
+   * If BlendingMode != NO_BLENDING or DrawMode == DM_SIMPLE,
+   * no halos will be rendered even if RenderHalos is set to true.
+   */
+  bool SetRenderHalos(bool bRenderHalos);
+  bool GetRenderHalos() const;
 
-	bool SetHaloColor( const VistaColor& rColor );
-	const VistaColor& GetHaloColor() const;
+  /**
+   * Sets the size of of the Halo. This size will be multiplied with the
+   * particle radius.
+   */
+  bool  SetHaloSize(float fSize);
+  float GetHaloSize() const;
 
-	/**
-	 * Sets the resolution of the textures, witch are used when rendering Billboards
-	 */
-	bool SetTextureResolution( int iResolution );
-	int  GetTextureResolution() const;
+  bool              SetHaloColor(const VistaColor& rColor);
+  const VistaColor& GetHaloColor() const;
 
-	/**
-	 * Sets whether Mipmaps should be used for the textures.
-	 */
-	bool SetGenerateMipmaps( bool bGenMipmaps );
-	bool GetGenerateMipmaps() const;
+  /**
+   * Sets the resolution of the textures, witch are used when rendering Billboards
+   */
+  bool SetTextureResolution(int iResolution);
+  int  GetTextureResolution() const;
 
-protected:
-	int  m_iDrawMode;
-	int  m_iBlendingMode;
-	int  m_iLightingMode;
+  /**
+   * Sets whether Mipmaps should be used for the textures.
+   */
+  bool SetGenerateMipmaps(bool bGenMipmaps);
+  bool GetGenerateMipmaps() const;
 
-	bool       m_bRenderHalos;
-	float      m_fHaloSize;
-	VistaColor m_oHaloColor;
+ protected:
+  int m_iDrawMode;
+  int m_iBlendingMode;
+  int m_iLightingMode;
 
-	int  m_iResolution;
-	bool m_bGenMipmaps;
+  bool       m_bRenderHalos;
+  float      m_fHaloSize;
+  VistaColor m_oHaloColor;
+
+  int  m_iResolution;
+  bool m_bGenMipmaps;
 };
-
 
 #endif // __VFLGPUPARTICLERENDERER_H
 
 /*============================================================================*/
 /*  END OF FILE                                                               */
 /*============================================================================*/
-

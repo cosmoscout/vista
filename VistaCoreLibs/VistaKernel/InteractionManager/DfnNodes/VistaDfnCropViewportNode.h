@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNCROPVIEWPORTNODE_H
 #define _VISTADFNCROPVIEWPORTNODE_H
 
@@ -31,13 +30,12 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <vector>
 #include <VistaBase/VistaColor.h>
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
-
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -57,36 +55,35 @@ class VistaViewport;
  * @inport{top, float, optional, vieport top coordinate}
  * @inport{bottom, float, optional, vieport bottom coordinate}
  */
-class VISTAKERNELAPI VistaDfnCropViewportNode : public IVdfnNode
-{
-public:
-	VistaDfnCropViewportNode( float nLeft, float nRight, float nBottom, float nTop,
-							bool bUseProjExtents, const VistaColor& oCropColor );
-	~VistaDfnCropViewportNode();
+class VISTAKERNELAPI VistaDfnCropViewportNode : public IVdfnNode {
+ public:
+  VistaDfnCropViewportNode(float nLeft, float nRight, float nBottom, float nTop,
+      bool bUseProjExtents, const VistaColor& oCropColor);
+  ~VistaDfnCropViewportNode();
 
-	void AddViewport( VistaViewport* pViewports );
+  void AddViewport(VistaViewport* pViewports);
 
-	bool PrepareEvaluationRun();
-	bool GetIsValid() const;
+  bool PrepareEvaluationRun();
+  bool GetIsValid() const;
 
-protected:
-	bool DoEvalNode();
+ protected:
+  bool DoEvalNode();
 
-private:
-	float m_nLeft;
-	float m_nRight;
-	float m_nBottom;
-	float m_nTop;
-	TVdfnPort<float>* m_pRightPort;
-	TVdfnPort<float>* m_pLeftPort;
-	TVdfnPort<float>* m_pTopPort;
-	TVdfnPort<float>* m_pBottomPort;
+ private:
+  float             m_nLeft;
+  float             m_nRight;
+  float             m_nBottom;
+  float             m_nTop;
+  TVdfnPort<float>* m_pRightPort;
+  TVdfnPort<float>* m_pLeftPort;
+  TVdfnPort<float>* m_pTopPort;
+  TVdfnPort<float>* m_pBottomPort;
 
-	bool m_bUseProjExtents;
-	VistaColor m_oCropColor;
+  bool       m_bUseProjExtents;
+  VistaColor m_oCropColor;
 
-	class CropViewportOverlay;
-	std::vector<CropViewportOverlay*> m_vecOverlays;
+  class CropViewportOverlay;
+  std::vector<CropViewportOverlay*> m_vecOverlays;
 };
 
 /*============================================================================*/
@@ -98,4 +95,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNCROPVIEWPORTNODE_H
-

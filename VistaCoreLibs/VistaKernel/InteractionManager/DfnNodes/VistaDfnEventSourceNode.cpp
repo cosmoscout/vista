@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDfnEventSourceNode.h"
 
 #include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/InteractionManager/VistaInteractionEvent.h>
 #include <VistaKernel/InteractionManager/VistaInteractionManager.h>
 
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaAspects/VistaPropertyAwareable.h>
-
+#include <VistaDataFlowNet/VdfnPort.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -39,68 +37,58 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaDfnEventSourceNode::VistaDfnEventSourceNode( VistaEventManager *pEvMgr,
-				  VistaInteractionManager *pInMa,
-				  const std::string &strSourceTag)
-	: VdfnShallowNode(),
-	  m_pEvMgr(pEvMgr),
-	  m_pInMa( pInMa ),
-	  m_pEvent(new VistaInteractionEvent( pInMa ) ),
-	  m_strSourceTag(strSourceTag)
-{
-	(*m_pEvent).SetId( VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE );
-	(*m_pEvent).SetInteractionContext( pInMa->GetInteractionContextByRoleId( pInMa->GetRoleId( m_strSourceTag ) ) );
-	(*m_pEvent).SetEventNode(this);
+VistaDfnEventSourceNode::VistaDfnEventSourceNode(
+    VistaEventManager* pEvMgr, VistaInteractionManager* pInMa, const std::string& strSourceTag)
+    : VdfnShallowNode()
+    , m_pEvMgr(pEvMgr)
+    , m_pInMa(pInMa)
+    , m_pEvent(new VistaInteractionEvent(pInMa))
+    , m_strSourceTag(strSourceTag) {
+  (*m_pEvent).SetId(VistaInteractionEvent::VEID_GRAPH_INPORT_CHANGE);
+  (*m_pEvent).SetInteractionContext(
+      pInMa->GetInteractionContextByRoleId(pInMa->GetRoleId(m_strSourceTag)));
+  (*m_pEvent).SetEventNode(this);
 }
 
-VistaDfnEventSourceNode::~VistaDfnEventSourceNode()
-{
-	delete m_pEvent;
+VistaDfnEventSourceNode::~VistaDfnEventSourceNode() {
+  delete m_pEvent;
 }
 
-bool VistaDfnEventSourceNode::PrepareEvaluationRun()
-{
-	m_mpRevision.clear();
-	for( PortMap::const_iterator it = m_mpInPorts.begin();
-		it != m_mpInPorts.end(); ++it )
-	{
-		IVdfnPort *pPort = (*it).second;
-		m_mpRevision[ pPort ] = pPort->GetUpdateCounter();
-	}
-	return true;
+bool VistaDfnEventSourceNode::PrepareEvaluationRun() {
+  m_mpRevision.clear();
+  for (PortMap::const_iterator it = m_mpInPorts.begin(); it != m_mpInPorts.end(); ++it) {
+    IVdfnPort* pPort    = (*it).second;
+    m_mpRevision[pPort] = pPort->GetUpdateCounter();
+  }
+  return true;
 }
 
-bool VistaDfnEventSourceNode::DoEvalNode()
-{
-	VistaInteractionEvent::PortList &liChangedPorts = (*m_pEvent).GetPortMapWrite();
-	liChangedPorts.clear();
+bool VistaDfnEventSourceNode::DoEvalNode() {
+  VistaInteractionEvent::PortList& liChangedPorts = (*m_pEvent).GetPortMapWrite();
+  liChangedPorts.clear();
 
-	for( PortMap::const_iterator it = m_mpInPorts.begin();
-		it != m_mpInPorts.end(); ++it )
-	{
-		IVdfnPort *pCheckPort = (*it).second;
-		RevisionMap::iterator rit = m_mpRevision.find( pCheckPort );
-		if( rit != m_mpRevision.end() )
-		{
-			if( pCheckPort->GetUpdateCounter() > (*rit).second )
-			{
-				// note port
-				liChangedPorts.push_back( (*it).first );
-				// note current revision
-				(*rit).second = pCheckPort->GetUpdateCounter();
-			}
-		}
-	}
+  for (PortMap::const_iterator it = m_mpInPorts.begin(); it != m_mpInPorts.end(); ++it) {
+    IVdfnPort*            pCheckPort = (*it).second;
+    RevisionMap::iterator rit        = m_mpRevision.find(pCheckPort);
+    if (rit != m_mpRevision.end()) {
+      if (pCheckPort->GetUpdateCounter() > (*rit).second) {
+        // note port
+        liChangedPorts.push_back((*it).first);
+        // note current revision
+        (*rit).second = pCheckPort->GetUpdateCounter();
+      }
+    }
+  }
 
-	if(!liChangedPorts.empty())
-	{
-		if(m_pEvent->GetInteractionContext() == NULL)
-			(*m_pEvent).SetInteractionContext( m_pInMa->GetInteractionContextByRoleId( m_pInMa->GetRoleId( m_strSourceTag ) ) );
+  if (!liChangedPorts.empty()) {
+    if (m_pEvent->GetInteractionContext() == NULL)
+      (*m_pEvent).SetInteractionContext(
+          m_pInMa->GetInteractionContextByRoleId(m_pInMa->GetRoleId(m_strSourceTag)));
 
-		// utter event!
-		(*m_pEvMgr).ProcessEvent( m_pEvent );
-	}
-	return true;
+    // utter event!
+    (*m_pEvMgr).ProcessEvent(m_pEvent);
+  }
+  return true;
 }
 
 /*============================================================================*/
@@ -110,5 +98,3 @@ bool VistaDfnEventSourceNode::DoEvalNode()
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

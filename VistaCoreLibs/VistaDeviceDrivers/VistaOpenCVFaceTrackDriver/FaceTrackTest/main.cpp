@@ -21,22 +21,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaKernel/VistaSystem.h>
+#include <VistaKernel/GraphicsManager/VistaGeomNode.h>
 #include <VistaKernel/GraphicsManager/VistaGeometryFactory.h>
 #include <VistaKernel/GraphicsManager/VistaGraphicsManager.h>
-#include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
-#include <VistaKernel/GraphicsManager/VistaGeomNode.h>
 #include <VistaKernel/GraphicsManager/VistaGroupNode.h>
+#include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
 #include <VistaKernel/GraphicsManager/VistaTransformNode.h>
+#include <VistaKernel/VistaSystem.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-const static int S_iArraySize = 2; // in each direction, so actually 2*n+1
+const static int   S_iArraySize    = 2; // in each direction, so actually 2*n+1
 const static float S_fArraySpacing = 0.5f;
-const static float S_fCubeSize = 0.1f;
+const static float S_fCubeSize     = 0.1f;
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
@@ -46,37 +45,33 @@ const static float S_fCubeSize = 0.1f;
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int	main( int argc, char* argv[] )
-{
-	VistaSystem oSystem;
+int main(int argc, char* argv[]) {
+  VistaSystem oSystem;
 
-	if( oSystem.Init( argc, argv ) == false )
-		return -1;
+  if (oSystem.Init(argc, argv) == false)
+    return -1;
 
-	VistaSceneGraph* pSceneGraph = oSystem.GetGraphicsManager()->GetSceneGraph();
-	VistaGeometryFactory oFactory( pSceneGraph );
-	VistaGeometry* pGeom = oFactory.CreateBox( S_fCubeSize, S_fCubeSize, S_fCubeSize, 
-													1, 1, 1, VistaColorRGB::LIGHT_GRAY );
+  VistaSceneGraph*     pSceneGraph = oSystem.GetGraphicsManager()->GetSceneGraph();
+  VistaGeometryFactory oFactory(pSceneGraph);
+  VistaGeometry*       pGeom =
+      oFactory.CreateBox(S_fCubeSize, S_fCubeSize, S_fCubeSize, 1, 1, 1, VistaColorRGB::LIGHT_GRAY);
 
-	for( int x = -S_iArraySize; x <= S_iArraySize; ++x )
-	{
-		float fXPos = x * S_fArraySpacing;
-		for( int y = -S_iArraySize; y <= S_iArraySize; ++y )
-		{
-			float fYPos = y * S_fArraySpacing;
-			for( int z = -S_iArraySize; z <= S_iArraySize; ++z )
-			{
-				float fZPos = z * S_fArraySpacing;
-				VistaTransformNode* pTrans = pSceneGraph->NewTransformNode( pSceneGraph->GetRoot() );
-				pTrans->SetTranslation( fXPos, fYPos, fZPos );
-				pSceneGraph->NewGeomNode( pTrans, pGeom );
-			}
-		}
-	}
+  for (int x = -S_iArraySize; x <= S_iArraySize; ++x) {
+    float fXPos = x * S_fArraySpacing;
+    for (int y = -S_iArraySize; y <= S_iArraySize; ++y) {
+      float fYPos = y * S_fArraySpacing;
+      for (int z = -S_iArraySize; z <= S_iArraySize; ++z) {
+        float               fZPos  = z * S_fArraySpacing;
+        VistaTransformNode* pTrans = pSceneGraph->NewTransformNode(pSceneGraph->GetRoot());
+        pTrans->SetTranslation(fXPos, fYPos, fZPos);
+        pSceneGraph->NewGeomNode(pTrans, pGeom);
+      }
+    }
+  }
 
-	oSystem.Run();
+  oSystem.Run();
 
-	return 0;
+  return 0;
 }
 
 /*============================================================================*/

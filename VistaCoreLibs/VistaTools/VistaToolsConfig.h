@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATOOLSCONFIG_H
 #define _VISTATOOLSCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTATOOLS_STATIC) 
-	#ifdef VISTATOOLS_EXPORTS
-		#define VISTATOOLSAPI __declspec(dllexport)
-	#else
-		#define VISTATOOLSAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTATOOLS_STATIC)
+#ifdef VISTATOOLS_EXPORTS
+#define VISTATOOLSAPI __declspec(dllexport)
+#else
+#define VISTATOOLSAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTATOOLSAPI
+#define VISTATOOLSAPI
 #endif
 
 #endif //_VISTATOOLSCONFIG_H

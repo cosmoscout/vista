@@ -21,11 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "Vista3DText.h" 
+#include "Vista3DText.h"
 #include <VistaBase/VistaVectorMath.h>
 #include <VistaMath/VistaBoundingBox.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -34,15 +32,12 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVista3DText::IVista3DText()
-{
+IVista3DText::IVista3DText() {
 }
 
-IVista3DText::~IVista3DText()
-{
+IVista3DText::~IVista3DText() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-

@@ -21,17 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNPORTCHANGEHANDLERBASE_H
 #define _VISTADFNPORTCHANGEHANDLERBASE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEventHandler.h>
 #include <VistaKernel/InteractionManager/VistaInteractionEvent.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,25 +43,24 @@ class VistaEventManager;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaDfnPortChangeHandlerBase : public VistaEventHandler
-{
-public:
-	VistaDfnPortChangeHandlerBase(VistaEventManager *pEvMgr);
-	~VistaDfnPortChangeHandlerBase();
+class VISTAKERNELAPI VistaDfnPortChangeHandlerBase : public VistaEventHandler {
+ public:
+  VistaDfnPortChangeHandlerBase(VistaEventManager* pEvMgr);
+  ~VistaDfnPortChangeHandlerBase();
 
+  void HandleEvent(VistaEvent* pEvent);
 
-	void HandleEvent(VistaEvent *pEvent);
-protected:
-	virtual bool HandlePortChange( VistaInteractionEvent *pInEv, const VistaInteractionEvent::PortList & );
-	virtual bool HandlePortChange( VistaInteractionEvent *pInEv, const std::string &strPort );
-private:
-	VistaEventManager *m_pEvMgr;
+ protected:
+  virtual bool HandlePortChange(
+      VistaInteractionEvent* pInEv, const VistaInteractionEvent::PortList&);
+  virtual bool HandlePortChange(VistaInteractionEvent* pInEv, const std::string& strPort);
+
+ private:
+  VistaEventManager* m_pEvMgr;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTADFNPORTCHANGEHANDLERBASE_H
-

@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(DLVISTATIMESTAMP_H)
 #define DLVISTATIMESTAMP_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaDLVTypes.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -47,152 +45,150 @@
  * The semantics for this a dependant on the type and quality of the clocks that we
  * have given by the operating system.
  */
-class VISTAINTERPROCCOMMAPI DLVistaTimeStamp
-{
-private:
-	/**
-	 * a wide attribute for a high-resolution clock-value (e.g. cpu-clock-count).
-	 * Note that this is supposed to be 64bit-wide clock counter which may not
-	 * always be available
-	 */
-	DLV_INT64 m_i64MicroStamp;
+class VISTAINTERPROCCOMMAPI DLVistaTimeStamp {
+ private:
+  /**
+   * a wide attribute for a high-resolution clock-value (e.g. cpu-clock-count).
+   * Note that this is supposed to be 64bit-wide clock counter which may not
+   * always be available
+   */
+  DLV_INT64 m_i64MicroStamp;
 
-	/**
-	 * a narrow attribute for a "not-that-high" resolution clock value (e.g. system-time, seconds etc.)
-	 * Note that the content is dependant on the availability on the operating system.
-	 */
-	DLV_INT32 m_i32MacroStamp;
+  /**
+   * a narrow attribute for a "not-that-high" resolution clock value (e.g. system-time, seconds
+   * etc.) Note that the content is dependant on the availability on the operating system.
+   */
+  DLV_INT32 m_i32MacroStamp;
 
-	/**
-	 * This is a special value that may indicate the number of clock-ticks that
-	 * can differ from m_i64MicroStamp. This value is usually -1, indicating that
-	 * the micro-stamp is precise.
-	 * Note that this field is experimental.
-	 */
-	DLV_INT32 m_i32UnsafetyValue;
+  /**
+   * This is a special value that may indicate the number of clock-ticks that
+   * can differ from m_i64MicroStamp. This value is usually -1, indicating that
+   * the micro-stamp is precise.
+   * Note that this field is experimental.
+   */
+  DLV_INT32 m_i32UnsafetyValue;
 
-protected:
-public:
-	/**
-	 * Clears this timestamp and inititalizes all values to -1, which
-	 * indicates an invalid timestamp.
-	 */
-	DLVistaTimeStamp();
+ protected:
+ public:
+  /**
+   * Clears this timestamp and inititalizes all values to -1, which
+   * indicates an invalid timestamp.
+   */
+  DLVistaTimeStamp();
 
-	/**
-	 * Initializes the micro- and macro-stamp with the given values.
-	 * Note that the unsafety-value remains -1
-	 * @param i64MicroStamp the microStamp for this timestamp
-	 * @param i32MacroStamp the macroStamp for this timestamp.
-	 * @see m_i64MicroStamp()
-	 * @see m_i32MacroStamp()
-	 */
-	DLVistaTimeStamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp);
+  /**
+   * Initializes the micro- and macro-stamp with the given values.
+   * Note that the unsafety-value remains -1
+   * @param i64MicroStamp the microStamp for this timestamp
+   * @param i32MacroStamp the macroStamp for this timestamp.
+   * @see m_i64MicroStamp()
+   * @see m_i32MacroStamp()
+   */
+  DLVistaTimeStamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp);
 
-	/**
-	 * Copies the values for this timestmp from rStamp
-	 * @param rStamp the timestamp to copy the values from
-	 */
-	DLVistaTimeStamp(const DLVistaTimeStamp &rStamp);
+  /**
+   * Copies the values for this timestmp from rStamp
+   * @param rStamp the timestamp to copy the values from
+   */
+  DLVistaTimeStamp(const DLVistaTimeStamp& rStamp);
 
-	/**
-	 * Destructor. Sets all values to -1 (invalid timestamp)
-	 */
-	virtual ~DLVistaTimeStamp();
+  /**
+   * Destructor. Sets all values to -1 (invalid timestamp)
+   */
+  virtual ~DLVistaTimeStamp();
 
+  /**
+   * currently empty
+   * @todo define equality for timestamps!
+   */
+  virtual bool Equals(const DLVistaTimeStamp&);
 
-	/**
-	 * currently empty
-	 * @todo define equality for timestamps!
-	 */
-	virtual bool Equals(const DLVistaTimeStamp &);
+  /**
+   * Sets the given stamp-values for this timestamp.
+   * @param i64MicroStamp the VistaType::microstamp to set
+   * @param i32MacroStamp the macrostamp to set
+   */
+  virtual void Stamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp) {
+    m_i64MicroStamp = i64MicroStamp;
+    m_i32MacroStamp = i32MacroStamp;
+  };
 
-	/**
-	 * Sets the given stamp-values for this timestamp.
-	 * @param i64MicroStamp the VistaType::microstamp to set
-	 * @param i32MacroStamp the macrostamp to set
-	 */
-	virtual void Stamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp)
-				{
-					m_i64MicroStamp = i64MicroStamp;
-					m_i32MacroStamp = i32MacroStamp;
-				};
+  /**
+   * Sets the unsafetyvalue for this timestamp. This is experimental.
+   * @todo define "what is unsafety"
+   */
+  virtual void SetUnsafetyValue(DLV_INT32 i32UnsafetyValue) {
+    m_i32UnsafetyValue = i32UnsafetyValue;
+  };
 
-	/**
-	 * Sets the unsafetyvalue for this timestamp. This is experimental.
-	 * @todo define "what is unsafety"
-	 */
-	virtual void SetUnsafetyValue(DLV_INT32 i32UnsafetyValue)
-	{
-		m_i32UnsafetyValue = i32UnsafetyValue;
-	};
+  /**
+   * returns the Microstamp for this value.
+   * Note that this is supposed to be a 64bit-value (long long), and that
+   * you might run into trouble printing this via printf or similiar. Look
+   * for the corrent tranformation parameters!
+   * -1 indicates an invalid VistaType::microstamp.
+   * @return the value of m_i64MicroStamp
+   */
+  DLV_INT64 GetMicroStamp() const {
+    return m_i64MicroStamp;
+  };
 
+  /**
+   * returns the Macrostamp for this value.
+   * -1 indicates an invalid macrostamp.
+   * @return the value of m_i32MacroStamp
+   */
+  DLV_INT32 GetMacroStamp() const {
+    return m_i32MacroStamp;
+  };
 
-	/**
-	 * returns the Microstamp for this value.
-	 * Note that this is supposed to be a 64bit-value (long long), and that
-	 * you might run into trouble printing this via printf or similiar. Look
-	 * for the corrent tranformation parameters!
-	 * -1 indicates an invalid VistaType::microstamp.
-	 * @return the value of m_i64MicroStamp
-	 */
-	DLV_INT64 GetMicroStamp() const { return m_i64MicroStamp; };
+  /**
+   * Returns the unsafetyvalue for this timestamp.
+   * -1 indicates an invalid unsafety value.
+   * Note that this field is experimental.
+   */
+  DLV_INT32 GetUnsafetyValue() const {
+    return m_i32UnsafetyValue;
+  };
 
-	/**
-	 * returns the Macrostamp for this value.
-	 * -1 indicates an invalid macrostamp.
-	 * @return the value of m_i32MacroStamp
-	 */
-	DLV_INT32 GetMacroStamp() const { return m_i32MacroStamp; };
+  /**
+   * empty
+   * @todo define equality for timestamps
+   */
+  bool operator==(const DLVistaTimeStamp&);
 
-	/**
-	 * Returns the unsafetyvalue for this timestamp.
-	 * -1 indicates an invalid unsafety value.
-	 * Note that this field is experimental.
-	 */
-	DLV_INT32 GetUnsafetyValue() const { return m_i32UnsafetyValue; };
+  /**
+   * emtpy
+   * @todo define an order for timestamps
+   */
+  bool operator>(const DLVistaTimeStamp&);
 
-	/**
-	 * empty
-	 * @todo define equality for timestamps
-	 */
-	bool operator==(const DLVistaTimeStamp &);
+  /**
+   * emtpy
+   * @todo define an order for timestamps
+   */
+  bool operator<(const DLVistaTimeStamp&);
 
-	/**
-	 * emtpy
-	 * @todo define an order for timestamps
-	 */
-	bool operator>(const DLVistaTimeStamp &);
+  /**
+   * empty
+   * @todo define an order for timestamps.
+   */
+  bool operator<=(const DLVistaTimeStamp&);
 
-	/**
-	 * emtpy
-	 * @todo define an order for timestamps
-	 */
-	bool operator<(const DLVistaTimeStamp &);
+  /**
+   * empty
+   * @todo define an order for timestamps
+   */
+  bool operator>=(const DLVistaTimeStamp&);
 
-	/**
-	 * empty
-	 * @todo define an order for timestamps.
-	 */
-	bool operator<=(const DLVistaTimeStamp &);
-
-	/**
-	 * empty
-	 * @todo define an order for timestamps
-	 */
-	bool operator>=(const DLVistaTimeStamp &);
-
-	/**
-	 * Copies micro-, macro- and unsafety value respectively.
-	 */
-	DLVistaTimeStamp &operator=(const DLVistaTimeStamp &);
+  /**
+   * Copies micro-, macro- and unsafety value respectively.
+   */
+  DLVistaTimeStamp& operator=(const DLVistaTimeStamp&);
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif // !defined(DLVISTATIMESTAMP_H)
-
-

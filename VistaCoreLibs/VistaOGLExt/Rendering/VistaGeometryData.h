@@ -31,68 +31,64 @@
 class VistaBufferObject;
 class VistaVertexArrayObject;
 
-class VISTAOGLEXTAPI VistaGeometryData
-{
-public:
-	VistaGeometryData();
-	virtual ~VistaGeometryData();
-	/**************************************************************************/
-	/* GETTER                                                                 */
-	/**************************************************************************/
-	unsigned int GetPolygonOffset() const;
-	unsigned int GetPolygonCount() const;
-	unsigned int GetStripOffset() const;
-	unsigned int GetStripCount() const;
-	unsigned int GetTriangleOffset() const;
-	unsigned int GetTriangleCount() const;
-	unsigned int GetLineOffset() const;
-	unsigned int GetLineCount() const;
+class VISTAOGLEXTAPI VistaGeometryData {
+ public:
+  VistaGeometryData();
+  virtual ~VistaGeometryData();
+  /**************************************************************************/
+  /* GETTER                                                                 */
+  /**************************************************************************/
+  unsigned int GetPolygonOffset() const;
+  unsigned int GetPolygonCount() const;
+  unsigned int GetStripOffset() const;
+  unsigned int GetStripCount() const;
+  unsigned int GetTriangleOffset() const;
+  unsigned int GetTriangleCount() const;
+  unsigned int GetLineOffset() const;
+  unsigned int GetLineCount() const;
 
-	VistaVertexArrayObject* GetVertexArrayObject() const;
-	VistaBufferObject*		GetInderBufferObject() const;
-	VistaBufferObject*      GetVertexBufferObjekt( unsigned int uiIndex ) const;
-	/**************************************************************************/
-	/* SETTER                                                                 */
-	/**************************************************************************/
-	void SetPolygonOffset( unsigned int uiPolygonOffset );
-	void SetPolygonCount( unsigned int uiPolygonCount );
-	void SetStripOffset( unsigned int uiStripOffset );
-	void SetStripCount( unsigned int uiStripCount );
-	void SetTriangleOffset( unsigned int uiStripOffset );
-	void SetTriangleCount( unsigned int uiStripCount );
-	void SetLineOffset( unsigned int uiLineOffset );
-	void SetLineCount( unsigned int uiLineCount );
+  VistaVertexArrayObject* GetVertexArrayObject() const;
+  VistaBufferObject*      GetInderBufferObject() const;
+  VistaBufferObject*      GetVertexBufferObjekt(unsigned int uiIndex) const;
+  /**************************************************************************/
+  /* SETTER                                                                 */
+  /**************************************************************************/
+  void SetPolygonOffset(unsigned int uiPolygonOffset);
+  void SetPolygonCount(unsigned int uiPolygonCount);
+  void SetStripOffset(unsigned int uiStripOffset);
+  void SetStripCount(unsigned int uiStripCount);
+  void SetTriangleOffset(unsigned int uiStripOffset);
+  void SetTriangleCount(unsigned int uiStripCount);
+  void SetLineOffset(unsigned int uiLineOffset);
+  void SetLineCount(unsigned int uiLineCount);
 
-	void SpecifyFloatAttribute(
-		unsigned int uiIndex, unsigned int uiNumComponents, 
-		unsigned int uiDataType );
-	void SpecifyIntegerAttribute( 
-		unsigned int uiIndex, unsigned int uiNumComponents, 
-		unsigned int uiDataType );
-	void SpecifyDoubleAttribute( 
-		unsigned int uiIndex, unsigned int uiNumComponents, 
-		unsigned int uiDataType );
+  void SpecifyFloatAttribute(
+      unsigned int uiIndex, unsigned int uiNumComponents, unsigned int uiDataType);
+  void SpecifyIntegerAttribute(
+      unsigned int uiIndex, unsigned int uiNumComponents, unsigned int uiDataType);
+  void SpecifyDoubleAttribute(
+      unsigned int uiIndex, unsigned int uiNumComponents, unsigned int uiDataType);
 
-	bool UpdateAttributeData( unsigned int uiIndex, unsigned int uiSizeInByte, const void *pData ); 
+  bool UpdateAttributeData(unsigned int uiIndex, unsigned int uiSizeInByte, const void* pData);
 
-protected:
-	void SpecifyAttribute( unsigned int uiIndex );
+ protected:
+  void SpecifyAttribute(unsigned int uiIndex);
 
-private:
-	typedef std::vector<VistaBufferObject*>	VboVector;
+ private:
+  typedef std::vector<VistaBufferObject*> VboVector;
 
-	VboVector		        m_vecVBOs;
-	VistaBufferObject*      m_pIBO;
-	VistaVertexArrayObject* m_pVAO;
+  VboVector               m_vecVBOs;
+  VistaBufferObject*      m_pIBO;
+  VistaVertexArrayObject* m_pVAO;
 
-	unsigned int	m_uiPolygonOffset;
-	unsigned int	m_uiPolygonCount;
-	unsigned int	m_uiStripOffset;
-	unsigned int	m_uiStripCount;
-	unsigned int	m_uiTriangleOffset;
-	unsigned int	m_uiTriangleCount;
-	unsigned int	m_uiLineOffset;
-	unsigned int	m_uiLineCount;
+  unsigned int m_uiPolygonOffset;
+  unsigned int m_uiPolygonCount;
+  unsigned int m_uiStripOffset;
+  unsigned int m_uiStripCount;
+  unsigned int m_uiTriangleOffset;
+  unsigned int m_uiTriangleCount;
+  unsigned int m_uiLineOffset;
+  unsigned int m_uiLineCount;
 };
 
 #endif // Include guard.

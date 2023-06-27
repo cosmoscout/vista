@@ -22,7 +22,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -33,7 +32,7 @@
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
 #if defined(WIN32)
-#pragma warning (disable: 4786)
+#pragma warning(disable : 4786)
 
 #define VISTAOPENVRDRIVERPLUGINEXPORT __declspec(dllexport)
 #define VISTAOPENVRDRIVERPLUGINIMPORT __declspec(dllimport)
@@ -62,20 +61,15 @@
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif
@@ -83,52 +77,44 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 /*
 IVistaDriverCreationMethod *VistaOpenVRDriver::GetDriverFactoryMethod()
 {
-	if(SpFactory == NULL)
-	{
-		SpFactory = new VistaOpenVRDriverCreateMethod;
+        if(SpFactory == NULL)
+        {
+                SpFactory = new VistaOpenVRDriverCreateMethod;
 
-		// we assume an update rate of 20Hz at max. Devices we inspected reported
-		// an update rate of about 17Hz, which seem reasonable.
-		SpFactory->RegisterSensorType( "BODY", sizeof(dtrack_body_type),
-			                           60,
-									   new VistaOpenVRBodyTranscodeFactory,
-									   VistaOpenVRBodyTranscode::GetTypeString() );
-		SpFactory->RegisterSensorType( "MARKER", sizeof(dtrack_marker_type),
-			                           60,
-									   new VistaOpenVRMarkerTranscodeFactory,
-									   VistaOpenVRMarkerTranscode::GetTypeString() );
+                // we assume an update rate of 20Hz at max. Devices we inspected reported
+                // an update rate of about 17Hz, which seem reasonable.
+                SpFactory->RegisterSensorType( "BODY", sizeof(dtrack_body_type),
+                                                   60,
+                                                                           new
+VistaOpenVRBodyTranscodeFactory, VistaOpenVRBodyTranscode::GetTypeString() );
+                SpFactory->RegisterSensorType( "MARKER", sizeof(dtrack_marker_type),
+                                                   60,
+                                                                           new
+VistaOpenVRMarkerTranscodeFactory, VistaOpenVRMarkerTranscode::GetTypeString() );
 
-	}
+        }
 
-	return SpFactory;
+        return SpFactory;
 } */
 
-namespace
-{
-	class VistaOpenVRDriverCreateMethod : public IVistaDriverCreationMethod
-	{
-	public:
-		VistaOpenVRDriverCreateMethod(IVistaTranscoderFactoryFactory *metaFac)
-			: IVistaDriverCreationMethod(metaFac)
-		{
-			RegisterSensorType( "STICK", sizeof(VistaOpenVRConfig::VISTA_openvr_stick_type),
-				60,
-				metaFac->CreateFactoryForType("STICK") );
-			RegisterSensorType( "HEAD", sizeof(VistaOpenVRConfig::VISTA_openvr_head_type),
-				60,
-				metaFac->CreateFactoryForType("HEAD") );
-		}
+namespace {
+class VistaOpenVRDriverCreateMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaOpenVRDriverCreateMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("STICK", sizeof(VistaOpenVRConfig::VISTA_openvr_stick_type), 60,
+        metaFac->CreateFactoryForType("STICK"));
+    RegisterSensorType("HEAD", sizeof(VistaOpenVRConfig::VISTA_openvr_head_type), 60,
+        metaFac->CreateFactoryForType("HEAD"));
+  }
 
-		virtual IVistaDeviceDriver *CreateDriver()
-		{
-			return new VistaOpenVRDriver(this);
-		}
-	};
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaOpenVRDriver(this);
+  }
+};
 
-
-
-	VistaOpenVRDriverCreateMethod *SpFactory = NULL;
-}
+VistaOpenVRDriverCreateMethod* SpFactory = NULL;
+} // namespace
 
 // /* definition to expand macro then apply to pragma message */
 // #define VALUE_TO_STRING(x) #x
@@ -138,33 +124,30 @@ namespace
 // /* Some example here */
 // #pragma message(VAR_NAME_VALUE(VISTAOPENVRDRIVERPLUGINAPI))
 
-extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaOpenVRDriver(crm);
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaOpenVRDriver(crm);
 }
 
-extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaOpenVRDriverCreateMethod(fac);
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaOpenVRDriverCreateMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAOPENVRDRIVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "OPENVRDRIVER";
+extern "C" VISTAOPENVRDRIVERPLUGINAPI const char* GetDeviceClassName() {
+  return "OPENVRDRIVER";
 }
 
-extern "C" VISTAOPENVRDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	//@TODO: What?
-	if( SpFactory == NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTAOPENVRDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  //@TODO: What?
+  if (SpFactory == NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
 /*============================================================================*/
@@ -178,8 +161,3 @@ extern "C" VISTAOPENVRDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCrea
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-
-
-
-

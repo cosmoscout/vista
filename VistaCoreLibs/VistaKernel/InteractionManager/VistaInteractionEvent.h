@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINTERACTIONEVENT_H
 #define _VISTAINTERACTIONEVENT_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEvent.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 #include <list>
 
@@ -50,63 +49,59 @@ class IVdfnNode;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaInteractionEvent : public VistaEvent
-{
-public:
-	typedef std::list<std::string> PortList;
+class VISTAKERNELAPI VistaInteractionEvent : public VistaEvent {
+ public:
+  typedef std::list<std::string> PortList;
 
-	enum
-	{
-		VEID_FIRST = VistaEvent::VEID_LAST,
-		VEID_CONTEXT_CHANGE = VistaEvent::VEID_LAST,
-		VEID_CONTEXT_GRAPH_UPDATE, /**< indicates that this context needs an update.
-		                                this is a system message. */
-		VEID_GRAPH_INPORT_CHANGE, /**< indicates the this context performed an update that
-		                               lead to a state change, e.g., the value of the graph
-		                               has changed */
-		VEID_LAST
-	};
+  enum {
+    VEID_FIRST          = VistaEvent::VEID_LAST,
+    VEID_CONTEXT_CHANGE = VistaEvent::VEID_LAST,
+    VEID_CONTEXT_GRAPH_UPDATE, /**< indicates that this context needs an update.
+                                    this is a system message. */
+    VEID_GRAPH_INPORT_CHANGE,  /**< indicates the this context performed an update that
+                                    lead to a state change, e.g., the value of the graph
+                                    has changed */
+    VEID_LAST
+  };
 
-	VistaInteractionEvent(VistaInteractionManager *pMgr);
-	virtual ~VistaInteractionEvent();
+  VistaInteractionEvent(VistaInteractionManager* pMgr);
+  virtual ~VistaInteractionEvent();
 
-	VistaInteractionContext *GetInteractionContext() const;
-	void  SetInteractionContext(VistaInteractionContext *pCtx);
-	unsigned int GetRoleId() const;
+  VistaInteractionContext* GetInteractionContext() const;
+  void                     SetInteractionContext(VistaInteractionContext* pCtx);
+  unsigned int             GetRoleId() const;
 
+  PortList&        GetPortMapWrite();
+  const PortList&  GetPortMapRead() const;
+  const IVdfnNode* GetEventNode() const;
+  void             SetEventNode(IVdfnNode* pNode);
 
-	PortList &GetPortMapWrite();
-	const PortList &GetPortMapRead() const;
-	const IVdfnNode *GetEventNode() const;
-	void SetEventNode(IVdfnNode *pNode);
+  void SetTime(double dTs);
+  // ######################################################################
+  // STATIC EVENT API
+  // ######################################################################
+  static int         GetTypeId();
+  static void        SetTypeId(int nId);
+  static std::string GetIdString(int nId);
 
+  // ######################################################################
+  // SERIALIZER API
+  // ######################################################################
+  virtual int         Serialize(IVistaSerializer&) const;
+  virtual int         DeSerialize(IVistaDeSerializer&);
+  virtual std::string GetSignature() const;
 
-	void SetTime(double dTs);
-	// ######################################################################
-	// STATIC EVENT API
-	// ######################################################################
-	static int GetTypeId();
-	static void SetTypeId(int nId);
-	static std::string GetIdString(int nId);
+  virtual void Debug(std::ostream& out) const;
 
-	// ######################################################################
-	// SERIALIZER API
-	// ######################################################################
-	virtual int Serialize(IVistaSerializer &) const;
-	virtual int DeSerialize(IVistaDeSerializer &);
-	virtual std::string GetSignature() const;
+ protected:
+ private:
+  int                      m_nUpdateMsg;
+  static int               m_nEventId;
+  VistaInteractionContext* m_pContext;
+  VistaInteractionManager* m_pMgr;
 
-
-	virtual void  Debug(std::ostream & out) const;
-protected:
-private:
-	int        m_nUpdateMsg;
-	static int m_nEventId;
-	VistaInteractionContext *m_pContext;
-	VistaInteractionManager *m_pMgr;
-
-	IVdfnNode *m_pEventNode;
-	PortList m_mpPortChangeMap;
+  IVdfnNode* m_pEventNode;
+  PortList   m_mpPortChangeMap;
 };
 
 /*============================================================================*/
@@ -114,4 +109,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAINTERACTIONEVENT_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _COLORCHANGERDFNNODE_H
 #define _COLORCHANGERDFNNODE_H
 
@@ -29,9 +28,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
+#include <VistaBase/VistaVectorMath.h>
 #include <VistaDataFlowNet/VdfnNode.h>
 #include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaBase/VistaVectorMath.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -46,36 +45,35 @@
 /*============================================================================*/
 
 /**
- * This class defines a node for the DataFlowNet. 
+ * This class defines a node for the DataFlowNet.
  * This node has three inports where new values are fed into the node,
- * and an outport that delivers the final 
+ * and an outport that delivers the final
  *
  * @inport{change_red,float,the value to change the red value}
  * @inport{change_green,float,the value to change the green value}
  * @inport{change_blue,float,the value to change the blue value}
  * @outport{color,VistaVector3D}
  */
-class ColorChangerDfnNode : public IVdfnNode
-{
-public:
-	ColorChangerDfnNode();
+class ColorChangerDfnNode : public IVdfnNode {
+ public:
+  ColorChangerDfnNode();
 
-	bool GetIsValid() const;
-	bool PrepareEvaluationRun();
+  bool GetIsValid() const;
+  bool PrepareEvaluationRun();
 
-protected:
-	bool DoEvalNode();
+ protected:
+  bool DoEvalNode();
 
-protected:
-	// storage for our inports
-	TVdfnPort<float>*			m_pChangeRPort;
-	TVdfnPort<float>*			m_pChangeGPort;
-	TVdfnPort<float>*			m_pChangeBPort;
+ protected:
+  // storage for our inports
+  TVdfnPort<float>* m_pChangeRPort;
+  TVdfnPort<float>* m_pChangeGPort;
+  TVdfnPort<float>* m_pChangeBPort;
 
-	//storage for the outport
-	TVdfnPort<VistaVector3D>*	m_pColorPort;
+  // storage for the outport
+  TVdfnPort<VistaVector3D>* m_pColorPort;
 
-	VistaVector3D				m_v3CurrentColor;
+  VistaVector3D m_v3CurrentColor;
 };
 
 /*============================================================================*/
@@ -83,4 +81,3 @@ protected:
 /*============================================================================*/
 
 #endif //_COLORCHANGERDFNNODE_H
-

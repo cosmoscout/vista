@@ -21,19 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFASTRAKDRIVER_H
 #define _VISTAFASTRAKDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include "VistaFastrakCommonShare.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-//Creation Method
+// Creation Method
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 /*============================================================================*/
@@ -55,7 +53,7 @@ class VistaDriverInfoAspect;
 /*============================================================================*/
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAFASTRAKDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTAFASTRAKDRIVER_STATIC)
 #ifdef VISTAFASTRAKDRIVER_EXPORTS
 #define VISTAFASTRAKDRIVERAPI __declspec(dllexport)
 #else
@@ -82,60 +80,49 @@ class VistaDriverInfoAspect;
  * specializations. This idea may be immature. But should be the way to go when
  * trying to move to another FastRak protocol variant.
  */
-class VISTAFASTRAKDRIVERAPI VistaFastrakDriver : public IVistaDeviceDriver
-{
-	friend class VistaFastrakAttachSequence;
-public:
+class VISTAFASTRAKDRIVERAPI VistaFastrakDriver : public IVistaDeviceDriver {
+  friend class VistaFastrakAttachSequence;
 
-	VistaFastrakDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaFastrakDriver();
+ public:
+  VistaFastrakDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaFastrakDriver();
 
+  void                     SetCommandSet(IVistaFastrakCommandSet* pSet);
+  IVistaFastrakCommandSet* GetCommandSet() const;
 
+ protected:
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-	void SetCommandSet( IVistaFastrakCommandSet *pSet );
-	IVistaFastrakCommandSet *GetCommandSet() const;
-protected:
-	
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+  virtual bool PhysicalEnable(bool bEnable);
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-	virtual bool PhysicalEnable(bool bEnable);
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-private:
-	VistaDriverConnectionAspect    *m_pConnection;
-	VistaDriverSensorMappingAspect *m_pSensorMap;
-	VistaFastrackProtocolAspect    *m_pProtocol;
-	VistaDriverInfoAspect          *m_pInfoAspect;
-	VistaFastrackReferenceFrameAspect *m_pRefFrame;
+ private:
+  VistaDriverConnectionAspect*       m_pConnection;
+  VistaDriverSensorMappingAspect*    m_pSensorMap;
+  VistaFastrackProtocolAspect*       m_pProtocol;
+  VistaDriverInfoAspect*             m_pInfoAspect;
+  VistaFastrackReferenceFrameAspect* m_pRefFrame;
 
+  IVistaFastrakCommandSet* m_pCommandSet;
 
-	IVistaFastrakCommandSet         *m_pCommandSet;
-
-	unsigned int m_nWandType,
-		         m_nBodyType;
+  unsigned int m_nWandType, m_nBodyType;
 };
 
-class VISTAFASTRAKDRIVERAPI FastrackCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	FastrackCreationMethod(IVistaTranscoderFactoryFactory *metaFac)
-		:IVistaDriverCreationMethod(metaFac)
-	{
-		RegisterSensorType( "BODY",
-			sizeof(VistaFastrakMeasures::sFastrakButtonSample),
-			120,
-			metaFac->CreateFactoryForType("BODY"));
+class VISTAFASTRAKDRIVERAPI FastrackCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  FastrackCreationMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("BODY", sizeof(VistaFastrakMeasures::sFastrakButtonSample), 120,
+        metaFac->CreateFactoryForType("BODY"));
 
-		RegisterSensorType( "WAND",
-			sizeof(VistaFastrakMeasures::sFastrakSample),
-			120,
-			metaFac->CreateFactoryForType("WAND"));
-	}
+    RegisterSensorType("WAND", sizeof(VistaFastrakMeasures::sFastrakSample), 120,
+        metaFac->CreateFactoryForType("WAND"));
+  }
 
-	virtual IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaFastrakDriver(this);
-	}
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaFastrakDriver(this);
+  }
 };
 
 /*============================================================================*/
@@ -143,4 +130,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTAFASTRAKDRIVER_H
-

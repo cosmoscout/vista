@@ -21,9 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 #include "VistaSemaphoreImp.h"
+#include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 #if defined(VISTA_THREADING_WIN32)
 #include "VistaWin32SemaphoreImp.h"
@@ -40,12 +39,10 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaSemaphoreImp::IVistaSemaphoreImp( ) 
-{
+IVistaSemaphoreImp::IVistaSemaphoreImp() {
 }
 
-IVistaSemaphoreImp::~IVistaSemaphoreImp()
-{
+IVistaSemaphoreImp::~IVistaSemaphoreImp() {
 }
 
 /*============================================================================*/
@@ -54,18 +51,16 @@ IVistaSemaphoreImp::~IVistaSemaphoreImp()
 
 /*============================================================================*/
 
-IVistaSemaphoreImp *IVistaSemaphoreImp ::CreateSemaphoreImp(int iCnt, eSemType eType )
-{
+IVistaSemaphoreImp* IVistaSemaphoreImp ::CreateSemaphoreImp(int iCnt, eSemType eType) {
 #if defined(VISTA_THREADING_WIN32)
-	return new VistaWin32SemaphoreImp(iCnt, eType);
+  return new VistaWin32SemaphoreImp(iCnt, eType);
 #elif defined(VISTA_THREADING_POSIX)
-	return new VistaPosixSemaphoreImp(iCnt);
+  return new VistaPosixSemaphoreImp(iCnt);
 #else
-	return 0; /** @todo */
+  return 0; /** @todo */
 #endif
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFRAMERATEDISPLAY_H
 #define _VISTAFRAMERATEDISPLAY_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -53,59 +51,55 @@ class VistaVector3D;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaFramerateDisplay : public VistaEventObserver
-{
-public:
-	VistaFramerateDisplay( VistaDisplayManager* pDisplayManager,
-							VistaFrameLoop* pFrameLoop,
-							const bool bOnAllViewports = false );
-	VistaFramerateDisplay( VistaDisplayManager* pDisplayManager,
-							VistaFrameLoop* pFrameLoop,
-							const VistaPropertyList& oConfig );
-	virtual ~VistaFramerateDisplay();
+class VISTAKERNELAPI VistaFramerateDisplay : public VistaEventObserver {
+ public:
+  VistaFramerateDisplay(VistaDisplayManager* pDisplayManager, VistaFrameLoop* pFrameLoop,
+      const bool bOnAllViewports = false);
+  VistaFramerateDisplay(VistaDisplayManager* pDisplayManager, VistaFrameLoop* pFrameLoop,
+      const VistaPropertyList& oConfig);
+  virtual ~VistaFramerateDisplay();
 
-	virtual void Notify( const VistaEvent *pEvent );
+  virtual void Notify(const VistaEvent* pEvent);
 
-	VistaColor GetColor() const;
-	void SetColor( const VistaColor& oValue );
-	
-	int GetTextSize() const;
-	void SetTextSize( const int oValue );
+  VistaColor GetColor() const;
+  void       SetColor(const VistaColor& oValue);
 
-	void GetPosition( float afPosition[2] ) const;
-	VistaVector3D GetPosition() const;
-	void SetPosition( const float anPosition[2] );
-	void SetPosition( const VistaVector3D& v3Position );
+  int  GetTextSize() const;
+  void SetTextSize(const int oValue);
 
-	VistaType::microtime GetUpdateFrequency() const;
-	void SetUpdateFrequency( const VistaType::microtime& oValue );
+  void          GetPosition(float afPosition[2]) const;
+  VistaVector3D GetPosition() const;
+  void          SetPosition(const float anPosition[2]);
+  void          SetPosition(const VistaVector3D& v3Position);
 
-	std::string GetPrefix() const;
-	void SetPrefix( const std::string& oValue );
-	std::string GetPostfix() const;
-	void SetPostfix( const std::string& oValue );
+  VistaType::microtime GetUpdateFrequency() const;
+  void                 SetUpdateFrequency(const VistaType::microtime& oValue);
 
-	bool GetIsEnabled() const;
-	void SetIsEnabled( const bool& oValue );
+  std::string GetPrefix() const;
+  void        SetPrefix(const std::string& oValue);
+  std::string GetPostfix() const;
+  void        SetPostfix(const std::string& oValue);
 
-private:
-	void PrepareText();
-	void SetText();
+  bool GetIsEnabled() const;
+  void SetIsEnabled(const bool& oValue);
 
-private:
-	VistaFrameLoop* m_pFrameLoop;
+ private:
+  void PrepareText();
+  void SetText();
 
-	VistaColor m_oColor;
-	int m_nSize;
-	float m_anPosition[2];
-	bool m_bEnabled;
-	VistaType::microtime m_nUpdateFrequency;
-	std::string m_sPrefix;
-	std::string m_sPostfix;
-	std::vector<Vista2DText*> m_vecDisplayTexts;
-	std::string m_sText;
-	VistaType::systemtime m_nLastUpdate;
+ private:
+  VistaFrameLoop* m_pFrameLoop;
+
+  VistaColor                m_oColor;
+  int                       m_nSize;
+  float                     m_anPosition[2];
+  bool                      m_bEnabled;
+  VistaType::microtime      m_nUpdateFrequency;
+  std::string               m_sPrefix;
+  std::string               m_sPostfix;
+  std::vector<Vista2DText*> m_vecDisplayTexts;
+  std::string               m_sText;
+  VistaType::systemtime     m_nLastUpdate;
 };
 
 #endif //_VISTAFRAMERATEDISPLAY_H
-

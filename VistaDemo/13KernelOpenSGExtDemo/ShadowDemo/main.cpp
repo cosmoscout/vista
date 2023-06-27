@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaKernel/VistaSystem.h>
 
 #include <VistaBase/VistaExceptionBase.h>
@@ -42,25 +41,19 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		ShadowDemo demoAppl(argc, argv);
-		demoAppl.Run ();
-	}
-	catch(const VistaExceptionBase& oExceptionBase)
-	{
-		oExceptionBase.PrintException();
-		oExceptionBase.PrintBacktrace();
-		return 1;
-	}
-	catch(...)
-	{
-		std::cerr << "Unknown exception occured!\n" << std::endl;
-		return -1;
-	}
-	return 0;
+int main(int argc, char* argv[]) {
+  try {
+    ShadowDemo demoAppl(argc, argv);
+    demoAppl.Run();
+  } catch (const VistaExceptionBase& oExceptionBase) {
+    oExceptionBase.PrintException();
+    oExceptionBase.PrintBacktrace();
+    return 1;
+  } catch (...) {
+    std::cerr << "Unknown exception occured!\n" << std::endl;
+    return -1;
+  }
+  return 0;
 }
 
 /*============================================================================*/

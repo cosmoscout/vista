@@ -41,23 +41,22 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTABASEAPI VistaAutoBufferPool
-{
-public:
-	VistaAutoBufferPool( std::size_t nNumBufsPreAlloced, std::size_t nBufDefSize, bool resizeOnNeed = true );
-	~VistaAutoBufferPool();
+class VISTABASEAPI VistaAutoBufferPool {
+ public:
+  VistaAutoBufferPool(
+      std::size_t nNumBufsPreAlloced, std::size_t nBufDefSize, bool resizeOnNeed = true);
+  ~VistaAutoBufferPool();
 
-	VistaAutoWriteBuffer GetBufferWrite();
-	std::size_t GetCurrentNumOfBuffers() const;
+  VistaAutoWriteBuffer GetBufferWrite();
+  std::size_t          GetCurrentNumOfBuffers() const;
 
-private:
-	std::vector<VistaAutoWriteBuffer> m_pool;
-	std::vector<VistaAutoWriteBuffer>::const_iterator SearchNextAvailable() const;
-	bool m_bAdaptSize;
+ private:
+  std::vector<VistaAutoWriteBuffer>                 m_pool;
+  std::vector<VistaAutoWriteBuffer>::const_iterator SearchNextAvailable() const;
+  bool                                              m_bAdaptSize;
 };
 
 #endif /* _VISTAAUTOBUFFERPOOL_H_ */
-
 
 /*============================================================================*/
 /* END OF FILE                                                                */

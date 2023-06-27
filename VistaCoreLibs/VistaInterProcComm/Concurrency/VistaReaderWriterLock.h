@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAREADERWRITERLOCK_H
 #define _VISTAREADERWRITERLOCK_H
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
@@ -31,25 +30,21 @@ class VistaThreadCondition;
 class VistaMutex;
 class IVistaReaderWriterLockImp;
 
-class VISTAINTERPROCCOMMAPI VistaReaderWriterLock
-{
+class VISTAINTERPROCCOMMAPI VistaReaderWriterLock {
 
-public:
+ public:
+  VistaReaderWriterLock();
+  virtual ~VistaReaderWriterLock();
 
-	VistaReaderWriterLock();
-	virtual ~VistaReaderWriterLock();
+  bool ReaderLock();
 
-	bool ReaderLock();
+  bool WriterLock();
 
-	bool WriterLock();
+  bool ReaderUnlock();
 
-	bool ReaderUnlock();
+  bool WriterUnlock();
 
-	bool WriterUnlock();
-
-private:
-
-		IVistaReaderWriterLockImp *m_pImp;
+ private:
+  IVistaReaderWriterLockImp* m_pImp;
 };
 #endif //_VISTAREADERWRITERLOCK_H
-

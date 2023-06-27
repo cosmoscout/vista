@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaVirtualPlatform.h"
 #include <VistaAspects/VistaAspectsUtils.h>
-
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -39,13 +37,11 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 VistaVirtualPlatform::VistaVirtualPlatform()
-: VistaReferenceFrame(),
-  IVistaObserveable()
-{
+    : VistaReferenceFrame()
+    , IVistaObserveable() {
 }
 
-VistaVirtualPlatform::~VistaVirtualPlatform()
-{
+VistaVirtualPlatform::~VistaVirtualPlatform() {
 }
 
 /*============================================================================*/
@@ -57,14 +53,12 @@ VistaVirtualPlatform::~VistaVirtualPlatform()
 /*  NAME      :   SetTranslation                                              */
 /*                                                                            */
 /*============================================================================*/
-bool VistaVirtualPlatform::SetTranslation(const VistaVector3D &refTranslation)
-{
-	if (VistaReferenceFrame::SetTranslation(refTranslation))
-	{
-		Notify(MSG_TRANSLATION_CHANGE);
-		return true;
-	}
-	return false;
+bool VistaVirtualPlatform::SetTranslation(const VistaVector3D& refTranslation) {
+  if (VistaReferenceFrame::SetTranslation(refTranslation)) {
+    Notify(MSG_TRANSLATION_CHANGE);
+    return true;
+  }
+  return false;
 }
 
 /*============================================================================*/
@@ -72,14 +66,12 @@ bool VistaVirtualPlatform::SetTranslation(const VistaVector3D &refTranslation)
 /*  NAME      :   SetRotation                                                 */
 /*                                                                            */
 /*============================================================================*/
-bool VistaVirtualPlatform::SetRotation(const VistaQuaternion &refRotation)
-{
-	if (VistaReferenceFrame::SetRotation(refRotation))
-	{
-		Notify(MSG_ROTATION_CHANGE);
-		return true;
-	}
-	return false;
+bool VistaVirtualPlatform::SetRotation(const VistaQuaternion& refRotation) {
+  if (VistaReferenceFrame::SetRotation(refRotation)) {
+    Notify(MSG_ROTATION_CHANGE);
+    return true;
+  }
+  return false;
 }
 
 /*============================================================================*/
@@ -87,14 +79,12 @@ bool VistaVirtualPlatform::SetRotation(const VistaQuaternion &refRotation)
 /*  NAME      :   SetScale                                                    */
 /*                                                                            */
 /*============================================================================*/
-bool VistaVirtualPlatform::SetScale(float fScale)
-{
-	if (VistaReferenceFrame::SetScale(fScale))
-	{
-		Notify(MSG_SCALE_CHANGE);
-		return true;
-	}
-	return false;
+bool VistaVirtualPlatform::SetScale(float fScale) {
+  if (VistaReferenceFrame::SetScale(fScale)) {
+    Notify(MSG_SCALE_CHANGE);
+    return true;
+  }
+  return false;
 }
 
 /*============================================================================*/
@@ -102,9 +92,8 @@ bool VistaVirtualPlatform::SetScale(float fScale)
 /*  NAME      :   GetNameForNameable                                          */
 /*                                                                            */
 /*============================================================================*/
-std::string VistaVirtualPlatform::GetNameForNameable() const
-{
-	return m_strNameForNameable;
+std::string VistaVirtualPlatform::GetNameForNameable() const {
+  return m_strNameForNameable;
 }
 
 /*============================================================================*/
@@ -112,17 +101,9 @@ std::string VistaVirtualPlatform::GetNameForNameable() const
 /*  NAME      :   SetNameForNameable                                          */
 /*                                                                            */
 /*============================================================================*/
-void VistaVirtualPlatform::SetNameForNameable(const string &sNewName)
-{
-	if(VistaAspectsComparisonStuff::StringEquals(sNewName, 
-										m_strNameForNameable, 
-										true) == false)
-	{
-		m_strNameForNameable = sNewName;
-		Notify(MSG_NAME_CHANGE);
-	}
+void VistaVirtualPlatform::SetNameForNameable(const string& sNewName) {
+  if (VistaAspectsComparisonStuff::StringEquals(sNewName, m_strNameForNameable, true) == false) {
+    m_strNameForNameable = sNewName;
+    Notify(MSG_NAME_CHANGE);
+  }
 }
-
-
-
-

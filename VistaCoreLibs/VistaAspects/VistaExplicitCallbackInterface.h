@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEXPLICITCALLBACKINTERFACE_H
 #define _VISTAEXPLICITCALLBACKINTERFACE_H
 
@@ -44,18 +43,17 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAASPECTSAPI IVistaExplicitCallbackInterface
-{
-public:
-	virtual ~IVistaExplicitCallbackInterface();
+class VISTAASPECTSAPI IVistaExplicitCallbackInterface {
+ public:
+  virtual ~IVistaExplicitCallbackInterface();
 
-	virtual bool PrepareCallback();
-	virtual bool Do()=0;
-	virtual bool PostCallback();
-protected:
-	IVistaExplicitCallbackInterface();
+  virtual bool PrepareCallback();
+  virtual bool Do() = 0;
+  virtual bool PostCallback();
+
+ protected:
+  IVistaExplicitCallbackInterface();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

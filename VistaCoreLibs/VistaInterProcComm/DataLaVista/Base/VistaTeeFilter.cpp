@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTeeFilter.h"
 #include "VistaPacketQueue.h"
+#include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <VistaInterProcComm/Concurrency/VistaThread.h>
 #include <VistaInterProcComm/Concurrency/VistaThreadEvent.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
 
 #include <algorithm>
 using namespace std;
@@ -38,101 +37,84 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
+IDLVistaTeeFilter::IDLVistaTeeFilter() {
+  m_pOutbounds       = new deque<IDLVistaPipeComponent*>;
+  m_pMutexIn         = new VistaMutex;
+  m_pMutexOut        = new VistaMutex;
+  m_pModifyOutbounds = new VistaMutex;
+  m_pRecycleEvent    = new VistaThreadEvent(VistaThreadEvent::NON_WAITABLE_EVENT);
 
-IDLVistaTeeFilter::IDLVistaTeeFilter()
-{
-	m_pOutbounds = new deque<IDLVistaPipeComponent *>;
-	m_pMutexIn = new VistaMutex;
-	m_pMutexOut = new VistaMutex;
-	m_pModifyOutbounds = new VistaMutex;
-	m_pRecycleEvent = new VistaThreadEvent(VistaThreadEvent::NON_WAITABLE_EVENT);
-
-	m_pLockEmpty = NULL;
+  m_pLockEmpty = NULL;
 }
 
-IDLVistaTeeFilter::~IDLVistaTeeFilter()
-{
-	(*m_pMutexIn).Lock(); // no new packets
-	(*m_pMutexOut).Lock(); // no more recycling now
+IDLVistaTeeFilter::~IDLVistaTeeFilter() {
+  (*m_pMutexIn).Lock();  // no new packets
+  (*m_pMutexOut).Lock(); // no more recycling now
 
-	delete m_pMutexIn;
-	delete m_pMutexOut;
-	delete m_pModifyOutbounds;
-	delete m_pRecycleEvent;
-	delete m_pLockEmpty;
+  delete m_pMutexIn;
+  delete m_pMutexOut;
+  delete m_pModifyOutbounds;
+  delete m_pRecycleEvent;
+  delete m_pLockEmpty;
 
-	delete m_pOutbounds;
+  delete m_pOutbounds;
 }
-
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-VistaMutex *IDLVistaTeeFilter::GrabMutex(VistaMutex *pMutex, bool bBlock)
-{
-	if(bBlock)
-	{
-		(*pMutex).Lock();
-	}
-	else
-	{
-		if((*pMutex).TryLock()==false)
-			return NULL;
-	}
+VistaMutex* IDLVistaTeeFilter::GrabMutex(VistaMutex* pMutex, bool bBlock) {
+  if (bBlock) {
+    (*pMutex).Lock();
+  } else {
+    if ((*pMutex).TryLock() == false)
+      return NULL;
+  }
 
-	return pMutex;
+  return pMutex;
 }
 
+bool IDLVistaTeeFilter::AttachOutputComponent(IDLVistaPipeComponent* pComp) {
+  bool bRet = false;
+  (*m_pModifyOutbounds).Lock();
+  if (find((*m_pOutbounds).begin(), (*m_pOutbounds).end(), pComp) == (*m_pOutbounds).end()) {
+    (*m_pOutbounds).push_back(pComp);
+    if (!m_pOutput)
+      m_pOutput = pComp; // make the first one the default!
+    bRet = true;
+  }
 
-bool IDLVistaTeeFilter::AttachOutputComponent(IDLVistaPipeComponent * pComp)
-{
-	bool bRet = false;
-	(*m_pModifyOutbounds).Lock();
-	if(find((*m_pOutbounds).begin(), (*m_pOutbounds).end(), pComp) == (*m_pOutbounds).end())
-	{
-		(*m_pOutbounds).push_back(pComp);
-		if(!m_pOutput)
-			m_pOutput = pComp; // make the first one the default!
-		bRet = true;
-	}
-
-	(*m_pModifyOutbounds).Unlock();
-	return bRet;
+  (*m_pModifyOutbounds).Unlock();
+  return bRet;
 }
 
+bool IDLVistaTeeFilter::DetachOutputComponent(IDLVistaPipeComponent* pComp) {
+  bool bRet = false;
+  (*m_pModifyOutbounds).Lock();
 
-bool IDLVistaTeeFilter::DetachOutputComponent(IDLVistaPipeComponent * pComp)
-{
-	bool bRet = false;
-	(*m_pModifyOutbounds).Lock();
+  deque<IDLVistaPipeComponent*>::iterator it =
+      find((*m_pOutbounds).begin(), (*m_pOutbounds).end(), pComp);
+  if (it != (*m_pOutbounds).end()) {
+    (*m_pOutbounds).erase(it);
+    bRet = true;
+  }
 
-	deque<IDLVistaPipeComponent *>::iterator it = find((*m_pOutbounds).begin(), (*m_pOutbounds).end(), pComp);
-	if(it!=(*m_pOutbounds).end())
-	{
-		(*m_pOutbounds).erase(it);
-		bRet = true;
-	}
-
-	(*m_pModifyOutbounds).Unlock();
-	return bRet;
+  (*m_pModifyOutbounds).Unlock();
+  return bRet;
 }
 
+int IDLVistaTeeFilter::GetNumberOfOutbounds() const {
+  (*m_pModifyOutbounds).Lock();
+  int iRet = (int)(*m_pOutbounds).size();
+  (*m_pModifyOutbounds).Unlock();
 
-int IDLVistaTeeFilter::GetNumberOfOutbounds() const
-{
-	(*m_pModifyOutbounds).Lock();
-	int iRet = (int)(*m_pOutbounds).size();
-	(*m_pModifyOutbounds).Unlock();
-
-	return iRet;
+  return iRet;
 }
 
-IDLVistaPipeComponent *IDLVistaTeeFilter::GetOutboundByIndex(int iIdx) const
-{
-	(*m_pModifyOutbounds).Lock();
-	IDLVistaPipeComponent *p = (*m_pOutbounds)[iIdx];
-	(*m_pModifyOutbounds).Unlock();
-	return p;
+IDLVistaPipeComponent* IDLVistaTeeFilter::GetOutboundByIndex(int iIdx) const {
+  (*m_pModifyOutbounds).Lock();
+  IDLVistaPipeComponent* p = (*m_pOutbounds)[iIdx];
+  (*m_pModifyOutbounds).Unlock();
+  return p;
 }
-

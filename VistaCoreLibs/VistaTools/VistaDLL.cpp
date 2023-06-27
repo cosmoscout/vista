@@ -21,10 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDLL.h" 
-#include <string>
+#include "VistaDLL.h"
 #include <cassert>
+#include <string>
 using std::string;
 
 #if defined(WIN32)
@@ -32,7 +31,7 @@ using std::string;
 #elif defined(HPUX)
 
 #else
-#include <dlfcn.h>              // POSIX
+#include <dlfcn.h> // POSIX
 #endif
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -45,59 +44,53 @@ using std::string;
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-VistaDLL::DLLHANDLE VistaDLL::Open(const string &strDllName)
-{
-	if(!strDllName.empty())
-	{
+VistaDLL::DLLHANDLE VistaDLL::Open(const string& strDllName) {
+  if (!strDllName.empty()) {
 #ifndef WIN32
-		return dlopen(strDllName.c_str(),RTLD_NOW|RTLD_GLOBAL);
+    return dlopen(strDllName.c_str(), RTLD_NOW | RTLD_GLOBAL);
 #else
-		// WIN32
-		return LoadLibraryExA(strDllName.c_str(),NULL,LOAD_WITH_ALTERED_SEARCH_PATH);
+    // WIN32
+    return LoadLibraryExA(strDllName.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 #endif
-	}
-	return NULL;
+  }
+  return NULL;
 }
 
-bool VistaDLL::Close(DLLHANDLE hDllHandle)
-{
-	if(hDllHandle)
-	{
+bool VistaDLL::Close(DLLHANDLE hDllHandle) {
+  if (hDllHandle) {
 
 #if !defined(WIN32)
-		dlclose(hDllHandle);
-		return true;
-#else                   // WIN32
-		FreeLibrary((HMODULE)hDllHandle);
-		return true;
+    dlclose(hDllHandle);
+    return true;
+#else // WIN32
+    FreeLibrary((HMODULE)hDllHandle);
+    return true;
 #endif
-	}
-	return false;
+  }
+  return false;
 }
 
-VistaDLL::DLLSYMBOL VistaDLL::FindSymbol( DLLHANDLE hDll, const string &strSymbol )
-{
-	if(hDll && !strSymbol.empty())
-	{
+VistaDLL::DLLSYMBOL VistaDLL::FindSymbol(DLLHANDLE hDll, const string& strSymbol) {
+  if (hDll && !strSymbol.empty()) {
 #ifndef WIN32
-		return dlsym(hDll,strSymbol.c_str());
-#else                   // WIN32
-		return (VistaDLL::DLLSYMBOL)GetProcAddress((HMODULE)hDll,strSymbol.c_str());
+    return dlsym(hDll, strSymbol.c_str());
+#else // WIN32
+    return (VistaDLL::DLLSYMBOL)GetProcAddress((HMODULE)hDll, strSymbol.c_str());
 #endif
-	}
-	return NULL;
+  }
+  return NULL;
 }
 
-string VistaDLL::GetError()
-{
+string VistaDLL::GetError() {
 #ifndef WIN32
-	const char *err = dlerror();
-	return string(err ? err : "no error");
-#else                   // WIN32
-	DWORD dw=GetLastError();
-	char buffer[512];
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,NULL,dw,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPTSTR)buffer,sizeof(buffer),NULL);
-	return string(buffer);
+  const char* err = dlerror();
+  return string(err ? err : "no error");
+#else // WIN32
+  DWORD dw = GetLastError();
+  char buffer[512];
+  FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      (LPTSTR)buffer, sizeof(buffer), NULL);
+  return string(buffer);
 #endif
 }
 
@@ -143,4 +136,3 @@ assert(0 && "NOT IMPLEMENTED ON THIS PLATFORM!");
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

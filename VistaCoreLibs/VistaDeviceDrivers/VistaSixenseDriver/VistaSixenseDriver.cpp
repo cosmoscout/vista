@@ -21,121 +21,110 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSixenseDriver.h"
 
 #include "VistaSixenseCommonShare.h"
 
 #include <VistaAspects/VistaAspectsUtils.h>
-#include <VistaBase/VistaTimeUtils.h>
 #include <VistaBase/VistaStreamUtils.h>
+#include <VistaBase/VistaTimeUtils.h>
 
 #include <assert.h>
 
+#include "VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h"
+#include "VistaDeviceDriversBase/DriverAspects/VistaDriverSensorMappingAspect.h"
+#include "VistaDeviceDriversBase/DriverAspects/VistaDriverThreadAspect.h"
 #include <sixense.h>
 #include <sixense_utils/controller_manager/controller_manager.hpp>
-#include "VistaDeviceDriversBase/DriverAspects/VistaDriverThreadAspect.h"
-#include "VistaDeviceDriversBase/DriverAspects/VistaDriverSensorMappingAspect.h"
-#include "VistaDeviceDriversBase/DriverAspects/VistaDriverMeasureHistoryAspect.h"
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaSixenseDriver::VistaSixenseDriver( IVistaDriverCreationMethod *crm )
-: IVistaDeviceDriver( crm )
-, m_pData( new sixenseAllControllerData )
-{
-	SetUpdateType( IVistaDeviceDriver::UPDATE_EXPLICIT_POLL );
+VistaSixenseDriver::VistaSixenseDriver(IVistaDriverCreationMethod* crm)
+    : IVistaDeviceDriver(crm)
+    , m_pData(new sixenseAllControllerData) {
+  SetUpdateType(IVistaDeviceDriver::UPDATE_EXPLICIT_POLL);
 
-	m_pMappingAspect = new VistaDriverSensorMappingAspect( crm );
-	RegisterAspect( m_pMappingAspect );
+  m_pMappingAspect = new VistaDriverSensorMappingAspect(crm);
+  RegisterAspect(m_pMappingAspect);
 
-	for( int i = 0; i < 4; ++i )
-		m_anLastUpdateIndices[i] = 255;
+  for (int i = 0; i < 4; ++i)
+    m_anLastUpdateIndices[i] = 255;
 }
 
-VistaSixenseDriver::~VistaSixenseDriver()
-{
-	sixenseExit();
-	delete m_pData;
+VistaSixenseDriver::~VistaSixenseDriver() {
+  sixenseExit();
+  delete m_pData;
 }
 
-bool VistaSixenseDriver::DoConnect()
-{
-	if( sixenseInit() == SIXENSE_FAILURE )
-	{
-		vstr::warnp() << "[SixenseDriver]: Initialization failed";
-		return false;
-	}
+bool VistaSixenseDriver::DoConnect() {
+  if (sixenseInit() == SIXENSE_FAILURE) {
+    vstr::warnp() << "[SixenseDriver]: Initialization failed";
+    return false;
+  }
 
-	sixenseSetActiveBase( 0 ); // @todo: configurable
+  sixenseSetActiveBase(0); // @todo: configurable
 
-	//int nNumControllers = sixenseGetNumActiveControllers();
+  // int nNumControllers = sixenseGetNumActiveControllers();
 
-	return true;
+  return true;
 }
 
-bool VistaSixenseDriver::DoDisconnect()
-{
-	return ( sixenseExit() == SIXENSE_SUCCESS );
+bool VistaSixenseDriver::DoDisconnect() {
+  return (sixenseExit() == SIXENSE_SUCCESS);
 }
 
-bool VistaSixenseDriver::DoSensorUpdate( VistaType::microtime dTs )
-{
-	if( sixenseGetAllNewestData( m_pData ) == SIXENSE_FAILURE )
-		return false;
+bool VistaSixenseDriver::DoSensorUpdate(VistaType::microtime dTs) {
+  if (sixenseGetAllNewestData(m_pData) == SIXENSE_FAILURE)
+    return false;
 
-	bool bSuccess = false;
-	for( int i = 0; i < 4; ++i )
-		bSuccess |= UpdateSensor( i, dTs );
+  bool bSuccess = false;
+  for (int i = 0; i < 4; ++i)
+    bSuccess |= UpdateSensor(i, dTs);
 
-	return bSuccess;
+  return bSuccess;
 }
 
-bool VistaSixenseDriver::PhysicalEnable( bool bEnable )
-{
-	return true;
+bool VistaSixenseDriver::PhysicalEnable(bool bEnable) {
+  return true;
 }
 
-bool VistaSixenseDriver::UpdateSensor( const int nSensorIndex, const VistaType::microtime nTimestamp )
-{
-	if( m_pData->controllers[nSensorIndex].enabled == false
-		|| m_pData->controllers[nSensorIndex].sequence_number == m_anLastUpdateIndices[nSensorIndex] )
-		return false;
+bool VistaSixenseDriver::UpdateSensor(
+    const int nSensorIndex, const VistaType::microtime nTimestamp) {
+  if (m_pData->controllers[nSensorIndex].enabled == false ||
+      m_pData->controllers[nSensorIndex].sequence_number == m_anLastUpdateIndices[nSensorIndex])
+    return false;
 
-	VistaDeviceSensor* pSensor = GetSensorByIndex( nSensorIndex );
-	if( pSensor == NULL )
-		return false;
+  VistaDeviceSensor* pSensor = GetSensorByIndex(nSensorIndex);
+  if (pSensor == NULL)
+    return false;
 
-	MeasureStart( nSensorIndex, nTimestamp );
-	// get the current place for the decoding for sensor 0
-	VistaSixenseMeasures::Measure* pMeasure = m_pHistoryAspect->GetCurrentSlot(pSensor)->getWrite<VistaSixenseMeasures::Measure>();
+  MeasureStart(nSensorIndex, nTimestamp);
+  // get the current place for the decoding for sensor 0
+  VistaSixenseMeasures::Measure* pMeasure =
+      m_pHistoryAspect->GetCurrentSlot(pSensor)->getWrite<VistaSixenseMeasures::Measure>();
 
-	memcpy( pMeasure, &m_pData->controllers[nSensorIndex], sizeof( VistaSixenseMeasures::Measure ) );
+  memcpy(pMeasure, &m_pData->controllers[nSensorIndex], sizeof(VistaSixenseMeasures::Measure));
 
-	// we are done. Indicate that to the history
-	MeasureStop( nSensorIndex );
+  // we are done. Indicate that to the history
+  MeasureStop(nSensorIndex);
 
+  m_anLastUpdateIndices[nSensorIndex] = m_pData->controllers[nSensorIndex].sequence_number;
 
-	m_anLastUpdateIndices[nSensorIndex] = m_pData->controllers[nSensorIndex].sequence_number;
-
-	return true;
+  return true;
 }
 
 /*============================================================================*/
 /* CREATION METHOD                                                            */
 /*============================================================================*/
 
-
-VistaSixenseCreationMethod::VistaSixenseCreationMethod( IVistaTranscoderFactoryFactory *metaFac )
-: IVistaDriverCreationMethod( metaFac )
-{
-	RegisterSensorType( "",	sizeof( VistaSixenseMeasures::Measure ), 120, metaFac->CreateFactoryForType( "" ) );
+VistaSixenseCreationMethod::VistaSixenseCreationMethod(IVistaTranscoderFactoryFactory* metaFac)
+    : IVistaDriverCreationMethod(metaFac) {
+  RegisterSensorType(
+      "", sizeof(VistaSixenseMeasures::Measure), 120, metaFac->CreateFactoryForType(""));
 }
 
-IVistaDeviceDriver* VistaSixenseCreationMethod::CreateDriver()
-{
-	return new VistaSixenseDriver( this );
+IVistaDeviceDriver* VistaSixenseCreationMethod::CreateDriver() {
+  return new VistaSixenseDriver(this);
 }
-

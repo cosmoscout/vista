@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VrmlEventHandler.h"
 #include "VrmlVisualizer.h"
 
@@ -35,21 +34,20 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VrmlEventHandler::VrmlEventHandler( VrmlVisualizer *app )
-	:	m_pApp( app )
-{
+VrmlEventHandler::VrmlEventHandler(VrmlVisualizer* app)
+    : m_pApp(app) {
 }
 
-VrmlEventHandler::~VrmlEventHandler(){}
+VrmlEventHandler::~VrmlEventHandler() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-void VrmlEventHandler::HandleEvent(VistaEvent *pEvent)
-{
-	// call the update method bevore each frame is redered.
-	m_pApp->Update();
+void VrmlEventHandler::HandleEvent(VistaEvent* pEvent) {
+  // call the update method bevore each frame is redered.
+  m_pApp->Update();
 }
 
 /*============================================================================*/

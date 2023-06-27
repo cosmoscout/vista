@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <string>
 
 #include "VistaPropertyFunctor.h"
@@ -35,92 +34,76 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaPropertyGetFunctor::IVistaPropertyGetFunctor(const std::string &sPropName,
-								const std::string &sClassName,
-								const std::string &sDescription)
-: m_sFunctorName(sPropName),
-  m_sFunctorClass(sClassName),
-  m_sDescription(sDescription)
-{
-	m_pRegistry=VistaPropertyFunctorRegistry::GetSingleton();
-	// update reference count, as we store the pointer
-	VistaPropertyFunctorRegistry::refup(m_pRegistry);
-	m_pRegistry->RegisterGetter(sPropName, sClassName, this);
+IVistaPropertyGetFunctor::IVistaPropertyGetFunctor(
+    const std::string& sPropName, const std::string& sClassName, const std::string& sDescription)
+    : m_sFunctorName(sPropName)
+    , m_sFunctorClass(sClassName)
+    , m_sDescription(sDescription) {
+  m_pRegistry = VistaPropertyFunctorRegistry::GetSingleton();
+  // update reference count, as we store the pointer
+  VistaPropertyFunctorRegistry::refup(m_pRegistry);
+  m_pRegistry->RegisterGetter(sPropName, sClassName, this);
 }
 
-IVistaPropertyGetFunctor::~IVistaPropertyGetFunctor()
-{
-	m_pRegistry->UnregisterGetter( m_sFunctorName, m_sFunctorClass );
-	VistaPropertyFunctorRegistry::refdown(m_pRegistry);
+IVistaPropertyGetFunctor::~IVistaPropertyGetFunctor() {
+  m_pRegistry->UnregisterGetter(m_sFunctorName, m_sFunctorClass);
+  VistaPropertyFunctorRegistry::refdown(m_pRegistry);
 }
-
 
 // #############################################################################
 
-IVistaPropertySetFunctor::IVistaPropertySetFunctor(const std::string &sPropName,
-						const std::string &sClassName,
-						const std::string &sDescription)
-: m_sFunctorName(sPropName),
-  m_sFunctorClass(sClassName),
-  m_sDescription(sDescription)
-{
-	m_pRegistry=VistaPropertyFunctorRegistry::GetSingleton();
-	// update reference count, as we store the pointer
-	VistaPropertyFunctorRegistry::refup(m_pRegistry);
-	m_pRegistry->RegisterSetter(sPropName, sClassName, this);
+IVistaPropertySetFunctor::IVistaPropertySetFunctor(
+    const std::string& sPropName, const std::string& sClassName, const std::string& sDescription)
+    : m_sFunctorName(sPropName)
+    , m_sFunctorClass(sClassName)
+    , m_sDescription(sDescription) {
+  m_pRegistry = VistaPropertyFunctorRegistry::GetSingleton();
+  // update reference count, as we store the pointer
+  VistaPropertyFunctorRegistry::refup(m_pRegistry);
+  m_pRegistry->RegisterSetter(sPropName, sClassName, this);
 }
 
-IVistaPropertySetFunctor::~IVistaPropertySetFunctor()
-{
-	m_pRegistry->UnregisterSetter(m_sFunctorName, m_sFunctorClass);
-	VistaPropertyFunctorRegistry::refdown(m_pRegistry);
+IVistaPropertySetFunctor::~IVistaPropertySetFunctor() {
+  m_pRegistry->UnregisterSetter(m_sFunctorName, m_sFunctorClass);
+  VistaPropertyFunctorRegistry::refdown(m_pRegistry);
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-void IVistaPropertyGetFunctor::SetNameForNameable(const std::string &sFunctorName)
-{
-	m_sFunctorName = sFunctorName;
+void IVistaPropertyGetFunctor::SetNameForNameable(const std::string& sFunctorName) {
+  m_sFunctorName = sFunctorName;
 }
 
-std::string IVistaPropertyGetFunctor::GetNameForNameable() const
-{
-	return m_sFunctorName;
+std::string IVistaPropertyGetFunctor::GetNameForNameable() const {
+  return m_sFunctorName;
 }
 
-std::string IVistaPropertyGetFunctor::GetPropertyDescription() const
-{
-	return m_sDescription;
+std::string IVistaPropertyGetFunctor::GetPropertyDescription() const {
+  return m_sDescription;
 }
 
-std::string IVistaPropertyGetFunctor::GetPropertyClassName() const
-{
-	return m_sFunctorClass;
+std::string IVistaPropertyGetFunctor::GetPropertyClassName() const {
+  return m_sFunctorClass;
 }
 // #############################################################################
 
-void IVistaPropertySetFunctor::SetNameForNameable(const std::string &sFunctorName)
-{
-	m_sFunctorName = sFunctorName;
+void IVistaPropertySetFunctor::SetNameForNameable(const std::string& sFunctorName) {
+  m_sFunctorName = sFunctorName;
 }
 
-std::string IVistaPropertySetFunctor::GetNameForNameable() const
-{
-	return m_sFunctorName;
+std::string IVistaPropertySetFunctor::GetNameForNameable() const {
+  return m_sFunctorName;
 }
 
-std::string IVistaPropertySetFunctor::GetPropertyDescription() const
-{
-	return m_sDescription;
+std::string IVistaPropertySetFunctor::GetPropertyDescription() const {
+  return m_sDescription;
 }
 
-std::string IVistaPropertySetFunctor::GetPropertyClassName() const
-{
-	return m_sFunctorClass;
+std::string IVistaPropertySetFunctor::GetPropertyClassName() const {
+  return m_sFunctorClass;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

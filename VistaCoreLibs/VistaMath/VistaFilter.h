@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /**
  *
  *      CLASS DEFINITIONS:
@@ -51,7 +50,7 @@
 /*============================================================================*/
 /*  INCLUDES                                                                  */
 /*============================================================================*/
-#include <cmath>    // sqrt (), tan ()
+#include <cmath> // sqrt (), tan ()
 // #include <VistaMath\VistaVectorMath.h>
 
 /**
@@ -60,24 +59,21 @@
  *	Derive if you need more filter types.
  */
 template <class ClassType>
-class Filter
-{
-public:
+class Filter {
+ public:
+  // Get the last filtered value
+  // Override this member to implement your functionality.
+  virtual void get(ClassType& outValue) const = 0;
 
-	// Get the last filtered value
-	// Override this member to implement your functionality.
-	virtual void get( ClassType & outValue ) const = 0;
+  // Put a new value into the filter
+  // Override this member to implement your functionality.
+  virtual void push(const ClassType& inValue) = 0;
 
-	// Put a new value into the filter
-	// Override this member to implement your functionality.
-	virtual void push( const ClassType & inValue ) = 0;
-
-	//Do get and set in one cycle
-	inline void apply( ClassType & InoutValue )
-	{
-		push ( InoutValue );
-		get  ( InoutValue );
-	}
+  // Do get and set in one cycle
+  inline void apply(ClassType& InoutValue) {
+    push(InoutValue);
+    get(InoutValue);
+  }
 };
 
 /**
@@ -85,215 +81,189 @@ public:
  * Use Length=0 for a dummy filter that does nothing.
  */
 template <class ClassType, int Length = 0>
-class Buffer : public Filter<ClassType>
-{
-public:
+class Buffer : public Filter<ClassType> {
+ public:
+  //	Get the last buffered value
+  virtual void get(ClassType& outValue) const {
+    outValue = myBuffer[position];
+  }
 
-	//	Get the last buffered value
-	virtual void get( ClassType & outValue ) const
-	{
-		outValue = myBuffer[position];
-	}
+  // Put a new value into the buffer
+  virtual void push(const ClassType& inValue) {
+    myBuffer[position] = inValue;                   // write value
+    position           = ++position % (Length + 1); // step ahead
+  }
 
-	// Put a new value into the buffer
-	virtual void push( const ClassType & inValue )
-	{
-		myBuffer[position] = inValue;       // write value
-		position = ++position % (Length+1);	// step ahead
-	}
+ private:
+  // buffer array
+  ClassType myBuffer[Length + 1];
 
-private:
-
-	// buffer array
-	ClassType	myBuffer[Length+1];
-
-	//position counter
-	int position;
-	};
+  // position counter
+  int position;
+};
 
 /**
  * M-Filter (moving avarage)
  */
 template <class ClassType>
-class MFilter : public Filter<ClassType>
-{
-public:
+class MFilter : public Filter<ClassType> {
+ public:
+  // Get the last filtered value
+  void get(ClassType& outValue) const {
+    outValue = original[0] + original[1];
+    outValue *= 0.5;
+  }
 
-	// Get the last filtered value
-	void get( ClassType & outValue ) const
-	{
-		outValue = original[0] + original[1];
-		outValue *= 0.5;
-	}
+  // Put a new value into the filter (forget the oldest) and recalc
+  void push(const ClassType& inValue) {
+    original[1] = original[0];
+    original[0] = inValue;
+  }
 
-
-	// Put a new value into the filter (forget the oldest) and recalc
-	void push( const ClassType & inValue )
-	{
-		original[1] = original[0];
-		original[0] = inValue;
-	}
-
-	private:
-
-	// filter queue
-	ClassType	original[2];
+ private:
+  // filter queue
+  ClassType original[2];
 };
 
 /**
  * A second order filter - ready to use
  */
 template <class ClassType>
-class SecondOrderFilter : public Filter<ClassType>
-{
-public:
+class SecondOrderFilter : public Filter<ClassType> {
+ public:
+  // Build a 2nd order filter
+  inline SecondOrderFilter()
+      : a0(1)
+      , a1(0)
+      , a2(0)
+      , b1(0)
+      , b2(0) {
+  }
 
-	// Build a 2nd order filter
-	inline SecondOrderFilter( )
-		: a0 ( 1 ), a1 ( 0 ), a2 ( 0 ), b1 ( 0 ), b2 ( 0 ) {}
+  // Build a 2nd order filter of these coefficients
+  inline SecondOrderFilter(
+      const double inA0, const double inA1, const double inA2, const double inB1, const double inB2)
+      : a0(inA0)
+      , a1(inA1)
+      , a2(inA2)
+      , b1(inB1)
+      , b2(inB2) {
+  }
 
+  // Copy constructor
+  inline SecondOrderFilter(const SecondOrderFilter& Other) {
+    // setup coefficients
+    a0 = Other.a0;
+    a1 = Other.a1;
+    a2 = Other.a2;
+    b1 = Other.b1;
+    b2 = Other.b2;
+  }
 
-	// Build a 2nd order filter of these coefficients
-	inline SecondOrderFilter
-		( const double inA0, const double inA1, const double inA2,
-		  const double inB1, const double inB2 )
-		: a0( inA0 ), a1( inA1 ), a2( inA2 ), b1( inB1 ), b2( inB2 ) {}
+  // Get the last filtered value
+  void get(ClassType& outValue) const {
+    outValue = filtered[0];
+  };
 
+  // Get one of the last filtered values (0 = last)
+  void get(ClassType& outValue, const int inIndex) const {
+    outValue = (inIndex > 0 && inIndex < 3) ? filtered[inIndex] : filtered[0];
+  };
 
-	// Copy constructor
-	inline SecondOrderFilter ( const SecondOrderFilter & Other )
-	{
-		// setup coefficients
-		a0 = Other.a0;
-		a1 = Other.a1;
-		a2 = Other.a2;
-		b1 = Other.b1;
-		b2 = Other.b2;
-	}
+  // Put a new value into the filter (forget the oldest) and recalc
+  void push(const ClassType& inValue) {
+    // shift the arrays up
+    original[2] = original[1];
+    original[1] = original[0];
+    original[0] = inValue;
 
-	// Get the last filtered value
-	void get( ClassType & outValue ) const
-	{
-		outValue = filtered[0];
-	};
+    filtered[2] = filtered[1];
+    filtered[1] = filtered[0];
 
-	// Get one of the last filtered values (0 = last)
-	void get( ClassType & outValue, const int inIndex ) const
-	{
-		outValue = (inIndex > 0 && inIndex < 3) ? filtered[ inIndex ] : filtered[0];
-	};
+    // calulate filter
+    filtered[0] = original[0] * a0 + original[1] * a1 + original[2] * a2 + filtered[1] * b1 +
+                  filtered[2] * b2;
+  }
 
-	// Put a new value into the filter (forget the oldest) and recalc
-	void push( const ClassType &  inValue )
-	{
-		// shift the arrays up
-		original[2] = original[1];
-		original[1] = original[0];
-		original[0] = inValue;
+  // Assignment operator (copies filter coefficients)
+  const SecondOrderFilter& operator=(const SecondOrderFilter& Original) {
+    a0 = Original.a0;
+    a1 = Original.a1;
+    a2 = Original.a2;
+    b1 = Original.b1;
+    b2 = Original.b2;
 
-		filtered[2] = filtered[1];
-		filtered[1] = filtered[0];
+    return Original;
+  }
 
-		// calulate filter
-		filtered[0] = original[0] * a0 +
-					  original[1] * a1 +
-					  original[2] * a2 +
-					  filtered[1] * b1 +
-					  filtered[2] * b2;
-	}
+  // Comparison operator (compares filter coefficients)
+  bool operator==(const SecondOrderFilter& Other) const {
+    return ((a0 == Other.a0) && (a1 == Other.a1) && (a2 == Other.a2) && (b1 == Other.b1) &&
+            (b2 == Other.b2));
+  }
 
-	// Assignment operator (copies filter coefficients)
-	const SecondOrderFilter & operator= ( const SecondOrderFilter & Original )
-	{
-		a0 = Original.a0;
-		a1 = Original.a1;
-		a2 = Original.a2;
-		b1 = Original.b1;
-		b2 = Original.b2;
+ protected:
+  // filter coefficients
+  double a0, a1, a2, b1, b2;
 
-		return Original;
-		}
-
-	// Comparison operator (compares filter coefficients)
-	bool operator== ( const SecondOrderFilter & Other ) const
-	{
-		return ( ( a0 == Other.a0 ) &&
-				 ( a1 == Other.a1 ) &&
-				 ( a2 == Other.a2 ) &&
-				 ( b1 == Other.b1 ) &&
-				 ( b2 == Other.b2 ) );
-	}
-
-protected:
-
-	// filter coefficients
-	double a0, a1, a2, b1, b2;
-
-	// filter queues
-	ClassType	original[3], filtered[3];
+  // filter queues
+  ClassType original[3], filtered[3];
 };
 
 /**
  * Butterworth lowpass
  */
 template <class ClassType>
-class ButterworthFilter : public SecondOrderFilter<ClassType>
-{
-public:
+class ButterworthFilter : public SecondOrderFilter<ClassType> {
+ public:
+  // Build Vista Butterworth lowpass of 2nd order with this cut off frequency
+  // default sample frequency 1kHz
+  inline ButterworthFilter(const double inCutOff, const double inSample = 1000.0) {
+    const float PI = 3.14159265358979323846f;
+    double      omega, k1, k2, k3;
 
-	// Build Vista Butterworth lowpass of 2nd order with this cut off frequency
-	// default sample frequency 1kHz
-	inline ButterworthFilter ( const double inCutOff, const double inSample = 1000.0 )
-	{
-		const float PI = 3.14159265358979323846f;
-		double omega, k1, k2, k3;
+    // initialize filter coefficients
+    omega = tan(PI * inCutOff / inSample);
 
-		// initialize filter coefficients
-		omega = tan ( PI * inCutOff / inSample );
+    k1 = sqrt(2) * omega;
+    k2 = omega * omega;
 
-		k1 = sqrt(2) * omega;
-		k2 = omega * omega;
-
-		a0 = k2 / ( 1 + k1 + k2 );
-		a1 = 2 * a0;
-		a2 = a0;
-		k3 = 2 * a0 / k2;
-		b1 = k3 - 2 * a0;
-		b2 =  1 - 2 * a0 - k3;
-	}
-
+    a0 = k2 / (1 + k1 + k2);
+    a1 = 2 * a0;
+    a2 = a0;
+    k3 = 2 * a0 / k2;
+    b1 = k3 - 2 * a0;
+    b2 = 1 - 2 * a0 - k3;
+  }
 };
 
 /**
  * critical damped lowpass
  */
 template <class ClassType>
-class CriticalDampedFilter : public SecondOrderFilter<ClassType>
-{
-public:
+class CriticalDampedFilter : public SecondOrderFilter<ClassType> {
+ public:
+  // Build a critical damped lowpass of 2nd order with this cut off frequency
+  // default sample frequency 1kHz
+  inline CriticalDampedFilter(const double inCutOff, const double inSample = 1000.0) {
+    const float PI = 3.14159265358979323846f;
+    double      omega, k1, k2, k3;
 
-	// Build a critical damped lowpass of 2nd order with this cut off frequency
-	// default sample frequency 1kHz
-	inline CriticalDampedFilter ( const double inCutOff, const double inSample = 1000.0 )
-	{
-		const float PI = 3.14159265358979323846f;
-		double omega, k1, k2, k3;
+    // initialize filter coefficients
+    omega = tan(PI * inCutOff / inSample);
 
-		// initialize filter coefficients
-		omega = tan( PI * inCutOff / inSample);
+    k1 = 2 * omega;
+    k2 = omega * omega;
 
-		k1 = 2 * omega;
-		k2 = omega * omega;
-
-		a0 = k2 / ( 1 + k1 + k2 );
-		a1 = 2 * a0;
-		a2 = a0;
-		k3 = 2 * a0 / k2;
-		b1 = k3 - 2 * a0;
-		b2 =  1 - 2 * a0 - k3;
-	}
+    a0 = k2 / (1 + k1 + k2);
+    a1 = 2 * a0;
+    a2 = a0;
+    k3 = 2 * a0 / k2;
+    b1 = k3 - 2 * a0;
+    b2 = 1 - 2 * a0 - k3;
+  }
 };
 
 /*============================================================================*/
 
-#endif  //_VISTAFILTER_H
+#endif //_VISTAFILTER_H

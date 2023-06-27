@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _NEWFILE_H
 #define _NEWFILE_H
 
@@ -44,23 +43,22 @@
 /**
  * Doxygen style doc tags for class documentation
  */
-class
-{
-public:
-	/**
-	 * important method doc tags are
-	 * @param
-	 * @return
-	 * @see
-	 * @todo
-	 * @bug
-	 * @deprecated
-	 */
-	 
-	 /// @todo single line doc tags need ///-style comments  
+class {
+ public:
+  /**
+   * important method doc tags are
+   * @param
+   * @return
+   * @see
+   * @todo
+   * @bug
+   * @deprecated
+   */
 
-protected:
-private:
+  /// @todo single line doc tags need ///-style comments
+
+ protected:
+ private:
 };
 
 #endif //_NEWFILE_H

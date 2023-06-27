@@ -21,17 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERGENERICPARAMETERASPECT_H
 #define _VISTADRIVERGENERICPARAMETERASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
-
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 
 #include <VistaAspects/VistaReflectionable.h>
 
@@ -47,165 +44,151 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 class VISTADEVICEDRIVERSAPI VistaDriverGenericParameterAspect
-                          : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	class VISTADEVICEDRIVERSAPI IParameterContainer : public IVistaReflectionable
-	{
-		REFL_DECLARE
-	public:
-		virtual ~IParameterContainer();
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  class VISTADEVICEDRIVERSAPI IParameterContainer : public IVistaReflectionable {
+    REFL_DECLARE
+   public:
+    virtual ~IParameterContainer();
 
-		virtual bool TurnDef( bool def ) { return false; }
-		virtual bool Apply() { return true; }
-	protected:
-		IParameterContainer();
-	};
+    virtual bool TurnDef(bool def) {
+      return false;
+    }
+    virtual bool Apply() {
+      return true;
+    }
 
-	class IContainerCreate
-	{
-	public:
-		virtual ~IContainerCreate() {}
-		virtual IParameterContainer *CreateContainer() = 0;
-		virtual bool DeleteContainer( IParameterContainer *pContainer ) = 0;
-	};
+   protected:
+    IParameterContainer();
+  };
 
+  class IContainerCreate {
+   public:
+    virtual ~IContainerCreate() {
+    }
+    virtual IParameterContainer* CreateContainer()                                = 0;
+    virtual bool                 DeleteContainer(IParameterContainer* pContainer) = 0;
+  };
 
-	VistaDriverGenericParameterAspect(IContainerCreate *pCreationFct);
-	virtual ~VistaDriverGenericParameterAspect();
+  VistaDriverGenericParameterAspect(IContainerCreate* pCreationFct);
+  virtual ~VistaDriverGenericParameterAspect();
 
+  IParameterContainer* GetParameterContainer() const;
 
-	IParameterContainer * GetParameterContainer() const;
+  template <class T>
+  T* GetParameter() const {
+    return dynamic_cast<T*>(GetParameterContainer());
+  }
 
-	template<class T>
-	T *GetParameter() const
-	{
-		return dynamic_cast<T*>( GetParameterContainer() );
-	}
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
+  virtual void Print(std::ostream&) const;
 
-	virtual void Print( std::ostream& ) const;
-
-protected:
-private:
-	IContainerCreate    *m_pCreate;
-	mutable IParameterContainer *m_pParams;
-	static int m_nAspectId;
+ protected:
+ private:
+  IContainerCreate*            m_pCreate;
+  mutable IParameterContainer* m_pParams;
+  static int                   m_nAspectId;
 };
 
-template<class parent>
-class TParameterContainer : public VistaDriverGenericParameterAspect::IParameterContainer
-{
-	REFL_INLINEIMP( TParameterContainer, VistaDriverGenericParameterAspect::IParameterContainer );
-public:
-	TParameterContainer( parent *pparent )
-	: VistaDriverGenericParameterAspect::IParameterContainer()
-	, m_parent(pparent)
-	{
+template <class parent>
+class TParameterContainer : public VistaDriverGenericParameterAspect::IParameterContainer {
+  REFL_INLINEIMP(TParameterContainer, VistaDriverGenericParameterAspect::IParameterContainer);
 
-	}
-	parent *GetParent() const { return m_parent; }
+ public:
+  TParameterContainer(parent* pparent)
+      : VistaDriverGenericParameterAspect::IParameterContainer()
+      , m_parent(pparent) {
+  }
+  parent* GetParent() const {
+    return m_parent;
+  }
 
-private:
-	parent *m_parent;
+ private:
+  parent* m_parent;
 };
 
-template<class T, class Kreator>
-class TParameterCreate : public VistaDriverGenericParameterAspect::IContainerCreate
-{
-public:
-	TParameterCreate( T *pDriver )
-	: m_pDriver( pDriver )
-	{
+template <class T, class Kreator>
+class TParameterCreate : public VistaDriverGenericParameterAspect::IContainerCreate {
+ public:
+  TParameterCreate(T* pDriver)
+      : m_pDriver(pDriver) {
+  }
 
-	}
+  VistaDriverGenericParameterAspect::IParameterContainer* CreateContainer() {
+    return new Kreator(m_pDriver);
+  }
 
-	VistaDriverGenericParameterAspect::IParameterContainer *CreateContainer()
-	{
-		return new Kreator( m_pDriver );
-	}
+  virtual bool DeleteContainer(VistaDriverGenericParameterAspect::IParameterContainer* pCont) {
+    delete pCont;
+    return true;
+  }
 
-	virtual bool DeleteContainer( VistaDriverGenericParameterAspect::IParameterContainer *pCont )
-	{
-		delete pCont;
-		return true;
-	}
-
-	T *m_pDriver;
+  T* m_pDriver;
 };
 
-
-#define PARAMETER_CLEANUP_FUNCTION( gettervarname, settervarname ) \
-	static void releaseParameterProps() \
-	{ \
-	IVistaPropertyGetFunctor **git = gettervarname; \
-	IVistaPropertySetFunctor **sit = settervarname; \
-	\
-		while( *git ) \
-			delete *git++; \
-	\
-		while( *sit ) \
-			delete *sit++; \
-	}
+#define PARAMETER_CLEANUP_FUNCTION(gettervarname, settervarname)                                   \
+  static void releaseParameterProps() {                                                            \
+    IVistaPropertyGetFunctor** git = gettervarname;                                                \
+    IVistaPropertySetFunctor** sit = settervarname;                                                \
+                                                                                                   \
+    while (*git)                                                                                   \
+      delete *git++;                                                                               \
+                                                                                                   \
+    while (*sit)                                                                                   \
+      delete *sit++;                                                                               \
+  }
 
 #define CALL_PARAMETER_CLEANUP_FUNCTION releaseParameterProps();
 
 #if !defined(WIN32)
- #define PARAMETER_CLEANUP( gettervarname, settervarname ) \
-	static __attribute__ ((destructor)) void releaseParameterProps() ; \
-	\
-	static void releaseParameterProps() \
-	{ \
-	IVistaPropertyGetFunctor **git = gettervarname; \
-	IVistaPropertySetFunctor **sit = settervarname; \
-	\
-		while( *git ) \
-			delete *git++; \
-	\
-		while( *sit ) \
-			delete *sit++; \
-	}
+#define PARAMETER_CLEANUP(gettervarname, settervarname)                                            \
+  static __attribute__((destructor)) void releaseParameterProps();                                 \
+                                                                                                   \
+  static void releaseParameterProps() {                                                            \
+    IVistaPropertyGetFunctor** git = gettervarname;                                                \
+    IVistaPropertySetFunctor** sit = settervarname;                                                \
+                                                                                                   \
+    while (*git)                                                                                   \
+      delete *git++;                                                                               \
+                                                                                                   \
+    while (*sit)                                                                                   \
+      delete *sit++;                                                                               \
+  }
 
 #else // !WIN32
- #include <windows.h>
- #define PARAMETER_CLEANUP( gettervarname, settervarname ) \
-	\
-	static void releaseParameterProps(); \
-	\
-	BOOL APIENTRY DllMain( HANDLE hModule, \
-						   DWORD  ul_reason_for_call, \
-						   LPVOID lpReserved \
-						 ) \
-	{ \
-		switch (ul_reason_for_call) \
-		{ \
-		case DLL_PROCESS_ATTACH: \
-		case DLL_THREAD_ATTACH: \
-		case DLL_THREAD_DETACH: \
-			break; \
-		case DLL_PROCESS_DETACH: \
-			if( lpReserved == 0 ) \
-				releaseParameterProps(); \
-			break; \
-		} \
-		return TRUE; \
-	} \
-	static void releaseParameterProps() \
-	{ \
-	IVistaPropertyGetFunctor **git = gettervarname; \
-	IVistaPropertySetFunctor **sit = settervarname; \
-	\
-		while( *git ) \
-			delete *git++; \
-	\
-		while( *sit ) \
-			delete *sit++; \
-	}
+#include <windows.h>
+#define PARAMETER_CLEANUP(gettervarname, settervarname)                                            \
+                                                                                                   \
+  static void releaseParameterProps();                                                             \
+                                                                                                   \
+  BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {             \
+    switch (ul_reason_for_call) {                                                                  \
+    case DLL_PROCESS_ATTACH:                                                                       \
+    case DLL_THREAD_ATTACH:                                                                        \
+    case DLL_THREAD_DETACH:                                                                        \
+      break;                                                                                       \
+    case DLL_PROCESS_DETACH:                                                                       \
+      if (lpReserved == 0)                                                                         \
+        releaseParameterProps();                                                                   \
+      break;                                                                                       \
+    }                                                                                              \
+    return TRUE;                                                                                   \
+  }                                                                                                \
+  static void releaseParameterProps() {                                                            \
+    IVistaPropertyGetFunctor** git = gettervarname;                                                \
+    IVistaPropertySetFunctor** sit = settervarname;                                                \
+                                                                                                   \
+    while (*git)                                                                                   \
+      delete *git++;                                                                               \
+                                                                                                   \
+    while (*sit)                                                                                   \
+      delete *sit++;                                                                               \
+  }
 #endif // !WIN32
 
 /*============================================================================*/
@@ -213,5 +196,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTADRIVERGENERICPARAMETERASPECT_H
-
-

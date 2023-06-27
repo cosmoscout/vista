@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFILESYSTEMNODE_H
 #define _VISTAFILESYSTEMNODE_H
 
@@ -29,18 +28,16 @@
 /* DEFINITIONS                                                                */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VistaToolsConfig.h"
 
-#include<string>
+#include <string>
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -52,99 +49,84 @@
  * @DATE   July 2003
  *
  */
-class VISTATOOLSAPI VistaFileSystemNode
-{
+class VISTATOOLSAPI VistaFileSystemNode {
 
-public:
+ public:
+  enum FILE_TYPE { FT_UNKNOWN = 0, FT_FILE = 1, FT_DIRECTORY = 2, FT_LINK = 3 };
 
-  enum FILE_TYPE
-  {
-	FT_UNKNOWN     = 0,
-	FT_FILE        = 1,
-	FT_DIRECTORY   = 2,
-	FT_LINK        = 3
-  };
-
-public:
-
+ public:
   //   VistaFileSystemNode();
-   VistaFileSystemNode( const std::string& sNodeName );
-   virtual ~VistaFileSystemNode();
+  VistaFileSystemNode(const std::string& sNodeName);
+  virtual ~VistaFileSystemNode();
 
+  /****** interface methods *************************************************/
 
-   /****** interface methods *************************************************/
+  /**
+   * Creates a new node
+   */
+  virtual bool Create() = 0;
 
-   /**
-	* Creates a new node
-	*/
-   virtual bool Create() = 0;
+  /**
+   * Creates the node, as well as all parent directories that dont exist yet
+   */
+  bool CreateWithParentDirectories();
 
-   /**
-    * Creates the node, as well as all parent directories that dont exist yet
-    */
-   bool CreateWithParentDirectories();
+  /**
+   * Deletes this node
+   */
+  virtual bool Delete() = 0;
 
-   /**
-	* Deletes this node
-	*/
-   virtual bool Delete() = 0;
+  /**
+   * Checks for existing of a node using operating system functions
+   */
+  virtual bool Exists() const = 0;
 
+  /**
+   * Checks if node is readonly
+   *   (different in Windows for files and directories, so handle it by
+   *    more specific classes)
+   */
+  virtual bool IsReadOnly() const;
 
-   /**
-	* Checks for existing of a node using operating system functions
-	*/
-   virtual bool Exists() const = 0;
+  /**
+   * Returns node type as enum FILE_TYPE (see above)
+   */
+  FILE_TYPE GetType() const;
 
+  /**
+   * Gets size of Node (file or directory)
+   */
+  virtual long GetSize() = 0;
 
-   /**
-	* Checks if node is readonly
-	*   (different in Windows for files and directories, so handle it by
-	*    more specific classes)
-	*/
-   virtual bool IsReadOnly() const;
+  /**
+   * Gets date of creation of node
+   */
+  virtual double GetCreationDate();
 
+  /**
+   * Gets date of last access to node
+   */
+  virtual double GetLastAccessDate();
 
-   /**
-	* Returns node type as enum FILE_TYPE (see above)
-	*/
-   FILE_TYPE GetType() const;
+  /**
+   * Gets date of last modify of node
+   */
+  virtual double GetLastModifiedDate();
 
-   /**
-	* Gets size of Node (file or directory)
-	*/
-   virtual long GetSize() = 0;
+  /***** final methods ******************************************************/
 
-   /**
-	* Gets date of creation of node
-	*/
-   virtual double GetCreationDate();
+  std::string GetName() const;            // relativ oder absolut oder ... ?
+  std::string GetLocalName() const;       // just the name, without prefix
+  std::string GetParentDirectory() const; // Parent directory without preceeding "/"
 
+  void SetName(const std::string& strName);
 
-   /**
-	* Gets date of last access to node
-	*/
-   virtual double GetLastAccessDate();
+  bool IsDirectory() const;
+  bool IsFile() const;
 
-   /**
-	* Gets date of last modify of node
-	*/
-   virtual double GetLastModifiedDate();
-
-   /***** final methods ******************************************************/
-
-
-   std::string GetName() const;   // relativ oder absolut oder ... ?
-   std::string GetLocalName() const; // just the name, without prefix
-   std::string GetParentDirectory() const; // Parent directory without preceeding "/"
-
-   void SetName(const std::string &strName);
-
-   bool IsDirectory() const;
-   bool IsFile() const;
-
-private:
-	std::string m_sName;
-	std::string m_sLocalName;
+ private:
+  std::string m_sName;
+  std::string m_sLocalName;
 };
 
 /*============================================================================*/
@@ -152,4 +134,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAFILESYSTEMNODE_H
-

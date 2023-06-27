@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnComposeQuaternionFromDirectionsNode.h" 
+#include "VdfnComposeQuaternionFromDirectionsNode.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -32,41 +31,36 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VdfnComposeQuaternionFromDirectionsNode::VdfnComposeQuaternionFromDirectionsNode()
-: m_pInFrom(NULL)
-, m_pInTo(NULL)
-, m_pOut(new TVdfnPort< VistaQuaternion >())
-{
-	RegisterInPortPrototype("from", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
-	RegisterInPortPrototype("to", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
-	RegisterOutPort("out", m_pOut);
+    : m_pInFrom(NULL)
+    , m_pInTo(NULL)
+    , m_pOut(new TVdfnPort<VistaQuaternion>()) {
+  RegisterInPortPrototype("from", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype("to", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterOutPort("out", m_pOut);
 }
-VdfnComposeQuaternionFromDirectionsNode::~VdfnComposeQuaternionFromDirectionsNode()
-{
+VdfnComposeQuaternionFromDirectionsNode::~VdfnComposeQuaternionFromDirectionsNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnComposeQuaternionFromDirectionsNode::PrepareEvaluationRun()
-{
-	m_pInFrom = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("from"));
-	m_pInTo = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("to"));
-	return GetIsValid();
+bool VdfnComposeQuaternionFromDirectionsNode::PrepareEvaluationRun() {
+  m_pInFrom = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("from"));
+  m_pInTo   = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("to"));
+  return GetIsValid();
 }
 
-bool VdfnComposeQuaternionFromDirectionsNode::DoEvalNode()
-{
-	VistaQuaternion& qOut = m_pOut->GetValueRef();
-	
-	qOut = VistaQuaternion(m_pInFrom->GetValueConstRef(), m_pInTo->GetValueConstRef());
-	qOut.Normalize();
+bool VdfnComposeQuaternionFromDirectionsNode::DoEvalNode() {
+  VistaQuaternion& qOut = m_pOut->GetValueRef();
 
-	m_pOut->SetUpdateTimeStamp(GetUpdateTimeStamp());
-	m_pOut->IncUpdateCounter();
-	return true;
+  qOut = VistaQuaternion(m_pInFrom->GetValueConstRef(), m_pInTo->GetValueConstRef());
+  qOut.Normalize();
+
+  m_pOut->SetUpdateTimeStamp(GetUpdateTimeStamp());
+  m_pOut->IncUpdateCounter();
+  return true;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

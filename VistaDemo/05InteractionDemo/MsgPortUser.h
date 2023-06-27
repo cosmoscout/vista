@@ -26,10 +26,9 @@
 
 class VistaSystem;
 
-class MsgPortUser
-{
-public:
-	static void EchoToCout( VistaSystem *pSystem );
+class MsgPortUser {
+ public:
+  static void EchoToCout(VistaSystem* pSystem);
 };
 
-#endif  /* _MSGPORTUSER_H */
+#endif /* _MSGPORTUSER_H */

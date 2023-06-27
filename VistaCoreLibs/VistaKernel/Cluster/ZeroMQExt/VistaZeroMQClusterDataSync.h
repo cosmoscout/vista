@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAZEROMQCLUSTERDATASYNC_H
 #define _VISTAZEROMQCLUSTERDATASYNC_H
 
@@ -30,79 +29,74 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBytebufferDataSyncBase.h>
-#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
+#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
+#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
 /*============================================================================*/
-namespace zmq
-{
-	class socket_t;
-	class message_t;
-}
+namespace zmq {
+class socket_t;
+class message_t;
+} // namespace zmq
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaZeroMQClusterLeaderDataSync : public VistaClusterBytebufferLeaderDataSyncBase
-{
-public:
-	VistaZeroMQClusterLeaderDataSync( const std::string& sHostname,
-										const int nServerPort,
-											const bool bVerbose = true );
-	explicit VistaZeroMQClusterLeaderDataSync( const std::string& sZeroMQAddress,
-											const bool bVerbose = true );
-	virtual ~VistaZeroMQClusterLeaderDataSync();
+class VISTAKERNELAPI VistaZeroMQClusterLeaderDataSync
+    : public VistaClusterBytebufferLeaderDataSyncBase {
+ public:
+  VistaZeroMQClusterLeaderDataSync(
+      const std::string& sHostname, const int nServerPort, const bool bVerbose = true);
+  explicit VistaZeroMQClusterLeaderDataSync(
+      const std::string& sZeroMQAddress, const bool bVerbose = true);
+  virtual ~VistaZeroMQClusterLeaderDataSync();
 
-	bool WaitForConnection( const std::vector<VistaConnectionIP*>& vecConnections );
-	
-	virtual bool GetIsValid() const;
+  bool WaitForConnection(const std::vector<VistaConnectionIP*>& vecConnections);
 
-	virtual std::string GetDataSyncType() const;
+  virtual bool GetIsValid() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual std::string GetDataSyncType() const;
 
-private:
-	virtual bool DoSendMessage();
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-private:
-	zmq::socket_t*	m_pSocket;
+ private:
+  virtual bool DoSendMessage();
+
+ private:
+  zmq::socket_t* m_pSocket;
 };
 
-class VISTAKERNELAPI VistaZeroMQClusterFollowerDataSync : public VistaClusterBytebufferFollowerDataSyncBase
-{
-public:
-	VistaZeroMQClusterFollowerDataSync( const std::string& sHostname,
-										const int nServerPort,
-										const bool bSwap,
-										const bool bVerbose = true );
-	explicit VistaZeroMQClusterFollowerDataSync( const std::string& sZeroMQAddress,
-										const bool bSwap,
-										const bool bVerbose = true );
-	virtual ~VistaZeroMQClusterFollowerDataSync();
+class VISTAKERNELAPI VistaZeroMQClusterFollowerDataSync
+    : public VistaClusterBytebufferFollowerDataSyncBase {
+ public:
+  VistaZeroMQClusterFollowerDataSync(const std::string& sHostname, const int nServerPort,
+      const bool bSwap, const bool bVerbose = true);
+  explicit VistaZeroMQClusterFollowerDataSync(
+      const std::string& sZeroMQAddress, const bool bSwap, const bool bVerbose = true);
+  virtual ~VistaZeroMQClusterFollowerDataSync();
 
-	bool WaitForConnection( VistaConnectionIP* pConnection );
+  bool WaitForConnection(VistaConnectionIP* pConnection);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-private:
-	virtual bool DoReceiveMessage();
+ private:
+  virtual bool DoReceiveMessage();
 
-private:
-	zmq::socket_t*	m_pSocket;
-	zmq::message_t*	m_pZmqMessage;
+ private:
+  zmq::socket_t*  m_pSocket;
+  zmq::message_t* m_pZmqMessage;
 };
 
 /*============================================================================*/

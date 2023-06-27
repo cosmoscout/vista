@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNCLUSTERNODEINFONODE_H
 #define _VISTADFNCLUSTERNODEINFONODE_H
 
@@ -30,11 +29,10 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
+#include <VistaDataFlowNet/VdfnHistoryPort.h>
 #include <VistaDataFlowNet/VdfnNode.h>
 #include <VistaDataFlowNet/VdfnNodeCreators.h>
 #include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnHistoryPort.h>
-
 
 #include <VistaBase/VistaBaseTypes.h>
 
@@ -64,19 +62,19 @@ class VistaClusterMode;
  * @outport{node_mode,int,a hint on the cluster mode\, see code\,plz}
  * @outport{node_clock,double,the frame clock value for the current iteration}
  */
-class VISTAKERNELAPI VdfnClusterNodeInfoNode : public IVdfnNode
-{
-public:
-	VdfnClusterNodeInfoNode( VistaClusterMode *pClAux );
-	virtual ~VdfnClusterNodeInfoNode();
+class VISTAKERNELAPI VdfnClusterNodeInfoNode : public IVdfnNode {
+ public:
+  VdfnClusterNodeInfoNode(VistaClusterMode* pClAux);
+  virtual ~VdfnClusterNodeInfoNode();
 
-protected:
-	bool DoEvalNode();
-private:
-	VistaClusterMode*			m_pClusterMode;
-	TVdfnPort<std::string>*		m_pClusterNodeName;
-	TVdfnPort<std::string>*		m_pClusterNodeType;
-	TVdfnPort<double>*			m_pClusterClock;
+ protected:
+  bool DoEvalNode();
+
+ private:
+  VistaClusterMode*       m_pClusterMode;
+  TVdfnPort<std::string>* m_pClusterNodeName;
+  TVdfnPort<std::string>* m_pClusterNodeType;
+  TVdfnPort<double>*      m_pClusterClock;
 };
 
 /*============================================================================*/
@@ -84,4 +82,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNDEVICEDEBUGNODE_H
-

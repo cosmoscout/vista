@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTAPIPECHECKER_H
 #define IDLVISTAPIPECHECKER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <list>
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
+#include <list>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -43,45 +41,41 @@ class IDLVistaPipeComponent;
 class DLVistaCheckError;
 class IDLVistaRegistration;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaPipeChecker
-{
-public:
-	DLVistaPipeChecker();
-	/**
-	 * Pure virtual destructor. Does nothing.
-	 */
-	virtual ~DLVistaPipeChecker();
+class VISTAINTERPROCCOMMAPI DLVistaPipeChecker {
+ public:
+  DLVistaPipeChecker();
+  /**
+   * Pure virtual destructor. Does nothing.
+   */
+  virtual ~DLVistaPipeChecker();
 
-	/**
-	 * Starts the pipe-checking at the given entry point into the pipe.
-	 * @return an error code (!=0) to state a failure, 0 iff this pipe seems to be ok.
-	 */
-	virtual DLVistaCheckError CheckPipe(IDLVistaPipeComponent *pBeginning, IDLVistaPipeComponent *pEnd) const;
+  /**
+   * Starts the pipe-checking at the given entry point into the pipe.
+   * @return an error code (!=0) to state a failure, 0 iff this pipe seems to be ok.
+   */
+  virtual DLVistaCheckError CheckPipe(
+      IDLVistaPipeComponent* pBeginning, IDLVistaPipeComponent* pEnd) const;
 
-protected:
+ protected:
+  DLVistaCheckError CheckInboundReference(IDLVistaPipeComponent* pComp) const;
+  DLVistaCheckError CheckOutboundReference(IDLVistaPipeComponent* pComp) const;
 
-	DLVistaCheckError CheckInboundReference(IDLVistaPipeComponent *pComp) const;
-	DLVistaCheckError CheckOutboundReference(IDLVistaPipeComponent *pComp) const;
+  DLVistaCheckError CheckPacketIntegrity(
+      IDLVistaPipeComponent* pIn, IDLVistaPipeComponent* pOut) const;
 
-	DLVistaCheckError CheckPacketIntegrity(IDLVistaPipeComponent *pIn, IDLVistaPipeComponent *pOut) const;
+  DLVistaCheckError CheckReachability(
+      IDLVistaPipeComponent* pBegin, IDLVistaPipeComponent* pEnd) const;
 
-	DLVistaCheckError CheckReachability(IDLVistaPipeComponent *pBegin, IDLVistaPipeComponent *pEnd) const;
-
-private:
-	IDLVistaRegistration *m_pPacketRegistration;
+ private:
+  IDLVistaRegistration* m_pPacketRegistration;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTAACTIVECOMPONENT_H
-
-
+#endif // DLVISTAACTIVECOMPONENT_H

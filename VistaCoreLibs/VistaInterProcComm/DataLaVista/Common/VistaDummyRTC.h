@@ -21,48 +21,53 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADUMMYRTC_H
 #define _VISTADUMMYRTC_H
 
- /*============================================================================*/
- /* MACROS AND DEFINES                                                         */
- /*============================================================================*/
+/*============================================================================*/
+/* MACROS AND DEFINES                                                         */
+/*============================================================================*/
 
- /*============================================================================*/
- /* INCLUDES                                                                   */
- /*============================================================================*/
+/*============================================================================*/
+/* INCLUDES                                                                   */
+/*============================================================================*/
+#include <VistaInterProcComm/DataLaVista/Base/VistaRTC.h>
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
- #include <VistaInterProcComm/DataLaVista/Base/VistaRTC.h>
 
- /*============================================================================*/
- /* FORWARD DECLARATIONS                                                       */
- /*============================================================================*/
+/*============================================================================*/
+/* FORWARD DECLARATIONS                                                       */
+/*============================================================================*/
 
+/*============================================================================*/
+/* CLASS DEFINITIONS                                                          */
+/*============================================================================*/
 
- /*============================================================================*/
- /* CLASS DEFINITIONS                                                          */
- /*============================================================================*/
+class DLVistaDummyRTC : public IDLVistaRTC {
+ private:
+  /**
+   * We prohibit copying
+   */
+  DLVistaDummyRTC(DLVistaDummyRTC&) {
+  }
 
-class DLVistaDummyRTC : public IDLVistaRTC
-{
-private:
-	/**
-	 * We prohibit copying
-	 */
-	DLVistaDummyRTC	(DLVistaDummyRTC &) {}
+ public:
+  DLVistaDummyRTC() {
+  }
+  virtual ~DLVistaDummyRTC() {
+  }
 
-public:
-
-						DLVistaDummyRTC	() {}
-	 virtual			~DLVistaDummyRTC	() {}
-
-	 virtual DLV_INT64	GetTickCount				() const {return 0;}
-	 virtual DLV_INT32	GetTimeStamp				() const {return 0;}
-	 virtual double		GetSystemTime				() const {return 0.0;}
-	 virtual double GetTickToSecond( DLV_INT64 nTs ) const { return 0.0; }
+  virtual DLV_INT64 GetTickCount() const {
+    return 0;
+  }
+  virtual DLV_INT32 GetTimeStamp() const {
+    return 0;
+  }
+  virtual double GetSystemTime() const {
+    return 0.0;
+  }
+  virtual double GetTickToSecond(DLV_INT64 nTs) const {
+    return 0.0;
+  }
 };
 
-
 #endif //_VISTADUMMYRTC_H
-

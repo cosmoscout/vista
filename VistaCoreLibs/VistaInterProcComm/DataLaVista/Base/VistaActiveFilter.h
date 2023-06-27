@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTAACTIVEFILTER_H
 #define DLVISTAACTIVEFILTER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,11 +31,11 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
-#include "VistaFilter.h"
 #include "VistaActiveComponent.h"
-#include <string>
+#include "VistaFilter.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <list>
+#include <string>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -49,102 +47,101 @@ class VistaPriority;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaActiveFilter : public IDLVistaFilter
-												 , public IDLVistaActiveComponent
-{
-public:
-	DLVistaActiveFilter(IDLVistaFilter *);
+class VISTAINTERPROCCOMMAPI DLVistaActiveFilter : public IDLVistaFilter,
+                                                  public IDLVistaActiveComponent {
+ public:
+  DLVistaActiveFilter(IDLVistaFilter*);
 
-	virtual ~DLVistaActiveFilter();
+  virtual ~DLVistaActiveFilter();
 
-	virtual bool InitPacketMgmt();
+  virtual bool InitPacketMgmt();
 
-	virtual IDLVistaDataPacket *FilterPacketL(IDLVistaDataPacket * pPacket);
+  virtual IDLVistaDataPacket* FilterPacketL(IDLVistaDataPacket* pPacket);
 
-	virtual void ConsumePacket(IDLVistaDataPacket * pPacket);
+  virtual void ConsumePacket(IDLVistaDataPacket* pPacket);
 
-	virtual IDLVistaDataPacket *PullPacket(bool bBlock);
+  virtual IDLVistaDataPacket* PullPacket(bool bBlock);
 
-	virtual IDLVistaDataPacket * GivePacket(bool bBlock);
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
 
-	virtual IDLVistaDataPacket *CreatePacket();
+  virtual IDLVistaDataPacket* CreatePacket();
 
-	virtual void DeletePacket(IDLVistaDataPacket *pPacket);
+  virtual void DeletePacket(IDLVistaDataPacket* pPacket);
 
+  virtual bool AttachInputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool AttachInputComponent(IDLVistaPipeComponent * pComp);
+  virtual bool AttachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool AttachOutputComponent(IDLVistaPipeComponent * pComp);
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+  virtual int GetInputPacketType() const;
+  virtual int GetOutputPacketType() const;
 
-	virtual int GetInputPacketType() const;
-	virtual int GetOutputPacketType() const;
+  virtual std::list<IDLVistaPipeComponent*> GetInputComponents() const;
+  virtual std::list<IDLVistaPipeComponent*> GetOutputComponents() const;
 
-	virtual std::list<IDLVistaPipeComponent *> GetInputComponents() const;
-	virtual std::list<IDLVistaPipeComponent *> GetOutputComponents() const;
+  /**
+   * This is a method for constraint checking.
+   * @param pComp the component to see whether this is registered as input to this component
+   * @return true if pComp is a valid input to this component.
+   */
+  virtual bool IsInputComponent(IDLVistaPipeComponent* pComp) const;
 
-   /**
-	 * This is a method for constraint checking.
-	 * @param pComp the component to see whether this is registered as input to this component
-	 * @return true if pComp is a valid input to this component.
-	 */
-	virtual bool IsInputComponent(IDLVistaPipeComponent *pComp) const;
+  /**
+   * This is a method for constraint checking.
+   * @param pComp the component to see whether this is registered as input to this component
+   * @return true if pComp is a valid input to this component.
+   */
+  virtual bool IsOutputComponent(IDLVistaPipeComponent* pComp) const;
 
-	/**
-	 * This is a method for constraint checking.
-	 * @param pComp the component to see whether this is registered as input to this component
-	 * @return true if pComp is a valid input to this component.
-	 */
-	virtual bool IsOutputComponent(IDLVistaPipeComponent *pComp) const;
+  bool StartComponent();
 
-	bool StartComponent();
+  bool PauseComponent(bool bJoin);
+  bool UnPauseComponent(bool bJoin);
 
-	bool PauseComponent(bool bJoin);
-	bool UnPauseComponent(bool bJoin);
+  bool StopComponent(bool bJoin);
 
-	bool StopComponent(bool bJoin);
+  bool StopComponentGently(bool bJoin);
 
-	bool StopComponentGently(bool bJoin);
+  bool HaltComponent();
 
-	bool HaltComponent();
+  /**
+   * tell the filter that active filtering is about to be stopped.
+   * Use this to indicate termination whenever the filter may
+   * be in a blocking wait internally
+   */
+  void IndicateFilteringEnd();
 
-	/**
-	 * tell the filter that active filtering is about to be stopped.
-	 * Use this to indicate termination whenever the filter may
-	 * be in a blocking wait internally
-	 */
-	void IndicateFilteringEnd();
+  virtual bool IsActiveComponent() const {
+    return true;
+  }
 
-	virtual bool IsActiveComponent() const { return true;}
+  bool IsComponentRunning() const;
 
-	bool IsComponentRunning() const;
+  virtual int SetComponentPriority(const VistaPriority& pPrio);
 
-	virtual int  SetComponentPriority(const VistaPriority &pPrio);
+  void SetThreadName(const std::string& strName);
 
-	void SetThreadName(const std::string& strName);
+  std::string GetThreadName() const;
 
-	std::string GetThreadName() const;
+  bool GetStopOnDestruct() const;
+  void SetStopOnDestruct(bool bStop);
 
-	bool GetStopOnDestruct() const;
-	void SetStopOnDestruct(bool bStop);
+  virtual IDLVistaDataPacket* ReturnPacket();
 
-	virtual IDLVistaDataPacket *ReturnPacket();
+ private:
+  VistaThreadLoop* m_pThread;
 
-private:
-	VistaThreadLoop *m_pThread;
-
-	IDLVistaFilter *m_pRealFilter;
-	bool m_bStopOnDestruct;
+  IDLVistaFilter* m_pRealFilter;
+  bool            m_bStopOnDestruct;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTAACTIVEFILTER_H
-
+#endif // DLVISTAACTIVEFILTER_H

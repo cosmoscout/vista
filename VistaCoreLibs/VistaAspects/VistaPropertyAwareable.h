@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROPERTYAWAREABLE_H
 #define _VISTAPROPERTYAWAREABLE_H
 
@@ -33,7 +32,6 @@
 #include <VistaAspects/VistaAspectsUtils.h>
 #include <VistaAspects/VistaProperty.h>
 #include <VistaAspects/VistaPropertyList.h>
-
 
 #include <string>
 
@@ -52,16 +50,14 @@
  *   update();
  * </verbatim>
  */
-template<class T> int compAndAssignFunc(const T& x, T &y)
-{
-	if( x != y )
-	{
-		y = x;
-		return 1;
-	}
-	return 0;
+template <class T>
+int compAndAssignFunc(const T& x, T& y) {
+  if (x != y) {
+    y = x;
+    return 1;
+  }
+  return 0;
 }
-
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -71,77 +67,69 @@ template<class T> int compAndAssignFunc(const T& x, T &y)
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAASPECTSAPI IVistaPropertyAwareable
-{
-public:
-	/**
-	* EPropertyStatus encodes the error values of
-	* some of the int-returning methods below.
-	*
-	* PROP_OK				well, everything worked out fine
-	* PROP_NOT_FOUND		unable to find the given property
-	* PROP_INVALID_VALUE	unable to cast the given prop value to the type needed
-	*/
-	enum EPropertyStatus
-	{
-		PROP_NO_CHANGE=0,
-		PROP_OK=1,
-		PROP_NOT_FOUND,
-		PROP_INVALID_VALUE
-	};
+class VISTAASPECTSAPI IVistaPropertyAwareable {
+ public:
+  /**
+   * EPropertyStatus encodes the error values of
+   * some of the int-returning methods below.
+   *
+   * PROP_OK				well, everything worked out fine
+   * PROP_NOT_FOUND		unable to find the given property
+   * PROP_INVALID_VALUE	unable to cast the given prop value to the type needed
+   */
+  enum EPropertyStatus { PROP_NO_CHANGE = 0, PROP_OK = 1, PROP_NOT_FOUND, PROP_INVALID_VALUE };
 
-	virtual ~IVistaPropertyAwareable() {};
-	/**
-	* Set the property given by refProp.GetNameForNameable() to
-	* the value encoded by refProp.GetValue()
-	* @param	refProp		Property with key and value to be set
-	* @return	int			A status int from EPropertyStatus (NOTE: 0 == success)
-	*/
-	virtual int SetProperty(const VistaProperty & refProp)    = 0;
-	/**
-	* Get the property value for the key refProp.GetNameForNameable() and
-	* put it to refProp's value field.
-	* @param	refProp		Property with key of property to be retrieved
-	* @param	refProp		Value field set accordingly iff successful
-	* @return	int			A status int from EPropertyStatus (NOTE: 0 == success)
-	*/
-	virtual int GetProperty(VistaProperty &refProp)          = 0;
-	virtual VistaProperty GetPropertyByName(const std::string &sPropName) = 0;
-	/**
-	* Set a property's value indexing it by it's name.
-	* @param sPropName	property's key
-	* @param sPropValue	property's value to be set
-	* @return bool		true iff successful
-	*
-	*/
-	virtual bool SetPropertyByName(const std::string &sPropName,
-								   const std::string &sPropValue) = 0;
-	/**
-	* Set several properties at once.
-	* @param	rPList	PropertyList containing all the properties to be set
-	* @return	int		number of properties successfully set
-	*/
-	virtual int SetPropertiesByList(const VistaPropertyList &rPList) = 0;
-	/**
-	* Retrieve all object properties at once.
-	* @param	rPList	PropertyList containing object's current properties
-	* @return	int		number of properties retrieved
-	*/
-	virtual int GetPropertiesByList(VistaPropertyList &rPList)       = 0;
-	/**
-	* Retrieve the list of symbols i.e. property keys which are "unterstood" by
-	* this object. This should contain all valid key which can be inquired using e.g.
-	* the GetProperty(...) method.
-	* @param	rStorageList	list with all valid property keys for this object
-	* @return	int				number of valid property keys (i.e. rStorageList.size())
-	*/
-	virtual int GetPropertySymbolList(std::list<std::string> &rStorageList) = 0;
+  virtual ~IVistaPropertyAwareable(){};
+  /**
+   * Set the property given by refProp.GetNameForNameable() to
+   * the value encoded by refProp.GetValue()
+   * @param	refProp		Property with key and value to be set
+   * @return	int			A status int from EPropertyStatus (NOTE: 0 == success)
+   */
+  virtual int SetProperty(const VistaProperty& refProp) = 0;
+  /**
+   * Get the property value for the key refProp.GetNameForNameable() and
+   * put it to refProp's value field.
+   * @param	refProp		Property with key of property to be retrieved
+   * @param	refProp		Value field set accordingly iff successful
+   * @return	int			A status int from EPropertyStatus (NOTE: 0 == success)
+   */
+  virtual int           GetProperty(VistaProperty& refProp)             = 0;
+  virtual VistaProperty GetPropertyByName(const std::string& sPropName) = 0;
+  /**
+   * Set a property's value indexing it by it's name.
+   * @param sPropName	property's key
+   * @param sPropValue	property's value to be set
+   * @return bool		true iff successful
+   *
+   */
+  virtual bool SetPropertyByName(const std::string& sPropName, const std::string& sPropValue) = 0;
+  /**
+   * Set several properties at once.
+   * @param	rPList	PropertyList containing all the properties to be set
+   * @return	int		number of properties successfully set
+   */
+  virtual int SetPropertiesByList(const VistaPropertyList& rPList) = 0;
+  /**
+   * Retrieve all object properties at once.
+   * @param	rPList	PropertyList containing object's current properties
+   * @return	int		number of properties retrieved
+   */
+  virtual int GetPropertiesByList(VistaPropertyList& rPList) = 0;
+  /**
+   * Retrieve the list of symbols i.e. property keys which are "unterstood" by
+   * this object. This should contain all valid key which can be inquired using e.g.
+   * the GetProperty(...) method.
+   * @param	rStorageList	list with all valid property keys for this object
+   * @return	int				number of valid property keys (i.e.
+   * rStorageList.size())
+   */
+  virtual int GetPropertySymbolList(std::list<std::string>& rStorageList) = 0;
 
+  virtual std::string GetPropertyDescription(const std::string& sPropName) = 0;
 
-	virtual std::string GetPropertyDescription(const std::string &sPropName) = 0;
-
-protected:
-	IVistaPropertyAwareable() {};
+ protected:
+  IVistaPropertyAwareable(){};
 };
 
 /*============================================================================*/
@@ -149,4 +137,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTAPROPERTYAWARE_H
-

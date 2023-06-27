@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAOPENCVFACETRACKDRIVER_H
 #define __VISTAOPENCVFACETRACKDRIVER_H
 
@@ -35,12 +34,11 @@
 #define VISTAOPENCVFACETRACKDRIVERAPI
 #endif
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverGenericParameterAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
 #include <VistaBase/VistaTimer.h>
 
@@ -56,128 +54,122 @@
 class VistaDriverThreadAspect;
 class VistaDriverInfoAspect;
 
-namespace cv
-{
-	class VideoCapture;
-	class CascadeClassifier;
-}
+namespace cv {
+class VideoCapture;
+class CascadeClassifier;
+} // namespace cv
 struct _IplImage;
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAOPENCVFACETRACKDRIVERAPI VistaOpenCVFaceTrackDriver : public IVistaDeviceDriver
-{
-public:
+class VISTAOPENCVFACETRACKDRIVERAPI VistaOpenCVFaceTrackDriver : public IVistaDeviceDriver {
+ public:
+  struct FacePoseMeasure {
+    float m_a3fPosition[3];
+  };
 
-	struct FacePoseMeasure 
-	{
-		float	m_a3fPosition[3];
-	};
+  VistaOpenCVFaceTrackDriver(IVistaDriverCreationMethod* pCreationMethod);
+  virtual ~VistaOpenCVFaceTrackDriver();
 
-	VistaOpenCVFaceTrackDriver( IVistaDriverCreationMethod* pCreationMethod );
-	virtual ~VistaOpenCVFaceTrackDriver();
+  class FaceTrackParameters : public VistaDriverGenericParameterAspect::IParameterContainer {
+    REFL_DECLARE
+   public:
+    FaceTrackParameters(VistaOpenCVFaceTrackDriver* pDriver);
 
+    enum {
+      MSG_CAPTUREDEVICE_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
+      MSG_FRAMERATE_CHG,
+      MSG_HEIGHT_CHG,
+      MSG_WIDTH_CHG,
+      MSG_EYEDISTANCCE_CHG,
+      MSG_NORMALIZEDEYEDISTANCE_CHG,
+      MSG_SHOWDEBUGWINDOW_CHG,
+      MSG_CLASSIFIERFILE_CHG,
+      MSG_LAST
+    };
 
-	class FaceTrackParameters : public VistaDriverGenericParameterAspect::IParameterContainer
-	{
-		REFL_DECLARE
-	public:
-		FaceTrackParameters( VistaOpenCVFaceTrackDriver* pDriver );
+    int  GetCaptureDevice() const;
+    bool SetCaptureDevice(int nDeviceID);
 
-		enum
-		{
-			MSG_CAPTUREDEVICE_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
-			MSG_FRAMERATE_CHG,
-			MSG_HEIGHT_CHG,
-			MSG_WIDTH_CHG,
-			MSG_EYEDISTANCCE_CHG,
-			MSG_NORMALIZEDEYEDISTANCE_CHG,
-			MSG_SHOWDEBUGWINDOW_CHG,
-			MSG_CLASSIFIERFILE_CHG,
-			MSG_LAST
-		};
+    int  GetWidth() const;
+    bool SetWidth(int nWidth);
 
-		int GetCaptureDevice() const;
-		bool SetCaptureDevice( int nDeviceID );
+    int  GetHeight() const;
+    bool SetHeight(int nHeight);
 
-		int GetWidth() const;
-		bool SetWidth( int nWidth );
+    float GetFrameRate() const;
+    bool  SetFrameRate(float nFrameRate);
 
-		int GetHeight() const;
-		bool SetHeight( int nHeight );	
+    float GetEyeDistance() const;
+    bool  SetEyeDistance(float fEyeDistance);
 
-		float GetFrameRate() const;
-		bool SetFrameRate( float nFrameRate );
+    float GetNormalizedEyeDistance() const;
+    bool  SetNormalizedEyeDistance(float nNormailzedDistance);
 
-		float GetEyeDistance() const;
-		bool SetEyeDistance( float fEyeDistance );
+    bool GetShowDebugWindow() const;
+    bool SetShowDebugWindow(bool bShowDebug);
 
-		float GetNormalizedEyeDistance() const;
-		bool SetNormalizedEyeDistance( float nNormailzedDistance );
+    std::string GetClassifierFile() const;
+    bool        SetClassifierFile(const std::string& sFilename);
 
-		bool GetShowDebugWindow() const;
-		bool SetShowDebugWindow( bool bShowDebug );
+   private:
+    VistaOpenCVFaceTrackDriver* m_pDriver;
 
-		std::string GetClassifierFile() const;
-		bool SetClassifierFile( const std::string& sFilename );
-	private:
-		VistaOpenCVFaceTrackDriver *m_pDriver;
+    int         m_nDeviceID;
+    int         m_nWidth;
+    int         m_nHeight;
+    float       m_nFramerate;
+    float       m_nEyeDistance;
+    float       m_nNormalizedEyeDistance;
+    bool        m_bShowDebugWindow;
+    std::string m_sClassifierFile;
+  };
 
-		int m_nDeviceID;
-		int m_nWidth;
-		int m_nHeight;
-		float m_nFramerate;
-		float m_nEyeDistance;
-		float m_nNormalizedEyeDistance;
-		bool m_bShowDebugWindow;
-		std::string m_sClassifierFile;
-	};
+  void UpdateEyeDistanceFactor();
+  void ConnectToOpenCVDevice();
+  void ReadCascadeClassifier();
+  void ChangeShowDebugWindow();
 
-	void UpdateEyeDistanceFactor();
-	void ConnectToOpenCVDevice();
-	void ReadCascadeClassifier();
-	void ChangeShowDebugWindow();
-protected:
-	
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+ protected:
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-	virtual bool PhysicalEnable( bool bEnable );
-	bool DoSensorUpdate( VistaType::microtime nTs );
-private:
-	VistaDriverInfoAspect*		m_pInfo;
-	VistaDriverThreadAspect*	m_pThread;
-	VistaDriverGenericParameterAspect* m_pParams;
+  virtual bool PhysicalEnable(bool bEnable);
+  bool         DoSensorUpdate(VistaType::microtime nTs);
 
-	cv::VideoCapture*			m_pCapture;
-	cv::CascadeClassifier*		m_pCascade;
-	bool						m_bDebugWindow;
-	float						m_nEyeDistanceFactor;
-	float						m_nPosNormalizeFactor;
-	int							m_nNormalizeWidth;
-	int							m_nNormalizeHeight;
-	bool						m_bPreConnect;
+ private:
+  VistaDriverInfoAspect*             m_pInfo;
+  VistaDriverThreadAspect*           m_pThread;
+  VistaDriverGenericParameterAspect* m_pParams;
 
-	int							m_nLastSizeX;
-	int							m_nLastSizeY;
-	int							m_nLastPosX;
-	int							m_nLastPosY;
-	float						m_fSizeTolerance;
+  cv::VideoCapture*      m_pCapture;
+  cv::CascadeClassifier* m_pCascade;
+  bool                   m_bDebugWindow;
+  float                  m_nEyeDistanceFactor;
+  float                  m_nPosNormalizeFactor;
+  int                    m_nNormalizeWidth;
+  int                    m_nNormalizeHeight;
+  bool                   m_bPreConnect;
 
-	VistaWeightedAverageTimer	m_oTimer;
+  int   m_nLastSizeX;
+  int   m_nLastSizeY;
+  int   m_nLastPosX;
+  int   m_nLastPosY;
+  float m_fSizeTolerance;
 
-	void*						m_pCLEyeCamera;
-	_IplImage*					m_pImage;
+  VistaWeightedAverageTimer m_oTimer;
+
+  void*      m_pCLEyeCamera;
+  _IplImage* m_pImage;
 };
 
-
-class VISTAOPENCVFACETRACKDRIVERAPI VistaOpenCVFaceTrackDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaOpenCVFaceTrackDriverCreationMethod(IVistaTranscoderFactoryFactory *pFac );
-	virtual IVistaDeviceDriver *CreateDriver();
+class VISTAOPENCVFACETRACKDRIVERAPI VistaOpenCVFaceTrackDriverCreationMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  VistaOpenCVFaceTrackDriverCreationMethod(IVistaTranscoderFactoryFactory* pFac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/
@@ -189,4 +181,3 @@ public:
 /*============================================================================*/
 
 #endif //__VISTAOPENCVFACETRACK_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAACCEPTOR_H
 #define _VISTAACCEPTOR_H
 
@@ -52,7 +51,7 @@ class VistaTCPServerSocket;
 
 /**
  * @ingroup VistaInterProcComm
- * 
+ *
  * @brief Asynchronously accepts incoming TCP connections in a separate
  * thread as a specific instance of IVistaThreadPoolWorkInstance.
  *
@@ -71,59 +70,53 @@ class VistaTCPServerSocket;
  * @todo Comment on buffering/blocking states of the created socket.
  * @todo How are multiple subsequent connections handled?
  */
-class VISTAINTERPROCCOMMAPI IVistaAcceptor : public IVistaThreadPoolWorkInstance
-{
-public:
-    /**
-	 * Creates a new IVistaAcceptor object.
-	 * @param sInterfaceName network interface to listen on
-	 * @param iPort port number to listen on
-	 */
-	IVistaAcceptor(const std::string &sInterfaceName, int iPort);
-	virtual ~IVistaAcceptor();
+class VISTAINTERPROCCOMMAPI IVistaAcceptor : public IVistaThreadPoolWorkInstance {
+ public:
+  /**
+   * Creates a new IVistaAcceptor object.
+   * @param sInterfaceName network interface to listen on
+   * @param iPort port number to listen on
+   */
+  IVistaAcceptor(const std::string& sInterfaceName, int iPort);
+  virtual ~IVistaAcceptor();
 
-	/**
-	 * Instructs the IVistaAcceptor to stop listening for client
-	 * connections. This, in turn, calls the HandleAbortMessage
-	 * routine. 
-	 */ 
-	void SetAbortSignal();
+  /**
+   * Instructs the IVistaAcceptor to stop listening for client
+   * connections. This, in turn, calls the HandleAbortMessage
+   * routine.
+   */
+  void SetAbortSignal();
 
-	bool GetIsConnected() const;
+  bool GetIsConnected() const;
 
-protected:
-    // IVistaThreadedTask implementation
-	virtual void PreWork();
-	virtual void DefinedThreadWork();
+ protected:
+  // IVistaThreadedTask implementation
+  virtual void PreWork();
+  virtual void DefinedThreadWork();
 
-	/**
-	 * Called upon successful connection. Children of IVistaAcceptor
-	 * override this method to handle incoming connections in a
-	 * certain way.
-	 */
-	virtual bool HandleIncomingClient(VistaTCPSocket *pSocket) = 0;
+  /**
+   * Called upon successful connection. Children of IVistaAcceptor
+   * override this method to handle incoming connections in a
+   * certain way.
+   */
+  virtual bool HandleIncomingClient(VistaTCPSocket* pSocket) = 0;
 
-    /**
-	 * Called upon connection failure or if the user instructed the
-	 * IVistaAcceptor to stop listening for connections via
-	 * SetAbortSignal(). 
-	 */
-	virtual bool HandleAbortMessage() = 0;
+  /**
+   * Called upon connection failure or if the user instructed the
+   * IVistaAcceptor to stop listening for connections via
+   * SetAbortSignal().
+   */
+  virtual bool HandleAbortMessage() = 0;
 
-	enum eSockState
-	{
-		SOCK_NONE=-1,
-		SOCK_CLIENT,
-		SOCK_EXIT
-	};
+  enum eSockState { SOCK_NONE = -1, SOCK_CLIENT, SOCK_EXIT };
 
-private:
-	VistaThreadEvent  *m_pSyncEvent;
-	VistaTCPServerSocket *m_pServer;
+ private:
+  VistaThreadEvent*     m_pSyncEvent;
+  VistaTCPServerSocket* m_pServer;
 
-	std::string   m_sInterfaceName;
-	int           m_iInterfacePort;
-	bool          m_bConnected;
+  std::string m_sInterfaceName;
+  int         m_iInterfacePort;
+  bool        m_bConnected;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

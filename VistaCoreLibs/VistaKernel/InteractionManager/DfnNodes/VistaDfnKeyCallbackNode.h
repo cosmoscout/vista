@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNCALLBACKCOUNTERNODE_H
 #define _VISTADFNCALLBACKCOUNTERNODE_H
 
@@ -31,13 +30,12 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
-#include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnNodeFactory.h>
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
-
+#include <VistaDataFlowNet/VdfnNode.h>
+#include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -58,43 +56,42 @@ class VistaKeyboardSystemControl;
  * @ingroup VdfnNodes
  * @outport{value, int, a counter value}
  */
-class VISTAKERNELAPI VistaDfnKeyCallbackNode : public IVdfnNode
-{
-protected:
-	class CounterCallback;
-public:
-	VistaDfnKeyCallbackNode();	
-	~VistaDfnKeyCallbackNode();
-	
-	virtual void SetupKeyboardCallback(  VistaKeyboardSystemControl* pKeyboard
-										, const int nKeyCode
-										, const int nModCode
-										, const std::string& sDescription
-										, const bool bForce );
+class VISTAKERNELAPI VistaDfnKeyCallbackNode : public IVdfnNode {
+ protected:
+  class CounterCallback;
 
-	bool PrepareEvaluationRun();
-	bool GetIsValid() const;
+ public:
+  VistaDfnKeyCallbackNode();
+  ~VistaDfnKeyCallbackNode();
 
-	IVistaExplicitCallbackInterface* GetCallback() const;
-	virtual void Callback(const CounterCallback* pCallback);	
-protected:
-	bool DoEvalNode();
-	virtual unsigned int CalcUpdateNeededScore() const;	
+  virtual void SetupKeyboardCallback(VistaKeyboardSystemControl* pKeyboard, const int nKeyCode,
+      const int nModCode, const std::string& sDescription, const bool bForce);
 
-	class CounterCallback : public IVistaExplicitCallbackInterface
-	{
-	public:
-		CounterCallback(VistaDfnKeyCallbackNode* pOwner);
-		virtual bool Do();		
-	private:
-		VistaDfnKeyCallbackNode* m_pOwner;		
-	};
+  bool PrepareEvaluationRun();
+  bool GetIsValid() const;
 
-	CounterCallback* m_pCallbackKeyDown;
-	VistaKeyboardSystemControl* m_pKeyboard;	
-private:
-	TVdfnPort<int>* m_pCallbackCountPort;
-	unsigned int m_nCounter;
+  IVistaExplicitCallbackInterface* GetCallback() const;
+  virtual void                     Callback(const CounterCallback* pCallback);
+
+ protected:
+  bool                 DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const;
+
+  class CounterCallback : public IVistaExplicitCallbackInterface {
+   public:
+    CounterCallback(VistaDfnKeyCallbackNode* pOwner);
+    virtual bool Do();
+
+   private:
+    VistaDfnKeyCallbackNode* m_pOwner;
+  };
+
+  CounterCallback*            m_pCallbackKeyDown;
+  VistaKeyboardSystemControl* m_pKeyboard;
+
+ private:
+  TVdfnPort<int>* m_pCallbackCountPort;
+  unsigned int    m_nCounter;
 };
 
 /*============================================================================*/
@@ -106,4 +103,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNCALLBACKCOUNTERNODE_H
-

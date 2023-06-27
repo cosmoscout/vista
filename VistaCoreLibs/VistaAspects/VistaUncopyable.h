@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAUNCOPYABLE_H
 #define _VISTAUNCOPYABLE_H
 
@@ -36,14 +35,13 @@
  * advised to also declare inherited classes as uncopyable.
  * Note that the access level changes to private, so take care to re-set it
  */
-#define VISTA_UNCOPYABLE( ClassName ) \
-private: \
-	ClassName( const ClassName& oOther ); \
-	ClassName& operator=( const ClassName& oCopy );
+#define VISTA_UNCOPYABLE(ClassName)                                                                \
+ private:                                                                                          \
+  ClassName(const ClassName& oOther);                                                              \
+  ClassName& operator=(const ClassName& oCopy);
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAUNCOPYABLE_H
-

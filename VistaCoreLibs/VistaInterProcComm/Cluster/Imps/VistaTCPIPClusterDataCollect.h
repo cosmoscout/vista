@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPIPCLUSTERCOLLECT_H
 #define _VISTATCPIPCLUSTERCOLLECT_H
 
@@ -31,11 +30,11 @@
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <VistaInterProcComm/Cluster/VistaClusterDataCollect.h>
-#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
+#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -45,96 +44,87 @@ class VistaConnectionIP;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaTCPIPClusterLeaderDataCollect : public IVistaClusterDataCollect
-{
-public:
-	explicit VistaTCPIPClusterLeaderDataCollect( const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaTCPIPClusterLeaderDataCollect : public IVistaClusterDataCollect {
+ public:
+  explicit VistaTCPIPClusterLeaderDataCollect(const bool bVerbose = true);
 
-	virtual ~VistaTCPIPClusterLeaderDataCollect();
-	
-	int AddFollower( const std::string& sName,
-						VistaConnectionIP* pConnection,
-						const bool bManageDeletion = false );
+  virtual ~VistaTCPIPClusterLeaderDataCollect();
 
-	virtual bool CollectTime( const VistaType::systemtime nOwnTime,
-							std::vector<VistaType::systemtime>& vecCollected );
-	virtual bool CollectData( const VistaPropertyList& oList,
-							std::vector<VistaPropertyList>& vecCollected );
-	virtual bool CollectData( const VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							std::vector<std::vector<VistaType::byte> >& vecCollected );
+  int AddFollower(
+      const std::string& sName, VistaConnectionIP* pConnection, const bool bManageDeletion = false);
 
-	virtual bool GetIsValid() const;
+  virtual bool CollectTime(
+      const VistaType::systemtime nOwnTime, std::vector<VistaType::systemtime>& vecCollected);
+  virtual bool CollectData(
+      const VistaPropertyList& oList, std::vector<VistaPropertyList>& vecCollected);
+  virtual bool CollectData(const VistaType::byte* pDataBuffer, const int iBufferSize,
+      std::vector<std::vector<VistaType::byte>>& vecCollected);
 
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataCollectType() const;
+  virtual std::string GetDataCollectType() const;
 
-	virtual int GetNumberOfFollowers() const;
-	virtual int GetNumberOfActiveFollowers() const;
-	virtual int GetNumberOfDeadFollowers() const;
-	virtual std::string GetFollowerNameForId( const int nID ) const;
-	virtual int GetFollowerIdForName( const std::string& sName ) const;
-	virtual bool GetFollowerIsAlive( const int nID ) const;
-	virtual int GetLastChangedFollower();
-	virtual bool DeactivateFollower( const std::string& sName );
-	virtual bool DeactivateFollower( const int nID );
+  virtual int         GetNumberOfFollowers() const;
+  virtual int         GetNumberOfActiveFollowers() const;
+  virtual int         GetNumberOfDeadFollowers() const;
+  virtual std::string GetFollowerNameForId(const int nID) const;
+  virtual int         GetFollowerIdForName(const std::string& sName) const;
+  virtual bool        GetFollowerIsAlive(const int nID) const;
+  virtual int         GetLastChangedFollower();
+  virtual bool        DeactivateFollower(const std::string& sName);
+  virtual bool        DeactivateFollower(const int nID);
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 
-private:
-	struct Follower;
-	bool RemoveFollower( Follower* pFollower );
+ private:
+  struct Follower;
+  bool RemoveFollower(Follower* pFollower);
 
-	bool ReceivePartFromFollower( int nExpectedType, Follower* pSlave,
-									const int nTimeout = 0 );
-	bool SendMessage();
+  bool ReceivePartFromFollower(int nExpectedType, Follower* pSlave, const int nTimeout = 0);
+  bool SendMessage();
 
-private:
-	VistaType::uint64		m_nCollectCount;
-	VistaByteBufferDeSerializer m_oDeSer;
-	std::vector<VistaType::byte> m_vecDeSerData;
+ private:
+  VistaType::uint64            m_nCollectCount;
+  VistaByteBufferDeSerializer  m_oDeSer;
+  std::vector<VistaType::byte> m_vecDeSerData;
 
-	std::vector<Follower*>	m_vecFollowers;
-	std::vector<Follower*>	m_vecAliveFollowers;
-	int						m_nLastChangedFollower;
+  std::vector<Follower*> m_vecFollowers;
+  std::vector<Follower*> m_vecAliveFollowers;
+  int                    m_nLastChangedFollower;
 };
 
-class VISTAINTERPROCCOMMAPI VistaTCPIPClusterFollowerDataCollect : public IVistaClusterDataCollect
-{
-public:
-	VistaTCPIPClusterFollowerDataCollect( VistaConnectionIP* pLeaderConnection,
-									const bool bSwap,
-									const bool bManageDeletion = false,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaTCPIPClusterFollowerDataCollect : public IVistaClusterDataCollect {
+ public:
+  VistaTCPIPClusterFollowerDataCollect(VistaConnectionIP* pLeaderConnection, const bool bSwap,
+      const bool bManageDeletion = false, const bool bVerbose = true);
 
-	virtual ~VistaTCPIPClusterFollowerDataCollect();
+  virtual ~VistaTCPIPClusterFollowerDataCollect();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual bool CollectTime( const VistaType::systemtime nOwnTime,
-							std::vector<VistaType::systemtime>& vecCollected );
-	virtual bool CollectData( const VistaPropertyList& oList,
-							std::vector<VistaPropertyList>& vecCollected );
-	virtual bool CollectData( const VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							std::vector<std::vector<VistaType::byte> >& vecCollected );
+  virtual bool CollectTime(
+      const VistaType::systemtime nOwnTime, std::vector<VistaType::systemtime>& vecCollected);
+  virtual bool CollectData(
+      const VistaPropertyList& oList, std::vector<VistaPropertyList>& vecCollected);
+  virtual bool CollectData(const VistaType::byte* pDataBuffer, const int iBufferSize,
+      std::vector<std::vector<VistaType::byte>>& vecCollected);
 
-	virtual std::string GetDataCollectType() const;
+  virtual std::string GetDataCollectType() const;
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 
-private:
-	bool SendMessage();
-	void Cleanup();
+ private:
+  bool SendMessage();
+  void Cleanup();
 
-private:
-	VistaType::uint64			m_nCollectCount;
-	VistaConnectionIP*			m_pLeaderConn;
-	bool						m_bManageDeletion;
-	VistaByteBufferSerializer	m_oMessage;
-	int							m_nBlockByteCount;
+ private:
+  VistaType::uint64         m_nCollectCount;
+  VistaConnectionIP*        m_pLeaderConn;
+  bool                      m_bManageDeletion;
+  VistaByteBufferSerializer m_oMessage;
+  int                       m_nBlockByteCount;
 };
 
 /*============================================================================*/

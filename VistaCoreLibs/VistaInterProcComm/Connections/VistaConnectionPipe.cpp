@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(WIN32)
+#include <cerrno>
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cerrno>
 #else
 
 #endif
 
-#include <iostream>
 #include "VistaConnectionPipe.h"
+#include <iostream>
 
 #include <VistaBase/VistaExceptionBase.h>
 
@@ -43,160 +42,144 @@
 namespace {
 const int PIPE_R = 0;
 const int PIPE_W = 1;
-}
+} // namespace
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaConnectionPipe::VistaConnectionPipe()
-{
-	SetIsOpen(false);
+VistaConnectionPipe::VistaConnectionPipe() {
+  SetIsOpen(false);
 }
 
-VistaConnectionPipe::~VistaConnectionPipe()
-{
-	Close();
+VistaConnectionPipe::~VistaConnectionPipe() {
+  Close();
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-bool VistaConnectionPipe::Open()
-{
-	if(GetIsOpen())
-		return true;
+bool VistaConnectionPipe::Open() {
+  if (GetIsOpen())
+    return true;
 
 #if !defined(WIN32)
-	if( pipe(m_fd) == -1 )
-		return false;
+  if (pipe(m_fd) == -1)
+    return false;
 #else
-	/**
-	 * @todo implement?
-	 */
+    /**
+     * @todo implement?
+     */
 #endif
 
-	SetIsOpen(true);
-	return true;
+  SetIsOpen(true);
+  return true;
 }
 
-void VistaConnectionPipe::Close(  )
-{
-	if( !GetIsOpen() )
-		return;
+void VistaConnectionPipe::Close() {
+  if (!GetIsOpen())
+    return;
 
 #if !defined(WIN32)
-	close(m_fd[PIPE_R]);
-	close(m_fd[PIPE_W]);
+  close(m_fd[PIPE_R]);
+  close(m_fd[PIPE_W]);
 #else
-	/**
-	 * @todo implement?
-	 */
+    /**
+     * @todo implement?
+     */
 #endif
 }
 
-int VistaConnectionPipe::Receive (void *buffer, const int length, int iTimeout  )
-{
-	if( !GetIsOpen() )
-		return -1;
+int VistaConnectionPipe::Receive(void* buffer, const int length, int iTimeout) {
+  if (!GetIsOpen())
+    return -1;
 
 #if !defined(WIN32)
-	int read_bytes = TEMP_FAILURE_RETRY( read( m_fd[PIPE_R], buffer, length ) );
-	if( read_bytes != length )
-	{
-		/* if unable to read requested bytes but not at EOF -> return error */
-		return -1 ;
-	}
-	return read_bytes;
+  int read_bytes = TEMP_FAILURE_RETRY(read(m_fd[PIPE_R], buffer, length));
+  if (read_bytes != length) {
+    /* if unable to read requested bytes but not at EOF -> return error */
+    return -1;
+  }
+  return read_bytes;
 #else
-	/**
-	 * @todo implement
-	 */
-	VISTA_THROW_NOT_IMPLEMENTED
+  /**
+   * @todo implement
+   */
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 }
 
-int VistaConnectionPipe::Send    (const void *buffer, const int length)
-{
-	if( !GetIsOpen() )
-		return -1;
+int VistaConnectionPipe::Send(const void* buffer, const int length) {
+  if (!GetIsOpen())
+    return -1;
 
 #if !defined(WIN32)
-	int sent_bytes = TEMP_FAILURE_RETRY( write( m_fd[PIPE_W], buffer, length ) );
-	if( sent_bytes != length )
-	{
-		/* if unable to write all data out -> error */
-		return -1 ;
-	}
-	return sent_bytes ;
+  int sent_bytes = TEMP_FAILURE_RETRY(write(m_fd[PIPE_W], buffer, length));
+  if (sent_bytes != length) {
+    /* if unable to write all data out -> error */
+    return -1;
+  }
+  return sent_bytes;
 #else
-	/**
-	 * @todo implement
-	 */
-	VISTA_THROW_NOT_IMPLEMENTED
+  /**
+   * @todo implement
+   */
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 }
 
-bool VistaConnectionPipe::HasPendingData() const
-{
+bool VistaConnectionPipe::HasPendingData() const {
 #if !defined(WIN32)
-	struct pollfd fds;
-	int timeout_msecs = 0;
+  struct pollfd fds;
+  int           timeout_msecs = 0;
 
-	fds.fd = m_fd[PIPE_R];
-	fds.events = POLLIN;
+  fds.fd     = m_fd[PIPE_R];
+  fds.events = POLLIN;
 
-	TEMP_FAILURE_RETRY( poll(&fds, 1, timeout_msecs) );
+  TEMP_FAILURE_RETRY(poll(&fds, 1, timeout_msecs));
 
-	return (fds.revents & POLLIN);
+  return (fds.revents & POLLIN);
 #else
-	/**
-	 * @todo implement
-	 */
-	VISTA_THROW_NOT_IMPLEMENTED
+  /**
+   * @todo implement
+   */
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 }
 
-unsigned long VistaConnectionPipe::PendingDataSize() const
-{
+unsigned long VistaConnectionPipe::PendingDataSize() const {
 #ifdef LINUX
-	int result = 0;
-	if ( ioctl ( int(m_fd[PIPE_R]), FIONREAD, & result ) != -1 )
-		return result;
-	else
-		return 0;
+  int result = 0;
+  if (ioctl(int(m_fd[PIPE_R]), FIONREAD, &result) != -1)
+    return result;
+  else
+    return 0;
 #elif defined(SUNOS)
-	int result = 0;
-	if ( ioctl ( int(m_fd[PIPE_R]), I_NREAD, & result ) > 0 )
-		return result;
-	else
-		return 0;
+  int result = 0;
+  if (ioctl(int(m_fd[PIPE_R]), I_NREAD, &result) > 0)
+    return result;
+  else
+    return 0;
 #else
-	VISTA_THROW_NOT_IMPLEMENTED
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 }
 
-HANDLE VistaConnectionPipe::GetConnectionDescriptor() const
-{
+HANDLE VistaConnectionPipe::GetConnectionDescriptor() const {
 #if !defined(WIN32)
-	return m_fd[PIPE_W];
+  return m_fd[PIPE_W];
 #else
-	VISTA_THROW_NOT_IMPLEMENTED
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 }
 
-HANDLE VistaConnectionPipe::GetConnectionWaitForDescriptor()
-{
+HANDLE VistaConnectionPipe::GetConnectionWaitForDescriptor() {
 #if !defined(WIN32)
-	return m_fd[PIPE_R];
+  return m_fd[PIPE_R];
 #else
-	VISTA_THROW_NOT_IMPLEMENTED
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

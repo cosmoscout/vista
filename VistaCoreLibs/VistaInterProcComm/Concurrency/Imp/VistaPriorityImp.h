@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPRIORITYIMP_H
 #define _VISTAPRIORITYIMP_H
 
@@ -37,52 +36,45 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IVistaPriorityImp
-{
-private:
-	int m_iSystemPriorityMax;
-	int m_iSystemPriorityMin;
-	int m_iSystemPriorityInterval;
-	int m_iSystemPriorityIntervalDirection;
+class VISTAINTERPROCCOMMAPI IVistaPriorityImp {
+ private:
+  int m_iSystemPriorityMax;
+  int m_iSystemPriorityMin;
+  int m_iSystemPriorityInterval;
+  int m_iSystemPriorityIntervalDirection;
 
-protected:
+ protected:
+  enum PRIORITY_RANGE {
+    VISTA_MIN_PRIORITY = 0,
+    VISTA_MID_PRIORITY = 16383,
+    VISTA_MAX_PRIORITY = 32767
+  };
 
-   enum PRIORITY_RANGE
-	{
-		VISTA_MIN_PRIORITY  =     0,
-		VISTA_MID_PRIORITY  = 16383,
-		VISTA_MAX_PRIORITY  = 32767
-	};
+  int GetSystemPriorityMax();
+  int GetSystemPriorityMin();
+  int GetSystemPriorityInterval();
+  int GetSystemPriorityIntervalDirection();
 
-	int GetSystemPriorityMax();
-	int GetSystemPriorityMin();
-	int GetSystemPriorityInterval();
-	int GetSystemPriorityIntervalDirection();
+  void SetSystemPriorityMax(int);
+  void SetSystemPriorityMin(int);
 
-	void SetSystemPriorityMax( int );
-	void SetSystemPriorityMin( int );
+  void InitInterval();
 
-	void InitInterval();
+ public:
+  IVistaPriorityImp();
+  virtual ~IVistaPriorityImp();
 
-public:
-
-	IVistaPriorityImp();
-	virtual ~IVistaPriorityImp();
-
-	virtual int ScalePriorityToSystemPriority(int) const;
-	virtual int ScaleSystemPriorityToPriority(int) const;
-	static IVistaPriorityImp *CreatePriorityImp();
+  virtual int               ScalePriorityToSystemPriority(int) const;
+  virtual int               ScaleSystemPriorityToPriority(int) const;
+  static IVistaPriorityImp* CreatePriorityImp();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAPRIORITY_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTANNEWGRAPHICSMANAGER_H
 #define _VISTANNEWGRAPHICSMANAGER_H
 
@@ -30,8 +29,8 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaKernel/GraphicsManager/VistaGraphicsBridge.h>
 #include <VistaKernel/EventManager/VistaEventHandler.h>
+#include <VistaKernel/GraphicsManager/VistaGraphicsBridge.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -53,92 +52,86 @@ class VistaPropertyList;
 class VistaEventManager;
 class VistaFrameLoop;
 
-
 // prototypes
-class   VistaGraphicsManager;
-VISTAKERNELAPI std::ostream & operator<< ( std::ostream &, const VistaGraphicsManager & );
-
+class VistaGraphicsManager;
+VISTAKERNELAPI std::ostream& operator<<(std::ostream&, const VistaGraphicsManager&);
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaGraphicsManager : public VistaEventHandler
-{
-public:
-	VistaGraphicsManager( VistaEventManager *pEvMgr, VistaFrameLoop* pLoop );
-	virtual ~VistaGraphicsManager();
+class VISTAKERNELAPI VistaGraphicsManager : public VistaEventHandler {
+ public:
+  VistaGraphicsManager(VistaEventManager* pEvMgr, VistaFrameLoop* pLoop);
+  virtual ~VistaGraphicsManager();
 
-	bool Init( IVistaNodeBridge* pNodeBridge,
-	               IVistaGraphicsBridge* pGraphicsBridge );
+  bool Init(IVistaNodeBridge* pNodeBridge, IVistaGraphicsBridge* pGraphicsBridge);
 
-	bool SetupScene( const std::string& sIniSection,
-					const VistaPropertyList& oConfig );
+  bool SetupScene(const std::string& sIniSection, const VistaPropertyList& oConfig);
 
-	//** access functions
-	VistaSceneGraph* GetSceneGraph() const;
+  //** access functions
+  VistaSceneGraph* GetSceneGraph() const;
 
-	float GetFrameRate() const;
-	int GetFrameCount() const;
-	/**
-	 * Get/set background color
-	 */
-	VistaColor  GetBackgroundColor() const;
-	void SetBackgroundColor(const VistaColor & color);
+  float GetFrameRate() const;
+  int   GetFrameCount() const;
+  /**
+   * Get/set background color
+   */
+  VistaColor GetBackgroundColor() const;
+  void       SetBackgroundColor(const VistaColor& color);
 
-	/**
-	 * @return returns true if frustum culling is enabled globally, false otherwise
-	 */
-	bool GetFrustumCullingEnabled() const;
-	/**
-	 * @param enables global frustum culling if true, disables otherwise
-	 */
-	void SetFrustumCullingEnabled(bool bCullingEnabled);
+  /**
+   * @return returns true if frustum culling is enabled globally, false otherwise
+   */
+  bool GetFrustumCullingEnabled() const;
+  /**
+   * @param enables global frustum culling if true, disables otherwise
+   */
+  void SetFrustumCullingEnabled(bool bCullingEnabled);
 
-	/**
-	 * @return returns true if occlusion culling is enabled globally,
-	           false otherwise
-	 */
-	bool GetOcclusionCullingEnabled() const;
-	/**
-	 * @param enables global occlusion culling if true, disables otherwise
-	 */
-	void SetOcclusionCullingEnabled( bool bOclCullingEnabled );
+  /**
+   * @return returns true if occlusion culling is enabled globally,
+             false otherwise
+   */
+  bool GetOcclusionCullingEnabled() const;
+  /**
+   * @param enables global occlusion culling if true, disables otherwise
+   */
+  void SetOcclusionCullingEnabled(bool bOclCullingEnabled);
 
-	/**
-	 * @return returns true if bounding box drawing around scenegraph
-	           nodes is enabled, false otherwise
-	 */
-	bool GetBBoxDrawingEnabled() const;
-	/**
-	 * @param enables bounding box drawing around scenegraph nodes if true,
-	          disables otherwise
-	 */
-	void SetBBoxDrawingEnabled(bool bState);
+  /**
+   * @return returns true if bounding box drawing around scenegraph
+             nodes is enabled, false otherwise
+   */
+  bool GetBBoxDrawingEnabled() const;
+  /**
+   * @param enables bounding box drawing around scenegraph nodes if true,
+            disables otherwise
+   */
+  void SetBBoxDrawingEnabled(bool bState);
 
+  IVistaGraphicsBridge* GetGraphicsBridge() const;
+  IVistaNodeBridge*     GetNodeBridge() const;
 
-	IVistaGraphicsBridge*   GetGraphicsBridge() const;
-	IVistaNodeBridge*       GetNodeBridge() const;
+  /**
+   * Handle graphics events, which haven't been handled by the application.
+   *
+   * @param    VistaEvent *pEvent
+   *
+   */
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-	/**
-	 * Handle graphics events, which haven't been handled by the application.
-	 *
-	 * @param    VistaEvent *pEvent
-	 *
-	 */
-	virtual void HandleEvent(VistaEvent *pEvent);
+  static bool RegisterEventTypes(VistaEventManager*);
 
-	static bool RegisterEventTypes(VistaEventManager*);
+  void CreateDefaultLights();
 
-	void CreateDefaultLights();
+  void Debug(std::ostream& oOut) const;
 
-	void Debug( std::ostream& oOut ) const;
-protected:
-
-	VistaSceneGraph*				m_pSceneGraph;
-	VistaGroupNode*			m_pModelRoot;
-	IVistaGraphicsBridge*   m_pGraphicsBridge;
-	IVistaNodeBridge*       m_pNodeBridge;
-	VistaFrameLoop*			m_pLoop;
+ protected:
+  VistaSceneGraph*      m_pSceneGraph;
+  VistaGroupNode*       m_pModelRoot;
+  IVistaGraphicsBridge* m_pGraphicsBridge;
+  IVistaNodeBridge*     m_pNodeBridge;
+  VistaFrameLoop*       m_pLoop;
 };
 
 /*============================================================================*/
@@ -146,4 +139,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTANNEWGRAPHICSMANAGER_H
-

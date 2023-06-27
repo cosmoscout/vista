@@ -21,21 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(_VISTADISPLAY_H)
 #define _VISTADISPLAY_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include "VistaDisplayEntity.h"
+#include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaAspects/VistaReflectionable.h>
 
 #include <vector>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -55,73 +52,66 @@ class IVistaDisplayBridge;
 /**
  * VistaDisplay is ...
  */
-class VISTAKERNELAPI VistaDisplay  : public VistaDisplayEntity
-{
-	friend class IVistaDisplayBridge;
-	friend class VistaDisplayManager;
+class VISTAKERNELAPI VistaDisplay : public VistaDisplayEntity {
+  friend class IVistaDisplayBridge;
+  friend class VistaDisplayManager;
 
-public:
-	virtual ~VistaDisplay();
+ public:
+  virtual ~VistaDisplay();
 
-	VistaDisplayManager *GetDisplayManager() const;
+  VistaDisplayManager* GetDisplayManager() const;
 
-	std::list<std::string> GetWindowNames() const;
-	unsigned int GetNumberOfWindows() const;
+  std::list<std::string> GetWindowNames() const;
+  unsigned int           GetNumberOfWindows() const;
 
-	VistaWindow *GetWindow(unsigned int iIndex) const;
-	std::vector<VistaWindow*> &GetWindows();
+  VistaWindow*               GetWindow(unsigned int iIndex) const;
+  std::vector<VistaWindow*>& GetWindows();
 
-	virtual void Debug ( std::ostream & out ) const;
+  virtual void Debug(std::ostream& out) const;
 
-	/**
-	 * Set/get display properties. The following keys are understood:
-	 *
-	 * DISPLAY_STRING       -   [string]
-	 * NUMBER_OF_WINDOWS    -   [int][read only]
-	 * WINDOW_NAMES         -   [list of strings][read only]
-	 */
+  /**
+   * Set/get display properties. The following keys are understood:
+   *
+   * DISPLAY_STRING       -   [string]
+   * NUMBER_OF_WINDOWS    -   [int][read only]
+   * WINDOW_NAMES         -   [list of strings][read only]
+   */
 
-	class VISTAKERNELAPI VistaDisplayProperties : public IVistaDisplayEntityProperties
-	{
-		friend class VistaDisplay;
+  class VISTAKERNELAPI VistaDisplayProperties : public IVistaDisplayEntityProperties {
+    friend class VistaDisplay;
 
-	public:
-		enum {
-			MSG_DISPLAYSTRING_CHANGE = IVistaDisplayEntityProperties::MSG_LAST,
-			MSG_LAST
-		};
+   public:
+    enum { MSG_DISPLAYSTRING_CHANGE = IVistaDisplayEntityProperties::MSG_LAST, MSG_LAST };
 
-		bool  SetName(const std::string &sName);
+    bool SetName(const std::string& sName);
 
-		std::string GetDisplayString() const;
-		bool        SetDisplayString(const std::string &sDispString);
+    std::string GetDisplayString() const;
+    bool        SetDisplayString(const std::string& sDispString);
 
-		virtual std::string GetReflectionableType() const;
+    virtual std::string GetReflectionableType() const;
 
-	protected:
-		virtual int AddToBaseTypeList(std::list<std::string> &rBtList) const;
+   protected:
+    virtual int AddToBaseTypeList(std::list<std::string>& rBtList) const;
 
-	private:
-		VistaDisplayProperties(VistaDisplayEntity *, IVistaDisplayBridge *);
-		virtual ~VistaDisplayProperties();
+   private:
+    VistaDisplayProperties(VistaDisplayEntity*, IVistaDisplayBridge*);
+    virtual ~VistaDisplayProperties();
 
-		std::string m_strDisplayString;
-	};
+    std::string m_strDisplayString;
+  };
 
-	VistaDisplayProperties *GetDisplayProperties() const;
+  VistaDisplayProperties* GetDisplayProperties() const;
 
-protected:
-	virtual IVistaDisplayEntityProperties *CreateProperties();
+ protected:
+  virtual IVistaDisplayEntityProperties* CreateProperties();
 
-	VistaDisplay(VistaDisplayManager *pDMgr,
-				  IVistaDisplayEntityData *pData,
-				  IVistaDisplayBridge *pBridge);
+  VistaDisplay(
+      VistaDisplayManager* pDMgr, IVistaDisplayEntityData* pData, IVistaDisplayBridge* pBridge);
 
-private:
-	std::vector<VistaWindow *> m_vecWindows;
-	VistaDisplayManager *m_pDisplayManager;
+ private:
+  std::vector<VistaWindow*> m_vecWindows;
+  VistaDisplayManager*      m_pDisplayManager;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

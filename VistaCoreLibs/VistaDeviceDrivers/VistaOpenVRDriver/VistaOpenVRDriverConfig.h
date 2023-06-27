@@ -22,7 +22,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAOPENVRDRIVERCONFIG_H
 #define __VISTAOPENVRDRIVERCONFIG_H
 
@@ -33,11 +32,9 @@
 #include <VistaBase/VistaQuaternion.h>
 #include <VistaBase/VistaTransformMatrix.h>
 
-
 #if defined(WIN32)
-#pragma warning (disable: 4786)
+#pragma warning(disable : 4786)
 #endif
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -47,48 +44,41 @@
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 // Single marker data (3DOF):
-namespace VistaOpenVRConfig
-{
-	struct VISTA_openvr_stick_type{
+namespace VistaOpenVRConfig {
+struct VISTA_openvr_stick_type {
 
-		float loc[3];
-		float rot[9];
-		VistaQuaternion orientation;
-		VistaTransformMatrix pose;
-		
-		bool grip_pressed;
-		
-		bool trackpad_pressed;
-		bool trackpad_touched;
-		float trackpad_x;
-		float trackpad_y;
-		
-		bool trigger_pressed;
-		bool trigger_touched;
-		float trigger_x;
-		
-		bool button_system_pressed;
-		bool button_menu_pressed;
-		bool button_a_pressed;
-	};
+  float                loc[3];
+  float                rot[9];
+  VistaQuaternion      orientation;
+  VistaTransformMatrix pose;
 
-	struct VISTA_openvr_head_type{
+  bool grip_pressed;
 
-		float loc[3];
-		float rot[9];
-		VistaQuaternion orientation;
-		VistaTransformMatrix pose;
-	};
-}
+  bool  trackpad_pressed;
+  bool  trackpad_touched;
+  float trackpad_x;
+  float trackpad_y;
+
+  bool  trigger_pressed;
+  bool  trigger_touched;
+  float trigger_x;
+
+  bool button_system_pressed;
+  bool button_menu_pressed;
+  bool button_a_pressed;
+};
+
+struct VISTA_openvr_head_type {
+
+  float                loc[3];
+  float                rot[9];
+  VistaQuaternion      orientation;
+  VistaTransformMatrix pose;
+};
+} // namespace VistaOpenVRConfig
 
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
 #endif //__VISTAOPENVRDRIVERCONFIG_H
-
-
-
-
-

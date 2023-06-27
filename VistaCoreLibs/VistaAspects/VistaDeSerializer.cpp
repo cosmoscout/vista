@@ -26,7 +26,6 @@ using std::string;
 
 #include "VistaDeSerializer.h"
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -43,71 +42,57 @@ using std::string;
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::ushort16 &val)
-{
-	ReadShort16(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::ushort16& val) {
+  ReadShort16(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::sint32 &val)
-{
-	ReadInt32(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::sint32& val) {
+  ReadInt32(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::uint32 &val)
-{
-	ReadInt32(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::uint32& val) {
+  ReadInt32(val);
+  return *this;
 }
 
-
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::sint64 &val)
-{
-	ReadInt64(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::sint64& val) {
+  ReadInt64(val);
+  return *this;
 }
 
-
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::uint64 &val)
-{
-	ReadUInt64(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::uint64& val) {
+  ReadUInt64(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::float32 &val)
-{
-	ReadFloat32(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::float32& val) {
+  ReadFloat32(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::float64 &val)
-{
-	ReadFloat64(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::float64& val) {
+  ReadFloat64(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( string &val)
-{
-	ReadEncodedString(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(string& val) {
+  ReadEncodedString(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( bool &val)
-{
-	ReadBool(val);
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(bool& val) {
+  ReadBool(val);
+  return *this;
 }
 
-IVistaDeSerializer &IVistaDeSerializer::operator>> ( VistaType::byte &val )
-{
-	ReadRawBuffer( &val, sizeof( VistaType::byte ) );
-	return *this;
+IVistaDeSerializer& IVistaDeSerializer::operator>>(VistaType::byte& val) {
+  ReadRawBuffer(&val, sizeof(VistaType::byte));
+  return *this;
 }
 
-
-void IVistaDeSerializer::SetByteorderSwapFlag( bool bDoesIt )
-{
-	SetByteorderSwapFlag( bDoesIt == true ? VistaSerializingToolset::SWAPS_MULTIBYTE_VALUES : VistaSerializingToolset::DOES_NOT_SWAP_MULTIBYTE_VALUES );
+void IVistaDeSerializer::SetByteorderSwapFlag(bool bDoesIt) {
+  SetByteorderSwapFlag(bDoesIt == true ? VistaSerializingToolset::SWAPS_MULTIBYTE_VALUES
+                                       : VistaSerializingToolset::DOES_NOT_SWAP_MULTIBYTE_VALUES);
 }
-

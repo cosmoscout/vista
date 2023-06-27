@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNTRACKBALLNODE_H
 #define _VISTADFNTRACKBALLNODE_H
 
@@ -31,12 +30,11 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
-
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -54,40 +52,37 @@ class VistaDisplayManager;
  * @inport{center, VistaVector3D, optional, the world origin of the rotation of the trackball}
  * @inport{grab, VistaVector3D, mandatory, the pixel coordinates of the current grab begin}
  * @inport{offset, VistaVector3D, mandatory, the current offset from grab}
- * @outport{transform, VistaTransformMatrix, the transform to apply to scene root to realize the trackball} 
+ * @outport{transform, VistaTransformMatrix, the transform to apply to scene root to realize the
+ * trackball}
  */
-class VISTAKERNELAPI VistaVdfnTrackball : public IVdfnNode
-{
-public:
-	VistaVdfnTrackball();
-	~VistaVdfnTrackball();
+class VISTAKERNELAPI VistaVdfnTrackball : public IVdfnNode {
+ public:
+  VistaVdfnTrackball();
+  ~VistaVdfnTrackball();
 
-	bool PrepareEvaluationRun();
-	bool GetIsValid() const;
+  bool PrepareEvaluationRun();
+  bool GetIsValid() const;
 
-protected:
-	bool DoEvalNode();
+ protected:
+  bool DoEvalNode();
 
-private:
+ private:
+  bool HandleRotate();
 
-	bool HandleRotate();
+  TVdfnPort<VistaTransformMatrix>* m_pOut;
 
-	TVdfnPort<VistaTransformMatrix> *m_pOut;
+  TVdfnPort<VistaVector3D>*m_pCenter, *m_pGrab, *m_pOffset;
 
-	TVdfnPort<VistaVector3D> *m_pCenter,		
-	                          *m_pGrab,
-		                      *m_pOffset;
+  /**
+   * Caches the offset input-port update count to see wether it is dirty,
+   * and calculate a new transform only in that case.
+   */
+  unsigned int m_iUpdateCountOffset;
 
-	/**
-	 * Caches the offset input-port update count to see wether it is dirty, 
-	 * and calculate a new transform only in that case.
-	 */
-	unsigned int m_iUpdateCountOffset;
-		
-	VistaVector3D   m_v3BegDrag;
-	VistaVector3D   m_v3TBCenter;
+  VistaVector3D m_v3BegDrag;
+  VistaVector3D m_v3TBCenter;
 
-	VistaTransformMatrix m_mtZoom;
+  VistaTransformMatrix m_mtZoom;
 };
 
 /*============================================================================*/
@@ -99,4 +94,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNTRACKBALLNODE_H
-

@@ -21,9 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include "VistaGlutJoystickDriver.h"
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
@@ -43,182 +42,156 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-namespace
-{
-	// ###########################################################################################
-	// ###########################################################################################
+namespace {
+// ###########################################################################################
+// ###########################################################################################
 
-	class VistaJoystickMeasureTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaJoystickMeasureTranscode()
-		{
+class VistaJoystickMeasureTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaJoystickMeasureTranscode() {
 
-			// we have "virtually" 36 scalars
-			// 32 btn + 1 btnMask + 3 Axes = 36 scalars
-			m_nNumberOfScalars = 36; // inherited as protected member
-		}
+    // we have "virtually" 36 scalars
+    // 32 btn + 1 btnMask + 3 Axes = 36 scalars
+    m_nNumberOfScalars = 36; // inherited as protected member
+  }
 
-		virtual ~VistaJoystickMeasureTranscode() {}
-		static std::string GetTypeString() { return "VistaJoystickMeasureTranscode"; }
-		REFL_INLINEIMP(VistaJoystickMeasureTranscode, IVistaMeasureTranscode);
-	};
+  virtual ~VistaJoystickMeasureTranscode() {
+  }
+  static std::string GetTypeString() {
+    return "VistaJoystickMeasureTranscode";
+  }
+  REFL_INLINEIMP(VistaJoystickMeasureTranscode, IVistaMeasureTranscode);
+};
 
-	// ###########################################################################################
-	// ###########################################################################################
+// ###########################################################################################
+// ###########################################################################################
 
-	// FACTORY
-	class VistaJoystickTranscoderFactory : public IVistaMeasureTranscoderFactory
-	{
-	public:
-		virtual IVistaMeasureTranscode *CreateTranscoder()
-		{
-			return new VistaJoystickMeasureTranscode;
-		}
+// FACTORY
+class VistaJoystickTranscoderFactory : public IVistaMeasureTranscoderFactory {
+ public:
+  virtual IVistaMeasureTranscode* CreateTranscoder() {
+    return new VistaJoystickMeasureTranscode;
+  }
 
-		virtual void DestroyTranscoder( IVistaMeasureTranscode *transc )
-		{
-			delete transc;
-		}
+  virtual void DestroyTranscoder(IVistaMeasureTranscode* transc) {
+    delete transc;
+  }
 
-		virtual std::string GetTranscoderName() const { return VistaJoystickMeasureTranscode::GetTypeString(); }
+  virtual std::string GetTranscoderName() const {
+    return VistaJoystickMeasureTranscode::GetTypeString();
+  }
 
-	protected:
-	};
+ protected:
+};
 
+// ###########################################################################################
+// ###########################################################################################
 
-	// ###########################################################################################
-	// ###########################################################################################
+class VistaJoystickPositionTranscode : public IVistaMeasureTranscode::V3Get {
+ public:
+  VistaJoystickPositionTranscode()
+      : IVistaMeasureTranscode::V3Get("POSITION", VistaJoystickMeasureTranscode::GetTypeString(),
+            "joystick glut axes position") {
+  }
 
+  virtual VistaVector3D GetValue(const VistaSensorMeasure* msr) const {
+    VistaVector3D v3Ret;
+    GetValue(msr, v3Ret);
+    return v3Ret;
+  }
 
-	class VistaJoystickPositionTranscode : public IVistaMeasureTranscode::V3Get
-	{
-	public:
-		VistaJoystickPositionTranscode()
-			: IVistaMeasureTranscode::V3Get("POSITION",
-			VistaJoystickMeasureTranscode::GetTypeString(),
-									"joystick glut axes position") {}
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaVector3D& v3Value) const {
+    if (!pMeasure)
+      return false;
 
-		virtual VistaVector3D GetValue(const VistaSensorMeasure *msr)    const
-		{
-			VistaVector3D v3Ret;
-			GetValue(msr, v3Ret);
-			return v3Ret;
-		}
+    const VistaGlutJoystickDriver::_sJoyMeasure* m =
+        (*pMeasure).getRead<VistaGlutJoystickDriver::_sJoyMeasure>();
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaVector3D &v3Value) const
-		{
-			if(!pMeasure)
-				return false;
+    v3Value[0] = float(m->m_nVals[1]);
+    v3Value[1] = float(m->m_nVals[2]);
+    v3Value[2] = float(m->m_nVals[3]);
+    return true;
+  }
+};
 
-			const VistaGlutJoystickDriver::_sJoyMeasure *m
-			        = (*pMeasure).getRead<VistaGlutJoystickDriver::_sJoyMeasure>();
+class VistaJoystickOrientationTranscode : public IVistaMeasureTranscode::QuatGet {
+ public:
+  VistaJoystickOrientationTranscode()
+      : IVistaMeasureTranscode::QuatGet("ORIENTATION",
+            VistaJoystickMeasureTranscode::GetTypeString(), "joystick glut axes orientation") {
+  }
 
-			v3Value[0] = float(m->m_nVals[1]);
-			v3Value[1] = float(m->m_nVals[2]);
-			v3Value[2] = float(m->m_nVals[3]);
-			return true;
-		}
-	};
+  virtual VistaQuaternion GetValue(const VistaSensorMeasure* msr) const {
+    VistaQuaternion qRet;
+    GetValue(msr, qRet);
+    return qRet;
+  }
 
-	class VistaJoystickOrientationTranscode : public IVistaMeasureTranscode::QuatGet
-	{
-	public:
-		VistaJoystickOrientationTranscode()
-			: IVistaMeasureTranscode::QuatGet("ORIENTATION",
-			VistaJoystickMeasureTranscode::GetTypeString(),
-									"joystick glut axes orientation") {}
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaQuaternion& qValue) const {
+    if (!pMeasure)
+      return false;
 
-		virtual VistaQuaternion GetValue(const VistaSensorMeasure *msr)    const
-		{
-			VistaQuaternion qRet;
-			GetValue(msr, qRet);
-			return qRet;
-		}
+    const VistaGlutJoystickDriver::_sJoyMeasure* m =
+        (*pMeasure).getRead<VistaGlutJoystickDriver::_sJoyMeasure>();
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaQuaternion &qValue) const
-		{
-			if(!pMeasure)
-				return false;
+    qValue = VistaQuaternion(VistaVector3D(0, 0, 1),
+        VistaVector3D(float(m->m_nVals[1]), float(m->m_nVals[2]), float(m->m_nVals[3])));
 
-			const VistaGlutJoystickDriver::_sJoyMeasure *m
-						= (*pMeasure).getRead<VistaGlutJoystickDriver::_sJoyMeasure>();
+    return true;
+  }
+};
 
-			qValue = VistaQuaternion( VistaVector3D(0,0,1),
-									   VistaVector3D( float(m->m_nVals[1]),
-									   float(m->m_nVals[2]),
-									   float(m->m_nVals[3]) ) );
+class VistaJoystickScalarTranscode : public IVistaMeasureTranscode::ScalarDoubleGet {
+ public:
+  VistaJoystickScalarTranscode()
+      : IVistaMeasureTranscode::ScalarDoubleGet("DSCALAR",
+            VistaJoystickMeasureTranscode::GetTypeString(),
+            "joystick glut axes (btMask,Axis1,Axis2,Axis3)") {
+  }
 
-			return true;
-		}
-	};
+  virtual bool GetValueIndexed(
+      const VistaSensorMeasure* pMeasure, double& dScalar, unsigned int nIndex) const {
+    if (!pMeasure)
+      return false;
 
-	class VistaJoystickScalarTranscode : public IVistaMeasureTranscode::ScalarDoubleGet
-	{
-	public:
-		VistaJoystickScalarTranscode()
-			: IVistaMeasureTranscode::ScalarDoubleGet("DSCALAR",
-			VistaJoystickMeasureTranscode::GetTypeString(),
-									"joystick glut axes (btMask,Axis1,Axis2,Axis3)") {}
+    const VistaGlutJoystickDriver::_sJoyMeasure* m =
+        (*pMeasure).getRead<VistaGlutJoystickDriver::_sJoyMeasure>();
 
-		virtual bool GetValueIndexed(const VistaSensorMeasure *pMeasure,
-									 double &dScalar,
-									 unsigned int nIndex ) const
-		{
-			if(!pMeasure)
-				return false;
+    switch (nIndex) {
+    case 32: {
+      dScalar = m->m_nVals[0]; // btMask
+      break;
+    }
+    case 33: // x
+    case 34: // y
+    case 35: // z
+    {
+      dScalar = m->m_nVals[nIndex - 32];
+      break;
+    }
+    default: {
+      if (nIndex < 32) {
+        dScalar = (int(m->m_nVals[0]) & (1 << nIndex) ? 1.0 : 0.0);
+        break;
+      }
+      break;
+    }
+    }
+    return true;
+  }
+};
 
-			const VistaGlutJoystickDriver::_sJoyMeasure *m
-					= (*pMeasure).getRead<VistaGlutJoystickDriver::_sJoyMeasure>();
-
-			switch(nIndex)
-			{
-			case 32:
-				{
-					dScalar = m->m_nVals[0]; // btMask
-					break;
-				}
-			case 33: // x
-			case 34: // y
-			case 35: // z
-				{
-					dScalar = m->m_nVals[nIndex - 32];
-					break;
-				}
-			default:
-				{
-					if( nIndex < 32)
-					{
-						dScalar = ( int(m->m_nVals[0]) & (1 << nIndex) ? 1.0 : 0.0 );
-						break;
-					}
-					break;
-				}
-			}
-			return true;
-		}
-	};
-
-
-	IVistaPropertyGetFunctor *SapGetter[] =
-	{
-		new VistaJoystickScalarTranscode,
-		new VistaJoystickOrientationTranscode,
-		new VistaJoystickPositionTranscode,
-		NULL
-	};
-}
-
+IVistaPropertyGetFunctor* SapGetter[] = {new VistaJoystickScalarTranscode,
+    new VistaJoystickOrientationTranscode, new VistaJoystickPositionTranscode, NULL};
+} // namespace
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifdef VISTAGLUTJOYSTICKTRANSCODER_EXPORTS
-	DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<VistaJoystickTranscoderFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaJoystickTranscoderFactory>)
 #else
-	DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<VistaJoystickTranscoderFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaJoystickTranscoderFactory>)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;

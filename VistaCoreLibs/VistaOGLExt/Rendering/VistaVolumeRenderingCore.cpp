@@ -21,11 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaVolumeRenderingCore.h"
 
-IVistaVolumeRenderingCore::IVistaVolumeRenderingCore()
-{ }
+IVistaVolumeRenderingCore::IVistaVolumeRenderingCore() {
+}
 
-IVistaVolumeRenderingCore::~IVistaVolumeRenderingCore()
-{ }
+IVistaVolumeRenderingCore::~IVistaVolumeRenderingCore() {
+}

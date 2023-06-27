@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERMEASUREHISTORYASPECT_H
 #define _VISTADRIVERMEASUREHISTORYASPECT_H
-
 
 /**
  * @page DriverHistoryPage History
  *
- * A history is a user definable buffer that can be used for time series or multimodal interaction technology.
+ * A history is a user definable buffer that can be used for time series or multimodal interaction
+ * technology.
  *
  * @section DriverHistoryImplementedBy Implemented by
  *
@@ -62,8 +61,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #include <map>
@@ -93,146 +92,133 @@
    - call GetCurrentSlot() on the sensor to write there
    - when done, call MeasureStop() on the sensor
  */
-class VISTADEVICEDRIVERSAPI VistaDriverMeasureHistoryAspect : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	VistaDriverMeasureHistoryAspect(unsigned int nDefHistSize = ~0);
-	virtual ~VistaDriverMeasureHistoryAspect();
+class VISTADEVICEDRIVERSAPI VistaDriverMeasureHistoryAspect
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  VistaDriverMeasureHistoryAspect(unsigned int nDefHistSize = ~0);
+  virtual ~VistaDriverMeasureHistoryAspect();
 
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // measure API
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  /**
+   * start a measure on a sensor. mandatory to call before getting the
+   * current slot. Do not forget to stop the current measure using the
+   * MeasureStop() API. The timestamp given will be noted in the history
+   * of the sensor, in that case it is the oldest time value accessible
+   * at the time of data acquisition.
+   * @see GetCurrentSlot()
+   * @see MeasureStop()
+   */
+  void MeasureStart(VistaDeviceSensor*, VistaType::microtime dTs);
 
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	// measure API
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	/**
-	 * start a measure on a sensor. mandatory to call before getting the
-	 * current slot. Do not forget to stop the current measure using the
-	 * MeasureStop() API. The timestamp given will be noted in the history
-	 * of the sensor, in that case it is the oldest time value accessible
-	 * at the time of data acquisition.
-	 * @see GetCurrentSlot()
-	 * @see MeasureStop()
-	 */
-	void                 MeasureStart(VistaDeviceSensor*, VistaType::microtime dTs);
+  /**
+   * retrieve the current slot of the history to write to for the sensor given.
+   * @return NULL when measure start was not called properly or there
+             is no memory for the history to write to
+   */
+  VistaSensorMeasure* GetCurrentSlot(VistaDeviceSensor*) const;
 
-	/**
-	 * retrieve the current slot of the history to write to for the sensor given.
-	 * @return NULL when measure start was not called properly or there
-	           is no memory for the history to write to
-	 */
-	VistaSensorMeasure *GetCurrentSlot(VistaDeviceSensor*) const;
+  /**
+   * stop measuring for the sensor. Without a call to that method, no
+   * change in sensor data will be visible for outside watchers and
+   * MeasureStart() as well as GetCurrentSlot() will always retrieve the
+   * same slot (if any!)
+   */
+  void MeasureStop(VistaDeviceSensor*);
 
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // management API
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  /**
+   * adjust the history size for the given sensor. Note that an old history
+   * is lost completely due to memory re-allocation. So it is wise to call
+   * this API only once or when it is clear that old data can be thrown away.
+   * The history size is given in terms of slots on a per-sensor level.
+   * @param nUserSize the number of slots the user wants to be guaranteed
+            to have access to
+   * @param nDriverSize the number of slots that the driver can write to
+            while the user is accessing the buffer. Use with care and take
+            a good look at the examples.
+   * @param nSlotLength the number of bytes per slot
+   * @return false if the sensor was not registered with this history
+   */
+  bool SetHistorySize(VistaDeviceSensor*, unsigned int nUserSize, unsigned int nDriverSize,
+      unsigned int nSlotLength);
 
-	/**
-	 * stop measuring for the sensor. Without a call to that method, no
-	 * change in sensor data will be visible for outside watchers and
-	 * MeasureStart() as well as GetCurrentSlot() will always retrieve the
-	 * same slot (if any!)
-	 */
-	void                 MeasureStop(VistaDeviceSensor*);
+  /**
+   * returns the number of slots finally allocated for this history and sensor.
+   * @return the number of slots allocated.
+   */
+  unsigned int GetHistorySize(VistaDeviceSensor*) const;
 
+  unsigned int GetDriverWriteHistorySize(VistaDeviceSensor*) const;
+  unsigned int GetUserReadHistorySize(VistaDeviceSensor*) const;
 
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	// management API
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	/**
-	 * adjust the history size for the given sensor. Note that an old history
-	 * is lost completely due to memory re-allocation. So it is wise to call
-	 * this API only once or when it is clear that old data can be thrown away.
-	 * The history size is given in terms of slots on a per-sensor level.
-	 * @param nUserSize the number of slots the user wants to be guaranteed
-	          to have access to
-	 * @param nDriverSize the number of slots that the driver can write to
-	          while the user is accessing the buffer. Use with care and take
-	          a good look at the examples.
-	 * @param nSlotLength the number of bytes per slot
-	 * @return false if the sensor was not registered with this history
-	 */
-	bool                 SetHistorySize(VistaDeviceSensor *, unsigned int nUserSize,
-						unsigned int nDriverSize,
-						unsigned int nSlotLength);
+  /**
+   * register a sensor. The registration is pointer-wise, registering a sensor
+   * more than once is a waste of cycles, and may reset the history on the sensor,
+   * in case a default history size is given.
+   * @see SetDefaultHistorySize()
+   */
+  bool RegisterSensor(VistaDeviceSensor*, IVistaDeviceDriver::AllocMemoryFunctor* amf = NULL,
+      IVistaDeviceDriver::ClaimMemoryFunctor* cmf = NULL, bool bReRegister = false);
 
-	/**
-	 * returns the number of slots finally allocated for this history and sensor.
-	 * @return the number of slots allocated.
-	 */
-	unsigned int         GetHistorySize(VistaDeviceSensor *) const;
+  bool SetAllocAndClaimFunctor(VistaDeviceSensor*, IVistaDeviceDriver::AllocMemoryFunctor* amf,
+      IVistaDeviceDriver::ClaimMemoryFunctor* cmf);
 
-	unsigned int         GetDriverWriteHistorySize( VistaDeviceSensor * ) const;
-	unsigned int         GetUserReadHistorySize( VistaDeviceSensor * ) const;
+  /**
+   * Unregisters a sensor from this history. A sensor that was not registered
+   * can not be unregistered.
+   * @return true
+   */
+  bool UnregisterSensor(VistaDeviceSensor*);
 
-	/**
-	 * register a sensor. The registration is pointer-wise, registering a sensor
-	 * more than once is a waste of cycles, and may reset the history on the sensor,
-	 * in case a default history size is given.
-	 * @see SetDefaultHistorySize()
-	 */
-	bool                 RegisterSensor(VistaDeviceSensor *, IVistaDeviceDriver::AllocMemoryFunctor *amf = NULL 
-		                                                   , IVistaDeviceDriver::ClaimMemoryFunctor *cmf = NULL,
-														   bool bReRegister = false );
+  /**
+   * query, whether a sensor is registered with this history.
+   */
+  bool GetIsRegistered(VistaDeviceSensor*) const;
 
-	bool                 SetAllocAndClaimFunctor( VistaDeviceSensor *,
-		                                         IVistaDeviceDriver::AllocMemoryFunctor *amf,
-		                                         IVistaDeviceDriver::ClaimMemoryFunctor *cmf );
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-	/**
-	 * Unregisters a sensor from this history. A sensor that was not registered
-	 * can not be unregistered.
-	 * @return true
-	 */
-	bool                 UnregisterSensor(VistaDeviceSensor * );
+  static unsigned int INVALID_READING;
 
-	/**
-	 * query, whether a sensor is registered with this history.
-	 */
-	bool                 GetIsRegistered(VistaDeviceSensor *) const;
+ protected:
+ private:
+  static int m_nAspectId;
 
+  struct _sL {
+    _sL()
+        : m_pMeasures(NULL)
+        , m_amf(NULL)
+        , m_cmf(NULL)
+        , m_bInitialized(false) {
+    }
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
+    _sL(VistaMeasureHistory* pMeasures, IVistaDeviceDriver::AllocMemoryFunctor* amf = NULL,
+        IVistaDeviceDriver::ClaimMemoryFunctor* cmf = NULL, bool bInitialized = false)
+        : m_pMeasures(pMeasures)
+        , m_nIt(m_pMeasures->m_rbHistory.GetCurrent())
+        , m_amf(amf)
+        , m_cmf(cmf)
+        , m_bInitialized(bInitialized) {
+    }
 
-	static unsigned int INVALID_READING;
+    VistaMeasureHistory*                    m_pMeasures;
+    bool                                    m_bInitialized;
+    IVistaDeviceDriver::AllocMemoryFunctor* m_amf;
+    IVistaDeviceDriver::ClaimMemoryFunctor* m_cmf;
 
-protected:
-private:
-	static int m_nAspectId;
+    VistaMeasureHistory::Buffer::iterator m_nIt;
+  };
 
-
-	struct _sL
-	{
-		_sL()
-			: m_pMeasures(NULL)
-			, m_amf(NULL)
-			, m_cmf(NULL)
-			, m_bInitialized(false)
-		{
-		}
-
-		_sL(VistaMeasureHistory *pMeasures,
-			IVistaDeviceDriver::AllocMemoryFunctor *amf = NULL,
-			IVistaDeviceDriver::ClaimMemoryFunctor *cmf = NULL,
-			bool bInitialized = false )
-			: m_pMeasures(pMeasures)
-			, m_nIt(m_pMeasures->m_rbHistory.GetCurrent())
-			, m_amf(amf)
-			, m_cmf(cmf)
-			, m_bInitialized(bInitialized)
-		{
-		}
-
-		VistaMeasureHistory *m_pMeasures;
-		bool m_bInitialized;
-		IVistaDeviceDriver::AllocMemoryFunctor *m_amf;
-		IVistaDeviceDriver::ClaimMemoryFunctor *m_cmf;
-
-		VistaMeasureHistory::Buffer::iterator m_nIt;
-	};
-
-	typedef std::map<VistaDeviceSensor*, _sL> HISTORY;
-	HISTORY m_mapHistories;
-	unsigned int m_nDefHistSize;
+  typedef std::map<VistaDeviceSensor*, _sL> HISTORY;
+  HISTORY                                   m_mapHistories;
+  unsigned int                              m_nDefHistSize;
 };
 
 /*============================================================================*/

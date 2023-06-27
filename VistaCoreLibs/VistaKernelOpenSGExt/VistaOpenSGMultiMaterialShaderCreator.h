@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGMULTIMATERIALSHADERCREATOR_H
 #define _VISTAOPENSGMULTIMATERIALSHADERCREATOR_H
 
@@ -32,10 +31,10 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 #include <OpenSG/OSGSHLChunk.h>
 #ifdef WIN32
@@ -48,44 +47,42 @@
  * For performance reasons, shaders and shader strings are stored in static maps
  * @TODO: rethink static buffering
  */
-namespace VistaOpenSGMultiMaterialShaderCreator
-{
-	const unsigned int S_nBaseMapTextureId = 0;
-	const unsigned int S_nBlendMapTextureId = 1;
-	const unsigned int S_nSpecularMapTextureId = 2;
-	const unsigned int S_nNormalMapTextureId = 3;
-	const unsigned int S_nGlossMapTextureId = 4;
-	const unsigned int S_nWorldEnvMapTextureId = 5;
-	const unsigned int S_nObjectEnvMapTextureId = 6;
+namespace VistaOpenSGMultiMaterialShaderCreator {
+const unsigned int S_nBaseMapTextureId      = 0;
+const unsigned int S_nBlendMapTextureId     = 1;
+const unsigned int S_nSpecularMapTextureId  = 2;
+const unsigned int S_nNormalMapTextureId    = 3;
+const unsigned int S_nGlossMapTextureId     = 4;
+const unsigned int S_nWorldEnvMapTextureId  = 5;
+const unsigned int S_nObjectEnvMapTextureId = 6;
 
-	struct VISTAKERNELOPENSGEXTAPI ShaderConfig 
-	{
-		ShaderConfig();
+struct VISTAKERNELOPENSGEXTAPI ShaderConfig {
+  ShaderConfig();
 
-		bool m_bHasBaseMap;
+  bool m_bHasBaseMap;
 
-		bool m_bHasBlendMap;
-		float m_nBlendFactor;
+  bool  m_bHasBlendMap;
+  float m_nBlendFactor;
 
-		bool m_bHasSpecularMap;
+  bool m_bHasSpecularMap;
 
-		bool m_bHasNormalMap;
+  bool m_bHasNormalMap;
 
-		bool m_bHasGlossMap;	
-		bool m_bHasWorldEnvMap;
-		bool m_bHasObjectEnvMap;
+  bool m_bHasGlossMap;
+  bool m_bHasWorldEnvMap;
+  bool m_bHasObjectEnvMap;
 
-		float m_nEnvironmentReflactionFactor;
-		float m_nEnvironmentBlur;
+  float m_nEnvironmentReflactionFactor;
+  float m_nEnvironmentBlur;
 
-		bool m_bUseFog;
-		
-		bool operator< ( const ShaderConfig& oConfig ) const;
-	};	
+  bool m_bUseFog;
 
-	VISTAKERNELOPENSGEXTAPI osg::SHLChunkPtr GetShader( const ShaderConfig& oShaderConfig );
-	VISTAKERNELOPENSGEXTAPI const std::string& GetVertexShader( const ShaderConfig& oShaderConfig );	
-	VISTAKERNELOPENSGEXTAPI const std::string& GetFragmentShader( const ShaderConfig& oShaderConfig );	
-}
+  bool operator<(const ShaderConfig& oConfig) const;
+};
+
+VISTAKERNELOPENSGEXTAPI osg::SHLChunkPtr GetShader(const ShaderConfig& oShaderConfig);
+VISTAKERNELOPENSGEXTAPI const std::string& GetVertexShader(const ShaderConfig& oShaderConfig);
+VISTAKERNELOPENSGEXTAPI const std::string& GetFragmentShader(const ShaderConfig& oShaderConfig);
+} // namespace VistaOpenSGMultiMaterialShaderCreator
 
 #endif // _VISTAOPENSGMULTIMATERIALSHADERCREATOR_H

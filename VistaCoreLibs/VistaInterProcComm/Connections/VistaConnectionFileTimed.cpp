@@ -21,53 +21,42 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaConnectionFileTimed.h"
 #include <string>
 using namespace std;
 
-VistaConnectionFileTimed::VistaConnectionFileTimed( const string & sFilename, 
-							  const bool bPulse,
-							  const float fFrequency, 
-							  const bool bIncoming ) :
-	VistaConnectionFile( sFilename, VistaConnectionFile::READ ),
-	m_bPulse(bPulse), 
-	m_fFrequency(fFrequency),
-	m_bIncoming(bIncoming), 
-	m_bStatusOK(bIncoming)
-{ 
-	m_LastTime = clock() ; 
+VistaConnectionFileTimed::VistaConnectionFileTimed(
+    const string& sFilename, const bool bPulse, const float fFrequency, const bool bIncoming)
+    : VistaConnectionFile(sFilename, VistaConnectionFile::READ)
+    , m_bPulse(bPulse)
+    , m_fFrequency(fFrequency)
+    , m_bIncoming(bIncoming)
+    , m_bStatusOK(bIncoming) {
+  m_LastTime = clock();
 }
 
-int VistaConnectionFileTimed::Receive ( void * buffer, const int length, int iTimeout )
-{
-	if( m_bStatusOK && m_bIncoming )
-	{
-	if( m_bPulse )
-	{
-		bool elapsed;
+int VistaConnectionFileTimed::Receive(void* buffer, const int length, int iTimeout) {
+  if (m_bStatusOK && m_bIncoming) {
+    if (m_bPulse) {
+      bool elapsed;
 #if defined(WIN32)
-		elapsed = ((float)(clock() - m_LastTime) /
-			   (float)CLK_TCK) > (1.0f/m_fFrequency);
+      elapsed = ((float)(clock() - m_LastTime) / (float)CLK_TCK) > (1.0f / m_fFrequency);
 #else
-		elapsed = ((float)(clock() - m_LastTime) /
-			   (float)CLOCKS_PER_SEC) > (1.0f/m_fFrequency);	
+      elapsed = ((float)(clock() - m_LastTime) / (float)CLOCKS_PER_SEC) > (1.0f / m_fFrequency);
 #endif
-		if( !elapsed )
-		return 0;
-	}
+      if (!elapsed)
+        return 0;
+    }
 
-	int read ;
-	read = VistaConnectionFile::Receive( buffer, length, iTimeout ) ;
-	m_LastTime = clock();
+    int read;
+    read       = VistaConnectionFile::Receive(buffer, length, iTimeout);
+    m_LastTime = clock();
 
-	return read;
-	}
-	else
-	return 0;
+    return read;
+  } else
+    return 0;
 }
 
-int VistaConnectionFileTimed::Send( const void * buffer, const int length )
-{ 
-	return 0 ; 
+int VistaConnectionFileTimed::Send(const void* buffer, const int length) {
+  return 0;
 }

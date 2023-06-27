@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACPUINFO_H
 #define _VISTACPUINFO_H
 
@@ -51,36 +50,35 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTATOOLSAPI VistaCPUInfo
-{
-public:
-	VistaCPUInfo();
-	~VistaCPUInfo();
+class VISTATOOLSAPI VistaCPUInfo {
+ public:
+  VistaCPUInfo();
+  ~VistaCPUInfo();
 
-	int GetProcessorCount();
+  int GetProcessorCount();
 
-	 VistaType::uint64 GetSpeed() const;
-	 unsigned int GetSpeedMHz() const;
+  VistaType::uint64 GetSpeed() const;
+  unsigned int      GetSpeedMHz() const;
 
-	 std::string GetCPUName() const;
-	 std::string GetVendorName() const;
+  std::string GetCPUName() const;
+  std::string GetVendorName() const;
 
-	 short int GetCPUFamily() const;
-	 short int GetCPUModel() const;
-	 short int GetCPUStepping() const;
+  short int GetCPUFamily() const;
+  short int GetCPUModel() const;
+  short int GetCPUStepping() const;
 
-	 bool GetIsMMXSupported() const;
-	 bool GetIsSSESupported() const;
-	 bool GetIsSSE2Supported() const;
-	 bool GetIs3DNowSupported() const;
-protected:
-private:
-	class _CPU_STAT;
-	_CPU_STAT *m_pStat;
+  bool GetIsMMXSupported() const;
+  bool GetIsSSESupported() const;
+  bool GetIsSSE2Supported() const;
+  bool GetIs3DNowSupported() const;
 
-	bool QueryCPUInfo();
-	std::string GetCPUNameString() const;
+ protected:
+ private:
+  class _CPU_STAT;
+  _CPU_STAT* m_pStat;
 
+  bool        QueryCPUInfo();
+  std::string GetCPUNameString() const;
 };
 
 /*============================================================================*/
@@ -88,5 +86,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTACPUINFO_H
-
-

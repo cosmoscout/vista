@@ -32,7 +32,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __SPATIALDFN_H
 #define __SPATIALDFN_H
 
@@ -61,27 +60,27 @@ class VistaGeometry;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class KinectHandler : public IVdfnActionObject
-{
-public:
-	KinectHandler( VistaSystem* pVistaSystem );
-	~KinectHandler();
+class KinectHandler : public IVdfnActionObject {
+ public:
+  KinectHandler(VistaSystem* pVistaSystem);
+  ~KinectHandler();
 
-	bool SetPosition( const std::vector<VistaVector3D>& vecPos );
-	bool SetTransformation( const VistaTransformMatrix& matTransform );
+  bool SetPosition(const std::vector<VistaVector3D>& vecPos);
+  bool SetTransformation(const VistaTransformMatrix& matTransform);
 
-	void SetIsEnabled( const bool bSet );
-	bool GetIsEnabled();
+  void SetIsEnabled(const bool bSet);
+  bool GetIsEnabled();
 
-	REFL_DECLARE;
+  REFL_DECLARE;
 
-private: 
-	void CreateElement( int nElement, VistaGeometry* pGeom, const VistaVector3D& v3Offset );
-private:
-	VistaTransformNode*					m_pManRoot;
-	VistaSceneGraph*							m_pSceneGraph;
-	std::vector<VistaTransformNode*>	m_vecJoints;
-	VistaTransformMatrix				m_matTransform;
+ private:
+  void CreateElement(int nElement, VistaGeometry* pGeom, const VistaVector3D& v3Offset);
+
+ private:
+  VistaTransformNode*              m_pManRoot;
+  VistaSceneGraph*                 m_pSceneGraph;
+  std::vector<VistaTransformNode*> m_vecJoints;
+  VistaTransformMatrix             m_matTransform;
 };
 
 /*============================================================================*/

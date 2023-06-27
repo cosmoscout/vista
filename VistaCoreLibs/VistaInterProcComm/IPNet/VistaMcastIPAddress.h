@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMCASTIPADDRESS_H
 #define _VISTAMCASTIPADDRESS_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaIPAddress.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -51,75 +50,67 @@
  * as a multicast group ip address will be checked instead.This class is designed to keep
  * the compatibility of multicast ip address with normal ip address.
  */
-class VISTAINTERPROCCOMMAPI VistaMcastIPAddress : public VistaIPAddress
-{
-private:
-protected:
-public:
+class VISTAINTERPROCCOMMAPI VistaMcastIPAddress : public VistaIPAddress {
+ private:
+ protected:
+ public:
+  /**
+   * Constructs an empty address.
+   */
+  VistaMcastIPAddress();
 
-	/**
-	 * Constructs an empty address.
-	 */
-	VistaMcastIPAddress();
+  VistaMcastIPAddress(const VistaMcastIPAddress&);
 
+  VistaMcastIPAddress(const VistaIPAddress&);
 
-	VistaMcastIPAddress(const VistaMcastIPAddress &);
+  /**
+   * Constructs an address for a multicast address given.
+   * The multicast address can only be a string representation for an
+   * ip-address, e.g. "234.5.6.7", and belong to "Class D" ip address.
+   * @param sHostName the multicast address
+   */
+  explicit VistaMcastIPAddress(const std::string& sHostName);
 
-	VistaMcastIPAddress(const VistaIPAddress &);
+  /**
+   * deconstructs this address.
+   */
+  virtual ~VistaMcastIPAddress();
 
-	/**
-	 * Constructs an address for a multicast address given.
-	 * The multicast address can only be a string representation for an
-	 * ip-address, e.g. "234.5.6.7", and belong to "Class D" ip address.
-	 * @param sHostName the multicast address
-	 */
-	explicit VistaMcastIPAddress(const std::string &sHostName);
+  /**
+   * sets the multicast address to the argument given.
+   * This call does validity check of the given multicast address.
+   * @param sHostName the multicast address
+   */
+  void SetHostName(const std::string& sHostName);
 
-	/**
-	 * deconstructs this address.
-	 */
-	virtual ~VistaMcastIPAddress();
+  /**
+   * sets this address to the given address-string. Note that the address is a binary
+   * representation that you usually get from bsd-methods, simply wrapped in a string
+   * object. Set this when you have a struct hostent entry with the adress you want to query.
+   * @param sAddress the binary representation to query the ip-adress from
+   */
+  void SetAddress(const std::string& sAddress);
 
+  /**
+   * Returns a string representation for this ip-addresse's type. Currently this is only IPV4 for
+   * all assigned ip-addresses, and undefined for unassigned addresses.
+   * @return either "IPV4-Multicast" or "UNASSIGNED"
+   */
+  void GetAddressTypeString(std::string& sString) const;
 
-	/**
-	 * sets the multicast address to the argument given.
-	 * This call does validity check of the given multicast address.
-	 * @param sHostName the multicast address
-	 */
-	void SetHostName(const std::string &sHostName);
+  /**
+   * IP-Addresses can be assigned without drawbacks
+   */
+  VistaMcastIPAddress& operator=(const VistaMcastIPAddress&);
 
-	/**
-	 * sets this address to the given address-string. Note that the address is a binary
-	 * representation that you usually get from bsd-methods, simply wrapped in a string
-	 * object. Set this when you have a struct hostent entry with the adress you want to query.
-	 * @param sAddress the binary representation to query the ip-adress from
-	 */
-	void SetAddress(const std::string &sAddress);
-
-	/**
-	 * Returns a string representation for this ip-addresse's type. Currently this is only IPV4 for
-	 * all assigned ip-addresses, and undefined for unassigned addresses.
-	 * @return either "IPV4-Multicast" or "UNASSIGNED"
-	 */
-	void GetAddressTypeString( std::string &sString ) const;
-
-
-	/**
-	 * IP-Addresses can be assigned without drawbacks
-	 */
-	VistaMcastIPAddress &operator= (const VistaMcastIPAddress &);
-
-	/**
-	 * IP-addresses can be explicitly assigned by given a string
-	 */
-	VistaMcastIPAddress &operator= (const std::string &sHostName);
-
+  /**
+   * IP-addresses can be explicitly assigned by given a string
+   */
+  VistaMcastIPAddress& operator=(const std::string& sHostName);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAMCASTIPADDRESS_H
-

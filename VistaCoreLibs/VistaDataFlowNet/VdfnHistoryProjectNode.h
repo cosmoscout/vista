@@ -21,22 +21,20 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNHISTORYPROJECTNODE_H
 #define _VDFNHISTORYPROJECTNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
 
-#include "VdfnReEvalNode.h"
-#include "VdfnPortFactory.h"
 #include "VdfnHistoryPort.h"
+#include "VdfnPortFactory.h"
+#include "VdfnReEvalNode.h"
 
-#include <map>
 #include <list>
+#include <map>
 #include <string>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -69,99 +67,86 @@
  *
  * @ingroup VdfnNodes
  * @inport{history,VdfnHistoryPortData*,mandatory,the incoming history to process}
- * @inport{sampling_mode,int,optional,0 for lazy (default)\, 1 for hot sampling\, 2 for history sampling}
+ * @inport{sampling_mode,int,optional,0 for lazy (default)\, 1 for hot sampling\, 2 for history
+ sampling}
  * @outport{some\,depending on history,some\,depending on history,outputs will be
             dynamically created\,depending on the inport history and projection mode}
  *
  * @see ReEvalNode
  */
-class VISTADFNAPI VdfnHistoryProjectNode : public IVdfnReEvalNode
-{
-public:
-	enum eMode
-	{
-		MD_LAZY = 0,
-		MD_HOT,
-		MD_ITERATE,
-		MD_INDEXED
-	};
-	/**
-	 * @param liOutPorts the names of the properties to have as outports for this
-	          project node. The order is not important.
-	 */
-	VdfnHistoryProjectNode(const std::list<std::string> &liOutPorts, 
-			                   eMode eInitialMode = MD_LAZY );
+class VISTADFNAPI VdfnHistoryProjectNode : public IVdfnReEvalNode {
+ public:
+  enum eMode { MD_LAZY = 0, MD_HOT, MD_ITERATE, MD_INDEXED };
+  /**
+   * @param liOutPorts the names of the properties to have as outports for this
+            project node. The order is not important.
+   */
+  VdfnHistoryProjectNode(const std::list<std::string>& liOutPorts, eMode eInitialMode = MD_LAZY);
 
-	/**
-	 * @todo check whether this code is legacy.
-	 */
-	virtual bool SetInPort(const std::string &sName, IVdfnPort*);
+  /**
+   * @todo check whether this code is legacy.
+   */
+  virtual bool SetInPort(const std::string& sName, IVdfnPort*);
 
+  /**
+   * The history project node is valid, as soon as a history is connected to it.
+   * @return true iff the port "history" is properly set.
+   */
+  virtual bool GetIsValid() const;
+  //	virtual bool PrepareEvaluationRun();
 
-	/**
-	 * The history project node is valid, as soon as a history is connected to it.
-	 * @return true iff the port "history" is properly set.
-	 */
-	virtual bool GetIsValid() const;
-//	virtual bool PrepareEvaluationRun();
+  /**
+   * Since the history processing mode may need multiple evaluation runs per
+   * frame, it is a ReEvalNode, and thus needs to specify whether or not
+   * it requires another evaluation run.
+   * @see ReEvalNode
+   */
+  virtual bool GetNeedsReEvaluation() const;
 
-	/**
-	 * Since the history processing mode may need multiple evaluation runs per
-	 * frame, it is a ReEvalNode, and thus needs to specify whether or not
-	 * it requires another evaluation run.
-	 * @see ReEvalNode
-	 */
-	virtual bool GetNeedsReEvaluation() const;
+ protected:
+  virtual bool         DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const override;
 
-protected:
-	virtual bool DoEvalNode();
-	virtual unsigned int CalcUpdateNeededScore() const override;
-private:
-	/**
-	 * pre-condition: history port set
-	 */
-	void UpdateOutPortMap();
+ private:
+  /**
+   * pre-condition: history port set
+   */
+  void UpdateOutPortMap();
 
+  struct _sSetHlp {
+    _sSetHlp()
+        : m_pFunctor(NULL)
+        , m_nIndex(~0) {
+    }
 
-	struct _sSetHlp
-	{
-		_sSetHlp()
-			: m_pFunctor(NULL),
-			m_nIndex(~0) {}
+    _sSetHlp(VdfnPortFactory::CPortSetFunctor* pFunctor, unsigned int nIndex)
+        : m_pFunctor(pFunctor)
+        , m_nIndex(nIndex) {
+    }
 
-		_sSetHlp( VdfnPortFactory::CPortSetFunctor *pFunctor,
-				  unsigned int nIndex )
-				  : m_pFunctor(pFunctor),
-					m_nIndex(nIndex)
-		{
-		}
+    VdfnPortFactory::CPortSetFunctor* m_pFunctor;
+    unsigned int                      m_nIndex;
+  };
 
-		VdfnPortFactory::CPortSetFunctor *m_pFunctor;
-		unsigned int                       m_nIndex;
-	};
+  std::map<IVdfnPort*, _sSetHlp> m_mpPortSetter;
+  struct _sPortMap {
+    _sPortMap() {
+    }
+    _sPortMap(const std::string& sFrom, const std::string& sTo)
+        : m_strFrom(sFrom)
+        , m_strTo(sTo) {
+    }
 
-	std::map<IVdfnPort*, _sSetHlp> m_mpPortSetter;
-	struct _sPortMap
-	{
-		_sPortMap() {}
-		_sPortMap(const std::string &sFrom, const std::string &sTo)
-			: m_strFrom(sFrom),
-			m_strTo(sTo) {}
+    std::string m_strFrom, m_strTo;
+  };
 
-		std::string m_strFrom,
-					m_strTo;
-	};
-
-	std::list< _sPortMap > m_liOutPorts;
-	std::list<std::string> m_liOriginalPorts;
-	HistoryPort    *m_pHistory;
-	TVdfnPort<int> *m_pSamplingMode;
-	TVdfnPort<unsigned int> *m_pIterateState,
-							  *m_pBackwardIndex,
-							  *m_pOutputIndex;
-	unsigned int	m_nUnprocessedMeasures;
-	eMode m_eInitialMode;
-
+  std::list<_sPortMap>    m_liOutPorts;
+  std::list<std::string>  m_liOriginalPorts;
+  HistoryPort*            m_pHistory;
+  TVdfnPort<int>*         m_pSamplingMode;
+  TVdfnPort<unsigned int>*m_pIterateState, *m_pBackwardIndex, *m_pOutputIndex;
+  unsigned int            m_nUnprocessedMeasures;
+  eMode                   m_eInitialMode;
 };
 
 /*============================================================================*/

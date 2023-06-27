@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_POSIX)
 
 #ifndef _VISTAPTHREADSMUTEXIMP_H
@@ -33,9 +32,7 @@
 
 #include "VistaMutexImp.h"
 
-
 #include <pthread.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,38 +42,33 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VistaPthreadsMutexImp : public IVistaMutexImp {
+ public:
+  VistaPthreadsMutexImp(const std::string& sName, const IVistaMutexImp::eScope nScope);
+  virtual ~VistaPthreadsMutexImp();
 
-class VistaPthreadsMutexImp : public IVistaMutexImp
-{
-public:
-	VistaPthreadsMutexImp(const std::string &sName, const IVistaMutexImp::eScope nScope);
-	virtual ~VistaPthreadsMutexImp ();
+  virtual void Lock();
+  virtual bool TryLock();
+  virtual void Unlock();
 
-	virtual void Lock    ();
-	virtual bool TryLock ();
-	virtual void Unlock  ();
+  pthread_mutex_t* GetPthreadMutex() {
+    return pPosixMutex;
+  };
 
-	pthread_mutex_t *GetPthreadMutex() { return pPosixMutex; };
-
-private:
-	pthread_mutex_t*     pPosixMutex;
-	//pthread_mutexattr_t  posixMutexAttr;
-	int m_sharedMem_fd;
+ private:
+  pthread_mutex_t* pPosixMutex;
+  // pthread_mutexattr_t  posixMutexAttr;
+  int m_sharedMem_fd;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif //_VISTASYSTEM_H
 
 #endif // VISTA_THREADING_PTHREAD
-
-

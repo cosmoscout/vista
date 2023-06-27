@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VTKDEMOAPPL_H
 #define _VTKDEMOAPPL_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -46,27 +44,24 @@ class VtkDrawObject;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VtkDemoAppl
-{
-public:
-    // CONSTRUCTORS / DESTRUCTOR
+class VtkDemoAppl {
+ public:
+  // CONSTRUCTORS / DESTRUCTOR
 
-    VtkDemoAppl(int argc = 0, char  *argv[] = NULL);
-    virtual ~VtkDemoAppl();
+  VtkDemoAppl(int argc = 0, char* argv[] = NULL);
+  virtual ~VtkDemoAppl();
 
-    // IMPLEMENTATION
-    bool   Run  ();
+  // IMPLEMENTATION
+  bool Run();
 
-    // ANOTHER
-    bool   CreateScene ();
+  // ANOTHER
+  bool CreateScene();
 
-
-// MEMBERS
-private:
-    VistaSystem		mVistaSystem;
-	VistaOpenGLNode *m_pVtkRoot;
-    VtkDrawObject   *m_pVtkDrawObj;
+  // MEMBERS
+ private:
+  VistaSystem      mVistaSystem;
+  VistaOpenGLNode* m_pVtkRoot;
+  VtkDrawObject*   m_pVtkDrawObj;
 };
-
 
 #endif // _VTKDEMOAPPL_H

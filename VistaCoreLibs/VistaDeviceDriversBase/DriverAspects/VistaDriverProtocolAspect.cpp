@@ -21,13 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDriverProtocolAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
 
-#include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #if defined(SUNOS)
 #include <typeinfo.h>
@@ -37,83 +36,70 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int IVistaDriverProtocolAspect::m_nAspectId  = -1;
+int IVistaDriverProtocolAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 IVistaDriverProtocolAspect::IVistaDriverProtocolAspect()
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(false)
-{
-	if(IVistaDriverProtocolAspect::GetAspectId() == -1) // unregistered
-		IVistaDriverProtocolAspect::SetAspectId(
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("PROTOCOL"));
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(false) {
+  if (IVistaDriverProtocolAspect::GetAspectId() == -1) // unregistered
+    IVistaDriverProtocolAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("PROTOCOL"));
 
-	SetId(IVistaDriverProtocolAspect::GetAspectId());
+  SetId(IVistaDriverProtocolAspect::GetAspectId());
 }
 
-IVistaDriverProtocolAspect::~IVistaDriverProtocolAspect()
-{
+IVistaDriverProtocolAspect::~IVistaDriverProtocolAspect() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool IVistaDriverProtocolAspect::RegisterProtocol( const _cVersionTag &oTag )
-{
-	if(GetHasProtocol(oTag) == false)
-	{
-		m_liProtocols.push_back(oTag);
-		return true;
-	}
-	return false;
+bool IVistaDriverProtocolAspect::RegisterProtocol(const _cVersionTag& oTag) {
+  if (GetHasProtocol(oTag) == false) {
+    m_liProtocols.push_back(oTag);
+    return true;
+  }
+  return false;
 }
 
-bool IVistaDriverProtocolAspect::GetHasProtocol( const _cVersionTag &oTag ) const
-{
-	return (std::find(m_liProtocols.begin(), m_liProtocols.end(), oTag) != m_liProtocols.end());
+bool IVistaDriverProtocolAspect::GetHasProtocol(const _cVersionTag& oTag) const {
+  return (std::find(m_liProtocols.begin(), m_liProtocols.end(), oTag) != m_liProtocols.end());
 }
 
-bool IVistaDriverProtocolAspect::UnregisterProtocol( const _cVersionTag &oTag )
-{
-	m_liProtocols.remove( oTag );
-	return true;
+bool IVistaDriverProtocolAspect::UnregisterProtocol(const _cVersionTag& oTag) {
+  m_liProtocols.remove(oTag);
+  return true;
 }
 
-bool IVistaDriverProtocolAspect::SetProtocol( const _cVersionTag &oTag )
-{
-	m_oCurrent = std::find(m_liProtocols.begin(), m_liProtocols.end(), oTag);
-	return (m_oCurrent != m_liProtocols.end());
+bool IVistaDriverProtocolAspect::SetProtocol(const _cVersionTag& oTag) {
+  m_oCurrent = std::find(m_liProtocols.begin(), m_liProtocols.end(), oTag);
+  return (m_oCurrent != m_liProtocols.end());
 }
 
-bool IVistaDriverProtocolAspect::GetProtocol(_cVersionTag &oTag) const
-{
-	if(m_liProtocols.empty())
-		return false;
-	if(m_oCurrent == m_liProtocols.end())
-		return false;
+bool IVistaDriverProtocolAspect::GetProtocol(_cVersionTag& oTag) const {
+  if (m_liProtocols.empty())
+    return false;
+  if (m_oCurrent == m_liProtocols.end())
+    return false;
 
-	oTag = *m_oCurrent;
-	return true;
+  oTag = *m_oCurrent;
+  return true;
 }
 
 // #########################################
 // OVERWRITE IN SUBCLASSES
 // #########################################
-int  IVistaDriverProtocolAspect::GetAspectId()
-{
-	return IVistaDriverProtocolAspect::m_nAspectId;
+int IVistaDriverProtocolAspect::GetAspectId() {
+  return IVistaDriverProtocolAspect::m_nAspectId;
 }
 
-void IVistaDriverProtocolAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
-
+void IVistaDriverProtocolAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

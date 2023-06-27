@@ -21,317 +21,293 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSixenseCommonShare.h"
 
-#include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaTimeUtils.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
+#include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
-
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 
 #include <string>
 
-namespace
-{
-	class VistaSixenseTranscode : public IVistaMeasureTranscode
-	{
-		REFL_INLINEIMP( VistaSixenseTranscode, IVistaMeasureTranscode );
-	public:
-		VistaSixenseTranscode() {}
+namespace {
+class VistaSixenseTranscode : public IVistaMeasureTranscode {
+  REFL_INLINEIMP(VistaSixenseTranscode, IVistaMeasureTranscode);
 
-		static std::string GetTypeString() { return "VistaSixenseTranscode"; }
-	};
+ public:
+  VistaSixenseTranscode() {
+  }
 
-	class VistaSixensePosGet : public IVistaMeasureTranscode::V3Get
-	{
-	public:
-		VistaSixensePosGet( const std::string& sTranscodeName )
-		: IVistaMeasureTranscode::V3Get( "POSITION", sTranscodeName, "position" )
-		{
-		}
+  static std::string GetTypeString() {
+    return "VistaSixenseTranscode";
+  }
+};
 
-		VistaVector3D GetValue( const VistaSensorMeasure *pMeasure ) const
-		{
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			return VistaVector3D( pRealMeasure->m_a3fPosition );
-		}
+class VistaSixensePosGet : public IVistaMeasureTranscode::V3Get {
+ public:
+  VistaSixensePosGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::V3Get("POSITION", sTranscodeName, "position") {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure, VistaVector3D& v3Value ) const
-		{
-			if(!pMeasure)
-				return false;
+  VistaVector3D GetValue(const VistaSensorMeasure* pMeasure) const {
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    return VistaVector3D(pRealMeasure->m_a3fPosition);
+  }
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			v3Value.SetValues( pRealMeasure->m_a3fPosition );
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, VistaVector3D& v3Value) const {
+    if (!pMeasure)
+      return false;
 
-	class VistaSixenseOriGet : public IVistaMeasureTranscode::QuatGet
-	{
-	public:
-		VistaSixenseOriGet( const std::string& sTranscodeName )
-		: IVistaMeasureTranscode::QuatGet( "ORIENTATION", sTranscodeName, "orientation" ) {}
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    v3Value.SetValues(pRealMeasure->m_a3fPosition);
+    return true;
+  }
+};
 
-		VistaQuaternion GetValue( const VistaSensorMeasure* pMeasure ) const
-		{
-			VistaQuaternion qOri;
-			GetValue( pMeasure, qOri );
-			return qOri;
-		};
+class VistaSixenseOriGet : public IVistaMeasureTranscode::QuatGet {
+ public:
+  VistaSixenseOriGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::QuatGet("ORIENTATION", sTranscodeName, "orientation") {
+  }
 
-		bool GetValue(const VistaSensorMeasure * pMeasure, VistaQuaternion &qQuat) const
-		{
-			if(!pMeasure)
-				return false;
+  VistaQuaternion GetValue(const VistaSensorMeasure* pMeasure) const {
+    VistaQuaternion qOri;
+    GetValue(pMeasure, qOri);
+    return qOri;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			qQuat = VistaQuaternion( pRealMeasure->a4fRotationQuaternion ); // @todo: check order
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, VistaQuaternion& qQuat) const {
+    if (!pMeasure)
+      return false;
 
-	class VistaSixenseRotMatrixGet : public IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix>
-	{
-	public:
-		VistaSixenseRotMatrixGet( const std::string& sTranscodeName )
-		: IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix>( "ROTMATRIX",
-				sTranscodeName, "orientation as matrix")
-		{}
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    qQuat = VistaQuaternion(pRealMeasure->a4fRotationQuaternion); // @todo: check order
+    return true;
+  }
+};
 
-		VistaTransformMatrix GetValue( const VistaSensorMeasure* pMeasure ) const
-		{
-			VistaTransformMatrix matRot;
-			GetValue( pMeasure, matRot );
-			return matRot;
-		};
+class VistaSixenseRotMatrixGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix> {
+ public:
+  VistaSixenseRotMatrixGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix>(
+            "ROTMATRIX", sTranscodeName, "orientation as matrix") {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure, VistaTransformMatrix& matRot ) const
-		{
-			if( !pMeasure )
-				return false;
+  VistaTransformMatrix GetValue(const VistaSensorMeasure* pMeasure) const {
+    VistaTransformMatrix matRot;
+    GetValue(pMeasure, matRot);
+    return matRot;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			for( int i = 0; i < 3; ++i )
-			{
-				for( int j = 0; j < 3; ++j )
-					matRot[i][j] = pRealMeasure->m_a3x3fRotationMatrix[j][i]; // @todo check order
-			}
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, VistaTransformMatrix& matRot) const {
+    if (!pMeasure)
+      return false;
 
-	class VistaSixensePoseGet : public IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix>
-	{
-	public:
-		VistaSixensePoseGet( const std::string& sTranscodeName )
-			: IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix>( "POSEMATRIX",
-				sTranscodeName, "pose (trans+rot) as matrix")
-		{}
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j)
+        matRot[i][j] = pRealMeasure->m_a3x3fRotationMatrix[j][i]; // @todo check order
+    }
+    return true;
+  }
+};
 
-		VistaTransformMatrix GetValue(const VistaSensorMeasure *pMeasure) const
-		{
-			VistaTransformMatrix matPose;
-			GetValue( pMeasure, matPose );
-			return matPose;
-		};
+class VistaSixensePoseGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix> {
+ public:
+  VistaSixensePoseGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::TTranscodeValueGet<VistaTransformMatrix>(
+            "POSEMATRIX", sTranscodeName, "pose (trans+rot) as matrix") {
+  }
 
-		bool GetValue(const VistaSensorMeasure* pMeasure, VistaTransformMatrix& matPose ) const
-		{
-			if(!pMeasure)
-				return false;
+  VistaTransformMatrix GetValue(const VistaSensorMeasure* pMeasure) const {
+    VistaTransformMatrix matPose;
+    GetValue(pMeasure, matPose);
+    return matPose;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			for( int i = 0; i < 3; ++i )
-			{
-				for( int j = 0; j < 3; ++j )
-					matPose[i][j] = pRealMeasure->m_a3x3fRotationMatrix[j][i]; // @todo check order
-			}
-			matPose.SetTranslation( pRealMeasure->m_a3fPosition );
+  bool GetValue(const VistaSensorMeasure* pMeasure, VistaTransformMatrix& matPose) const {
+    if (!pMeasure)
+      return false;
 
-			return true;
-		}
-	};
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j)
+        matPose[i][j] = pRealMeasure->m_a3x3fRotationMatrix[j][i]; // @todo check order
+    }
+    matPose.SetTranslation(pRealMeasure->m_a3fPosition);
 
-	class VistaSixenseButtonGet : public IVistaMeasureTranscode::TTranscodeValueGet<bool>
-	{
-	public:
-		VistaSixenseButtonGet( const std::string& sTranscodeName,
-							const std::string& sGetterName,
-							const std::string& sDescription,
-							const int nButtonMask )
-		: IVistaMeasureTranscode::TTranscodeValueGet<bool>( sGetterName, sTranscodeName, sDescription )
-		, m_nButtonMask( nButtonMask )
-		{
-		}
+    return true;
+  }
+};
 
-		bool GetValue( const VistaSensorMeasure *pMeasure ) const
-		{
-			bool bTmp = false;
-			GetValue( pMeasure, bTmp );
-			return bTmp;
-		};
+class VistaSixenseButtonGet : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+ public:
+  VistaSixenseButtonGet(const std::string& sTranscodeName, const std::string& sGetterName,
+      const std::string& sDescription, const int nButtonMask)
+      : IVistaMeasureTranscode::TTranscodeValueGet<bool>(sGetterName, sTranscodeName, sDescription)
+      , m_nButtonMask(nButtonMask) {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure, bool& bValue ) const
-		{
-			if( pMeasure == NULL )
-				return false;
+  bool GetValue(const VistaSensorMeasure* pMeasure) const {
+    bool bTmp = false;
+    GetValue(pMeasure, bTmp);
+    return bTmp;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			bValue = ( ( pRealMeasure->m_nButtons & m_nButtonMask ) != 0 );
+  bool GetValue(const VistaSensorMeasure* pMeasure, bool& bValue) const {
+    if (pMeasure == NULL)
+      return false;
 
-			return true;
-		}
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    bValue = ((pRealMeasure->m_nButtons & m_nButtonMask) != 0);
 
-	private:
-		const int m_nButtonMask;
-	};
+    return true;
+  }
 
-	class VistaSixenseJoyXGet : public IVistaMeasureTranscode::TTranscodeValueGet<float>
-	{
-	public:
-		VistaSixenseJoyXGet( const std::string& sTranscodeName )
-		: IVistaMeasureTranscode::TTranscodeValueGet<float>( "JOYSTICK_X", sTranscodeName, "horizontal joystick axis")
-		{
-		}
+ private:
+  const int m_nButtonMask;
+};
 
-		float GetValue( const VistaSensorMeasure* pMeasure ) const
-		{
-			float nValue;
-			GetValue( pMeasure, nValue );
-			return nValue;
-		};
+class VistaSixenseJoyXGet : public IVistaMeasureTranscode::TTranscodeValueGet<float> {
+ public:
+  VistaSixenseJoyXGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::TTranscodeValueGet<float>(
+            "JOYSTICK_X", sTranscodeName, "horizontal joystick axis") {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure, float& nValue ) const
-		{
-			if( pMeasure == NULL )
-				return false;
+  float GetValue(const VistaSensorMeasure* pMeasure) const {
+    float nValue;
+    GetValue(pMeasure, nValue);
+    return nValue;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			nValue = pRealMeasure->m_nJoystickX;
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, float& nValue) const {
+    if (pMeasure == NULL)
+      return false;
 
-	class VistaSixenseJoyYGet : public IVistaMeasureTranscode::TTranscodeValueGet<float>
-	{
-	public:
-		VistaSixenseJoyYGet( const std::string& sTranscodeName )
-		: IVistaMeasureTranscode::TTranscodeValueGet<float>( "JOYSTICK_Y", sTranscodeName, "vertical joystick axis")
-		{
-		}
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    nValue = pRealMeasure->m_nJoystickX;
+    return true;
+  }
+};
 
-		float GetValue( const VistaSensorMeasure* pMeasure ) const
-		{
-			float nValue;
-			GetValue( pMeasure, nValue );
-			return nValue;
-		};
+class VistaSixenseJoyYGet : public IVistaMeasureTranscode::TTranscodeValueGet<float> {
+ public:
+  VistaSixenseJoyYGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::TTranscodeValueGet<float>(
+            "JOYSTICK_Y", sTranscodeName, "vertical joystick axis") {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure, float& nValue ) const
-		{
-			if( pMeasure == NULL )
-				return false;
+  float GetValue(const VistaSensorMeasure* pMeasure) const {
+    float nValue;
+    GetValue(pMeasure, nValue);
+    return nValue;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			nValue = pRealMeasure->m_nJoystickY;
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, float& nValue) const {
+    if (pMeasure == NULL)
+      return false;
 
-	class VistaSixenseTriggerGet : public IVistaMeasureTranscode::TTranscodeValueGet<float>
-	{
-	public:
-		VistaSixenseTriggerGet( const std::string& sTranscodeName )
-		: IVistaMeasureTranscode::TTranscodeValueGet<float>( "TRIGGER", sTranscodeName, "analog trigger value")
-		{
-		}
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    nValue = pRealMeasure->m_nJoystickY;
+    return true;
+  }
+};
 
-		float GetValue( const VistaSensorMeasure* pMeasure ) const
-		{
-			float nValue;
-			GetValue( pMeasure, nValue );
-			return nValue;
-		};
+class VistaSixenseTriggerGet : public IVistaMeasureTranscode::TTranscodeValueGet<float> {
+ public:
+  VistaSixenseTriggerGet(const std::string& sTranscodeName)
+      : IVistaMeasureTranscode::TTranscodeValueGet<float>(
+            "TRIGGER", sTranscodeName, "analog trigger value") {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure, float& nValue ) const
-		{
-			if( pMeasure == NULL )
-				return false;
+  float GetValue(const VistaSensorMeasure* pMeasure) const {
+    float nValue;
+    GetValue(pMeasure, nValue);
+    return nValue;
+  };
 
-			const VistaSixenseMeasures::Measure* pRealMeasure = pMeasure->getRead<VistaSixenseMeasures::Measure>();
-			nValue = pRealMeasure->m_nTrigger;
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, float& nValue) const {
+    if (pMeasure == NULL)
+      return false;
 
+    const VistaSixenseMeasures::Measure* pRealMeasure =
+        pMeasure->getRead<VistaSixenseMeasures::Measure>();
+    nValue = pRealMeasure->m_nTrigger;
+    return true;
+  }
+};
 
-	static IVistaPropertyGetFunctor *SaBodyGet[] =
-	{
-		new VistaSixensePosGet( "VistaSixenseTranscode" ),
-		new VistaSixenseOriGet( "VistaSixenseTranscode" ),
-		new VistaSixenseRotMatrixGet( "VistaSixenseTranscode" ),
-		new VistaSixensePoseGet( "VistaSixenseTranscode" ),
-		new VistaSixenseTriggerGet( "VistaSixenseTranscode" ),
-		new VistaSixenseJoyXGet( "VistaSixenseTranscode" ),
-		new VistaSixenseJoyYGet( "VistaSixenseTranscode" ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_1", "button 1", VistaSixenseMeasures::g_nButton1Mask ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_2", "button 2", VistaSixenseMeasures::g_nButton2Mask ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_3", "button 3", VistaSixenseMeasures::g_nButton3Mask ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_4", "button 4", VistaSixenseMeasures::g_nButton4Mask ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_START", "start button", VistaSixenseMeasures::g_nButtonStartMask ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_BUMPER", "bumper button", VistaSixenseMeasures::g_nButtonBumperMask ),
-		new VistaSixenseButtonGet( "VistaSixenseTranscode", "BUTTON_JOYSTICK", "joystick button", VistaSixenseMeasures::g_nButtonJoystickMask ),
-		NULL
-	};
+static IVistaPropertyGetFunctor* SaBodyGet[] = {new VistaSixensePosGet("VistaSixenseTranscode"),
+    new VistaSixenseOriGet("VistaSixenseTranscode"),
+    new VistaSixenseRotMatrixGet("VistaSixenseTranscode"),
+    new VistaSixensePoseGet("VistaSixenseTranscode"),
+    new VistaSixenseTriggerGet("VistaSixenseTranscode"),
+    new VistaSixenseJoyXGet("VistaSixenseTranscode"),
+    new VistaSixenseJoyYGet("VistaSixenseTranscode"),
+    new VistaSixenseButtonGet(
+        "VistaSixenseTranscode", "BUTTON_1", "button 1", VistaSixenseMeasures::g_nButton1Mask),
+    new VistaSixenseButtonGet(
+        "VistaSixenseTranscode", "BUTTON_2", "button 2", VistaSixenseMeasures::g_nButton2Mask),
+    new VistaSixenseButtonGet(
+        "VistaSixenseTranscode", "BUTTON_3", "button 3", VistaSixenseMeasures::g_nButton3Mask),
+    new VistaSixenseButtonGet(
+        "VistaSixenseTranscode", "BUTTON_4", "button 4", VistaSixenseMeasures::g_nButton4Mask),
+    new VistaSixenseButtonGet("VistaSixenseTranscode", "BUTTON_START", "start button",
+        VistaSixenseMeasures::g_nButtonStartMask),
+    new VistaSixenseButtonGet("VistaSixenseTranscode", "BUTTON_BUMPER", "bumper button",
+        VistaSixenseMeasures::g_nButtonBumperMask),
+    new VistaSixenseButtonGet("VistaSixenseTranscode", "BUTTON_JOYSTICK", "joystick button",
+        VistaSixenseMeasures::g_nButtonJoystickMask),
+    NULL};
 
+class VistaSixenseDriverTranscodeFactoryFactory : public IVistaTranscoderFactoryFactory {
+ public:
+  virtual IVistaMeasureTranscoderFactory* CreateFactoryForType(const std::string& sTypeName) {
+    if (VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(sTypeName, "")) {
+      return new TDefaultTranscoderFactory<VistaSixenseTranscode>(
+          VistaSixenseTranscode::GetTypeString());
+    } else
+      return NULL;
+  }
 
-	class VistaSixenseDriverTranscodeFactoryFactory : public IVistaTranscoderFactoryFactory
-	{
-	public:
-		virtual IVistaMeasureTranscoderFactory* CreateFactoryForType( const std::string& sTypeName )
-		{
-			if( VistaAspectsComparisonStuff::StringCaseInsensitiveEquals( sTypeName, "" ) )
-			{
-				return new TDefaultTranscoderFactory<VistaSixenseTranscode>( VistaSixenseTranscode::GetTypeString() );
-			}
-			else
-				return NULL;
-		}
+  virtual void DestroyTranscoderFactory(IVistaMeasureTranscoderFactory* pFac) {
+    delete pFac;
+  }
 
-		virtual void DestroyTranscoderFactory( IVistaMeasureTranscoderFactory* pFac )
-		{
-			delete pFac;
-		}
-
-		static void OnUnload()
-		{
-			TDefaultTranscoderFactory<VistaSixenseTranscode> oFac( VistaSixenseTranscode::GetTypeString() );
-			oFac.OnUnload();
-		}
-
-	};
-}
-
+  static void OnUnload() {
+    TDefaultTranscoderFactory<VistaSixenseTranscode> oFac(VistaSixenseTranscode::GetTypeString());
+    oFac.OnUnload();
+  }
+};
+} // namespace
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
 #ifdef VISTASIXENSETRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaSixenseDriverTranscodeFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(VistaSixenseDriverTranscodeFactoryFactory)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaSixenseDriverTranscodeFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(VistaSixenseDriverTranscodeFactoryFactory)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
-IMPTRANSCODERPLUG_CLEANUP( VistaSixenseDriverTranscodeFactoryFactory )
+IMPTRANSCODERPLUG_CLEANUP(VistaSixenseDriverTranscodeFactoryFactory)
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

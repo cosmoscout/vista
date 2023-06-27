@@ -21,92 +21,71 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
 #include "VistaTimeStamp.h"
 
-
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DLVistaTimeStamp::DLVistaTimeStamp(const DLVistaTimeStamp &rStamp)
-{
-	m_i64MicroStamp = rStamp.m_i64MicroStamp;
-	m_i32MacroStamp = rStamp.m_i32MacroStamp;
-	m_i32UnsafetyValue = rStamp.m_i32UnsafetyValue;
+DLVistaTimeStamp::DLVistaTimeStamp(const DLVistaTimeStamp& rStamp) {
+  m_i64MicroStamp    = rStamp.m_i64MicroStamp;
+  m_i32MacroStamp    = rStamp.m_i32MacroStamp;
+  m_i32UnsafetyValue = rStamp.m_i32UnsafetyValue;
 }
 
-
-DLVistaTimeStamp::DLVistaTimeStamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp)
-{
-	m_i64MicroStamp = i64MicroStamp;
-	m_i32MacroStamp = i32MacroStamp;
-	m_i32UnsafetyValue = 0;
+DLVistaTimeStamp::DLVistaTimeStamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp) {
+  m_i64MicroStamp    = i64MicroStamp;
+  m_i32MacroStamp    = i32MacroStamp;
+  m_i32UnsafetyValue = 0;
 }
 
-
-DLVistaTimeStamp::DLVistaTimeStamp()
-{
-	m_i64MicroStamp = -1; // invalid
-	m_i32MacroStamp = -1; // invalid
-	m_i32UnsafetyValue = -1; // invalid
+DLVistaTimeStamp::DLVistaTimeStamp() {
+  m_i64MicroStamp    = -1; // invalid
+  m_i32MacroStamp    = -1; // invalid
+  m_i32UnsafetyValue = -1; // invalid
 }
 
-DLVistaTimeStamp::~DLVistaTimeStamp()
-{
-	m_i64MicroStamp = -1; // invalid
-	m_i32MacroStamp = -1; // invalid
-	m_i32UnsafetyValue = -1; // invalid
+DLVistaTimeStamp::~DLVistaTimeStamp() {
+  m_i64MicroStamp    = -1; // invalid
+  m_i32MacroStamp    = -1; // invalid
+  m_i32UnsafetyValue = -1; // invalid
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-
-bool DLVistaTimeStamp::Equals(const DLVistaTimeStamp &rStamp)
-{
-	return false;
+bool DLVistaTimeStamp::Equals(const DLVistaTimeStamp& rStamp) {
+  return false;
 }
 
-bool DLVistaTimeStamp::operator==(const DLVistaTimeStamp &rStamp)
-{
-	return false;
+bool DLVistaTimeStamp::operator==(const DLVistaTimeStamp& rStamp) {
+  return false;
 }
 
-bool DLVistaTimeStamp::operator>(const DLVistaTimeStamp &rStamp)
-{
-	return false;
+bool DLVistaTimeStamp::operator>(const DLVistaTimeStamp& rStamp) {
+  return false;
 }
 
-
-bool DLVistaTimeStamp::operator<(const DLVistaTimeStamp &rStamp)
-{
-	return false;
+bool DLVistaTimeStamp::operator<(const DLVistaTimeStamp& rStamp) {
+  return false;
 }
 
-bool DLVistaTimeStamp::operator<=(const DLVistaTimeStamp &rStamp)
-{
-	return false;
+bool DLVistaTimeStamp::operator<=(const DLVistaTimeStamp& rStamp) {
+  return false;
 }
 
-bool DLVistaTimeStamp::operator>=(const DLVistaTimeStamp &rStamp)
-{
-	return false;
+bool DLVistaTimeStamp::operator>=(const DLVistaTimeStamp& rStamp) {
+  return false;
 }
 
-
-DLVistaTimeStamp &DLVistaTimeStamp::operator=(const DLVistaTimeStamp &rStamp)
-{
-	m_i64MicroStamp = rStamp.GetMicroStamp();
-	m_i32MacroStamp = rStamp.GetMacroStamp();
-	m_i32UnsafetyValue = rStamp.GetUnsafetyValue();
-	return *this;
+DLVistaTimeStamp& DLVistaTimeStamp::operator=(const DLVistaTimeStamp& rStamp) {
+  m_i64MicroStamp    = rStamp.GetMicroStamp();
+  m_i32MacroStamp    = rStamp.GetMacroStamp();
+  m_i32UnsafetyValue = rStamp.GetUnsafetyValue();
+  return *this;
 }
-
-

@@ -29,8 +29,8 @@
 
 #include <VistaBase/VistaBaseTypes.h>
 
-#include "VistaImage.h"
 #include "VistaGLTexture.h"
+#include "VistaImage.h"
 
 #include <map>
 
@@ -47,27 +47,24 @@ class VistaMutex;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI IVistaImageAndTextureCoreFactory
-{
-public:
-	static void SetSingleton( IVistaImageAndTextureCoreFactory* pFactory );
-	static IVistaImageAndTextureCoreFactory* GetSingleton();
+class VISTAKERNELAPI IVistaImageAndTextureCoreFactory {
+ public:
+  static void                              SetSingleton(IVistaImageAndTextureCoreFactory* pFactory);
+  static IVistaImageAndTextureCoreFactory* GetSingleton();
 
-	virtual IVistaImageCore* CreateImageCore() = 0;
-	virtual IVistaTextureCore* CreateTextureCore() = 0;
+  virtual IVistaImageCore*   CreateImageCore()   = 0;
+  virtual IVistaTextureCore* CreateTextureCore() = 0;
 
-	VistaImage* GetCachedImage( const std::string& sFilename );
-	void StoreCachedImage( const std::string& sFilename, const VistaImage& oImage );
+  VistaImage* GetCachedImage(const std::string& sFilename);
+  void        StoreCachedImage(const std::string& sFilename, const VistaImage& oImage);
 
-protected:
-	IVistaImageAndTextureCoreFactory();
-	virtual ~IVistaImageAndTextureCoreFactory();
+ protected:
+  IVistaImageAndTextureCoreFactory();
+  virtual ~IVistaImageAndTextureCoreFactory();
 
-	std::map<std::string, VistaImage> m_mapCachedImages;
-	VistaMutex* m_pCachedImagesMutex;
+  std::map<std::string, VistaImage> m_mapCachedImages;
+  VistaMutex*                       m_pCachedImagesMutex;
 };
-
-
 
 /*============================================================================*/
 /* END OF FILE                                                                */

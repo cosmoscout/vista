@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTATRANSFORMFILTER_H
 #define IDLVISTATRANSFORMFILTER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,58 +42,56 @@
 class IDLVistaDataPacket;
 class DLVistaPacketQueue;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IDLVistaTransformFilter : public IDLVistaFilter
-{
-private:
-	IDLVistaTransformFilter(IDLVistaTransformFilter &);
+class VISTAINTERPROCCOMMAPI IDLVistaTransformFilter : public IDLVistaFilter {
+ private:
+  IDLVistaTransformFilter(IDLVistaTransformFilter&);
 
-	int m_iOutboundQueueSize;
+  int m_iOutboundQueueSize;
 
-	int m_iFilterCount;
+  int m_iFilterCount;
 
-	int m_iDropCount;
+  int m_iDropCount;
 
-protected:
-	IDLVistaTransformFilter();
+ protected:
+  IDLVistaTransformFilter();
 
-	virtual bool DoTransform(IDLVistaDataPacket *, IDLVistaDataPacket *pBuf) = 0;
+  virtual bool DoTransform(IDLVistaDataPacket*, IDLVistaDataPacket* pBuf) = 0;
 
-	DLVistaPacketQueue *m_pOutboundPackets;
-public:
+  DLVistaPacketQueue* m_pOutboundPackets;
 
-	virtual ~IDLVistaTransformFilter();
+ public:
+  virtual ~IDLVistaTransformFilter();
 
-	virtual IDLVistaDataPacket *FilterPacketL(IDLVistaDataPacket *pPacket );
+  virtual IDLVistaDataPacket* FilterPacketL(IDLVistaDataPacket* pPacket);
 
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false);
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual IDLVistaDataPacket *GivePacket(bool bBlock);
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
 
-	void ConsumePacket(IDLVistaDataPacket *pPacket) {};
+  void ConsumePacket(IDLVistaDataPacket* pPacket){};
 
-	virtual bool InitPacketMgmt();
+  virtual bool InitPacketMgmt();
 
-	void SetOutboundQueueSize(int iSize);
+  void SetOutboundQueueSize(int iSize);
 
-	int GetOutboundQueueSize() const;
+  int GetOutboundQueueSize() const;
 
-	/**
-	 * The return Packet method for transform filters always returns NULL
-	 */
-	virtual IDLVistaDataPacket *ReturnPacket();
+  /**
+   * The return Packet method for transform filters always returns NULL
+   */
+  virtual IDLVistaDataPacket* ReturnPacket();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //IDLVISTAFILTER_H
-
+#endif // IDLVISTAFILTER_H

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADLL_H
 #define _VISTADLL_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -45,24 +43,25 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTATOOLSAPI VistaDLL
-{
-public:
-	typedef void* DLLHANDLE;
-	typedef void* DLLSYMBOL;
+class VISTATOOLSAPI VistaDLL {
+ public:
+  typedef void* DLLHANDLE;
+  typedef void* DLLSYMBOL;
 
-	static DLLHANDLE   Open(const std::string &strDllName);
-	static bool        Close(DLLHANDLE hDllHandle);
-	static DLLSYMBOL   FindSymbol( DLLHANDLE han, const std::string &strSymbol );
-	static std::string GetError();
+  static DLLHANDLE   Open(const std::string& strDllName);
+  static bool        Close(DLLHANDLE hDllHandle);
+  static DLLSYMBOL   FindSymbol(DLLHANDLE han, const std::string& strSymbol);
+  static std::string GetError();
 
 #if 0 // not implementable on linux :(
 	static std::string GetFilePath(DLLHANDLE hDllHandle);
 #endif
 
-private:
-	VistaDLL() {}
-	~VistaDLL() {}
+ private:
+  VistaDLL() {
+  }
+  ~VistaDLL() {
+  }
 };
 
 /*============================================================================*/
@@ -70,4 +69,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADLL_H
-

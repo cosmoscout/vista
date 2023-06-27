@@ -1,4 +1,4 @@
-	/*============================================================================*/
+/*============================================================================*/
 /*                              ViSTA VR toolkit                              */
 /*               Copyright (c) 1997-2016 RWTH Aachen University               */
 /*============================================================================*/
@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAGLUTKEYBOARDDRIVER_H
 #define _VISTAGLUTKEYBOARDDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -56,69 +54,63 @@ class VistaDriverAbstractWindowAspect;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAGLUTKEYBOARDDRIVERAPI VistaGlutKeyboardDriver : public IVistaKeyboardDriver
-{
-public:
-	VistaGlutKeyboardDriver(IVistaDriverCreationMethod *);
-	virtual ~VistaGlutKeyboardDriver();
+class VISTAGLUTKEYBOARDDRIVERAPI VistaGlutKeyboardDriver : public IVistaKeyboardDriver {
+ public:
+  VistaGlutKeyboardDriver(IVistaDriverCreationMethod*);
+  virtual ~VistaGlutKeyboardDriver();
 
-	static void KeyDownFunction(unsigned char, int, int);
-	static void KeyUpFunction(unsigned char, int, int);
-	static void SpecialKeyDownFunction(int, int, int);
-	static void SpecialKeyUpFunction(int, int, int);
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  static void KeyDownFunction(unsigned char, int, int);
+  static void KeyUpFunction(unsigned char, int, int);
+  static void SpecialKeyDownFunction(int, int, int);
+  static void SpecialKeyUpFunction(int, int, int);
 
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
-private:
-	static void SetKeyValue(VistaGlutKeyboardDriver *,
-							unsigned char ucKey,
-							bool bIsUp,
-							int nModifier);
-	static void SetSpecialKeyValue(VistaGlutKeyboardDriver *pKeyboard,
-								   int nKeyValue,
-								   bool bIsUp,
-								   int nModifier);
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-	struct _sKeyHlp
-	{
-		_sKeyHlp()
-			: m_nKey(-1),
-			  m_nModifier(-1),
-			  m_bUpKey(false)
-		{}
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-		_sKeyHlp( int nKey, int nModifier, bool bUp )
-			: m_nKey(nKey), m_nModifier(nModifier), m_bUpKey(bUp)
-		{
-		}
+ private:
+  static void SetKeyValue(VistaGlutKeyboardDriver*, unsigned char ucKey, bool bIsUp, int nModifier);
+  static void SetSpecialKeyValue(
+      VistaGlutKeyboardDriver* pKeyboard, int nKeyValue, bool bIsUp, int nModifier);
 
+  struct _sKeyHlp {
+    _sKeyHlp()
+        : m_nKey(-1)
+        , m_nModifier(-1)
+        , m_bUpKey(false) {
+    }
 
-		int m_nKey,
-			m_nModifier;
-		bool m_bUpKey;
-	};
+    _sKeyHlp(int nKey, int nModifier, bool bUp)
+        : m_nKey(nKey)
+        , m_nModifier(nModifier)
+        , m_bUpKey(bUp) {
+    }
 
-	void Receive( const _sKeyHlp & );
+    int  m_nKey, m_nModifier;
+    bool m_bUpKey;
+  };
 
-	std::vector< _sKeyHlp > m_vecKeyVec;
-	bool m_bLastFrameValue;
-	bool m_bConnected;
+  void Receive(const _sKeyHlp&);
 
-	VistaDriverAbstractWindowAspect *m_pWindowAspect;
-	VistaMutex m_update_vec_lock;
+  std::vector<_sKeyHlp> m_vecKeyVec;
+  bool                  m_bLastFrameValue;
+  bool                  m_bConnected;
+
+  VistaDriverAbstractWindowAspect* m_pWindowAspect;
+  VistaMutex                       m_update_vec_lock;
 };
 
-class VISTAGLUTKEYBOARDDRIVERAPI VistaGlutKeyboardDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaGlutKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
-protected:
-private:
-};
+class VISTAGLUTKEYBOARDDRIVERAPI VistaGlutKeyboardDriverCreationMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  VistaGlutKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 
+ protected:
+ private:
+};
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

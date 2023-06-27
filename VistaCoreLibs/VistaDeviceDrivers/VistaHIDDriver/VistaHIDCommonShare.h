@@ -21,25 +21,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAHIDDRIVERCOMMONSHARE_H__
 #define _VISTAHIDDRIVERCOMMONSHARE_H__
 
 #include <string>
 
-
-namespace VistaHIDCommonShare
-{
-	struct sHIDMeasure
-	{
-		int nAxes[32];
-		unsigned char nButtons[512];
-	};
-}
+namespace VistaHIDCommonShare {
+struct sHIDMeasure {
+  int           nAxes[32];
+  unsigned char nButtons[512];
+};
+} // namespace VistaHIDCommonShare
 
 /*============================================================================*/
-/* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES							*/
+/* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES
+ */
 /*============================================================================*/
-
 
 #endif //_VISTAHIDDRIVERCOMMONSHARE_H__

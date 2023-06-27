@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
@@ -29,56 +28,49 @@
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
-
 // ****************************************************************************
 // PARAMETER API IMPLEMENTATION
 // ****************************************************************************
 
-namespace
-{
+namespace {
 
-	class VistaSpaceNavigatorTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaSpaceNavigatorTranscode()
-		{
-			m_nNumberOfScalars = 0;
-		}
+class VistaSpaceNavigatorTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaSpaceNavigatorTranscode() {
+    m_nNumberOfScalars = 0;
+  }
 
-		static std::string GetTypeString() { return "VistaSpaceNavigatorTranscode"; }
-		REFL_INLINEIMP(VistaSpaceNavigatorTranscode, IVistaMeasureTranscode);
-	};
+  static std::string GetTypeString() {
+    return "VistaSpaceNavigatorTranscode";
+  }
+  REFL_INLINEIMP(VistaSpaceNavigatorTranscode, IVistaMeasureTranscode);
+};
 
-	class VistaSpaceNavigatorTranscodeFactory : public IVistaMeasureTranscoderFactory
-	{
-	public:
-		virtual IVistaMeasureTranscode *CreateTranscoder()
-		{
-			return new VistaSpaceNavigatorTranscode;
-		}
-		virtual void DestroyTranscoder( IVistaMeasureTranscode *transcoder )
-		{
-			delete transcoder;
-		}
-		virtual std::string GetTranscoderName() const { return "VistaSpaceNavigatorTranscodeFactory"; }
+class VistaSpaceNavigatorTranscodeFactory : public IVistaMeasureTranscoderFactory {
+ public:
+  virtual IVistaMeasureTranscode* CreateTranscoder() {
+    return new VistaSpaceNavigatorTranscode;
+  }
+  virtual void DestroyTranscoder(IVistaMeasureTranscode* transcoder) {
+    delete transcoder;
+  }
+  virtual std::string GetTranscoderName() const {
+    return "VistaSpaceNavigatorTranscodeFactory";
+  }
+};
 
-
-	};
-
-
-}
+} // namespace
 
 // ############################################################################
 
 #ifdef VISTASPACENAVIGATORTRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<VistaSpaceNavigatorTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaSpaceNavigatorTranscodeFactory>)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<VistaSpaceNavigatorTranscodeFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaSpaceNavigatorTranscodeFactory>)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
 IMPTRANSCODERPLUG_CLEANUP(TSimpleTranscoderFactoryFactory<VistaSpaceNavigatorTranscodeFactory>)
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -87,5 +79,3 @@ IMPTRANSCODERPLUG_CLEANUP(TSimpleTranscoderFactoryFactory<VistaSpaceNavigatorTra
 /*============================================================================*/
 /*                                               */
 /*============================================================================*/
-
-

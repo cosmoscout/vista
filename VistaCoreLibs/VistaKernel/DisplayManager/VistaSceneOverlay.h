@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASCENEOVERLAY_H
 #define _VISTASCENEOVERLAY_H
 
@@ -47,30 +46,27 @@ class VistaViewport;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI IVistaSceneOverlay : public IVistaOpenGLDraw
-{
-public:
-	virtual ~IVistaSceneOverlay();
+class VISTAKERNELAPI IVistaSceneOverlay : public IVistaOpenGLDraw {
+ public:
+  virtual ~IVistaSceneOverlay();
 
-	// scene overlays do not have a bounding box
-	virtual bool GetBoundingBox( VistaBoundingBox &bb );
+  // scene overlays do not have a bounding box
+  virtual bool GetBoundingBox(VistaBoundingBox& bb);
 
-	virtual bool GetIsEnabled() const = 0;
-	virtual void SetIsEnabled( bool bEnabled ) = 0;
+  virtual bool GetIsEnabled() const        = 0;
+  virtual void SetIsEnabled(bool bEnabled) = 0;
 
-	VistaViewport* GetAttachedViewport() const;
+  VistaViewport* GetAttachedViewport() const;
 
-protected:
-	virtual void UpdateOnViewportChange( int iWidth, int iHeight,
-											int iPosX, int iPosY ) = 0;
+ protected:
+  virtual void UpdateOnViewportChange(int iWidth, int iHeight, int iPosX, int iPosY) = 0;
 
-	IVistaSceneOverlay( VistaDisplayManager* pDisplayManager,
-						const std::string& sViewportName = "" );
-	IVistaSceneOverlay( VistaViewport* pViewport );
+  IVistaSceneOverlay(VistaDisplayManager* pDisplayManager, const std::string& sViewportName = "");
+  IVistaSceneOverlay(VistaViewport* pViewport);
 
-private:
-	class ViewportResizeObserver;
-	ViewportResizeObserver*		m_pViewportObserver;
+ private:
+  class ViewportResizeObserver;
+  ViewportResizeObserver* m_pViewportObserver;
 };
 
 /*============================================================================*/
@@ -78,4 +74,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTASCENEOVERLAY_H
-

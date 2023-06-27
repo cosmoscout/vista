@@ -21,17 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERINFOASPECT_H
 #define _VISTADRIVERINFOASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
-
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 
 #include <VistaAspects/VistaPropertyAwareable.h>
 
@@ -52,38 +49,37 @@
  * used in term to retrieve them in the form of a PROPLIST, which can be
  * printed or traversed in a GUI.
  */
-class VISTADEVICEDRIVERSAPI VistaDriverInfoAspect : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	VistaDriverInfoAspect();
-	virtual ~VistaDriverInfoAspect();
+class VISTADEVICEDRIVERSAPI VistaDriverInfoAspect
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  VistaDriverInfoAspect();
+  virtual ~VistaDriverInfoAspect();
 
+  /**
+   * API to use by a driver, as the PROPLIST is returned as
+   * a reference that can be written to. Users should use the
+   * read-only API
+   * @see GetInfoProps()
+   * @return a reference to the props to be written to.
+   */
+  VistaPropertyList& GetInfoPropsWrite();
 
-	/**
-	 * API to use by a driver, as the PROPLIST is returned as
-	 * a reference that can be written to. Users should use the
-	 * read-only API
-	 * @see GetInfoProps()
-	 * @return a reference to the props to be written to.
-	 */
-	VistaPropertyList &GetInfoPropsWrite();
+  /**
+   * returns a copy of the driver props for further inspection.
+   * @return the driver info props.
+   */
+  VistaPropertyList GetInfoProps() const;
 
-	/**
-	 * returns a copy of the driver props for further inspection.
-	 * @return the driver info props.
-	 */
-	VistaPropertyList  GetInfoProps() const;
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
-
-protected:
-private:
-	VistaPropertyList m_oProps;
-	static int m_nAspectId;
+ protected:
+ private:
+  VistaPropertyList m_oProps;
+  static int        m_nAspectId;
 };
 
 /*============================================================================*/
@@ -91,5 +87,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADRIVERINFOASPECT_H
-
-

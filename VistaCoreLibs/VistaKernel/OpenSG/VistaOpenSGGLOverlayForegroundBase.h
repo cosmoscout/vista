@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA_OPENSG_GLOVERLAYFOREGROUND_BASE_H_
 #define _VISTA_OPENSG_GLOVERLAYFOREGROUND_BASE_H_
 
@@ -34,191 +33,171 @@
 #include <VistaKernel/OpenSG/VistaOpenSGGLOverlayForegroundFields.h>
 
 #if defined(WIN32)
-//diable warnings from OpenSG includes
+// diable warnings from OpenSG includes
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGSystemDef.h>
 
 #include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
+#include <OpenSG/OSGRefPtr.h>
 
-#include <OpenSG/OSGForeground.h> // Parent
+#include <OpenSG/OSGForeground.h>   // Parent
 #include <OpenSG/OSGStringFields.h> // Formats type
 
 #if defined(WIN32)
 #pragma warning(pop)
 #endif
 
-
-
-
 OSG_BEGIN_NAMESPACE
 
-class VistaOpenSGGLOverlayForeground ;
+class VistaOpenSGGLOverlayForeground;
 
-class VISTAKERNELAPI VistaOpenSGGLOverlayForegroundBase : public Foreground
-{
-  private:
+class VISTAKERNELAPI VistaOpenSGGLOverlayForegroundBase : public Foreground {
+ private:
+  typedef Foreground Inherited;
 
-	typedef Foreground    Inherited;
+  /*==========================  PUBLIC  =================================*/
+ public:
+  typedef VistaOpenSGGLOverlayForegroundPtr Ptr;
 
-	/*==========================  PUBLIC  =================================*/
-  public:
+  enum { GLOverlaysFieldId = Inherited::NextFieldId, NextFieldId = GLOverlaysFieldId + 1 };
 
-	typedef VistaOpenSGGLOverlayForegroundPtr  Ptr;
+  static const BitVector GLOverlaysFieldMask;
+  static const BitVector MTInfluenceMask;
 
-	enum
-	{
-		GLOverlaysFieldId   = Inherited::NextFieldId,
-		NextFieldId    = GLOverlaysFieldId   + 1
-	};
+  /*---------------------------------------------------------------------*/
+  /*                           Class Get                                 */
+  /*---------------------------------------------------------------------*/
 
+  static FieldContainerType& getClassType(void);
+  static UInt32              getClassTypeId(void);
 
-	static const BitVector GLOverlaysFieldMask;
-	static const BitVector MTInfluenceMask;
+  /*---------------------------------------------------------------------*/
+  /*                       FieldContainer Get                            */
+  /*---------------------------------------------------------------------*/
 
+  virtual FieldContainerType&       getType(void);
+  virtual const FieldContainerType& getType(void) const;
 
-	/*---------------------------------------------------------------------*/
-	/*                           Class Get                                 */
-	/*---------------------------------------------------------------------*/
+  virtual UInt32 getContainerSize(void) const;
 
-	static        FieldContainerType &getClassType    (void);
-	static        UInt32              getClassTypeId  (void);
+  /*---------------------------------------------------------------------*/
+  /*                           Field Get                                 */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                       FieldContainer Get                            */
-	/*---------------------------------------------------------------------*/
+  MField<void*>* getMFGLOverlays(void);
 
-	virtual       FieldContainerType &getType  (void);
-	virtual const FieldContainerType &getType  (void) const;
+  void*                getGLOverlays(const UInt32 index);
+  MField<void*>&       getGLOverlays(void);
+  const MField<void*>& getGLOverlays(void) const;
 
-	virtual       UInt32              getContainerSize(void) const;
+  /*---------------------------------------------------------------------*/
+  /*                           Field Set                                 */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                           Field Get                                 */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                              Sync                                   */
+  /*---------------------------------------------------------------------*/
 
-	MField<void*>       *getMFGLOverlays      (void);
+  /*---------------------------------------------------------------------*/
+  /*                          Binary Access                              */
+  /*---------------------------------------------------------------------*/
 
-	void*               getGLOverlays         (const UInt32 index);
-	MField<void*>       &getGLOverlays        (void);
-	const MField<void*> &getGLOverlays        (void) const;
+  virtual UInt32 getBinSize(const BitVector& whichField);
+  virtual void   copyToBin(BinaryDataHandler& pMem, const BitVector& whichField);
+  virtual void   copyFromBin(BinaryDataHandler& pMem, const BitVector& whichField);
 
-	/*---------------------------------------------------------------------*/
-	/*                           Field Set                                 */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                          Construction                               */
+  /*---------------------------------------------------------------------*/
 
+  static VistaOpenSGGLOverlayForegroundPtr create(void);
+  static VistaOpenSGGLOverlayForegroundPtr createEmpty(void);
 
-	/*---------------------------------------------------------------------*/
-	/*                              Sync                                   */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                              Copy                                   */
+  /*---------------------------------------------------------------------*/
 
+  virtual FieldContainerPtr shallowCopy(void) const;
 
-	/*---------------------------------------------------------------------*/
-	/*                          Binary Access                              */
-	/*---------------------------------------------------------------------*/
+  /*=========================  PROTECTED  ===============================*/
+ protected:
+  /*---------------------------------------------------------------------*/
+  /*                             Fields                                  */
+  /*---------------------------------------------------------------------*/
 
-	virtual UInt32 getBinSize (const BitVector         &whichField);
-	virtual void   copyToBin  (      BinaryDataHandler &pMem,
-							   const BitVector         &whichField);
-	virtual void   copyFromBin(      BinaryDataHandler &pMem,
-							   const BitVector         &whichField);
+  MField<void*> m_mfGLOverlays;
 
+  /*---------------------------------------------------------------------*/
+  /*                          Constructors                               */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                          Construction                               */
-	/*---------------------------------------------------------------------*/
+  VistaOpenSGGLOverlayForegroundBase(void);
+  VistaOpenSGGLOverlayForegroundBase(const VistaOpenSGGLOverlayForegroundBase& source);
 
-	static  VistaOpenSGGLOverlayForegroundPtr      create          (void);
-	static  VistaOpenSGGLOverlayForegroundPtr      createEmpty     (void);
+  /*---------------------------------------------------------------------*/
+  /*                          Destructors                                */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                              Copy                                   */
-	/*---------------------------------------------------------------------*/
+  virtual ~VistaOpenSGGLOverlayForegroundBase(void);
 
-	virtual FieldContainerPtr     shallowCopy     (void) const;
+  /*---------------------------------------------------------------------*/
+  /*                              Sync                                   */
+  /*---------------------------------------------------------------------*/
+  //#if !defined(OSG_FIXED_MFIELDSYNC)
+  void executeSyncImpl(VistaOpenSGGLOverlayForegroundBase* pOther, const BitVector& whichField);
 
-	/*=========================  PROTECTED  ===============================*/
-  protected:
+  virtual void executeSync(FieldContainer& other, const BitVector& whichField);
+  //#else
+  /*    void executeSyncImpl(      SimpleStatisticsForegroundBase *pOther,
+                                                   const BitVector         &whichField,
+                                                   const SyncInfo          &sInfo     );
 
-	/*---------------------------------------------------------------------*/
-	/*                             Fields                                  */
-	/*---------------------------------------------------------------------*/
+          virtual void   executeSync(      FieldContainer    &other,
+                                                             const BitVector         &whichField,
+                                                             const SyncInfo          &sInfo);
 
-	MField<void*>  m_mfGLOverlays;
+          virtual void execBeginEdit     (const BitVector &whichField,
+                                                                                    UInt32 uiAspect,
+                                                                                    UInt32
+     uiContainerSize);
 
-	/*---------------------------------------------------------------------*/
-	/*                          Constructors                               */
-	/*---------------------------------------------------------------------*/
+                          void execBeginEditImpl (const BitVector &whichField,
+                                                                                    UInt32 uiAspect,
+                                                                                    UInt32
+     uiContainerSize);
 
-	VistaOpenSGGLOverlayForegroundBase(void);
-	VistaOpenSGGLOverlayForegroundBase(const VistaOpenSGGLOverlayForegroundBase &source);
+                                            virtual void onDestroyAspect(UInt32 uiId, UInt32
+     uiAspect);*/
+  //#endif
+  /*==========================  PRIVATE  ================================*/
+ private:
+  friend class FieldContainer;
 
-	/*---------------------------------------------------------------------*/
-	/*                          Destructors                                */
-	/*---------------------------------------------------------------------*/
+  static FieldDescription*  _desc[];
+  static FieldContainerType _type;
 
-	virtual ~VistaOpenSGGLOverlayForegroundBase(void);
-
-	/*---------------------------------------------------------------------*/
-	/*                              Sync                                   */
-	/*---------------------------------------------------------------------*/
-//#if !defined(OSG_FIXED_MFIELDSYNC)
-	void executeSyncImpl(      VistaOpenSGGLOverlayForegroundBase *pOther,
-						 const BitVector         &whichField);
-
-	virtual void   executeSync(      FieldContainer    &other,
-							   const BitVector         &whichField);
-//#else
-/*    void executeSyncImpl(      SimpleStatisticsForegroundBase *pOther,
-						 const BitVector         &whichField,
-						 const SyncInfo          &sInfo     );
-
-	virtual void   executeSync(      FieldContainer    &other,
-							   const BitVector         &whichField,
-							   const SyncInfo          &sInfo);
-
-	virtual void execBeginEdit     (const BitVector &whichField,
-										  UInt32     uiAspect,
-										  UInt32     uiContainerSize);
-
-			void execBeginEditImpl (const BitVector &whichField,
-										  UInt32     uiAspect,
-										  UInt32     uiContainerSize);
-
-					  virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);*/
-//#endif
-	/*==========================  PRIVATE  ================================*/
-  private:
-
-	friend class FieldContainer;
-
-	static FieldDescription   *_desc[];
-	static FieldContainerType  _type;
-
-
-	// prohibit default functions (move to 'public' if you need one)
-	void operator =(const VistaOpenSGGLOverlayForegroundBase &source);
+  // prohibit default functions (move to 'public' if you need one)
+  void operator=(const VistaOpenSGGLOverlayForegroundBase& source);
 };
 
 //---------------------------------------------------------------------------
 //   Exported Types
 //---------------------------------------------------------------------------
 
-
-typedef VistaOpenSGGLOverlayForegroundBase *VistaOpenSGGLOverlayForegroundBaseP;
+typedef VistaOpenSGGLOverlayForegroundBase* VistaOpenSGGLOverlayForegroundBaseP;
 
 typedef osgIF<VistaOpenSGGLOverlayForegroundBase::isNodeCore,
-	CoredNodePtr<VistaOpenSGGLOverlayForeground>,
-			  FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-			  >::_IRet VistaOpenSGGLOverlayForegroundNodePtr;
+    CoredNodePtr<VistaOpenSGGLOverlayForeground>,
+    FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC>::_IRet
+    VistaOpenSGGLOverlayForegroundNodePtr;
 
 typedef RefPtr<VistaOpenSGGLOverlayForegroundPtr> VistaOpenSGGLOverlayForegroundRefPtr;
 

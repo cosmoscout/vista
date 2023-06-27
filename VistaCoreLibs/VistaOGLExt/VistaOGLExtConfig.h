@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOGLEXTCONFIG_H
 #define _VISTAOGLEXTCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAOGLEXT_STATIC) 
-	#ifdef VISTAOGLEXT_EXPORTS
-		#define VISTAOGLEXTAPI __declspec(dllexport)
-	#else
-		#define VISTAOGLEXTAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTAOGLEXT_STATIC)
+#ifdef VISTAOGLEXT_EXPORTS
+#define VISTAOGLEXTAPI __declspec(dllexport)
+#else
+#define VISTAOGLEXTAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAOGLEXTAPI
+#define VISTAOGLEXTAPI
 #endif
 
 #endif //_VISTAOGLEXTCONFIG_H

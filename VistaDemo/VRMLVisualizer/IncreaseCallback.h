@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _INCREASECALLBACK_H
 #define _INCREASECALLBACK_H
 
@@ -50,35 +49,31 @@ class VrmlVisualizer;
  * This Callback increases the animation speed if the animation is running.
  * If the animation is not running the next step is shown.
  */
-class IncreaseCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	
-	/**
-	 * Constructor
-	 * This one needs the instance of the CVrmlVisualizer
-	 */
-	IncreaseCallback( VrmlVisualizer *pVrmlVisualizer );
-	
-	/**
-	 * Destructor 
-	 * Nothing to here, because the m_pVrmlVisualizer is hold by the main.cpp
-	 */
-	virtual ~IncreaseCallback();
+class IncreaseCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * This one needs the instance of the CVrmlVisualizer
+   */
+  IncreaseCallback(VrmlVisualizer* pVrmlVisualizer);
 
-	/**
-	 * Do
-	 * The Do method is invoced by the application.
-	 */
-	bool Do();
+  /**
+   * Destructor
+   * Nothing to here, because the m_pVrmlVisualizer is hold by the main.cpp
+   */
+  virtual ~IncreaseCallback();
 
-private:
-	
-	/**
-	 * Instance of CVrmlVisualizer
-	 */
-	VrmlVisualizer *m_pVrmlVisualizer;
+  /**
+   * Do
+   * The Do method is invoced by the application.
+   */
+  bool Do();
 
+ private:
+  /**
+   * Instance of CVrmlVisualizer
+   */
+  VrmlVisualizer* m_pVrmlVisualizer;
 };
 
 /*============================================================================*/

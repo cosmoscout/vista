@@ -21,17 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /* DEFINITIONS                                                                */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -46,104 +42,91 @@
 
 #include <fstream>
 #ifdef WIN32
-	#include <io.h>
+#include <io.h>
 #else
-	#include <cstdio>
+#include <cstdio>
 #endif
-
 
 using namespace std;
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-
-VistaFileSystemFile::VistaFileSystemFile(const string &file_name)
-: VistaFileSystemNode(file_name)
-{
+VistaFileSystemFile::VistaFileSystemFile(const string& file_name)
+    : VistaFileSystemNode(file_name) {
 }
 
-
-VistaFileSystemFile::~VistaFileSystemFile()
-{
+VistaFileSystemFile::~VistaFileSystemFile() {
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-bool VistaFileSystemFile::Create()
-{
-	if( Exists() )
-		return true;
-	std::ofstream oStream( GetName().c_str() );
-	bool bSuccess = oStream.good();
-	oStream.close();
-	return bSuccess;
+bool VistaFileSystemFile::Create() {
+  if (Exists())
+    return true;
+  std::ofstream oStream(GetName().c_str());
+  bool          bSuccess = oStream.good();
+  oStream.close();
+  return bSuccess;
 }
 
-
-
-bool VistaFileSystemFile::Delete()
-{
-	vstr::outi() << "VistaFileSystemFile::Delete() -- deleting file ["
-				<< GetName() << "]" <<  std::endl;
-	return (remove(GetName().c_str()) == 0) ? true : false;
+bool VistaFileSystemFile::Delete() {
+  vstr::outi() << "VistaFileSystemFile::Delete() -- deleting file [" << GetName() << "]"
+               << std::endl;
+  return (remove(GetName().c_str()) == 0) ? true : false;
 }
 
-
-bool VistaFileSystemFile::Exists() const
-{
-#ifdef WIN32  // ##### WINDOWS VERSION ########################################
+bool VistaFileSystemFile::Exists() const {
+#ifdef WIN32 // ##### WINDOWS VERSION ########################################
 
   struct _stat attributes;
 
-  if ( _stat(GetName().c_str(), &attributes) != 0 )
-	return false;
+  if (_stat(GetName().c_str(), &attributes) != 0)
+    return false;
 
-  if ( attributes.st_mode & _S_IFREG )
-	return true;
+  if (attributes.st_mode & _S_IFREG)
+    return true;
   else
-	return false;
+    return false;
 
-#else        // ##### UNIX VERSION ############################################
+#else // ##### UNIX VERSION ############################################
 
   struct stat attributes;
 
-  if ( stat(GetName().c_str(), &attributes) != 0 )
-	return false;
+  if (stat(GetName().c_str(), &attributes) != 0)
+    return false;
 
-  if ( attributes.st_mode & S_IFREG )
-	return true;
+  if (attributes.st_mode & S_IFREG)
+    return true;
   else
-	return false;
+    return false;
 
 #endif
 }
 
-long VistaFileSystemFile::GetSize()
-{
-#ifdef WIN32  // ##### WINDOWS VERSION ########################################
+long VistaFileSystemFile::GetSize() {
+#ifdef WIN32 // ##### WINDOWS VERSION ########################################
 
   struct _stat attributes;
 
-  if ( _stat(GetName().c_str(), &attributes) != 0 )
-	return 0;
+  if (_stat(GetName().c_str(), &attributes) != 0)
+    return 0;
 
-  return ((long) attributes.st_size);
+  return ((long)attributes.st_size);
 
-#else        // ##### UNIX VERSION ############################################
+#else // ##### UNIX VERSION ############################################
 
   struct stat attributes;
 
-  if ( stat(GetName().c_str(), &attributes) != 0 )
-	return 0;
+  if (stat(GetName().c_str(), &attributes) != 0)
+    return 0;
 
-  return ((long) attributes.st_size);
+  return ((long)attributes.st_size);
 
 #endif
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

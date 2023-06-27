@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNREFERENCEFRAMETRANSFORMNODE_H
 #define _VISTADFNREFERENCEFRAMETRANSFORMNODE_H
 
@@ -32,8 +31,8 @@
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
 
 #include <VistaBase/VistaVectorMath.h>
 
@@ -54,41 +53,45 @@ class VistaReferenceFrame;
 /**
  * Node that takes a configurable amount of in-positions, in-orientations and in-transformations
  * and transforms them into or out of a selected reference frame.
- 
+
  * @ingroup VdfnNodes
- * @inport{in_position + idx, VistaVector3D, optional, the in-position with index idx to transform to out_position + idx}
- * @inport{in_orientation + idx, VistaQuaternion, optional, the in-orientation with index idx to transform to out_orientation + idx}
- * @inport{in_matrix + idx, VistaTransformMatrix, optional, the in-transformation with index idx to transform to out_transformation + idx}
- * @outport{out_position + idx, VistaVector3D, the in-position with index idx transformed from in_position + idx}
- * @outport{out_oriantation + idx, VistaVector3D, the in-orientation with index idx transformed from in_orientation + idx}
- * @outport{out_matrix + idx, VistaVector3D, the in-transformation with index idx transformed from in_matrix + idx}
- 
+ * @inport{in_position + idx, VistaVector3D, optional, the in-position with index idx to transform
+ to out_position + idx}
+ * @inport{in_orientation + idx, VistaQuaternion, optional, the in-orientation with index idx to
+ transform to out_orientation + idx}
+ * @inport{in_matrix + idx, VistaTransformMatrix, optional, the in-transformation with index idx to
+ transform to out_transformation + idx}
+ * @outport{out_position + idx, VistaVector3D, the in-position with index idx transformed from
+ in_position + idx}
+ * @outport{out_oriantation + idx, VistaVector3D, the in-orientation with index idx transformed from
+ in_orientation + idx}
+ * @outport{out_matrix + idx, VistaVector3D, the in-transformation with index idx transformed from
+ in_matrix + idx}
+
  */
-class VISTAKERNELAPI VistaDfnReferenceFrameTransformNode : public IVdfnNode
-{
-public:
-	VistaDfnReferenceFrameTransformNode( VistaReferenceFrame* pFrame,
-											bool bTransformToFrame,
-											int iNrPositionPorts,
-											int iNrOrientationPorts,
-											int iNrMatrixPorts );
-	~VistaDfnReferenceFrameTransformNode();
+class VISTAKERNELAPI VistaDfnReferenceFrameTransformNode : public IVdfnNode {
+ public:
+  VistaDfnReferenceFrameTransformNode(VistaReferenceFrame* pFrame, bool bTransformToFrame,
+      int iNrPositionPorts, int iNrOrientationPorts, int iNrMatrixPorts);
+  ~VistaDfnReferenceFrameTransformNode();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	bool PrepareEvaluationRun();
-protected:
-	virtual bool DoEvalNode();
-private:
-	VistaReferenceFrame*			m_pFrame;
-	bool							m_bTransformFromFrame;
+  bool PrepareEvaluationRun();
 
-	std::vector<TVdfnPort<VistaVector3D>*>			m_vecInPortsPos;
-	std::vector<TVdfnPort<VistaVector3D>*>			m_vecOutPortsPos;
-	std::vector<TVdfnPort<VistaQuaternion>*>		m_vecInPortsOri;
-	std::vector<TVdfnPort<VistaQuaternion>*>		m_vecOutPortsOri;
-	std::vector<TVdfnPort<VistaTransformMatrix>*>	m_vecInPortsMat;
-	std::vector<TVdfnPort<VistaTransformMatrix>*>	m_vecOutPortsMat;
+ protected:
+  virtual bool DoEvalNode();
+
+ private:
+  VistaReferenceFrame* m_pFrame;
+  bool                 m_bTransformFromFrame;
+
+  std::vector<TVdfnPort<VistaVector3D>*>        m_vecInPortsPos;
+  std::vector<TVdfnPort<VistaVector3D>*>        m_vecOutPortsPos;
+  std::vector<TVdfnPort<VistaQuaternion>*>      m_vecInPortsOri;
+  std::vector<TVdfnPort<VistaQuaternion>*>      m_vecOutPortsOri;
+  std::vector<TVdfnPort<VistaTransformMatrix>*> m_vecInPortsMat;
+  std::vector<TVdfnPort<VistaTransformMatrix>*> m_vecOutPortsMat;
 };
 
 /*============================================================================*/
@@ -96,4 +99,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNREFERENCEFRAMETRANSFORMNODE_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAHIDDRIVERFORCEFEEDBACKASPECT_H
 #define _VISTAHIDDRIVERFORCEFEEDBACKASPECT_H
 
@@ -56,40 +55,37 @@ class VistaConnection;
  *
  * @todo add documentation for this PLEAZE
  */
-class VistaHIDDriverForceFeedbackAspect : public IVistaDriverForceFeedbackAspect
-{
-public:
-	VistaHIDDriverForceFeedbackAspect(VistaConnection *pCon);
-	virtual ~VistaHIDDriverForceFeedbackAspect();
+class VistaHIDDriverForceFeedbackAspect : public IVistaDriverForceFeedbackAspect {
+ public:
+  VistaHIDDriverForceFeedbackAspect(VistaConnection* pCon);
+  virtual ~VistaHIDDriverForceFeedbackAspect();
 
-	virtual bool SetForce( const VistaVector3D & force,
-						   const VistaVector3D & v3Ignored);
-	using IVistaDriverForceFeedbackAspect::SetForce; //to make overload available
+  virtual bool SetForce(const VistaVector3D& force, const VistaVector3D& v3Ignored);
+  using IVistaDriverForceFeedbackAspect::SetForce; // to make overload available
 
-	int GetNumInputDOF() const;
-	int GetNumOutputDOF() const;
+  int GetNumInputDOF() const;
+  int GetNumOutputDOF() const;
 
-    /**
-     * Returns the maximum stiffness of this device.
-     * @return 0 when this parameter is not present, > 0 else
-     */
-    virtual float GetMaximumStiffness() const;
+  /**
+   * Returns the maximum stiffness of this device.
+   * @return 0 when this parameter is not present, > 0 else
+   */
+  virtual float GetMaximumStiffness() const;
 
-    /**
-     * Returns the maximal force to be output by the device.
-     * @return 0 for not applicable, > 0 else
-     */
-    virtual float GetMaximumForce() const;
+  /**
+   * Returns the maximal force to be output by the device.
+   * @return 0 for not applicable, > 0 else
+   */
+  virtual float GetMaximumForce() const;
 
-	virtual bool SetForcesEnabled(bool bEnabled);
-	virtual bool GetForcesEnabled() const;
+  virtual bool SetForcesEnabled(bool bEnabled);
+  virtual bool GetForcesEnabled() const;
 
-protected:
+ protected:
+ private:
+  ff_effect m_effect;
 
-private:
-	ff_effect m_effect;
-
-	VistaConnection *m_pCon;
+  VistaConnection* m_pCon;
 };
 
 /*============================================================================*/

@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 #ifndef _VISTACLUSTERSYNCEDTIMERIMP_H
 #define _VISTACLUSTERSYNCEDTIMERIMP_H
 
@@ -32,8 +30,8 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaBase/VistaTimerImp.h>
 #include <VistaBase/VistaDefaultTimerImp.h>
+#include <VistaBase/VistaTimerImp.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -63,25 +61,22 @@ class VistaConnectionIP;
  *       Finally, perform at least on call to Sync()
  * Note: timestamps will not be necessarily monotonous when calling Sync()
  */
-class VISTAKERNELAPI VistaClusterSyncedTimerImp : public VistaDefaultTimerImp
-{
-public:
-	VistaClusterSyncedTimerImp();	
-	virtual ~VistaClusterSyncedTimerImp();
+class VISTAKERNELAPI VistaClusterSyncedTimerImp : public VistaDefaultTimerImp {
+ public:
+  VistaClusterSyncedTimerImp();
+  virtual ~VistaClusterSyncedTimerImp();
 
-	bool Init( VistaClusterMode* pMode );
-	bool InitAsLeader( VistaConnectionIP* pConn, bool bManageConnDeletion = true );
-	bool InitAsFollower( std::vector<VistaConnectionIP*> vecConns, 
-							bool bManageConnDeletion = true );
+  bool Init(VistaClusterMode* pMode);
+  bool InitAsLeader(VistaConnectionIP* pConn, bool bManageConnDeletion = true);
+  bool InitAsFollower(std::vector<VistaConnectionIP*> vecConns, bool bManageConnDeletion = true);
 
-	bool Sync( int nIterations = 1000 );
+  bool Sync(int nIterations = 1000);
 
-private:
-	bool m_bIsLeader;
-	bool m_bOwnConnections;
-	std::vector<VistaConnectionIP*> m_vecConnections;
+ private:
+  bool                            m_bIsLeader;
+  bool                            m_bOwnConnections;
+  std::vector<VistaConnectionIP*> m_vecConnections;
 };
-
 
 /*============================================================================*/
 /* END OF FILE                                                                */

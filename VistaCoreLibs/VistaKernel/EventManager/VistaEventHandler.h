@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEVENTHANDLER_H
 #define _VISTAEVENTHANDLER_H
 
@@ -49,26 +48,24 @@ class VistaEventManager;
 /**
  * VistaEventHandler - the mother of all event handlers ;-)
  */
-class VISTAKERNELAPI VistaEventHandler
-{
-public:
-	virtual ~VistaEventHandler();
+class VISTAKERNELAPI VistaEventHandler {
+ public:
+  virtual ~VistaEventHandler();
 
+  virtual void HandleEvent(VistaEvent* pEvent) = 0; // overwrite this to handle the given event
 
-	virtual void HandleEvent(VistaEvent *pEvent) = 0;	// overwrite this to handle the given event
+  virtual bool GetIsEnabled() const;
+  virtual void SetIsEnabled(bool bEnabled);
 
+  std::string GetHandlerToken() const;
+  void        SetHandlerToken(const std::string& strToken);
 
-	virtual bool GetIsEnabled() const;
-	virtual void SetIsEnabled(bool bEnabled);
+ protected:
+  VistaEventHandler();
 
-
-	std::string GetHandlerToken() const;
-	void SetHandlerToken(const std::string &strToken);
-protected:
-	VistaEventHandler();
-private:
-	bool m_bIsEnabled;
-	std::string m_strHandlerToken;
+ private:
+  bool        m_bIsEnabled;
+  std::string m_strHandlerToken;
 };
 
 /*============================================================================*/

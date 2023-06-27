@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <cerrno>
 
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
@@ -30,17 +29,17 @@
 
 #include "VistaPosixThreadEventImp.h"
 
-#if defined (LINUX) || defined (DARWIN)
-	#include <sys/ioctl.h>
-	#include <sys/time.h>
+#if defined(LINUX) || defined(DARWIN)
+#include <sys/ioctl.h>
+#include <sys/time.h>
 #elif defined(SUNOS) || defined(IRIX)
-	#include <sys/types.h>
-	#include <sys/filio.h>
+#include <sys/types.h>
+#include <sys/filio.h>
 #endif
 
+#include <assert.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <assert.h>
 
 #include <algorithm>
 
@@ -55,22 +54,17 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaPosixThreadEventImp::VistaPosixThreadEventImp()
-{
-	int res = pipe(m_fd);
-	if(!res)
-	{
-		// HOUSTON, WE HAVE GOT A PROBLEM
-	}
+VistaPosixThreadEventImp::VistaPosixThreadEventImp() {
+  int res = pipe(m_fd);
+  if (!res) {
+    // HOUSTON, WE HAVE GOT A PROBLEM
+  }
 }
 
-
-VistaPosixThreadEventImp::~VistaPosixThreadEventImp()
-{
-	close(m_fd[PIPE_R]);
-	close(m_fd[PIPE_W]);
+VistaPosixThreadEventImp::~VistaPosixThreadEventImp() {
+  close(m_fd[PIPE_R]);
+  close(m_fd[PIPE_W]);
 }
-
 
 /*============================================================================*/
 /*============================================================================*/
@@ -80,107 +74,95 @@ VistaPosixThreadEventImp::~VistaPosixThreadEventImp()
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-void VistaPosixThreadEventImp::SignalEvent()
-{
-	VistaPosixThreadEventImp* pThis = this;
-   
-	int n = 0;
-	if(0 <= ioctl(m_fd[PIPE_W],FIONREAD, reinterpret_cast<char*>(&n)) && n==0)
-		TEMP_FAILURE_RETRY( write(m_fd[PIPE_W], &pThis, sizeof(this)) );
+void VistaPosixThreadEventImp::SignalEvent() {
+  VistaPosixThreadEventImp* pThis = this;
+
+  int n = 0;
+  if (0 <= ioctl(m_fd[PIPE_W], FIONREAD, reinterpret_cast<char*>(&n)) && n == 0)
+    TEMP_FAILURE_RETRY(write(m_fd[PIPE_W], &pThis, sizeof(this)));
 }
 
-bool VistaPosixThreadEventImp::WaitForEvent(int iTimeoutMSecs)
-{
-	VistaPosixThreadEventImp *pThis;
+bool VistaPosixThreadEventImp::WaitForEvent(int iTimeoutMSecs) {
+  VistaPosixThreadEventImp* pThis;
 
-	struct timeval tv;
-	int secs = iTimeoutMSecs / 1000;
-	tv.tv_sec  = secs;
-	tv.tv_usec = (iTimeoutMSecs - secs*1000) * 1000;
+  struct timeval tv;
+  int            secs = iTimeoutMSecs / 1000;
+  tv.tv_sec           = secs;
+  tv.tv_usec          = (iTimeoutMSecs - secs * 1000) * 1000;
 
-	fd_set readfds;
-	FD_ZERO(&readfds);
-	FD_SET(m_fd[PIPE_R], &readfds);
+  fd_set readfds;
+  FD_ZERO(&readfds);
+  FD_SET(m_fd[PIPE_R], &readfds);
 
-	// @todo add descriptors to exceptfds set and check for errors
-	TEMP_FAILURE_RETRY( select(m_fd[PIPE_R]+1, &readfds, NULL, NULL, &tv) );
-	
-	if(FD_ISSET(m_fd[PIPE_R], &readfds))
-	{
-		TEMP_FAILURE_RETRY( read(m_fd[PIPE_R], (void*)&pThis, sizeof(pThis)) );
-		assert(pThis==this);
-		return true;
-	}
+  // @todo add descriptors to exceptfds set and check for errors
+  TEMP_FAILURE_RETRY(select(m_fd[PIPE_R] + 1, &readfds, NULL, NULL, &tv));
 
-	return false;
+  if (FD_ISSET(m_fd[PIPE_R], &readfds)) {
+    TEMP_FAILURE_RETRY(read(m_fd[PIPE_R], (void*)&pThis, sizeof(pThis)));
+    assert(pThis == this);
+    return true;
+  }
+
+  return false;
 }
 
-bool VistaPosixThreadEventImp::WaitForEvent(bool bBlock)
-{
-	VistaPosixThreadEventImp *pThis;
+bool VistaPosixThreadEventImp::WaitForEvent(bool bBlock) {
+  VistaPosixThreadEventImp* pThis;
 
-	struct timeval tv;
-	struct timeval *ptv=NULL;
-	if(!bBlock)
-	{
-		tv.tv_sec  = 0;
-		tv.tv_usec = 0;
-		ptv = &tv;
-	}	
+  struct timeval  tv;
+  struct timeval* ptv = NULL;
+  if (!bBlock) {
+    tv.tv_sec  = 0;
+    tv.tv_usec = 0;
+    ptv        = &tv;
+  }
 
-	fd_set readfds;
-	FD_ZERO(&readfds);
-	FD_SET(m_fd[PIPE_R], &readfds);
+  fd_set readfds;
+  FD_ZERO(&readfds);
+  FD_SET(m_fd[PIPE_R], &readfds);
 
-	// @todo add descriptors to exceptfds set and check for errors
-	TEMP_FAILURE_RETRY( select(m_fd[PIPE_R]+1, &readfds, NULL, NULL, ptv) );
-	
-	if(FD_ISSET(m_fd[PIPE_R], &readfds))
-	{
-		TEMP_FAILURE_RETRY( read(m_fd[PIPE_R], (void*)&pThis, sizeof(pThis)) );
-		assert(pThis==this);
-		return true;
-	}
+  // @todo add descriptors to exceptfds set and check for errors
+  TEMP_FAILURE_RETRY(select(m_fd[PIPE_R] + 1, &readfds, NULL, NULL, ptv));
 
-	return false;
+  if (FD_ISSET(m_fd[PIPE_R], &readfds)) {
+    TEMP_FAILURE_RETRY(read(m_fd[PIPE_R], (void*)&pThis, sizeof(pThis)));
+    assert(pThis == this);
+    return true;
+  }
+
+  return false;
 }
 
-HANDLE VistaPosixThreadEventImp::GetEventSignalHandle() const
-{
-	return (HANDLE)m_fd[PIPE_W];
+HANDLE VistaPosixThreadEventImp::GetEventSignalHandle() const {
+  return (HANDLE)m_fd[PIPE_W];
 }
 
-HANDLE VistaPosixThreadEventImp::GetEventWaitHandle() const
-{
-	return (HANDLE)m_fd[PIPE_R];
+HANDLE VistaPosixThreadEventImp::GetEventWaitHandle() const {
+  return (HANDLE)m_fd[PIPE_R];
 }
 
-bool VistaPosixThreadEventImp::ResetThisEvent( ResetBehavior reset_behavior )
-{
-	// determine if there is a signal waiting
-	int result = 0;
+bool VistaPosixThreadEventImp::ResetThisEvent(ResetBehavior reset_behavior) {
+  // determine if there is a signal waiting
+  int result = 0;
 
-	// determine a snapshot of the _current_ state
-	// even at the risk of loosing a signal
-	if ( ! ioctl ( m_fd[PIPE_R], FIONREAD, & result ) )
-	{
-		// success
-		VistaPosixThreadEventImp *pThis;
-		
-		// loop might be slower, but we avoid dynamic allocation
-		// of an array of pointers to read all results at once
-		// anyway... we expect to be only a few signals in the queue
-		int num_to_reset = reset_behavior == RESET_ALL_EVENTS ? result/(int)sizeof(void*) : 1;
-		for( int i=0; i < num_to_reset; ++i)
-		{
-			TEMP_FAILURE_RETRY( read(m_fd[PIPE_R], (void*)&pThis, sizeof(pThis)) );
-		}
-		return true;
-	}
+  // determine a snapshot of the _current_ state
+  // even at the risk of loosing a signal
+  if (!ioctl(m_fd[PIPE_R], FIONREAD, &result)) {
+    // success
+    VistaPosixThreadEventImp* pThis;
 
-	return false;
+    // loop might be slower, but we avoid dynamic allocation
+    // of an array of pointers to read all results at once
+    // anyway... we expect to be only a few signals in the queue
+    int num_to_reset = reset_behavior == RESET_ALL_EVENTS ? result / (int)sizeof(void*) : 1;
+    for (int i = 0; i < num_to_reset; ++i) {
+      TEMP_FAILURE_RETRY(read(m_fd[PIPE_R], (void*)&pThis, sizeof(pThis)));
+    }
+    return true;
+  }
+
+  return false;
 }
-
 
 #endif
 

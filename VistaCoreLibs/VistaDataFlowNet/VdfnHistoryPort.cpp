@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnHistoryPort.h"
 #include "VistaDeviceDriversBase/VistaSensorReadState.h"
 
@@ -31,97 +30,78 @@
 
 unsigned int VdfnHistoryPortData::MAGIC_COOKIE_VALUE = 0xCAFECAFE;
 
-#if defined( VISTA_TRANSMIT_INCREMENTAL_HISTORIES )
-	static const unsigned int IS_INCREMENTAL=1;
+#if defined(VISTA_TRANSMIT_INCREMENTAL_HISTORIES)
+static const unsigned int IS_INCREMENTAL = 1;
 #else
-	static const unsigned int IS_INCREMENTAL=0;
+static const unsigned int IS_INCREMENTAL = 0;
 #endif
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnHistoryPortData::VdfnHistoryPortData( const VistaMeasureHistory &oHistory,
-									IVistaMeasureTranscode *pTranscode,
-									VistaDeviceSensor *pSensor,
-									VistaSensorReadState *pReadState)
-		: m_oHistory(oHistory),
-		  m_nNewMeasures(0),
-		  m_nRealNewMeasures(0),
-		  m_nMeasureCount(0),
-		  m_nAvgDriverUpdTime(0),
-		  m_nAvgUpdFreq(0),
-		  m_pTranscode(pTranscode),
-		  m_pSensor(pSensor),
-		  m_pReadState( pReadState ),
-		  MAGIC_COOKIE( MAGIC_COOKIE_VALUE )
-{
-	// pre-condition: m_pReadState is not 0
-	assert( m_pReadState );
-	m_pReadState->SetUseIncrementalSerialization( IS_INCREMENTAL == 1 ? true : false );
-	m_pReadState->SetUseOwnHistoryForDeSerialization(false);
+VdfnHistoryPortData::VdfnHistoryPortData(const VistaMeasureHistory& oHistory,
+    IVistaMeasureTranscode* pTranscode, VistaDeviceSensor* pSensor,
+    VistaSensorReadState* pReadState)
+    : m_oHistory(oHistory)
+    , m_nNewMeasures(0)
+    , m_nRealNewMeasures(0)
+    , m_nMeasureCount(0)
+    , m_nAvgDriverUpdTime(0)
+    , m_nAvgUpdFreq(0)
+    , m_pTranscode(pTranscode)
+    , m_pSensor(pSensor)
+    , m_pReadState(pReadState)
+    , MAGIC_COOKIE(MAGIC_COOKIE_VALUE) {
+  // pre-condition: m_pReadState is not 0
+  assert(m_pReadState);
+  m_pReadState->SetUseIncrementalSerialization(IS_INCREMENTAL == 1 ? true : false);
+  m_pReadState->SetUseOwnHistoryForDeSerialization(false);
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
+IVistaDeSerializer& operator>>(IVistaDeSerializer& oDeSer, VdfnHistoryPortData* pPort) {
 
-IVistaDeSerializer &operator>>(IVistaDeSerializer &oDeSer,
-							   VdfnHistoryPortData *pPort )
-{
+  oDeSer >> (*pPort).MAGIC_COOKIE;
 
-	oDeSer >> (*pPort).MAGIC_COOKIE;
+  if ((*pPort).MAGIC_COOKIE != VdfnHistoryPortData::MAGIC_COOKIE_VALUE) {
+    vstr::err() << "Invalid format for History Port Data. Expected: [0x" << std::hex
+                << VdfnHistoryPortData::MAGIC_COOKIE_VALUE << "] -- is: [0x"
+                << (*pPort).MAGIC_COOKIE << "]" << std::dec;
+    return oDeSer;
+  }
 
-	if( (*pPort).MAGIC_COOKIE != VdfnHistoryPortData::MAGIC_COOKIE_VALUE ) {
-		vstr::err() << "Invalid format for History Port Data. Expected: [0x"
-				    << std::hex
-					<< VdfnHistoryPortData::MAGIC_COOKIE_VALUE
-					<< "] -- is: [0x" << (*pPort).MAGIC_COOKIE << "]" << std::dec;
-		return oDeSer;
-	}
+  unsigned int is_incremental = 2;
 
-	unsigned int is_incremental = 2;
+  oDeSer >> (*pPort).m_nNewMeasures >> (*pPort).m_nRealNewMeasures >> (*pPort).m_nMeasureCount >>
+      (*pPort).m_nAvgDriverUpdTime >> (*pPort).m_nAvgUpdFreq >> is_incremental;
 
-	oDeSer >> (*pPort).m_nNewMeasures
-		   >> (*pPort).m_nRealNewMeasures
-		   >> (*pPort).m_nMeasureCount
-		   >> (*pPort).m_nAvgDriverUpdTime
-		   >> (*pPort).m_nAvgUpdFreq
-		   >> is_incremental;
+  assert(is_incremental == IS_INCREMENTAL); // error trapping
 
-	assert( is_incremental == IS_INCREMENTAL ); // error trapping
+  (*pPort).m_pReadState->DeSerialize(oDeSer);
 
-	(*pPort).m_pReadState->DeSerialize( oDeSer );
-
-	return oDeSer;
+  return oDeSer;
 }
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // SERIALIZING
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+IVistaSerializer& operator<<(IVistaSerializer& oSer, const VdfnHistoryPortData* pPort) {
+  oSer << (*pPort).MAGIC_COOKIE;
 
-IVistaSerializer   &operator<<(IVistaSerializer &oSer,
-							   const VdfnHistoryPortData *pPort )
-{
-	oSer << (*pPort).MAGIC_COOKIE;
+  oSer << (*pPort).m_nNewMeasures << (*pPort).m_nRealNewMeasures << (*pPort).m_nMeasureCount
+       << (*pPort).m_nAvgDriverUpdTime << (*pPort).m_nAvgUpdFreq;
 
+  oSer << IS_INCREMENTAL;
 
-	oSer << (*pPort).m_nNewMeasures
-		 << (*pPort).m_nRealNewMeasures
-		 << (*pPort).m_nMeasureCount
-		 << (*pPort).m_nAvgDriverUpdTime
-		 << (*pPort).m_nAvgUpdFreq;
+  (*pPort).m_pReadState->Serialize(oSer);
 
-	oSer << IS_INCREMENTAL;
-
-	(*pPort).m_pReadState->Serialize( oSer );
-
-	return oSer;
+  return oSer;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

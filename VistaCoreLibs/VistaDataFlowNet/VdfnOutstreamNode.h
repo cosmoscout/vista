@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNOUTSTREAMNODE_H
 #define _VDFNOUTSTREAMNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -34,7 +32,6 @@
 #include "VdfnPort.h"
 #include "VdfnSerializer.h"
 #include <VistaBase/VistaVectorMath.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -58,27 +55,26 @@ class VdfnObjectRegistry;
  * @ingroup VdfnNodes
  * @outport{ text, string, text to display}
  */
-class VISTADFNAPI VdfnOutstreamNode : public IVdfnNode
-{
-public:
-	VdfnOutstreamNode( std::ostream& oOutstream );
-	~VdfnOutstreamNode();
+class VISTADFNAPI VdfnOutstreamNode : public IVdfnNode {
+ public:
+  VdfnOutstreamNode(std::ostream& oOutstream);
+  ~VdfnOutstreamNode();
 
-	virtual bool PrepareEvaluationRun();
+  virtual bool PrepareEvaluationRun();
 
-	std::string GetPrefix() const;
-	void SetPrefix( const std::string& oValue );
-	std::string GetPostfix() const;
-	void SetPostfix( const std::string& oValue );
+  std::string GetPrefix() const;
+  void        SetPrefix(const std::string& oValue);
+  std::string GetPostfix() const;
+  void        SetPostfix(const std::string& oValue);
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
-	std::string m_sPrefix;
-	std::string m_sPostfix;
-	std::ostream& m_oOutstream;
-	TVdfnPort<std::string>* m_pTextPort;
+ private:
+  std::string             m_sPrefix;
+  std::string             m_sPostfix;
+  std::ostream&           m_oOutstream;
+  TVdfnPort<std::string>* m_pTextPort;
 };
 
 /*============================================================================*/
@@ -86,4 +82,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNAPPLYTRANSFORMNODE_H
-

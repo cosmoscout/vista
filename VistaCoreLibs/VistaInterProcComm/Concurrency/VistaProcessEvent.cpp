@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaProcessEvent.h"
 #include "Imp/VistaProcessEventImp.h"
 
@@ -33,68 +32,50 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-
-VistaProcessEventSignaller::VistaProcessEventSignaller( const std::string& sEventName )
-{
-	m_pImpl = IVistaProcessEventImp::CreateProcessEventSignallerImp( sEventName );
+VistaProcessEventSignaller::VistaProcessEventSignaller(const std::string& sEventName) {
+  m_pImpl = IVistaProcessEventImp::CreateProcessEventSignallerImp(sEventName);
 }
 
-
-VistaProcessEventSignaller::~VistaProcessEventSignaller()
-{
-	delete m_pImpl;
+VistaProcessEventSignaller::~VistaProcessEventSignaller() {
+  delete m_pImpl;
 }
 
-
-bool VistaProcessEventSignaller::GetIsValid() const
-{
-	return m_pImpl->GetIsValid();
+bool VistaProcessEventSignaller::GetIsValid() const {
+  return m_pImpl->GetIsValid();
 }
 
-
-bool VistaProcessEventSignaller::SignalEvent()
-{
-	return m_pImpl->SignalEvent();
+bool VistaProcessEventSignaller::SignalEvent() {
+  return m_pImpl->SignalEvent();
 }
 
-std::string VistaProcessEventSignaller::GetEventName() const
-{
-	return m_pImpl->GetEventName();
+std::string VistaProcessEventSignaller::GetEventName() const {
+  return m_pImpl->GetEventName();
 }
-
 
 // ============================================================================
 // ============================================================================
 
-VistaProcessEventReceiver::VistaProcessEventReceiver( const std::string& sEventName,
-														const int nMaxWaitForSignaller )
-{
-	m_pImpl = IVistaProcessEventImp::CreateProcessEventReceiverImp( sEventName, nMaxWaitForSignaller );
+VistaProcessEventReceiver::VistaProcessEventReceiver(
+    const std::string& sEventName, const int nMaxWaitForSignaller) {
+  m_pImpl = IVistaProcessEventImp::CreateProcessEventReceiverImp(sEventName, nMaxWaitForSignaller);
 }
 
-
-VistaProcessEventReceiver::~VistaProcessEventReceiver()
-{
-	delete m_pImpl;
+VistaProcessEventReceiver::~VistaProcessEventReceiver() {
+  delete m_pImpl;
 }
 
-bool VistaProcessEventReceiver::WaitForEvent( int iBlockTime )
-{
-	return m_pImpl->WaitForEvent(iBlockTime);
+bool VistaProcessEventReceiver::WaitForEvent(int iBlockTime) {
+  return m_pImpl->WaitForEvent(iBlockTime);
 }
 
-bool VistaProcessEventReceiver::WaitForEvent( bool bBlock )
-{
-	return m_pImpl->WaitForEvent(bBlock);
+bool VistaProcessEventReceiver::WaitForEvent(bool bBlock) {
+  return m_pImpl->WaitForEvent(bBlock);
 }
 
-std::string VistaProcessEventReceiver::GetEventName() const
-{
-	return m_pImpl->GetEventName();
+std::string VistaProcessEventReceiver::GetEventName() const {
+  return m_pImpl->GetEventName();
 }
 
-bool VistaProcessEventReceiver::GetIsValid() const
-{
-	return m_pImpl->GetIsValid();
+bool VistaProcessEventReceiver::GetIsValid() const {
+  return m_pImpl->GetIsValid();
 }
-

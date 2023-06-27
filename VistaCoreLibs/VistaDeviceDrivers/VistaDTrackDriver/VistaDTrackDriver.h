@@ -21,36 +21,33 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADTRACKDRIVER_H
 #define _VISTADTRACKDRIVER_H
-
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include "VistaDTrackCommonShare.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-//Creation Method
+// Creation Method
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTADTRACKDRIVER_STATIC) 
-	#ifdef VISTADTRACKDRIVER_EXPORTS
-		#define VISTADTRACKDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTADTRACKDRIVERAPI __declspec(dllimport)
-	#endif
+// Windows DLL build
+#if defined(WIN32) && !defined(VISTADTRACKDRIVER_STATIC)
+#ifdef VISTADTRACKDRIVER_EXPORTS
+#define VISTADTRACKDRIVERAPI __declspec(dllexport)
+#else
+#define VISTADTRACKDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTADTRACKDRIVERAPI
+#define VISTADTRACKDRIVERAPI
 #endif
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -83,48 +80,42 @@ class VistaDTrackProtocolAspect;
  *
  * @todo the decoding can be somewhat slow (it uses stream classes...)
  */
-class VISTADTRACKDRIVERAPI VistaDTrackDriver : public IVistaDeviceDriver
-{
-public:
-	VistaDTrackDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaDTrackDriver();
+class VISTADTRACKDRIVERAPI VistaDTrackDriver : public IVistaDeviceDriver {
+ public:
+  VistaDTrackDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaDTrackDriver();
 
-	//static IVistaDriverCreationMethod *GetDriverFactoryMethod();
+  // static IVistaDriverCreationMethod *GetDriverFactoryMethod();
 
-	virtual bool GetAttachOnly() const;
-	virtual void SetAttachOnly(bool bAttach);
+  virtual bool GetAttachOnly() const;
+  virtual void SetAttachOnly(bool bAttach);
 
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-	virtual bool PhysicalEnable(bool bEnable);
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool PhysicalEnable(bool bEnable);
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-private:
-	VistaDriverConnectionAspect     *m_pConnection;
-	VistaDTrackProtocolAspect       *m_pProtocol;
-	VistaDriverSensorMappingAspect  *m_pSensors;
-	VistaByteBufferDeSerializer     *m_pDeSerializer,
-									*m_pLine;
-	std::vector<VistaType::byte>	m_vecPacketBuffer;
+ private:
+  VistaDriverConnectionAspect*    m_pConnection;
+  VistaDTrackProtocolAspect*      m_pProtocol;
+  VistaDriverSensorMappingAspect* m_pSensors;
+  VistaByteBufferDeSerializer *   m_pDeSerializer, *m_pLine;
+  std::vector<VistaType::byte>    m_vecPacketBuffer;
 
+  typedef std::map<std::string, ILineDecode*> DECODEMAP;
+  DECODEMAP                                   m_mapDecoder;
+  unsigned int                                m_nGlobalType, m_nMarkerType;
 
-	typedef std::map<std::string, ILineDecode*> DECODEMAP;
-	DECODEMAP m_mapDecoder;
-	unsigned int m_nGlobalType,
-				 m_nMarkerType;
-
-	bool m_bAttachOnly;
+  bool m_bAttachOnly;
 };
 
+// CREATION METHOD
 
-//CREATION METHOD
-
-class VISTADTRACKDRIVERAPI VistaDTrackCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaDTrackCreationMethod(IVistaTranscoderFactoryFactory *metaFac);
-	virtual IVistaDeviceDriver *CreateDriver();
+class VISTADTRACKDRIVERAPI VistaDTrackCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaDTrackCreationMethod(IVistaTranscoderFactoryFactory* metaFac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/

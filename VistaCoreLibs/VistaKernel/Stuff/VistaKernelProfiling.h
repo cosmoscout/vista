@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAKERNELPROFILING_H
 #define _VISTAKERNELPROFILING_H
 
@@ -35,17 +34,25 @@
 /*============================================================================*/
 
 #ifdef VISTAKERNEL_USE_PROFILING
-	#define VistaKernelProfileScope( sSectionName ) VistaBasicProfiler::ProfileScopeObject oLocalSection_sSectionName( sSectionName )
-	#define VistaKernelProfileStartSection( sSectionName ) VistaBasicProfiler::GetSingleton()->StartSection( sSectionName )
-	#define VistaKernelProfileStopSection() VistaBasicProfiler::GetSingleton()->StopSection()	
-	#define VistaKernelProfileStopNamedSection( sSectionName ) VistaBasicProfiler::GetSingleton()->StopSection( sSectionName )	
-	#define VistaKernelProfileNewFrame() VistaBasicProfiler::GetSingleton()->NewFrame()
+#define VistaKernelProfileScope(sSectionName)                                                      \
+  VistaBasicProfiler::ProfileScopeObject oLocalSection_sSectionName(sSectionName)
+#define VistaKernelProfileStartSection(sSectionName)                                               \
+  VistaBasicProfiler::GetSingleton()->StartSection(sSectionName)
+#define VistaKernelProfileStopSection() VistaBasicProfiler::GetSingleton()->StopSection()
+#define VistaKernelProfileStopNamedSection(sSectionName)                                           \
+  VistaBasicProfiler::GetSingleton()->StopSection(sSectionName)
+#define VistaKernelProfileNewFrame() VistaBasicProfiler::GetSingleton()->NewFrame()
 #else
-	#define VistaKernelProfileScope( sSectionName ) {}
-	#define VistaKernelProfileStartSection( sSectionName ) {}
-	#define VistaKernelProfileStopSection() {}
-	#define VistaKernelProfileStopNamedSection( sSectionName ) {}
-	#define VistaKernelProfileNewFrame() {}
+#define VistaKernelProfileScope(sSectionName)                                                      \
+  {}
+#define VistaKernelProfileStartSection(sSectionName)                                               \
+  {}
+#define VistaKernelProfileStopSection()                                                            \
+  {}
+#define VistaKernelProfileStopNamedSection(sSectionName)                                           \
+  {}
+#define VistaKernelProfileNewFrame()                                                               \
+  {}
 #endif
 
 /*============================================================================*/
@@ -61,4 +68,3 @@
 /*============================================================================*/
 
 #endif //_VISTAVIRTUALCONSOLE_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaPhantomServerDriver.h"
 
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverConnectionAspect.h>
@@ -29,9 +28,9 @@
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverWorkspaceAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-#include <VistaInterProcComm/Connections/VistaConnection.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
+#include <VistaInterProcComm/Connections/VistaConnection.h>
 
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaStreamUtils.h>
@@ -43,7 +42,7 @@ using namespace std;
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-#if defined(WIN32) && !defined(VISTAPHANTOMSERVERDRIVERPLUGIN_STATIC) 
+#if defined(WIN32) && !defined(VISTAPHANTOMSERVERDRIVERPLUGIN_STATIC)
 #ifdef VISTAPHANTOMSERVERPLUGIN_EXPORTS
 #define VISTAPHANTOMSERVERPLUGINAPI __declspec(dllexport)
 #else
@@ -53,42 +52,39 @@ using namespace std;
 #define VISTAPHANTOMSERVERPLUGINAPI
 #endif
 
-namespace
-{
-	VistaPhantomServerDriverFactory *SpFactory = NULL;
+namespace {
+VistaPhantomServerDriverFactory* SpFactory = NULL;
 }
 
 /*
 IVistaDriverCreationMethod *VistaPhantomServerDriver::GetDriverFactoryMethod()
 {
-	if(SpFactory == NULL)
-	{
-		SpFactory = new VistaPhantomServerDriverFactory;
-		SpFactory->RegisterSensorType( "",
-			sizeof(_sPhantomMeasure),
-			1000,
-			new VistaPhantomServerTranscoderFactory,
-			VistaPhantomServerDriverMeasureTranscode::GetTypeString());
-	}
-	return SpFactory;
+        if(SpFactory == NULL)
+        {
+                SpFactory = new VistaPhantomServerDriverFactory;
+                SpFactory->RegisterSensorType( "",
+                        sizeof(_sPhantomMeasure),
+                        1000,
+                        new VistaPhantomServerTranscoderFactory,
+                        VistaPhantomServerDriverMeasureTranscode::GetTypeString());
+        }
+        return SpFactory;
 }*/
 
-extern "C" VISTAPHANTOMSERVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaPhantomServerDriver(crm);
+extern "C" VISTAPHANTOMSERVERPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaPhantomServerDriver(crm);
 }
 
-extern "C" VISTAPHANTOMSERVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaPhantomServerDriverFactory(fac);
+extern "C" VISTAPHANTOMSERVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaPhantomServerDriverFactory(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAPHANTOMSERVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "PHANTOMSERVER";
+extern "C" VISTAPHANTOMSERVERPLUGINAPI const char* GetDeviceClassName() {
+  return "PHANTOMSERVER";
 }
-

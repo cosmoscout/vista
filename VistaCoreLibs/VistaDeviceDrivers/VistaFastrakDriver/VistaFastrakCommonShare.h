@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFASTRAKCOMMONSHARE_H
 #define _VISTAFASTRAKCOMMONSHARE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -42,29 +40,21 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VistaFastrakMeasures
-{
-	struct sFastrakSample
-	{
-		float m_vPos[3], // pos   x,y,z
-			m_vOri[4]; // quat, x,y,z, w
-		int   m_nDistortionLevel,
-			m_nTimeStamp,
-			m_nFrameCount;
-	};
-
-
-	struct sFastrakButtonSample : public sFastrakSample
-	{
-		bool m_bBtPress;
-	};
-
+namespace VistaFastrakMeasures {
+struct sFastrakSample {
+  float m_vPos[3], // pos   x,y,z
+      m_vOri[4];   // quat, x,y,z, w
+  int m_nDistortionLevel, m_nTimeStamp, m_nFrameCount;
 };
 
+struct sFastrakButtonSample : public sFastrakSample {
+  bool m_bBtPress;
+};
+
+}; // namespace VistaFastrakMeasures
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAFASTRAKCOMMONSHARE_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNFADEOUTNODE_H
 #define _VISTADFNFADEOUTNODE_H
 
@@ -33,12 +32,11 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnUtil.h>
-
+#include <map>
 
 #include <VistaKernel/DisplayManager/Vista2DDrawingObjects.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
@@ -67,48 +65,46 @@ class VistaColorOverlay;
  *
  * @ingroup VdfnNodes
  * @inport{opacity, float, optional\, when state is given, the transparency value of the overlay}
- * @inport{state, bool, optional\, when opacity is given, application state: on or off} 
+ * @inport{state, bool, optional\, when opacity is given, application state: on or off}
  */
-class VISTAKERNELAPI VistaDfnFadeoutNode : public IVdfnNode
-{
-public:
-	VistaDfnFadeoutNode( VistaClusterMode* pClusterMode );
-	~VistaDfnFadeoutNode();
+class VISTAKERNELAPI VistaDfnFadeoutNode : public IVdfnNode {
+ public:
+  VistaDfnFadeoutNode(VistaClusterMode* pClusterMode);
+  ~VistaDfnFadeoutNode();
 
-	bool GetIsValid() const;
-	bool PrepareEvaluationRun();
+  bool GetIsValid() const;
+  bool PrepareEvaluationRun();
 
-	void AddToViewport( VistaViewport* pViewport );
-	void AddToAllViewports( VistaDisplayManager* pManager );
+  void AddToViewport(VistaViewport* pViewport);
+  void AddToAllViewports(VistaDisplayManager* pManager);
 
-	VistaColor GetColor() const;
-	void SetColor( const VistaColor& oValue );
+  VistaColor GetColor() const;
+  void       SetColor(const VistaColor& oValue);
 
-	VistaType::microtime GetFadeinTime() const;
-	void SetFadeinTime( const VistaType::microtime oValue );
-	VistaType::microtime GetFadeoutTime() const;
-	void SetFadeoutTime( const VistaType::microtime oValue );
+  VistaType::microtime GetFadeinTime() const;
+  void                 SetFadeinTime(const VistaType::microtime oValue);
+  VistaType::microtime GetFadeoutTime() const;
+  void                 SetFadeoutTime(const VistaType::microtime oValue);
 
+ protected:
+  bool DoEvalNode();
+  void SetModeOpacity();
 
-protected:
-	bool DoEvalNode();
-	void SetModeOpacity();
+ private:
+  std::vector<VistaColorOverlay*> m_vecOverlays;
 
-private:
-	std::vector<VistaColorOverlay*> m_vecOverlays;
+  VistaClusterMode* m_pClusterMode;
 
-	VistaClusterMode* m_pClusterMode;
+  TVdfnPort<bool>*  m_pStatePort;
+  TVdfnPort<float>* m_pOpacityPort;
 
-	TVdfnPort<bool>*	m_pStatePort;
-	TVdfnPort<float>*	m_pOpacityPort;
+  VistaType::microtime m_nFadeinTime;
+  VistaType::microtime m_nFadeoutTime;
+  VistaColor           m_oColor;
 
-	VistaType::microtime m_nFadeinTime;
-	VistaType::microtime m_nFadeoutTime;
-	VistaColor m_oColor;
-
-	int m_nState;
-	VistaType::microtime m_nStartTime;
-	float m_nOpacity;
+  int                  m_nState;
+  VistaType::microtime m_nStartTime;
+  float                m_nOpacity;
 };
 
 /*============================================================================*/
@@ -116,4 +112,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFOVERLAYTEXTLABELNODE_H
-

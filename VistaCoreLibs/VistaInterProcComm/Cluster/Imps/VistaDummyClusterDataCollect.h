@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADUMMYCLUSTERCOLLECT_H
 #define _VISTADUMMYCLUSTERCOLLECT_H
 
@@ -43,26 +42,24 @@
 /**
  * Dummy implementation that does nothing - useful for example in Standalone
  */
-class VISTAINTERPROCCOMMAPI VistaDummyClusterDataCollect : public IVistaClusterDataCollect
-{
-public:
-	VistaDummyClusterDataCollect();
-	virtual ~VistaDummyClusterDataCollect();
+class VISTAINTERPROCCOMMAPI VistaDummyClusterDataCollect : public IVistaClusterDataCollect {
+ public:
+  VistaDummyClusterDataCollect();
+  virtual ~VistaDummyClusterDataCollect();
 
-	virtual bool CollectTime( const VistaType::systemtime nOwnTime,
-							std::vector<VistaType::systemtime>& vecCollected );
-	virtual bool CollectData( const VistaPropertyList& oList,
-							std::vector<VistaPropertyList>& vecCollected );
-	virtual bool CollectData( const VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							std::vector<std::vector<VistaType::byte> >& vecCollected );
+  virtual bool CollectTime(
+      const VistaType::systemtime nOwnTime, std::vector<VistaType::systemtime>& vecCollected);
+  virtual bool CollectData(
+      const VistaPropertyList& oList, std::vector<VistaPropertyList>& vecCollected);
+  virtual bool CollectData(const VistaType::byte* pDataBuffer, const int iBufferSize,
+      std::vector<std::vector<VistaType::byte>>& vecCollected);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataCollectType() const;
+  virtual std::string GetDataCollectType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 };
 
 /*============================================================================*/

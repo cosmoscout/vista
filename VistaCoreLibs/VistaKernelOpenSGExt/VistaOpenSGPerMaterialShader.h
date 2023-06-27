@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGPERPERMATERIALSHADER_H__
 #define _VISTAOPENSGPERPERMATERIALSHADER_H__
 
@@ -46,88 +45,81 @@ class VistaGeometry;
 class IVistaNode;
 
 // fwd declare of ChunkMaterialPtr
-namespace osg
-{
-	template <class BasePtrTypeT, class FieldContainerTypeT> class FCPtr;
-	class ChunkMaterial;
-	class AttachmentContainerPtr;
-	class Material;
-	typedef FCPtr<AttachmentContainerPtr, Material> MaterialPtr;
-	typedef FCPtr<MaterialPtr, ChunkMaterial> ChunkMaterialPtr;
-}
+namespace osg {
+template <class BasePtrTypeT, class FieldContainerTypeT>
+class FCPtr;
+class ChunkMaterial;
+class AttachmentContainerPtr;
+class Material;
+typedef FCPtr<AttachmentContainerPtr, Material> MaterialPtr;
+typedef FCPtr<MaterialPtr, ChunkMaterial>       ChunkMaterialPtr;
+} // namespace osg
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGPerMaterialShader
-{
-public:
-	struct VISTAKERNELOPENSGEXTAPI CShaderUniformParam
-	{
-	friend class VistaOpenSGPerMaterialShader;
-	public:
-		enum PARAM_TYPE
-		{
-			INVALID = -1,
-			BOOL = 0,
-			INT,
-			FLOAT,
-			VEC2,
-			VEC3,
-			VEC4,
-			OSG_LIGHT_MASK,
-			OSG_ACTIVE_LIGHTS,
-			OSG_CAMERA_POSITION,
-		};
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGPerMaterialShader {
+ public:
+  struct VISTAKERNELOPENSGEXTAPI CShaderUniformParam {
+    friend class VistaOpenSGPerMaterialShader;
 
-		CShaderUniformParam( const std::string& sName,
-								const bool bParam );
-		CShaderUniformParam( const std::string& sName,
-								const int iParam );
-		CShaderUniformParam( const std::string& sName,
-								const float fParam );
-		CShaderUniformParam( const std::string& sName,
-								const float afParam[],
-								const int iVecSize );
-		CShaderUniformParam( const PARAM_TYPE eType );
-	private:
-		std::string	m_sName;
-		PARAM_TYPE	m_eType;
-		float		m_afData[4];
-		int			m_iData;
-	};
+   public:
+    enum PARAM_TYPE {
+      INVALID = -1,
+      BOOL    = 0,
+      INT,
+      FLOAT,
+      VEC2,
+      VEC3,
+      VEC4,
+      OSG_LIGHT_MASK,
+      OSG_ACTIVE_LIGHTS,
+      OSG_CAMERA_POSITION,
+    };
 
-	VistaOpenSGPerMaterialShader();
-	virtual ~VistaOpenSGPerMaterialShader();
+    CShaderUniformParam(const std::string& sName, const bool bParam);
+    CShaderUniformParam(const std::string& sName, const int iParam);
+    CShaderUniformParam(const std::string& sName, const float fParam);
+    CShaderUniformParam(const std::string& sName, const float afParam[], const int iVecSize);
+    CShaderUniformParam(const PARAM_TYPE eType);
 
-	bool SetShadersFromFile( const std::string& sVertexShaderFile,
-							const std::string& sFragmentShaderFile );
-	bool SetShadersFromString( const std::string& sVertexShader,
-							const std::string& sFragmentShader );
+   private:
+    std::string m_sName;
+    PARAM_TYPE  m_eType;
+    float       m_afData[4];
+    int         m_iData;
+  };
 
-	bool SetUniformParameter( const CShaderUniformParam& oParam );
+  VistaOpenSGPerMaterialShader();
+  virtual ~VistaOpenSGPerMaterialShader();
 
-	virtual bool ApplyToGeometry( VistaGeometry *pGeometry );
-	virtual bool ApplyToGeometry( VistaGeometry *pGeometry,
-				const std::vector<CShaderUniformParam>& vecUniformParams );
-	virtual bool RemoveFromGeometry( VistaGeometry *pGeometry );
-	
-	virtual bool ApplyToAllGeometries( IVistaNode* pNode );
-	virtual bool RemoveFromAllGeometries( IVistaNode* pNode );
+  bool SetShadersFromFile(
+      const std::string& sVertexShaderFile, const std::string& sFragmentShaderFile);
+  bool SetShadersFromString(const std::string& sVertexShader, const std::string& sFragmentShader);
 
-	/**
-	 * For specializations (e.g. changes based on current material), override
-	 * this function
-	 */
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pMaterial );
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pMaterial,
-				const std::vector<CShaderUniformParam>& vecUniformParams );
-	virtual bool RemoveFromOSGMaterial( osg::ChunkMaterialPtr& pMaterial );
+  bool SetUniformParameter(const CShaderUniformParam& oParam);
 
-private:
-	struct					CShaderData;
-	CShaderData*			m_pShaderData;
+  virtual bool ApplyToGeometry(VistaGeometry* pGeometry);
+  virtual bool ApplyToGeometry(
+      VistaGeometry* pGeometry, const std::vector<CShaderUniformParam>& vecUniformParams);
+  virtual bool RemoveFromGeometry(VistaGeometry* pGeometry);
+
+  virtual bool ApplyToAllGeometries(IVistaNode* pNode);
+  virtual bool RemoveFromAllGeometries(IVistaNode* pNode);
+
+  /**
+   * For specializations (e.g. changes based on current material), override
+   * this function
+   */
+  virtual bool ApplyToOSGMaterial(osg::ChunkMaterialPtr& pMaterial);
+  virtual bool ApplyToOSGMaterial(
+      osg::ChunkMaterialPtr& pMaterial, const std::vector<CShaderUniformParam>& vecUniformParams);
+  virtual bool RemoveFromOSGMaterial(osg::ChunkMaterialPtr& pMaterial);
+
+ private:
+  struct CShaderData;
+  CShaderData* m_pShaderData;
 };
 
 /*============================================================================*/

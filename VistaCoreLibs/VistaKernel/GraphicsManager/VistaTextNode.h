@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFONTNODE_H
 #define _VISTAFONTNODE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include "VistaKernel/GraphicsManager/VistaLeafNode.h"
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,26 +43,24 @@ class IVista3DText;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaTextNode : public VistaLeafNode
-{
-	friend class VistaSceneGraph;
-public:
-	virtual ~VistaTextNode();
+class VISTAKERNELAPI VistaTextNode : public VistaLeafNode {
+  friend class VistaSceneGraph;
 
-	virtual bool CanHaveChildren() const;
+ public:
+  virtual ~VistaTextNode();
 
-	IVista3DText *GetTextImp() const;
-	void SetText(const std::string &sText);
-	std::string GetText() const;
-private:
-	VistaTextNode(	VistaGroupNode*			pParent,
-					IVista3DText   *            pTextImp,
-					IVistaNodeBridge*			pBridge,
-					IVistaNodeData*				pData,
-					std::string					strName = "");
+  virtual bool CanHaveChildren() const;
 
-private:
-	IVista3DText *m_pTextImp;
+  IVista3DText* GetTextImp() const;
+  void          SetText(const std::string& sText);
+  std::string   GetText() const;
+
+ private:
+  VistaTextNode(VistaGroupNode* pParent, IVista3DText* pTextImp, IVistaNodeBridge* pBridge,
+      IVistaNodeData* pData, std::string strName = "");
+
+ private:
+  IVista3DText* m_pTextImp;
 };
 
 /*============================================================================*/
@@ -71,4 +68,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAGEOMNODE_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "GeometryDemoAppl.h"
 
 #include <VistaKernel/VistaSystem.h>
@@ -40,27 +39,18 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		GeometryDemoAppl oDemoAppl;
-		if( oDemoAppl.Init( argc, argv ) == true )
-		{
-			// start universe as an endless loop
-			oDemoAppl.Run ();
-		}
-	}
-	catch ( VistaExceptionBase& e )
-	{
-		e.PrintException();
-	}
-	catch ( std::exception& e )
-	{
-		std::cerr << "Exception:" << e.what() << std::endl;
-	}
+int main(int argc, char* argv[]) {
+  try {
+    GeometryDemoAppl oDemoAppl;
+    if (oDemoAppl.Init(argc, argv) == true) {
+      // start universe as an endless loop
+      oDemoAppl.Run();
+    }
+  } catch (VistaExceptionBase& e) { e.PrintException(); } catch (std::exception& e) {
+    std::cerr << "Exception:" << e.what() << std::endl;
+  }
 
-	return 0;
+  return 0;
 }
 
 /*============================================================================*/

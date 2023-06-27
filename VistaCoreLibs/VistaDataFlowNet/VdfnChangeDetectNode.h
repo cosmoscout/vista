@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCHANGEDETECTNODE_H
 #define _VDFNCHANGEDETECTNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -64,59 +62,51 @@
  * @inport{in,type T,mandatory, the incoming value to check}
  * @outport{out,type T, the outport that contains the new value}
  */
-template<class T>
-class TVdfnChangeDetectNode : public IVdfnNode
-{
-	public:
-	TVdfnChangeDetectNode()
-		: IVdfnNode(),
-		  m_pOutPort(new TVdfnPort<T>),
-		  m_pInPort(NULL),
-		  m_bFirstRun(true)
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<T> > );
-		RegisterOutPort( "out", m_pOutPort );
-	}
+template <class T>
+class TVdfnChangeDetectNode : public IVdfnNode {
+ public:
+  TVdfnChangeDetectNode()
+      : IVdfnNode()
+      , m_pOutPort(new TVdfnPort<T>)
+      , m_pInPort(NULL)
+      , m_bFirstRun(true) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterOutPort("out", m_pOutPort);
+  }
 
-	~TVdfnChangeDetectNode()
-	{
-	}
+  ~TVdfnChangeDetectNode() {
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pInPort = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>( "in", this );
-		return GetIsValid();
-	}
-protected:
-	/**
-	 * on first run, it forwards the inport value to the outport value,
-	 * on every later run, it checks whether the <i>value</i> of the inport
-	 * has changed compared to the last update. If so, it will forward the new
-	 * value to its outport.
-	 * @return true
-	 */
-	bool DoEvalNode()
-	{
-		if( m_bFirstRun || m_pInPort->GetValue() != m_nLastValue )
-		{
-			m_nLastValue = m_pInPort->GetValue();
-			m_pOutPort->SetValue( m_nLastValue, GetUpdateTimeStamp() );
-			m_bFirstRun = false;
-		}
-		return true;
-	}
-private:
+  bool PrepareEvaluationRun() {
+    m_pInPort = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>("in", this);
+    return GetIsValid();
+  }
 
-	T m_nLastValue;
-	TVdfnPort<T> *m_pOutPort,
-				 *m_pInPort;
-	bool m_bFirstRun;
+ protected:
+  /**
+   * on first run, it forwards the inport value to the outport value,
+   * on every later run, it checks whether the <i>value</i> of the inport
+   * has changed compared to the last update. If so, it will forward the new
+   * value to its outport.
+   * @return true
+   */
+  bool DoEvalNode() {
+    if (m_bFirstRun || m_pInPort->GetValue() != m_nLastValue) {
+      m_nLastValue = m_pInPort->GetValue();
+      m_pOutPort->SetValue(m_nLastValue, GetUpdateTimeStamp());
+      m_bFirstRun = false;
+    }
+    return true;
+  }
+
+ private:
+  T            m_nLastValue;
+  TVdfnPort<T>*m_pOutPort, *m_pInPort;
+  bool         m_bFirstRun;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNCHANGEDETECTNODE_H
-

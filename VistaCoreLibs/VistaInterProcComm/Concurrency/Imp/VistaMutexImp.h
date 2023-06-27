@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMUTEXIMP_H
 #define _VISTAMUTEXIMP_H
 
@@ -39,32 +38,26 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IVistaMutexImp
-{
-public:
+class VISTAINTERPROCCOMMAPI IVistaMutexImp {
+ public:
+  enum eScope {
+    eIntraProcess = 0, /**< visible only within same process scope */
+    eInterProcess      /**< visible in between process scopes (globally visible) */
+  };
 
-	enum eScope
-	{
-		eIntraProcess = 0, /**< visible only within same process scope */
-		eInterProcess      /**< visible in between process scopes (globally visible) */
-	};
+  IVistaMutexImp();
+  virtual ~IVistaMutexImp();
 
+  virtual void Lock()    = 0;
+  virtual bool TryLock() = 0;
+  virtual void Unlock()  = 0;
 
-	IVistaMutexImp  ();
-	virtual ~IVistaMutexImp ();
-
-	virtual void Lock    () = 0;
-	virtual bool TryLock () = 0;
-	virtual void Unlock  () = 0;
-
-	static IVistaMutexImp *CreateMutexImp(const std::string &sName, eScope nScope);
+  static IVistaMutexImp* CreateMutexImp(const std::string& sName, eScope nScope);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

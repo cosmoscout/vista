@@ -21,26 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VtkDemoAppl.h"
 
 #include <VistaBase/VistaExceptionBase.h>
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		VtkDemoAppl demoAppl(argc, argv);
-		// start universe as an endless loop
-		demoAppl.Run ();
-	}
-	catch ( VistaExceptionBase &eException )
-	{
-		eException.PrintException();
-	}
+int main(int argc, char* argv[]) {
+  try {
+    VtkDemoAppl demoAppl(argc, argv);
+    // start universe as an endless loop
+    demoAppl.Run();
+  } catch (VistaExceptionBase& eException) { eException.PrintException(); }
 
-
-	return 0;
+  return 0;
 }
-
-

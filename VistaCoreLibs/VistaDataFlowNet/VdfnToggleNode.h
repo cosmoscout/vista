@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNTOGGLENODE_H
 #define _VDFNTOGGLENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include "VdfnNode.h"
 #include "VdfnConfig.h"
+#include "VdfnNode.h"
 #include "VdfnPort.h"
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -53,39 +51,35 @@ class IVdfnPortTypeCompare;
  * @outport{toggle, bool, signal to toggle the internal state}
  * @outport{out, bool, intrnal state}
  */
-class VISTADFNAPI VdfnToggleNode : public IVdfnNode
-{
-public:
-	enum ToggleMode
-	{
-		TM_ON_ANY_UPDATE, // whenever a new value arives
-		TM_ON_UPDATE_IF_TRUE, // whenever the inport is updated and the value is true
-		TM_ON_UPDATE_IF_FALSE, // whenever the inport is updated and the value is false
-		TM_ON_ANY_CHANGE, // whenever the value on the inport changes (to true or false)
-		TM_ON_CHANGE_TO_TRUE, // whenever the value changes to true
-		TM_ON_CHANGE_TO_FALSE, // whenever the value changes to false		
-	};
+class VISTADFNAPI VdfnToggleNode : public IVdfnNode {
+ public:
+  enum ToggleMode {
+    TM_ON_ANY_UPDATE,      // whenever a new value arives
+    TM_ON_UPDATE_IF_TRUE,  // whenever the inport is updated and the value is true
+    TM_ON_UPDATE_IF_FALSE, // whenever the inport is updated and the value is false
+    TM_ON_ANY_CHANGE,      // whenever the value on the inport changes (to true or false)
+    TM_ON_CHANGE_TO_TRUE,  // whenever the value changes to true
+    TM_ON_CHANGE_TO_FALSE, // whenever the value changes to false
+  };
 
-	VdfnToggleNode( ToggleMode eMode, const bool bInitialState );
-	~VdfnToggleNode();
+  VdfnToggleNode(ToggleMode eMode, const bool bInitialState);
+  ~VdfnToggleNode();
 
-	virtual bool PrepareEvaluationRun();
+  virtual bool PrepareEvaluationRun();
 
-protected:
-	bool DoEvalNode();
-	bool CheckForInportChange();
-	void Toggle();
+ protected:
+  bool DoEvalNode();
+  bool CheckForInportChange();
+  void Toggle();
 
-	ToggleMode m_eToggleMode;
-	TVdfnPort<bool>* m_pTogglePort;
-	TVdfnPort<bool>* m_pOutPort;
-	bool m_bLastValue;
-	bool m_bState;
-
+  ToggleMode       m_eToggleMode;
+  TVdfnPort<bool>* m_pTogglePort;
+  TVdfnPort<bool>* m_pOutPort;
+  bool             m_bLastValue;
+  bool             m_bState;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNTOGGLENODE_H
-

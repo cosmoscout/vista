@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAUSERPLATFORM_H
 #define _VISTAUSERPLATFORM_H
 
@@ -58,43 +57,37 @@ class VistaDisplaySystem;
  *
  * Changes to both the virtual platform and the user's position are
  * observed, and the transformations of the scenegraph nodes updated
- * accordingly. 
+ * accordingly.
  */
-class VISTAKERNELAPI VistaUserPlatform
-{
-public:
-	VistaUserPlatform(VistaSceneGraph *pSG,
-					   VistaDisplaySystem *);
-	virtual ~VistaUserPlatform();
+class VISTAKERNELAPI VistaUserPlatform {
+ public:
+  VistaUserPlatform(VistaSceneGraph* pSG, VistaDisplaySystem*);
+  virtual ~VistaUserPlatform();
 
+  VistaVirtualPlatformAdapter* GetPlatformTrans() const;
+  VistaTransformNode*          GetPlatformNode() const;
+  VistaTransformNode*          GetPlatformUserNode() const;
 
-	VistaVirtualPlatformAdapter *GetPlatformTrans() const;
-	VistaTransformNode          *GetPlatformNode() const;
-	VistaTransformNode          *GetPlatformUserNode() const;
+  VistaVirtualPlatform* GetPlatform() const;
 
-	VistaVirtualPlatform *GetPlatform() const;
+  VistaVector3D GetUserViewPosition() const;
 
-	VistaVector3D GetUserViewPosition() const;
-protected:
-private:
-	class UserPlatformObserver;
-	class UserObserver;
+ protected:
+ private:
+  class UserPlatformObserver;
+  class UserObserver;
 
-	UserPlatformObserver        *m_pPlatObs;
-	UserObserver                *m_pUserObs;
-	VistaVirtualPlatformAdapter *m_pPlatTrans;
+  UserPlatformObserver*        m_pPlatObs;
+  UserObserver*                m_pUserObs;
+  VistaVirtualPlatformAdapter* m_pPlatTrans;
 
-	VistaSceneGraph            *m_pSG;
-	VistaTransformNode *m_pPlatformNode,
-						*m_pUserNode;
-	VistaDisplaySystem *m_pDispSys;
+  VistaSceneGraph*    m_pSG;
+  VistaTransformNode *m_pPlatformNode, *m_pUserNode;
+  VistaDisplaySystem* m_pDispSys;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAUSERPLATFORM_H
-
-

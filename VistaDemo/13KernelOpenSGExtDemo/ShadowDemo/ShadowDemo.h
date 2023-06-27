@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _SHADOWDEMO_H
 #define _SHADOWDEMO_H
 
@@ -49,33 +48,31 @@ class VistaEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class ShadowDemo
-{
-public:
-	ShadowDemo(int argc = 0, char  *argv[] = NULL);
-	virtual ~ShadowDemo();
+class ShadowDemo {
+ public:
+  ShadowDemo(int argc = 0, char* argv[] = NULL);
+  virtual ~ShadowDemo();
 
-	bool Run();
-	bool CreateScene();
+  bool Run();
+  bool CreateScene();
 
-	void SetShadowEnabled( bool b );
-	bool GetShadowEnabled();
+  void SetShadowEnabled(bool b);
+  bool GetShadowEnabled();
 
-	void UpdateLightAnimation(VistaEvent *pEvent);
+  void UpdateLightAnimation(VistaEvent* pEvent);
 
-	void SetActiveShadowMode( VistaOpenSGShadow::eShadowMode mode );
-	VistaOpenSGShadow::eShadowMode GetActiveShadowMode();
+  void                           SetActiveShadowMode(VistaOpenSGShadow::eShadowMode mode);
+  VistaOpenSGShadow::eShadowMode GetActiveShadowMode();
 
-	static std::string GetShadowModeName(VistaOpenSGShadow::eShadowMode mode);
+  static std::string GetShadowModeName(VistaOpenSGShadow::eShadowMode mode);
 
-	void ScaleShadowMapResolution( const float nFactor );
+  void ScaleShadowMapResolution(const float nFactor);
 
-private:
-	VistaSystem                    mVistaSystem;
-	VistaDirectionalLight          *m_pLight;
-	VistaOpenSGShadow              *m_pShadow;
-	int								m_nMapSize;
+ private:
+  VistaSystem            mVistaSystem;
+  VistaDirectionalLight* m_pLight;
+  VistaOpenSGShadow*     m_pShadow;
+  int                    m_nMapSize;
 };
-
 
 #endif // _SHADOWDEMO_H

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROCESSEVENT_H
 #define _VISTAPROCESSEVENT_H
 
@@ -30,48 +29,42 @@
 
 #include <string>
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
 class IVistaProcessEventImp;
 
+class VISTAINTERPROCCOMMAPI VistaProcessEventSignaller {
+ public:
+  VistaProcessEventSignaller(const std::string& sEventName);
+  virtual ~VistaProcessEventSignaller();
 
-class VISTAINTERPROCCOMMAPI VistaProcessEventSignaller
-{
-public:
-	VistaProcessEventSignaller( const std::string& sEventName );
-	virtual ~VistaProcessEventSignaller();
+  std::string GetEventName() const;
 
-	std::string GetEventName() const;
+  bool GetIsValid() const;
 
-	bool GetIsValid() const;
+  bool SignalEvent();
 
-	bool SignalEvent();
-	
-private:
-	IVistaProcessEventImp *m_pImpl;
+ private:
+  IVistaProcessEventImp* m_pImpl;
 };
 
-class VISTAINTERPROCCOMMAPI VistaProcessEventReceiver
-{
-public:
-	VistaProcessEventReceiver( const std::string& sEventName,
-								const int nMaxWaitForSignaller );
-	virtual ~VistaProcessEventReceiver();
+class VISTAINTERPROCCOMMAPI VistaProcessEventReceiver {
+ public:
+  VistaProcessEventReceiver(const std::string& sEventName, const int nMaxWaitForSignaller);
+  virtual ~VistaProcessEventReceiver();
 
-	std::string GetEventName() const;
+  std::string GetEventName() const;
 
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool WaitForEvent( bool bBlock );
-	bool WaitForEvent( int iBlockTime );
-	
-private:
-	IVistaProcessEventImp *m_pImpl;
+  bool WaitForEvent(bool bBlock);
+  bool WaitForEvent(int iBlockTime);
+
+ private:
+  IVistaProcessEventImp* m_pImpl;
 };
-
 
 /*============================================================================*/
 

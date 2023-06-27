@@ -21,14 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIOMULTIPLEXERIP_H
 #define _VISTAIOMULTIPLEXERIP_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-
 
 #ifdef WIN32
 #include <Windows.h>
@@ -37,15 +35,14 @@
 #include <map>
 #include <vector>
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
 #include <VistaBase/VistaBaseTypes.h>
 
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/AsyncIO/VistaIOMultiplexer.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -55,49 +52,48 @@ class VistaThreadEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaIOMultiplexerIP : public VistaIOMultiplexer
-{
-public:
-	VistaIOMultiplexerIP();
-	virtual ~VistaIOMultiplexerIP();
+class VISTAINTERPROCCOMMAPI VistaIOMultiplexerIP : public VistaIOMultiplexer {
+ public:
+  VistaIOMultiplexerIP();
+  virtual ~VistaIOMultiplexerIP();
 
-	int Demultiplex( unsigned int nTimeout = ~0 );
-	bool AddMultiplexPoint(HANDLE han, int iTicket, eIODir eDir);
-	bool RemMultiplexPoint(HANDLE han);
-	bool RemMultiplexPointByTicket(int iTicket);
-	int  GetTicketForHandle(HANDLE han) const;
-	HANDLE GetHandleForTicket(int iTicket) const;
+  int    Demultiplex(unsigned int nTimeout = ~0);
+  bool   AddMultiplexPoint(HANDLE han, int iTicket, eIODir eDir);
+  bool   RemMultiplexPoint(HANDLE han);
+  bool   RemMultiplexPointByTicket(int iTicket);
+  int    GetTicketForHandle(HANDLE han) const;
+  HANDLE GetHandleForTicket(int iTicket) const;
 
-	/**
-	 * Factory method for HANDLE creations
-	 */
-	virtual HANDLE CreateHandleForDescriptor(int iDesc, eIODir);
+  /**
+   * Factory method for HANDLE creations
+   */
+  virtual HANDLE CreateHandleForDescriptor(int iDesc, eIODir);
 
-	/**
-	 * Factory method for HANDLE deletions
-	 */
-	virtual bool   DeleteHandleForDescriptor(int iDesc, HANDLE han, eIODir);
+  /**
+   * Factory method for HANDLE deletions
+   */
+  virtual bool DeleteHandleForDescriptor(int iDesc, HANDLE han, eIODir);
 
-	eIODir GetDirForHandle(HANDLE) const;
-	void Shutdown();
-protected:
-	bool AddPoint(HANDLE han, int iTicket, eIODir eDir);
-	bool RemPoint(HANDLE han, int iTicket);
-private:
-	std::vector<HANDLE> m_veHandles;
-	typedef std::map<int, HANDLE> TICKETMAP;
-	TICKETMAP m_mpTicketMap;
-	typedef std::map<HANDLE, std::pair<int, eIODir> > HANDLEMAP;
+  eIODir GetDirForHandle(HANDLE) const;
+  void   Shutdown();
 
-	std::map<int, VistaThreadEvent*> m_mpHandles;
+ protected:
+  bool AddPoint(HANDLE han, int iTicket, eIODir eDir);
+  bool RemPoint(HANDLE han, int iTicket);
 
-	HANDLEMAP m_mpHandleMap;
-	VistaThreadEvent *m_pMetaEvent;
-	VistaMutex *m_pActionMutex,
-				*m_pDoneMutex,
-				*m_pHandleMapMutex;
+ private:
+  std::vector<HANDLE>                              m_veHandles;
+  typedef std::map<int, HANDLE>                    TICKETMAP;
+  TICKETMAP                                        m_mpTicketMap;
+  typedef std::map<HANDLE, std::pair<int, eIODir>> HANDLEMAP;
 
-	VistaThreadCondition *m_pActionDone, *m_pWaitingForAction;
+  std::map<int, VistaThreadEvent*> m_mpHandles;
+
+  HANDLEMAP         m_mpHandleMap;
+  VistaThreadEvent* m_pMetaEvent;
+  VistaMutex *      m_pActionMutex, *m_pDoneMutex, *m_pHandleMapMutex;
+
+  VistaThreadCondition *m_pActionDone, *m_pWaitingForAction;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

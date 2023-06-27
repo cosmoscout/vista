@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -38,143 +36,115 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-IDLVistaFilter::IDLVistaFilter()
-{
-	m_pInput = m_pOutput = 0;
-
+IDLVistaFilter::IDLVistaFilter() {
+  m_pInput = m_pOutput = 0;
 }
 
+IDLVistaFilter::IDLVistaFilter(IDLVistaFilter&) {
 
-IDLVistaFilter::IDLVistaFilter(IDLVistaFilter &)
-{
-	
-	//throw;
+  // throw;
 }
 
-
-IDLVistaFilter::~IDLVistaFilter()
-{
+IDLVistaFilter::~IDLVistaFilter() {
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-IDLVistaDataPacket *IDLVistaFilter::PullPacket(bool bBlock)
-{
-	return m_pInput->GivePacket(bBlock);
+IDLVistaDataPacket* IDLVistaFilter::PullPacket(bool bBlock) {
+  return m_pInput->GivePacket(bBlock);
 }
 
-void IDLVistaFilter::ConsumePacket(IDLVistaDataPacket * )
-{
+void IDLVistaFilter::ConsumePacket(IDLVistaDataPacket*) {
 }
 
-bool IDLVistaFilter::AttachOutputComponent(IDLVistaPipeComponent *pOut )
-{
-	m_pOutput = pOut;
-	return true;
+bool IDLVistaFilter::AttachOutputComponent(IDLVistaPipeComponent* pOut) {
+  m_pOutput = pOut;
+  return true;
 }
 
-bool IDLVistaFilter::AttachInputComponent(IDLVistaPipeComponent *pIn )
-{
-	m_pInput = pIn;
-	return true;
+bool IDLVistaFilter::AttachInputComponent(IDLVistaPipeComponent* pIn) {
+  m_pInput = pIn;
+  return true;
 }
 
-bool IDLVistaFilter::DetachInputComponent(IDLVistaPipeComponent * pComp)
-{
-	if(pComp == m_pInput)
-	{
-		m_pInput = 0;
-		return true;
-	}
-	return false;
+bool IDLVistaFilter::DetachInputComponent(IDLVistaPipeComponent* pComp) {
+  if (pComp == m_pInput) {
+    m_pInput = 0;
+    return true;
+  }
+  return false;
 }
 
-bool IDLVistaFilter::DetachOutputComponent(IDLVistaPipeComponent *pComp )
-{
-	if(pComp == m_pOutput)
-	{
-		m_pOutput = 0;
-		return true;
-	}
-	return false;
+bool IDLVistaFilter::DetachOutputComponent(IDLVistaPipeComponent* pComp) {
+  if (pComp == m_pOutput) {
+    m_pOutput = 0;
+    return true;
+  }
+  return false;
 }
 
-bool IDLVistaFilter::RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock)
-{
-	(*m_pInput).RecycleDataPacket(pPacket, this);
-	//(*m_pOutboundPackets).push_front(pPacket);
-	return true;
+bool IDLVistaFilter::RecycleDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock) {
+  (*m_pInput).RecycleDataPacket(pPacket, this);
+  //(*m_pOutboundPackets).push_front(pPacket);
+  return true;
 }
 
-bool IDLVistaFilter::AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock)
-{
-	IDLVistaDataPacket *p = FilterPacketL(pPacket);
-	if(p) // ok, filtering worked
-	{
-		return this->m_pOutput->AcceptDataPacket(p, this);
-	}
-	return false;
+bool IDLVistaFilter::AcceptDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock) {
+  IDLVistaDataPacket* p = FilterPacketL(pPacket);
+  if (p) // ok, filtering worked
+  {
+    return this->m_pOutput->AcceptDataPacket(p, this);
+  }
+  return false;
 }
 
-bool IDLVistaFilter::IsInputComponent(IDLVistaPipeComponent *pComp) const
-{
-	return (m_pInput == pComp);
+bool IDLVistaFilter::IsInputComponent(IDLVistaPipeComponent* pComp) const {
+  return (m_pInput == pComp);
 }
 
-bool IDLVistaFilter::IsOutputComponent(IDLVistaPipeComponent *pComp) const
-{
-	return (m_pOutput == pComp);
+bool IDLVistaFilter::IsOutputComponent(IDLVistaPipeComponent* pComp) const {
+  return (m_pOutput == pComp);
 }
 
-
-list<IDLVistaPipeComponent *> IDLVistaFilter::GetOutputComponents() const
-{
-	list<IDLVistaPipeComponent *> list;
-	if(m_pOutput)
-		list.push_back(m_pOutput);
-	return list;
+list<IDLVistaPipeComponent*> IDLVistaFilter::GetOutputComponents() const {
+  list<IDLVistaPipeComponent*> list;
+  if (m_pOutput)
+    list.push_back(m_pOutput);
+  return list;
 }
 
-list<IDLVistaPipeComponent *> IDLVistaFilter::GetInputComponents() const
-{
-	list<IDLVistaPipeComponent *> list;
-	if(m_pInput)
-	{
-		list.push_back(m_pInput);
-	}
-	return list;
+list<IDLVistaPipeComponent*> IDLVistaFilter::GetInputComponents() const {
+  list<IDLVistaPipeComponent*> list;
+  if (m_pInput) {
+    list.push_back(m_pInput);
+  }
+  return list;
 }
 
-
-IDLVistaPipeComponent *IDLVistaFilter::GetOutboundByIndex(int iIndex) const 
-{
-	return (iIndex == 0 ? m_pOutput : NULL);
+IDLVistaPipeComponent* IDLVistaFilter::GetOutboundByIndex(int iIndex) const {
+  return (iIndex == 0 ? m_pOutput : NULL);
 }
 
-int IDLVistaFilter::GetNumberOfOutbounds() const 
-{
-	return (m_pInput ? 1 : 0);
+int IDLVistaFilter::GetNumberOfOutbounds() const {
+  return (m_pInput ? 1 : 0);
 }
 
-
-int IDLVistaFilter::GetNumberOfInbounds() const
-{
-	return (m_pOutput ? 1 : 0);
+int IDLVistaFilter::GetNumberOfInbounds() const {
+  return (m_pOutput ? 1 : 0);
 }
 
-
-IDLVistaPipeComponent *IDLVistaFilter::GetInboundByIndex(int iIndex) const 
-{
-	return (iIndex == 0 ? m_pInput : NULL);
+IDLVistaPipeComponent* IDLVistaFilter::GetInboundByIndex(int iIndex) const {
+  return (iIndex == 0 ? m_pInput : NULL);
 }
 
-IDLVistaDataPacket *IDLVistaFilter::ReturnPacket()
-{
-	//forward return call to output
-	if(m_pOutput != 0)
-		return m_pOutput->ReturnPacket();
-	else
-		return NULL;
+IDLVistaDataPacket* IDLVistaFilter::ReturnPacket() {
+  // forward return call to output
+  if (m_pOutput != 0)
+    return m_pOutput->ReturnPacket();
+  else
+    return NULL;
 }

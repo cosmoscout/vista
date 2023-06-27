@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFRAMELOOP_H
 #define _VISTAFRAMELOOP_H
 
@@ -32,10 +31,10 @@
 
 #include <VistaBase/VistaBaseTypes.h>
 
-#include <string>
 #include <list>
-#include <vector>
 #include <ostream>
+#include <string>
+#include <vector>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -55,37 +54,35 @@ class Vista2DText;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaFrameLoop
-{
-public:
-	VistaFrameLoop();
-	virtual ~VistaFrameLoop();
+class VISTAKERNELAPI VistaFrameLoop {
+ public:
+  VistaFrameLoop();
+  virtual ~VistaFrameLoop();
 
-	virtual bool Init( VistaSystem* pVistaSystem );
+  virtual bool Init(VistaSystem* pVistaSystem);
 
-	virtual void Run();
-	virtual void Quit();
-	virtual void FrameUpdate();
+  virtual void Run();
+  virtual void Quit();
+  virtual void FrameUpdate();
 
-	float GetFrameRate();
-	int GetFrameCount();
-	VistaType::microtime GetAverageLoopTime();
+  float                GetFrameRate();
+  int                  GetFrameCount();
+  VistaType::microtime GetAverageLoopTime();
 
-protected:
-	void EmitSystemEvent( const int iSystemEventId );
+ protected:
+  void EmitSystemEvent(const int iSystemEventId);
 
-protected:
-	class DisplayUpdateCallback;
-	DisplayUpdateCallback*		m_pUpdateCallback;
-	VistaDisplayManager*		m_pDisplayManager;
-	VistaEventManager*			m_pEventManager;
-	VistaSystemEvent*			m_pSystemEvent;
-	VistaClusterMode*			m_pClusterMode;
+ protected:
+  class DisplayUpdateCallback;
+  DisplayUpdateCallback* m_pUpdateCallback;
+  VistaDisplayManager*   m_pDisplayManager;
+  VistaEventManager*     m_pEventManager;
+  VistaSystemEvent*      m_pSystemEvent;
+  VistaClusterMode*      m_pClusterMode;
 
-	VistaWeightedAverageTimer*	m_pAvgLoopTime;
-	VistaWeightedAverageTimer*	m_pFrameRate;
-	int							m_iFrameCount;
-
+  VistaWeightedAverageTimer* m_pAvgLoopTime;
+  VistaWeightedAverageTimer* m_pFrameRate;
+  int                        m_iFrameCount;
 };
 
 /*============================================================================*/

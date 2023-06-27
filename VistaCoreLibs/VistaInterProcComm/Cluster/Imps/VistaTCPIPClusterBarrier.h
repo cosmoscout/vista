@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPIPCLUSTERBARRIER_H
 #define _VISTATCPIPCLUSTERBARRIER_H
 
@@ -30,11 +29,11 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBarrierIPBase.h>
+#include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,33 +43,32 @@ class VistaConnectionIP;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaTCPIPClusterLeaderBarrier : public VistaClusterLeaderBarrierIPBase
-{
-public:
-	VistaTCPIPClusterLeaderBarrier( const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaTCPIPClusterLeaderBarrier
+    : public VistaClusterLeaderBarrierIPBase {
+ public:
+  VistaTCPIPClusterLeaderBarrier(const bool bVerbose = true);
 
-	virtual ~VistaTCPIPClusterLeaderBarrier();
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual ~VistaTCPIPClusterLeaderBarrier();
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 };
 
-class VISTAINTERPROCCOMMAPI VistaTCPIPClusterFollowerBarrier : public VistaClusterFollowerBarrierIPBase
-{
-public:
-	VistaTCPIPClusterFollowerBarrier( VistaConnectionIP* pLeaderConnection,
-									const bool bManageDeletion = false,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaTCPIPClusterFollowerBarrier
+    : public VistaClusterFollowerBarrierIPBase {
+ public:
+  VistaTCPIPClusterFollowerBarrier(VistaConnectionIP* pLeaderConnection,
+      const bool bManageDeletion = false, const bool bVerbose = true);
 
-	virtual ~VistaTCPIPClusterFollowerBarrier();
+  virtual ~VistaTCPIPClusterFollowerBarrier();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 };
 
 /*============================================================================*/

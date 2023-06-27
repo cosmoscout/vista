@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAGEOMNODE_H
 #define _VISTAGEOMNODE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/GraphicsManager/VistaLeafNode.h>
 #include <VistaAspects/VistaUncopyable.h>
+#include <VistaKernel/GraphicsManager/VistaLeafNode.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -47,28 +46,28 @@ class IVistaNodeData;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaGeomNode : public VistaLeafNode
-{
-	VISTA_UNCOPYABLE( VistaGeomNode );
-	friend class VistaSceneGraph;
-	friend class IVistaNodeBridge;
-public:
-	/** Retrieve node's geometry
-	 * @return VistaGeometry* : Pointer to geometry object currently attached to node
-	 */
-	virtual VistaGeometry* GetGeometry() const;
-	/** Set node's geometry
-	 * @param VistaGeometry* pGeom : Pointer to new geometry object
-	 * @return bool true/false
-	 */
-	virtual bool SetGeometry(VistaGeometry* pGeom);
-	virtual bool CanHaveChildren() const;
+class VISTAKERNELAPI VistaGeomNode : public VistaLeafNode {
+  VISTA_UNCOPYABLE(VistaGeomNode);
+  friend class VistaSceneGraph;
+  friend class IVistaNodeBridge;
 
-	virtual ~VistaGeomNode();
+ public:
+  /** Retrieve node's geometry
+   * @return VistaGeometry* : Pointer to geometry object currently attached to node
+   */
+  virtual VistaGeometry* GetGeometry() const;
+  /** Set node's geometry
+   * @param VistaGeometry* pGeom : Pointer to new geometry object
+   * @return bool true/false
+   */
+  virtual bool SetGeometry(VistaGeometry* pGeom);
+  virtual bool CanHaveChildren() const;
 
-	virtual bool ScaleGeometry(const float fX, const float fY, const float xZ);
+  virtual ~VistaGeomNode();
 
-	void Debug( std::ostream& oOut, int nLevel = 0 ) const;
+  virtual bool ScaleGeometry(const float fX, const float fY, const float xZ);
+
+  void Debug(std::ostream& oOut, int nLevel = 0) const;
 
 /**
  * @todo should we become an observer for our geometry?
@@ -84,14 +83,11 @@ public:
 	virtual void Observe(IVistaObserveable *pObservable, int eTicket=IVistaObserveable::TICKET_NONE) = 0;
 #endif
 
-protected:
-	VistaGeomNode( VistaGroupNode*                        pParent,
-					VistaGeometry*                         pGgeom,
-					IVistaNodeBridge*                       pBridge,
-					IVistaNodeData*                         pData,
-					std::string                                     strName = "");
+ protected:
+  VistaGeomNode(VistaGroupNode* pParent, VistaGeometry* pGgeom, IVistaNodeBridge* pBridge,
+      IVistaNodeData* pData, std::string strName = "");
 
-	VistaGeometry* m_pGeometry;
+  VistaGeometry* m_pGeometry;
 };
 
 /*============================================================================*/
@@ -99,4 +95,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTAGEOMNODE_H
-

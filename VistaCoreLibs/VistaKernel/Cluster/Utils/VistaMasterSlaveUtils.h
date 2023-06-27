@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMASTERSLAVEUTILS_H
 #define _VISTAMASTERSLAVEUTILS_H
 
@@ -31,13 +30,12 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaBase/VistaBaseTypes.h>
 #include <VistaAspects/VistaSerializable.h>
+#include <VistaBase/VistaBaseTypes.h>
 
-#include <map>
 #include <list>
+#include <map>
 #include <string>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -51,100 +49,88 @@ class VistaEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VistaMasterSlave
-{	
-	typedef	std::pair<int, int> PortRange;
-	typedef std::list<PortRange> FreePortList;
+namespace VistaMasterSlave {
+typedef std::pair<int, int>  PortRange;
+typedef std::list<PortRange> FreePortList;
 
-	enum
-	{
-		DATASYNC_DUMMY,
-		DATASYNC_TCP,
-		DATASYNC_ZEROMQ,
-		DATASYNC_INTERPROC,
-	};
+enum {
+  DATASYNC_DUMMY,
+  DATASYNC_TCP,
+  DATASYNC_ZEROMQ,
+  DATASYNC_INTERPROC,
+};
 
-	enum
-	{
-		BARRIER_TCP,
-		BARRIER_BROADCAST,
-		BARRIER_INTERPROC,
-		BARRIER_ZEROMQ,
-		BARRIER_DUMMY,
-	};
+enum {
+  BARRIER_TCP,
+  BARRIER_BROADCAST,
+  BARRIER_INTERPROC,
+  BARRIER_ZEROMQ,
+  BARRIER_DUMMY,
+};
 
-	enum
-	{
-		SWAPSYNC_NONE,
-		SWAPSYNC_DEFAULTBARRIER,
-		SWAPSYNC_TCP,
-		SWAPSYNC_BROADCAST,
-		SWAPSYNC_INTERPROC,
-		SWAPSYNC_ZEROMQ,
-		SWAPSYNC_DUMMY,
-		SWAPSYNC_GSYNCGROUP,
-	};
+enum {
+  SWAPSYNC_NONE,
+  SWAPSYNC_DEFAULTBARRIER,
+  SWAPSYNC_TCP,
+  SWAPSYNC_BROADCAST,
+  SWAPSYNC_INTERPROC,
+  SWAPSYNC_ZEROMQ,
+  SWAPSYNC_DUMMY,
+  SWAPSYNC_GSYNCGROUP,
+};
 
-	std::string GetDataSyncModeName( const int m_nDataSyncMethod );
-	std::string GetSwapSyncModeName( const int m_nSwapSyncMethod );
-	std::string GetBarrierModeName( const int m_nBarrierMethod );
+std::string GetDataSyncModeName(const int m_nDataSyncMethod);
+std::string GetSwapSyncModeName(const int m_nSwapSyncMethod);
+std::string GetBarrierModeName(const int m_nBarrierMethod);
 
-	void FillPortListFromIni( const std::string& sEntry,
-							FreePortList& vecPorts );
-	int GetFreePortFromPortList( FreePortList& vecPorts );
-	
-	
-	class VISTAKERNELAPI Message : public IVistaSerializable
-	{
-	public:
-		Message();
-		virtual ~Message();
+void FillPortListFromIni(const std::string& sEntry, FreePortList& vecPorts);
+int  GetFreePortFromPortList(FreePortList& vecPorts);
 
-		// Setup: register allowed Events for receiving
-		bool RegisterEventType( VistaEvent* pEvent );
+class VISTAKERNELAPI Message : public IVistaSerializable {
+ public:
+  Message();
+  virtual ~Message();
 
-		// Write
-		void SetFrameCount( int nCount );
-		void SetEventMsg( const VistaEvent* pEvent );
-		void SetStartFrameMsg( VistaType::systemtime nTime );
-		void SetEndFrameMsg( VistaType::systemtime nTime );
-		void SetQuitMsg( VistaType::systemtime nTime );
+  // Setup: register allowed Events for receiving
+  bool RegisterEventType(VistaEvent* pEvent);
 
-		// Read	
-		enum CMSG_TYPE
-		{
-			CMSG_INVALID = -1,
-			CMSG_STARTFRAME,
-			CMSG_EVENT,
-			CMSG_ENDFRAME,
-			CMSG_QUIT,
-		};
-		CMSG_TYPE GetType() const;
-		int GetFrameCount() const;
-		VistaType::systemtime GetClock() const;
-		VistaEvent* GetEvent() const;
+  // Write
+  void SetFrameCount(int nCount);
+  void SetEventMsg(const VistaEvent* pEvent);
+  void SetStartFrameMsg(VistaType::systemtime nTime);
+  void SetEndFrameMsg(VistaType::systemtime nTime);
+  void SetQuitMsg(VistaType::systemtime nTime);
 
-		virtual int Serialize( IVistaSerializer& ) const;
-		virtual int DeSerialize( IVistaDeSerializer& );
-		virtual std::string GetSignature() const;
+  // Read
+  enum CMSG_TYPE {
+    CMSG_INVALID = -1,
+    CMSG_STARTFRAME,
+    CMSG_EVENT,
+    CMSG_ENDFRAME,
+    CMSG_QUIT,
+  };
+  CMSG_TYPE             GetType() const;
+  int                   GetFrameCount() const;
+  VistaType::systemtime GetClock() const;
+  VistaEvent*           GetEvent() const;
 
-	private:
-		CMSG_TYPE				m_nType;
-		int						m_nFrameCount;
-		VistaType::systemtime	m_nClock;
+  virtual int         Serialize(IVistaSerializer&) const;
+  virtual int         DeSerialize(IVistaDeSerializer&);
+  virtual std::string GetSignature() const;
 
-		int						m_nEventType;
-		const VistaEvent*		m_pSendEvent;
-		std::map<int, VistaEvent*>	m_mapRegisteredEvents;
-	};
-}
+ private:
+  CMSG_TYPE             m_nType;
+  int                   m_nFrameCount;
+  VistaType::systemtime m_nClock;
 
-
-
+  int                        m_nEventType;
+  const VistaEvent*          m_pSendEvent;
+  std::map<int, VistaEvent*> m_mapRegisteredEvents;
+};
+} // namespace VistaMasterSlave
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAMASTERSLAVEUTILS_H
-

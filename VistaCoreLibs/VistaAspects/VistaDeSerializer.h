@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADESERIALIZER_H
 #define _VISTADESERIALIZER_H
 
@@ -71,63 +70,56 @@ class IVistaSerializable;
  * on. Note that this is currently only the sketch of an idea and might not be appropriate
  * at all.
  */
-class VISTAASPECTSAPI IVistaDeSerializer
-{
-private:
-protected:
+class VISTAASPECTSAPI IVistaDeSerializer {
+ private:
+ protected:
+  /**
+   * DeSerializers are only interfaces, they do not really get constructed.
+   */
+  IVistaDeSerializer(){};
 
-	/**
-	 * DeSerializers are only interfaces, they do not really get constructed.
-	 */
-	IVistaDeSerializer() {};
-public:
+ public:
+  /**
+   * DeSerializers are only interfaces, they do not really get destructed.
+   */
+  virtual ~IVistaDeSerializer(){};
 
-	/**
-	 * DeSerializers are only interfaces, they do not really get destructed.
-	 */
-	virtual ~IVistaDeSerializer() {};
+  virtual int ReadShort16(VistaType::ushort16& us16Val)             = 0;
+  virtual int ReadInt32(VistaType::sint32& si32Val)                 = 0;
+  virtual int ReadInt32(VistaType::uint32& si32Val)                 = 0;
+  virtual int ReadInt64(VistaType::sint64& si64Val)                 = 0;
+  virtual int ReadUInt64(VistaType::uint64& si64Val)                = 0;
+  virtual int ReadFloat32(VistaType::float32& fVal)                 = 0;
+  virtual int ReadFloat64(VistaType::float64& f64Val)               = 0;
+  virtual int ReadDouble(double& dVal)                              = 0;
+  virtual int ReadRawBuffer(void* pBuffer, int iLen)                = 0;
+  virtual int ReadBool(bool& bVal)                                  = 0;
+  virtual int ReadString(std::string&, const int iMaxLen)           = 0;
+  virtual int ReadDelimitedString(std::string&, char cDelim = '\0') = 0;
+  virtual int ReadEncodedString(std::string&)                       = 0;
 
+  virtual int ReadSerializable(IVistaSerializable&) = 0;
 
-	virtual int ReadShort16( VistaType::ushort16 &us16Val) = 0;
-	virtual int ReadInt32( VistaType::sint32 &si32Val) = 0;
-	virtual int ReadInt32( VistaType::uint32 &si32Val) = 0;
-	virtual int ReadInt64( VistaType::sint64 &si64Val) = 0;
-	virtual int ReadUInt64( VistaType::uint64 &si64Val) = 0;
-	virtual int ReadFloat32( VistaType::float32 &fVal) = 0;
-	virtual int ReadFloat64( VistaType::float64 &f64Val) = 0;
-	virtual int ReadDouble( double &dVal ) = 0;
-	virtual int ReadRawBuffer(void *pBuffer, int iLen) = 0;
-	virtual int ReadBool(bool &bVal) = 0;
-	virtual int ReadString(std::string &, const int iMaxLen) = 0;
-	virtual int ReadDelimitedString(std::string &, char cDelim = '\0') = 0;
-	virtual int ReadEncodedString( std::string& ) = 0;
+  virtual VistaSerializingToolset::ByteOrderSwapBehavior GetByteorderSwapFlag() const       = 0;
+  virtual void SetByteorderSwapFlag(VistaSerializingToolset::ByteOrderSwapBehavior bDoesIt) = 0;
 
-	virtual int ReadSerializable(IVistaSerializable &) = 0;
+  //! @deprecated call SetByteorderSwapFlag with proper swap behavior
+  void SetByteorderSwapFlag(bool bDoesIt);
 
-
-
-	virtual VistaSerializingToolset::ByteOrderSwapBehavior GetByteorderSwapFlag() const = 0;
-	virtual void SetByteorderSwapFlag( VistaSerializingToolset::ByteOrderSwapBehavior bDoesIt ) = 0;
-
-	//! @deprecated call SetByteorderSwapFlag with proper swap behavior
-	void SetByteorderSwapFlag( bool bDoesIt );
-
-	virtual IVistaDeSerializer &operator>> ( VistaType::ushort16 &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::sint32 &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::uint32 &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::sint64 &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::uint64 &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::float32 &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::float64 &);
-	virtual IVistaDeSerializer &operator>> ( std::string &);
-	virtual IVistaDeSerializer &operator>> ( bool &);
-	virtual IVistaDeSerializer &operator>> ( VistaType::byte & );
+  virtual IVistaDeSerializer& operator>>(VistaType::ushort16&);
+  virtual IVistaDeSerializer& operator>>(VistaType::sint32&);
+  virtual IVistaDeSerializer& operator>>(VistaType::uint32&);
+  virtual IVistaDeSerializer& operator>>(VistaType::sint64&);
+  virtual IVistaDeSerializer& operator>>(VistaType::uint64&);
+  virtual IVistaDeSerializer& operator>>(VistaType::float32&);
+  virtual IVistaDeSerializer& operator>>(VistaType::float64&);
+  virtual IVistaDeSerializer& operator>>(std::string&);
+  virtual IVistaDeSerializer& operator>>(bool&);
+  virtual IVistaDeSerializer& operator>>(VistaType::byte&);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
 
 #endif //_VISTASYSTEM_H

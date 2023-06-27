@@ -34,9 +34,7 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
 #define OSG_COMPILEVistaOpenGLDrawCoreINST
-
 
 #include "OSGVistaOpenGLDrawCoreBase.h"
 #include "OSGVistaOpenGLDrawCore.h"
@@ -44,10 +42,10 @@
 
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -56,175 +54,132 @@
 #pragma warning(pop)
 #endif
 
-#include <stdlib.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector VistaOpenGLDrawCoreBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+const OSG::BitVector VistaOpenGLDrawCoreBase::MTInfluenceMask =
+    (Inherited::MTInfluenceMask) | (static_cast<BitVector>(0x0) << Inherited::NextFieldId);
 
-FieldContainerType VistaOpenGLDrawCoreBase::_type(
-    "VistaOpenGLDrawCore",
-    "MaterialDrawable",
-    NULL,
+FieldContainerType VistaOpenGLDrawCoreBase::_type("VistaOpenGLDrawCore", "MaterialDrawable", NULL,
     reinterpret_cast<PrototypeCreateF>(&VistaOpenGLDrawCoreBase::createEmpty),
-    VistaOpenGLDrawCore::initMethod,
-    NULL,
-    0);
+    VistaOpenGLDrawCore::initMethod, NULL, 0);
 
-//OSG_FIELD_CONTAINER_DEF(VistaOpenGLDrawCoreBase, VistaOpenGLDrawCorePtr)
+// OSG_FIELD_CONTAINER_DEF(VistaOpenGLDrawCoreBase, VistaOpenGLDrawCorePtr)
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &VistaOpenGLDrawCoreBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &VistaOpenGLDrawCoreBase::getType(void) const 
-{
-    return _type;
-} 
-
-
-FieldContainerPtr VistaOpenGLDrawCoreBase::shallowCopy(void) const 
-{ 
-    VistaOpenGLDrawCorePtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const VistaOpenGLDrawCore *>(this)); 
-
-    return returnValue; 
+FieldContainerType& VistaOpenGLDrawCoreBase::getType(void) {
+  return _type;
 }
 
-UInt32 VistaOpenGLDrawCoreBase::getContainerSize(void) const 
-{ 
-    return sizeof(VistaOpenGLDrawCore); 
+const FieldContainerType& VistaOpenGLDrawCoreBase::getType(void) const {
+  return _type;
 }
 
+FieldContainerPtr VistaOpenGLDrawCoreBase::shallowCopy(void) const {
+  VistaOpenGLDrawCorePtr returnValue;
+
+  newPtr(returnValue, dynamic_cast<const VistaOpenGLDrawCore*>(this));
+
+  return returnValue;
+}
+
+UInt32 VistaOpenGLDrawCoreBase::getContainerSize(void) const {
+  return sizeof(VistaOpenGLDrawCore);
+}
 
 #if !defined(OSG_FIXED_MFIELDSYNC)
-void VistaOpenGLDrawCoreBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
-{
-    this->executeSyncImpl(static_cast<VistaOpenGLDrawCoreBase *>(&other),
-                          whichField);
+void VistaOpenGLDrawCoreBase::executeSync(FieldContainer& other, const BitVector& whichField) {
+  this->executeSyncImpl(static_cast<VistaOpenGLDrawCoreBase*>(&other), whichField);
 }
 #else
-void VistaOpenGLDrawCoreBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
-{
-    this->executeSyncImpl((VistaOpenGLDrawCoreBase *) &other, whichField, sInfo);
+void VistaOpenGLDrawCoreBase::executeSync(
+    FieldContainer& other, const BitVector& whichField, const SyncInfo& sInfo) {
+  this->executeSyncImpl((VistaOpenGLDrawCoreBase*)&other, whichField, sInfo);
 }
-void VistaOpenGLDrawCoreBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+void VistaOpenGLDrawCoreBase::execBeginEdit(
+    const BitVector& whichField, UInt32 uiAspect, UInt32 uiContainerSize) {
+  this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void VistaOpenGLDrawCoreBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
-
+void VistaOpenGLDrawCoreBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect) {
+  Inherited::onDestroyAspect(uiId, uiAspect);
 }
 #endif
 
 /*------------------------- constructors ----------------------------------*/
 
 #ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
+#pragma warning(disable : 383)
 #endif
 
-VistaOpenGLDrawCoreBase::VistaOpenGLDrawCoreBase(void) :
-    Inherited() 
-{
+VistaOpenGLDrawCoreBase::VistaOpenGLDrawCoreBase(void)
+    : Inherited() {
 }
 
 #ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
+#pragma warning(default : 383)
 #endif
 
-VistaOpenGLDrawCoreBase::VistaOpenGLDrawCoreBase(const VistaOpenGLDrawCoreBase &source) :
-    Inherited                 (source)
-{
+VistaOpenGLDrawCoreBase::VistaOpenGLDrawCoreBase(const VistaOpenGLDrawCoreBase& source)
+    : Inherited(source) {
 }
 
 /*-------------------------- destructors ----------------------------------*/
 
-VistaOpenGLDrawCoreBase::~VistaOpenGLDrawCoreBase(void)
-{
+VistaOpenGLDrawCoreBase::~VistaOpenGLDrawCoreBase(void) {
 }
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 VistaOpenGLDrawCoreBase::getBinSize(const BitVector &whichField)
-{
-    UInt32 returnValue = Inherited::getBinSize(whichField);
+UInt32 VistaOpenGLDrawCoreBase::getBinSize(const BitVector& whichField) {
+  UInt32 returnValue = Inherited::getBinSize(whichField);
 
-
-    return returnValue;
+  return returnValue;
 }
 
-void VistaOpenGLDrawCoreBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
-{
-    Inherited::copyToBin(pMem, whichField);
-
-
+void VistaOpenGLDrawCoreBase::copyToBin(BinaryDataHandler& pMem, const BitVector& whichField) {
+  Inherited::copyToBin(pMem, whichField);
 }
 
-void VistaOpenGLDrawCoreBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
-{
-    Inherited::copyFromBin(pMem, whichField);
-
-
+void VistaOpenGLDrawCoreBase::copyFromBin(BinaryDataHandler& pMem, const BitVector& whichField) {
+  Inherited::copyFromBin(pMem, whichField);
 }
 
 #if !defined(OSG_FIXED_MFIELDSYNC)
-void VistaOpenGLDrawCoreBase::executeSyncImpl(      VistaOpenGLDrawCoreBase *pOther,
-                                        const BitVector         &whichField)
-{
+void VistaOpenGLDrawCoreBase::executeSyncImpl(
+    VistaOpenGLDrawCoreBase* pOther, const BitVector& whichField) {
 
-    Inherited::executeSyncImpl(pOther, whichField);
-
-
+  Inherited::executeSyncImpl(pOther, whichField);
 }
 #else
-void VistaOpenGLDrawCoreBase::executeSyncImpl(      VistaOpenGLDrawCoreBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
+void VistaOpenGLDrawCoreBase::executeSyncImpl(
+    VistaOpenGLDrawCoreBase* pOther, const BitVector& whichField, const SyncInfo& sInfo) {
 
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
+  Inherited::executeSyncImpl(pOther, whichField, sInfo);
 }
 
-void VistaOpenGLDrawCoreBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
-{
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
-
+void VistaOpenGLDrawCoreBase::execBeginEditImpl(
+    const BitVector& whichField, UInt32 uiAspect, UInt32 uiContainerSize) {
+  Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 #endif
 
 OSG_END_NAMESPACE
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+#include <OpenSG/OSGSFieldTypeDef.inl>
 
 OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<VistaOpenGLDrawCorePtr>::_type("VistaOpenGLDrawCorePtr", "MaterialDrawablePtr");
+DataType FieldDataTraits<VistaOpenGLDrawCorePtr>::_type(
+    "VistaOpenGLDrawCorePtr", "MaterialDrawablePtr");
 #endif
 
 OSG_DLLEXPORT_SFIELD_DEF1(VistaOpenGLDrawCorePtr, );
 OSG_DLLEXPORT_MFIELD_DEF1(VistaOpenGLDrawCorePtr, );
 
 OSG_END_NAMESPACE
-

@@ -21,11 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATRANSFORMABLETEXTURE_H_
 #define _VISTATRANSFORMABLETEXTURE_H_
-
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -34,9 +31,9 @@
 /*============================================================================*/
 /*  INCLUDES                                                                  */
 /*============================================================================*/
-#include <GL/glew.h>
 #include "VistaOGLExtConfig.h"
 #include "VistaTexture.h"
+#include <GL/glew.h>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -51,39 +48,34 @@
 /**
  * VistaTransformableTexture provides a basic abstraction for transformed OpenGL textures.
  */
-class VISTAOGLEXTAPI VistaTransformableTexture : public VistaTexture
-{
-public:
-	//! forwards to the VistaTexture constructor
-	VistaTransformableTexture(GLenum eTarget);
-	//! forwards to the VistaTexture constructor
-	VistaTransformableTexture(GLenum eTarget, GLuint iId, bool bManaged);
+class VISTAOGLEXTAPI VistaTransformableTexture : public VistaTexture {
+ public:
+  //! forwards to the VistaTexture constructor
+  VistaTransformableTexture(GLenum eTarget);
+  //! forwards to the VistaTexture constructor
+  VistaTransformableTexture(GLenum eTarget, GLuint iId, bool bManaged);
 
+  /**
+   * Bind the texture and multiply texture transform matrix.
+   * Be sure to call Unbind to not influence subsequent texturing!!!
+   */
+  virtual void Bind();
 
-	/**
-	 * Bind the texture and multiply texture transform matrix.
-	 * Be sure to call Unbind to not influence subsequent texturing!!!
-	 */
-	virtual void Bind();
-	
-	/**
-	 * Unbinds texture by binding default target. Pop texture matrix stack.
-	 */
-	virtual void Unbind();
+  /**
+   * Unbinds texture by binding default target. Pop texture matrix stack.
+   */
+  virtual void Unbind();
 
-	// set texture transform to rotate the texture clockwise -> transforms texture coordinates CCW!
-	void SetToRotZ(const float &degrees);
+  // set texture transform to rotate the texture clockwise -> transforms texture coordinates CCW!
+  void SetToRotZ(const float& degrees);
 
+  // set the texture transform matrix to be multiplied onto the current texture transform stack.
+  // reminder: this transforms the texture coordinates, not the texture itself!!!
+  void SetMatrix(const float m_gl[16]);
+  void SetToIdentitiy();
 
-	// set the texture transform matrix to be multiplied onto the current texture transform stack.
-	// reminder: this transforms the texture coordinates, not the texture itself!!!
-	void SetMatrix(const float m_gl[16]);
-	void SetToIdentitiy();
-
-private:
-	float m_oglMatrix[16];
-
+ private:
+  float m_oglMatrix[16];
 };
 
 #endif // _VISTATRANSFORMABLETEXTURE _H_
-
