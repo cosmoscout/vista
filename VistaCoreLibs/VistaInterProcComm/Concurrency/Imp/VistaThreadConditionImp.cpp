@@ -21,11 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 #include "VistaThreadConditionImp.h"
-
 
 #if defined(VISTA_THREADING_WIN32)
 #include "VistaWin32ThreadConditionImp.h"
@@ -35,7 +33,6 @@
 #pragma warning "THREADCONDITIONS UNSUPPORTED FOR THIS PLATFORM!"
 #endif
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -44,33 +41,26 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaThreadConditionImp::IVistaThreadConditionImp()
-{
+IVistaThreadConditionImp::IVistaThreadConditionImp() {
 }
 
-IVistaThreadConditionImp::~IVistaThreadConditionImp()
-{
+IVistaThreadConditionImp::~IVistaThreadConditionImp() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-IVistaThreadConditionImp *IVistaThreadConditionImp::CreateThreadConditionImp()
-{
-	// factory method
+IVistaThreadConditionImp* IVistaThreadConditionImp::CreateThreadConditionImp() {
+  // factory method
 #if defined(VISTA_THREADING_WIN32)
-	return new VistaWin32ThreadConditionImp;
+  return new VistaWin32ThreadConditionImp;
 #elif defined(VISTA_THREADING_POSIX)
-	return new VistaPthreadsThreadConditionImp;
+  return new VistaPthreadsThreadConditionImp;
 #else
-	return 0;
+  return 0;
 #endif
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

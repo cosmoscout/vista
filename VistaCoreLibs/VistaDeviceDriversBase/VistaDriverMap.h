@@ -21,11 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERMAP_H
 #define _VISTADRIVERMAP_H
-
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -66,201 +63,193 @@ class IVddReadstateSource;
  * the driver map will give notice to observers. Might by handy for GUI
  * programming.
  */
-class VISTADEVICEDRIVERSAPI VistaDriverMap : public IVistaObserveable
-{
-public:
-	VistaDriverMap();
+class VISTADEVICEDRIVERSAPI VistaDriverMap : public IVistaObserveable {
+ public:
+  VistaDriverMap();
 
-	/**
-	 * will release memory on *all* still registered driver creation methods.
-	 * Before that, the IVistaDriverCreationMethod::OnUnload() method
-	 * will be called.
-	 * @see UnregisterDriverCreationMethod()
-	 */
-	virtual ~VistaDriverMap();
+  /**
+   * will release memory on *all* still registered driver creation methods.
+   * Before that, the IVistaDriverCreationMethod::OnUnload() method
+   * will be called.
+   * @see UnregisterDriverCreationMethod()
+   */
+  virtual ~VistaDriverMap();
 
+  enum {
+    MSG_ADDDRIVER = IVistaObserveable::MSG_LAST,
+    MSG_REMDRIVER,
+    MSG_DELDRIVER,
+    MSG_ADDDRIVERCREATIONMETHOD,
+    MSG_UNREGISTERDRIVERCREATIONMETHOD,
+    MSG_LAST
+  };
 
-	enum
-	{
-		MSG_ADDDRIVER = IVistaObserveable::MSG_LAST,
-		MSG_REMDRIVER,
-		MSG_DELDRIVER,
-		MSG_ADDDRIVERCREATIONMETHOD,
-		MSG_UNREGISTERDRIVERCREATIONMETHOD,
-		MSG_LAST
-	};
+  /**
+   * adds a new driver with a unique name. In case a driver with sName
+   * is already registered, the method will overwrite the old binding
+   * and utter a MSG_ADDDRIVER. In case the same driver was registered
+   * with the same name, nothing will happen.
+   * @return false if pDriver was already registered as sName
+   */
+  bool AddDeviceDriver(const std::string& sName, IVistaDeviceDriver* pDriver);
 
+  /**
+   * query for a driver given a name
+   * @return true when a driver with sName was registered, false else
+   */
+  bool GetIsDeviceDriver(const std::string& sName) const;
 
-	/**
-	 * adds a new driver with a unique name. In case a driver with sName
-	 * is already registered, the method will overwrite the old binding
-	 * and utter a MSG_ADDDRIVER. In case the same driver was registered
-	 * with the same name, nothing will happen.
-	 * @return false if pDriver was already registered as sName
-	 */
-	bool                AddDeviceDriver(const std::string &sName,
-										IVistaDeviceDriver *pDriver);
+  /**
+   * query for a driver given a name
+   * @return a pointer to the driver that was registered with name sName
+   */
+  IVistaDeviceDriver* GetDeviceDriver(const std::string& sName) const;
 
-	/**
-	 * query for a driver given a name
-	 * @return true when a driver with sName was registered, false else
-	 */
-	bool                GetIsDeviceDriver(const std::string &sName) const;
+  /**
+   * delete the driver by a name. The driver destructor is called.
+   * MSG_DELDRIVER is uttered AFTER the driver was deleted.
+   * @return false is no driver with sName was registered beforehand, true else
+   */
+  bool DelDeviceDriver(const std::string& sName);
 
-	/**
-	 * query for a driver given a name
-	 * @return a pointer to the driver that was registered with name sName
-	 */
-	IVistaDeviceDriver *GetDeviceDriver(const std::string &sName) const;
+  /**
+   * remove a driver from this map, given a name. the driver destructor is NOT called.
+   * MSG_REMDRIVER is uttered AFTER the driver was removed.
+   * @return false in case no driver with sName was registered, true else
+   */
+  bool RemDeviceDriver(const std::string& sName);
 
-	/**
-	 * delete the driver by a name. The driver destructor is called.
-	 * MSG_DELDRIVER is uttered AFTER the driver was deleted.
-	 * @return false is no driver with sName was registered beforehand, true else
-	 */
-	bool                DelDeviceDriver(const std::string &sName);
+  bool RemDeviceDriver(IVistaDeviceDriver*);
 
-	/**
-	 * remove a driver from this map, given a name. the driver destructor is NOT called.
-	 * MSG_REMDRIVER is uttered AFTER the driver was removed.
-	 * @return false in case no driver with sName was registered, true else
-	 */
-	bool                RemDeviceDriver(const std::string &sName);
+  /**
+   * same as RemDeviceDriver(), but returns the removed driver as a result.
+   * MSG_REMDRIVER is uttered AFTER the driver was removed.
+   * @return NULL if no driver named sName was found, a pointer to it else
+   */
+  IVistaDeviceDriver* RemAndGetDeviceDriver(const std::string& sName);
 
-	bool                RemDeviceDriver( IVistaDeviceDriver * );
+  /**
+   * typedef for a more smooth iteration. Note that this iterator exports
+   * write access, so use with care.
+   */
+  typedef std::map<std::string, IVistaDeviceDriver*>::iterator iterator;
 
-	/**
-	 * same as RemDeviceDriver(), but returns the removed driver as a result.
-	 * MSG_REMDRIVER is uttered AFTER the driver was removed.
-	 * @return NULL if no driver named sName was found, a pointer to it else
-	 */
-	IVistaDeviceDriver *RemAndGetDeviceDriver(const std::string &sName);
+  /**
+   * const version of the access iterator.
+   */
+  typedef std::map<std::string, IVistaDeviceDriver*>::const_iterator const_iterator;
 
-	/**
-	 * typedef for a more smooth iteration. Note that this iterator exports
-	 * write access, so use with care.
-	 */
-	typedef std::map<std::string, IVistaDeviceDriver*>::iterator iterator;
+  /**
+   * start of the driver iteration
+   */
+  iterator begin();
 
-	/**
-	 * const version of the access iterator.
-	 */
-	typedef std::map<std::string, IVistaDeviceDriver*>::const_iterator const_iterator;
+  /**
+   * end of the driver iteration
+   */
+  iterator end();
 
-	/**
-	 * start of the driver iteration
-	 */
-	iterator begin();
+  /**
+   * const API, start of the driver iteration
+   */
+  const_iterator begin() const;
 
-	/**
-	 * end of the driver iteration
-	 */
-	iterator end();
+  /**
+   * const API, end of the driver iteration
+   */
+  const_iterator end() const;
 
+  /**
+   * the number of registered drivers
+   */
+  size_t size() const;
 
-	/**
-	 * const API, start of the driver iteration
-	 */
-	const_iterator begin() const;
+  // ##########################################################
+  // CREATION METHOD API
+  // ##########################################################
 
-	/**
-	 * const API, end of the driver iteration
-	 */
-	const_iterator end() const;
+  /**
+   * register a creation method for a TYPE of drivers. TYPE names
+   * have to be unique. Use the bForceRegistration parameter to
+   * overwrite existing creation methods on purpose.
+   * In case of overwriting, the old pointer is lost, so be sure to claim
+   * the memory for it somewhere.
+   * @see UnregisterDriverCreationMethod()
+   * @see GetDriverCreationMethod()
+   * @param sTypeName the type name to register
+   * @param pMethod a pointer to a creation method, must not be NULL
+   * @param bForceRegistration overwrite existing creation methods.
+   */
+  bool RegisterDriverCreationMethod(const std::string& sTypeName,
+      IVistaDriverCreationMethod* pMethod, bool bForceRegistration = false);
 
-	/**
-	 * the number of registered drivers
-	 */
-	size_t   size() const;
+  /**
+   * unregister a previously registered driver creation method by its
+   * type name symbol.
+   * @param sTypeName the type to unregister
+   * @param bDeleteDriverCreationMethod while at it... release the memory.
+   */
+  bool UnregisterDriverCreationMethod(
+      const std::string& sTypeName, bool bDeleteDriverCreationMethod = true);
 
-	// ##########################################################
-	// CREATION METHOD API
-	// ##########################################################
+  static bool DeleteDriverCreationMethod(IVistaDriverCreationMethod*);
 
-	/**
-	 * register a creation method for a TYPE of drivers. TYPE names
-	 * have to be unique. Use the bForceRegistration parameter to
-	 * overwrite existing creation methods on purpose.
-	 * In case of overwriting, the old pointer is lost, so be sure to claim
-	 * the memory for it somewhere.
-	 * @see UnregisterDriverCreationMethod()
-	 * @see GetDriverCreationMethod()
-	 * @param sTypeName the type name to register
-	 * @param pMethod a pointer to a creation method, must not be NULL
-	 * @param bForceRegistration overwrite existing creation methods.
-	 */
-	bool RegisterDriverCreationMethod(const std::string &sTypeName,
-		IVistaDriverCreationMethod *pMethod,
-		bool bForceRegistration = false);
+  /**
+   * query for a creation method by giving a type
+   * @see RegisterDriverCreationMethod()
+   * @return NULL if this type was not registered before
+   */
+  IVistaDriverCreationMethod* GetDriverCreationMethod(const std::string& sTypeName) const;
 
-	/**
-	 * unregister a previously registered driver creation method by its
-	 * type name symbol.
-	 * @param sTypeName the type to unregister
-	 * @param bDeleteDriverCreationMethod while at it... release the memory.
-	 */
-	bool UnregisterDriverCreationMethod(const std::string &sTypeName,
-		bool bDeleteDriverCreationMethod = true);
+  /**
+   * typedef for creation method iteration
+   */
+  typedef std::map<std::string, IVistaDriverCreationMethod*>::iterator crm_iterator;
 
-	static bool DeleteDriverCreationMethod( IVistaDriverCreationMethod * );
+  /**
+   * const version for creation method iteration
+   */
+  typedef std::map<std::string, IVistaDriverCreationMethod*>::const_iterator crm_const_iterator;
 
-	/**
-	 * query for a creation method by giving a type
-	 * @see RegisterDriverCreationMethod()
-	 * @return NULL if this type was not registered before
-	 */
-	IVistaDriverCreationMethod *GetDriverCreationMethod(const std::string &sTypeName) const;
+  /**
+   * creation method iteration begin
+   */
+  crm_iterator crm_begin();
 
-	/**
-	 * typedef for creation method iteration
-	 */
-	typedef std::map<std::string, IVistaDriverCreationMethod*>::iterator crm_iterator;
+  /**
+   * createion method iteration end
+   */
+  crm_iterator crm_end();
 
-	/**
-	 * const version for creation method iteration
-	 */
-	typedef std::map<std::string, IVistaDriverCreationMethod*>::const_iterator crm_const_iterator;
+  /**
+   * const version, creation method iteration begin
+   */
+  crm_const_iterator crm_begin() const;
 
+  /**
+   * const version, creation method iteration end
+   */
+  crm_const_iterator crm_end() const;
 
-	/**
-	 * creation method iteration begin
-	 */
-	crm_iterator crm_begin();
+  /**
+   * the number of registered creation methods
+   */
+  size_t crm_size() const;
 
-	/**
-	 * createion method iteration end
-	 */
-	crm_iterator crm_end();
+  void Purge(bool bDelete = false);
 
-	/**
-	 * const version, creation method iteration begin
-	 */
-	crm_const_iterator crm_begin() const;
+  IVddReadstateSource* GetReadstateSource() const;
+  void                 SetReadstateSource(IVddReadstateSource*);
 
-	/**
-	 * const version, creation method iteration end
-	 */
-	crm_const_iterator crm_end() const;
+ protected:
+ private:
+  typedef std::map<std::string, IVistaDeviceDriver*> DEVMAP;
+  DEVMAP                                             m_mpDevices;
 
-	/**
-	 * the number of registered creation methods
-	 */
-	size_t crm_size() const;
+  typedef std::map<std::string, IVistaDriverCreationMethod*> CRMAP;
+  CRMAP                                                      m_mapCreationMethods;
 
-	void Purge(bool bDelete=false);
-
-
-	IVddReadstateSource *GetReadstateSource() const;
-	void SetReadstateSource( IVddReadstateSource * );
-protected:
-private:
-	typedef std::map<std::string, IVistaDeviceDriver*> DEVMAP;
-	DEVMAP m_mpDevices;
-
-	typedef std::map<std::string, IVistaDriverCreationMethod*> CRMAP;
-	CRMAP   m_mapCreationMethods;
-
-	IVddReadstateSource *m_pReadstateSource;
+  IVddReadstateSource* m_pReadstateSource;
 };
 
 /*============================================================================*/

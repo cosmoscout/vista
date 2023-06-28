@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* VistaConnection is an abstact class which provides a generic interface    */
 /* to a connection interface. Classes of new types of connections shall be    */
@@ -36,17 +35,17 @@
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 // Standard C++ includes
-#include <string>
 #include <iostream>
+#include <string>
 
 // system headers
 
-#include <VistaAspects/VistaSerializer.h>
 #include <VistaAspects/VistaDeSerializer.h>
+#include <VistaAspects/VistaSerializer.h>
 
 class VistaConnection;
 
-VISTAINTERPROCCOMMAPI std::ostream & operator<< (std::ostream &, const VistaConnection &);
+VISTAINTERPROCCOMMAPI std::ostream& operator<<(std::ostream&, const VistaConnection&);
 
 /**
  * A connection is an alias for a "stream-like" instance. It is used to serve
@@ -78,199 +77,207 @@ VISTAINTERPROCCOMMAPI std::ostream & operator<< (std::ostream &, const VistaConn
  * this interface. You can ONLY turn this feature on and off, but do not do any fine
  * tuning.
  */
-class VISTAINTERPROCCOMMAPI VistaConnection : public IVistaSerializer, public IVistaDeSerializer
-{
-public:
-	/**
-	 * Constructor, sets open=false, swapbyteorder=true, blocking=true, buffering=false, readtimeout=0
-	 */
-	VistaConnection();
+class VISTAINTERPROCCOMMAPI VistaConnection : public IVistaSerializer, public IVistaDeSerializer {
+ public:
+  /**
+   * Constructor, sets open=false, swapbyteorder=true, blocking=true, buffering=false, readtimeout=0
+   */
+  VistaConnection();
 
-	/**
-	 * Virtual destuctor. Needed to destroy objects of derived classes.
-	 */
-	virtual ~VistaConnection();
+  /**
+   * Virtual destuctor. Needed to destroy objects of derived classes.
+   */
+  virtual ~VistaConnection();
 
-	virtual void Debug( std::ostream& oStream ) const;
+  virtual void Debug(std::ostream& oStream) const;
 
-	/**
-	 * Open shall open a connection. Open connections shall not change their state
-	 * when they are opened again.
-	 *
-	 * @return  true   if Open was successful
-	 *          false  if Open failed
-	 */
-	virtual bool Open() = 0;
+  /**
+   * Open shall open a connection. Open connections shall not change their state
+   * when they are opened again.
+   *
+   * @return  true   if Open was successful
+   *          false  if Open failed
+   */
+  virtual bool Open() = 0;
 
-	/**
-	 * Returns the current state of this connection, iff this thing is open or not.
-	 * @return true iff this connection is open, false else.
-	 */
-	virtual bool GetIsOpen() const { return m_bIsOpen; }
+  /**
+   * Returns the current state of this connection, iff this thing is open or not.
+   * @return true iff this connection is open, false else.
+   */
+  virtual bool GetIsOpen() const {
+    return m_bIsOpen;
+  }
 
-	/**
-	 * Close shall close the connection.
-	 * After a call to close, send and receive methods will fail. It shall be safe to
-	 * call close on a closed connection.
-	 *
-	 * @param bSkipData true: ignore data queued in connection
-	 */
-	virtual void Close() = 0;
+  /**
+   * Close shall close the connection.
+   * After a call to close, send and receive methods will fail. It shall be safe to
+   * call close on a closed connection.
+   *
+   * @param bSkipData true: ignore data queued in connection
+   */
+  virtual void Close() = 0;
 
+  /**
+   * Receive shall read some information from the connection. Note that a call to this
+   * method can timeout, that means the call can return without |length|-read bytes.
+   * In order to avoid this, call SetBlocking(true) and Receive with a timeout of 0.
+   * Note that then, this call will ONLY return after |length|-bytes are really received
+   * which could "deadlock" the caller, when this does not happen.
+   *
+   * @param length   maximum length of bytes to be received |buffer| <= length
+   * @param  buffer   the received information
+   * @param iTimeout the timeout to wait until at least one byte will be available
+   *
+   * @return  number of received bytes, 0 on timeout without receival of any byte, -1 in case of
+   * total error
+   */
+  virtual int Receive(void* pBuffer, const int nLength, int iTimeout = 0) = 0;
 
-	/**
-	 * Receive shall read some information from the connection. Note that a call to this
-	 * method can timeout, that means the call can return without |length|-read bytes.
-	 * In order to avoid this, call SetBlocking(true) and Receive with a timeout of 0.
-	 * Note that then, this call will ONLY return after |length|-bytes are really received
-	 * which could "deadlock" the caller, when this does not happen.
-	 *
-	 * @param length   maximum length of bytes to be received |buffer| <= length
-	 * @param  buffer   the received information
-	 * @param iTimeout the timeout to wait until at least one byte will be available
-	 *
-	 * @return  number of received bytes, 0 on timeout without receival of any byte, -1 in case of total error
-	 */
-	virtual int  Receive( void* pBuffer, const int nLength, int iTimeout = 0 )=0;
+  /**
+   * Send shall write some information to the connection
+   *
+   * @param   buffer   the information which shall be sent
+   * @param   length   the length of the information to send
+   *
+   * @return  the number of bytes that were actually sent or -1 on failure
+   */
+  virtual int Send(const void* pBuffer, const int nLength) = 0;
 
-	/**
-	 * Send shall write some information to the connection
-	 *
-	 * @param   buffer   the information which shall be sent
-	 * @param   length   the length of the information to send
-	 *
-	 * @return  the number of bytes that were actually sent or -1 on failure
-	 */
-	virtual int Send( const void* pBuffer, const int nLength )=0;
+  /**
+   * Returns whether this connctions cares for byte-order of the sent-data or not.
+   * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
+   * and even more.
+   * @return true iff this connection cares for the byte-order of the sent or received data
+   * @see SetByteorderSwapFlag()
+   */
+  VistaSerializingToolset::ByteOrderSwapBehavior GetByteorderSwapFlag() const;
 
+  /**
+   * Sets whether this connection cares for byte-order or not.
+   * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
+   * and even more.
+   * @see GetByteorderSwapFlag()
+   * @param bDoesIt true iff byte-order is significant for this class, false else
+   */
+  void SetByteorderSwapFlag(VistaSerializingToolset::ByteOrderSwapBehavior bDoesIt);
 
-	/**
-	 * Returns whether this connctions cares for byte-order of the sent-data or not.
-	 * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
-	 * and even more.
-	 * @return true iff this connection cares for the byte-order of the sent or received data
-	 * @see SetByteorderSwapFlag()
-	 */
-	VistaSerializingToolset::ByteOrderSwapBehavior GetByteorderSwapFlag() const;
+  /**
+   * @todo change this: make full virtual and specialize
+   */
+  virtual bool HasPendingData() const {
+    return true;
+  }
+  virtual unsigned long WaitForIncomingData(int timeout = 0) {
+    return 0;
+  }
+  virtual unsigned long WaitForSendFinish(int timeout = 0) {
+    return 0;
+  }
+  virtual unsigned long PendingDataSize() const {
+    return 0;
+  }
+  virtual bool GetIsBlocking() const;
+  virtual bool GetIsBuffering() const {
+    return m_bIsBuffering;
+  }
+  virtual void SetIsBlocking(bool bBlocking) {
+    m_bIsBlocking = bBlocking;
+  }
+  virtual void SetIsBuffering(bool bBuffering) {
+    m_bIsBuffering = bBuffering;
+  }
 
-	/**
-	 * Sets whether this connection cares for byte-order or not.
-	 * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
-	 * and even more.
-	 * @see GetByteorderSwapFlag()
-	 * @param bDoesIt true iff byte-order is significant for this class, false else
-	 */
-	void SetByteorderSwapFlag( VistaSerializingToolset::ByteOrderSwapBehavior bDoesIt );
+  /**
+   * Gets/Sets the read timeout that is used by default with every call to
+   * ReadXYZ - per default, it is set to 0 ( = wait forever )
+   */
+  virtual int  GetReadTimeout() const;
+  virtual bool SetReadTimeout(int nReadTimeout);
 
-	/**
-	 * @todo change this: make full virtual and specialize
-	 */
-	virtual bool HasPendingData() const { return true; }
-	virtual unsigned long WaitForIncomingData(int timeout=0) { return 0; }
-	virtual unsigned long WaitForSendFinish(int timeout=0) { return 0; }
-	virtual unsigned long PendingDataSize() const { return 0; }
-	virtual bool GetIsBlocking() const;
-	virtual bool GetIsBuffering() const { return m_bIsBuffering; }
-	virtual void SetIsBlocking( bool bBlocking ) { m_bIsBlocking = bBlocking; }
-	virtual void SetIsBuffering( bool bBuffering ) { m_bIsBuffering = bBuffering; }
+  virtual bool Flush() {
+    return false;
+  }
 
-	/**
-	 * Gets/Sets the read timeout that is used by default with every call to
-	 * ReadXYZ - per default, it is set to 0 ( = wait forever )
-	 */
-	virtual int GetReadTimeout() const;
-	virtual bool SetReadTimeout( int nReadTimeout );
+  virtual bool GetIsFine() const;
 
-	virtual bool Flush() { return false; }
+  virtual HANDLE GetConnectionDescriptor() const;
+  virtual HANDLE GetConnectionWaitForDescriptor();
+  virtual bool   GetWaitForDescriptorEventSelectIsEnabled() const;
+  virtual bool   SetWaitForDescriptorEventSelectIsEnabled(const bool bSet);
 
-	virtual bool GetIsFine() const;
+  enum eConState { CON_NONE = -1, CON_IO = 0, CON_CLOSE };
+  virtual eConState DetermineConState() const;
 
+  // ############################################################
+  // IMPLEMENTATION : IVistaSerializer / IVistaDeSerializer
+  // ############################################################
 
-	virtual HANDLE GetConnectionDescriptor() const;
-	virtual HANDLE GetConnectionWaitForDescriptor();
-	virtual bool GetWaitForDescriptorEventSelectIsEnabled() const;
-	virtual bool SetWaitForDescriptorEventSelectIsEnabled( const bool bSet );
+  virtual int WriteShort16(VistaType::ushort16 us16Val);
+  virtual int WriteInt32(VistaType::sint32 si32Val);
+  virtual int WriteInt32(VistaType::uint32 si32Val);
+  virtual int WriteInt64(VistaType::sint64 si64Val);
+  virtual int WriteUInt64(VistaType::uint64 si64Val);
+  virtual int WriteFloat32(VistaType::float32 fVal);
+  virtual int WriteFloat64(VistaType::float64 f64Val);
+  virtual int WriteDouble(double dValue);
 
-	enum eConState
-	{
-		CON_NONE = -1,
-		CON_IO = 0,
-		CON_CLOSE
-	};
-	virtual eConState DetermineConState() const;
+  virtual int WriteRawBuffer(const void* pBuffer, const int iLen);
+  virtual int WriteBool(bool bVal);
 
-	// ############################################################
-	// IMPLEMENTATION : IVistaSerializer / IVistaDeSerializer
-	// ############################################################
+  virtual int WriteString(const std::string& sValue);
+  virtual int WriteDelimitedString(const std::string&, char cDelim = '\0');
+  virtual int WriteEncodedString(const std::string&);
 
-	virtual int WriteShort16(  VistaType::ushort16 us16Val );
-	virtual int WriteInt32( VistaType::sint32 si32Val );
-	virtual int WriteInt32( VistaType::uint32 si32Val );
-	virtual int WriteInt64( VistaType::sint64 si64Val );
-	virtual int WriteUInt64( VistaType::uint64 si64Val );
-	virtual int WriteFloat32( VistaType::float32 fVal );
-	virtual int WriteFloat64( VistaType::float64 f64Val );
-	virtual int WriteDouble( double dValue );
+  virtual int WriteSerializable(const IVistaSerializable&);
 
-	virtual int WriteRawBuffer( const void *pBuffer, const int iLen );
-	virtual int WriteBool( bool bVal );
+  virtual int ReadShort16(VistaType::ushort16& us16Val);
+  virtual int ReadInt32(VistaType::sint32& si32Val);
+  virtual int ReadInt32(VistaType::uint32& si32Val);
 
-	virtual int WriteString( const std::string& sValue );
-	virtual int WriteDelimitedString( const std::string&, char cDelim = '\0' );
-	virtual int WriteEncodedString( const std::string& );
+  virtual int ReadInt64(VistaType::sint64& si64Val);
+  virtual int ReadUInt64(VistaType::uint64& si64Val);
+  virtual int ReadFloat32(VistaType::float32& fVal);
+  virtual int ReadFloat64(VistaType::float64& f64Val);
+  virtual int ReadDouble(double& dDoubleVal);
 
-	virtual int WriteSerializable( const IVistaSerializable& );
+  virtual int ReadRawBuffer(void* pBuffer, int iLen);
+  virtual int ReadBool(bool& bVal);
 
+  virtual int ReadString(std::string& sTarget, const int iMaxLen);
+  virtual int ReadDelimitedString(std::string& sTarget, char cDelim = '\0');
+  virtual int ReadEncodedString(std::string& sTarget);
 
-	virtual int ReadShort16( VistaType::ushort16 &us16Val );
-	virtual int ReadInt32( VistaType::sint32 &si32Val );
-	virtual int ReadInt32( VistaType::uint32 &si32Val );
+  virtual int ReadSerializable(IVistaSerializable&);
 
-	virtual int ReadInt64( VistaType::sint64 &si64Val );
-	virtual int ReadUInt64( VistaType::uint64 &si64Val );
-	virtual int ReadFloat32( VistaType::float32 &fVal );
-	virtual int ReadFloat64( VistaType::float64 &f64Val );
-	virtual int ReadDouble( double &dDoubleVal );
+ protected:
+  /**
+   * Provides access to the open/close flag for specialized instances.
+   * @param bOpen the new state of this connection (open=true, closed=false)
+   */
+  void SetIsOpen(bool bOpen);
 
-	virtual int ReadRawBuffer( void *pBuffer, int iLen );
-	virtual int ReadBool( bool &bVal );
+ private:
+  /**
+   * m_bIsOpen indicates if a connection is opened.
+   */
+  bool m_bIsOpen;
 
-	virtual int ReadString( std::string& sTarget, const int iMaxLen );
-	virtual int ReadDelimitedString( std::string& sTarget, char cDelim = '\0' );
-	virtual int ReadEncodedString( std::string& sTarget );
+  /**
+   * indicates whether this connection cares for byte-order (little/big-endianess)
+   */
+  VistaSerializingToolset::ByteOrderSwapBehavior m_bDoesSwapByteOrder;
 
-	virtual int ReadSerializable( IVistaSerializable & );
+  /**
+   * indicates whether this connection is in blocking mode
+   */
+  bool m_bIsBlocking;
 
+  /**
+   * indicates whether this connections uses a buffering strategy or not.
+   */
+  bool m_bIsBuffering;
 
-protected:
-
-	/**
-	 * Provides access to the open/close flag for specialized instances.
-	 * @param bOpen the new state of this connection (open=true, closed=false)
-	 */
-	void SetIsOpen(bool bOpen);
-private:
-	/**
-	 * m_bIsOpen indicates if a connection is opened.
-	 */
-	bool m_bIsOpen;
-
-	/**
-	 * indicates whether this connection cares for byte-order (little/big-endianess)
-	 */
-	VistaSerializingToolset::ByteOrderSwapBehavior  m_bDoesSwapByteOrder;
-
-	/**
-	 * indicates whether this connection is in blocking mode
-	 */
-	bool m_bIsBlocking;
-
-	/**
-	 * indicates whether this connections uses a buffering strategy or not.
-	 */
-	bool m_bIsBuffering;
-
-	int m_nReadTimeout;
+  int m_nReadTimeout;
 };
 
 /*============================================================================*/

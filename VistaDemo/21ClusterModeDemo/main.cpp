@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /**
  * Description:
  * This is the ClusterModeDemo, which explains how to set up the VistaClusterMode,
  * how it works, and what to take care of to keep nodes synchronized.
- * 
+ *
  * How to use this demo:
  * - read the general info in this file
  * - read the start_clustered.bat|sh file to see how to start masters and slaves
@@ -65,7 +64,7 @@
  *    - For random numbers, use the VistaRandomNumberGenerator::GetStandardRNG(), which
  *      generates the same values for all nodes
  *    - When timing is used to make application-state decisions, only use cluster-sync
- *      times, e.g. from system events or by explicitly syncing timestamps (example in 
+ *      times, e.g. from system events or by explicitly syncing timestamps (example in
  *      ClusterModeDemo.cpp)
  *    - Data from external sources (e.g. driver data, HPC computation results) should only
  *      be received on the master node, and then distributed to the slaves (examples in the
@@ -74,7 +73,6 @@
  *      main application thread differently. Thus, either distribute the results from
  *      the master to the slaves, or synchronize the read-back time.
  */
-
 
 #include "ClusterModeDemo.h"
 
@@ -94,24 +92,16 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int	main( int argc, char *argv[] )
-{
-	try
-	{
-		ClusterModeDemo oDemoAppl( argc, argv );
-		// start application as an endless loop
-		oDemoAppl.Run();
-	}
-	catch( VistaExceptionBase &e )
-	{
-		e.PrintException();
-	}
-	catch( std::exception &e )
-	{
-		std::cerr << "Exception:" << e.what() << std::endl;
-	}
+int main(int argc, char* argv[]) {
+  try {
+    ClusterModeDemo oDemoAppl(argc, argv);
+    // start application as an endless loop
+    oDemoAppl.Run();
+  } catch (VistaExceptionBase& e) { e.PrintException(); } catch (std::exception& e) {
+    std::cerr << "Exception:" << e.what() << std::endl;
+  }
 
-	return 0;
+  return 0;
 }
 
 /*============================================================================*/

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROXIMITYSIGN_H
 #define _VISTAPROXIMITYSIGN_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -50,41 +48,35 @@ class VistaGroupNode;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaProximitySign : public IVistaProximityWarningBase
-{
-public:
-	VistaProximitySign( VistaEventManager* pManager,
-								const float nBeginWarningDistance,
-								const float nMaxWarningDistance,
-								const bool bDisableOcclusion,
-								VistaGraphicsManager* pGraphicsManager );
-	virtual ~VistaProximitySign();
+class VISTAKERNELAPI VistaProximitySign : public IVistaProximityWarningBase {
+ public:
+  VistaProximitySign(VistaEventManager* pManager, const float nBeginWarningDistance,
+      const float nMaxWarningDistance, const bool bDisableOcclusion,
+      VistaGraphicsManager* pGraphicsManager);
+  virtual ~VistaProximitySign();
 
-	void SetScale( const float nXScale, const float nYScale );
-	bool SetTexture( const std::string sTexture ) const;
-	bool SetDefaultTexture() const;
-	void SetParentNode( VistaGroupNode* pNode );
+  void SetScale(const float nXScale, const float nYScale);
+  bool SetTexture(const std::string sTexture) const;
+  bool SetDefaultTexture() const;
+  void SetParentNode(VistaGroupNode* pNode);
 
-	virtual bool DoUpdate( const float nMinDistance,
-							const float nWarningLevel,
-							const VistaVector3D& v3PointOnBounds,
-							const VistaVector3D& v3UserPosition,
-							const VistaQuaternion& qUserOrientation );
+  virtual bool DoUpdate(const float nMinDistance, const float nWarningLevel,
+      const VistaVector3D& v3PointOnBounds, const VistaVector3D& v3UserPosition,
+      const VistaQuaternion& qUserOrientation);
 
-	virtual bool GetIsEnabled() const;
-	virtual bool SetIsEnabled( const bool bSet );
+  virtual bool GetIsEnabled() const;
+  virtual bool SetIsEnabled(const bool bSet);
 
-	virtual bool DoTimeUpdate( VistaType::systemtime nTime, const float nOpacityScale, const bool bFlashState );
+  virtual bool DoTimeUpdate(
+      VistaType::systemtime nTime, const float nOpacityScale, const bool bFlashState);
 
-
-private:
-	bool m_bEnabled;
-	bool m_bCurrentFlashState;
-	float m_nWarningLevel;
-	VistaTransformNode* m_pPositionNode;
-	VistaTransformNode* m_pScaleNode;
-	VistaGeometry* m_pGeometry;
+ private:
+  bool                m_bEnabled;
+  bool                m_bCurrentFlashState;
+  float               m_nWarningLevel;
+  VistaTransformNode* m_pPositionNode;
+  VistaTransformNode* m_pScaleNode;
+  VistaGeometry*      m_pGeometry;
 };
 
 #endif //_VISTAPROXIMITYSIGN_H
-

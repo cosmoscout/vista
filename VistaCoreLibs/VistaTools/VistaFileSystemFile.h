@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFILESYSTEMFILE_H
 #define _VISTAFILESYSTEMFILE_H
 
@@ -29,11 +28,9 @@
 /* DEFINITIONS                                                                */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -57,25 +54,22 @@
  *
  */
 
-class VISTATOOLSAPI VistaFileSystemFile : public VistaFileSystemNode
-{
+class VISTATOOLSAPI VistaFileSystemFile : public VistaFileSystemNode {
 
-public:
+ public:
+  // VistaFileSystemFile();
+  explicit VistaFileSystemFile(const std::string& sFileName);
+  virtual ~VistaFileSystemFile();
 
-	//VistaFileSystemFile();
-	explicit VistaFileSystemFile( const std::string& sFileName) ;
-	virtual ~VistaFileSystemFile();
+  /* extended functionality */
+  virtual bool Create();
+  virtual bool Delete();
+  virtual bool Exists() const;
 
-
-	/* extended functionality */
-	virtual bool Create();
-	virtual bool Delete();
-	virtual bool Exists() const;
-
-	/* Gets size of file
-	*
-	*/
-	virtual long GetSize();
+  /* Gets size of file
+   *
+   */
+  virtual long GetSize();
 };
 
 /*============================================================================*/
@@ -83,5 +77,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTAFILESYSTEMFILE_H
-
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPIPCLUSTERSYNC_H
 #define _VISTATCPIPCLUSTERSYNC_H
 
@@ -30,13 +29,13 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBytebufferDataSyncBase.h>
-#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
+#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
+#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -46,74 +45,69 @@ class VistaConnectionIP;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaTCPIPClusterLeaderDataSync : public VistaClusterBytebufferLeaderDataSyncBase
-{
-public:
-	explicit VistaTCPIPClusterLeaderDataSync( const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaTCPIPClusterLeaderDataSync
+    : public VistaClusterBytebufferLeaderDataSyncBase {
+ public:
+  explicit VistaTCPIPClusterLeaderDataSync(const bool bVerbose = true);
 
-	virtual ~VistaTCPIPClusterLeaderDataSync();
-	
-	int AddFollower( const std::string& sName,
-						VistaConnectionIP* pConnection,
-						const bool bManageDeletion = false );
+  virtual ~VistaTCPIPClusterLeaderDataSync();
 
+  int AddFollower(
+      const std::string& sName, VistaConnectionIP* pConnection, const bool bManageDeletion = false);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual int GetNumberOfFollowers() const;
-	virtual int GetNumberOfActiveFollowers() const;
-	virtual int GetNumberOfDeadFollowers() const;
-	virtual std::string GetFollowerNameForId( const int nID ) const;
-	virtual int GetFollowerIdForName( const std::string& sName ) const;
-	virtual bool GetFollowerIsAlive( const int nID ) const;
-	virtual int GetLastChangedFollower();
-	virtual bool DeactivateFollower( const std::string& sName );
-	virtual bool DeactivateFollower( const int nID );
+  virtual int         GetNumberOfFollowers() const;
+  virtual int         GetNumberOfActiveFollowers() const;
+  virtual int         GetNumberOfDeadFollowers() const;
+  virtual std::string GetFollowerNameForId(const int nID) const;
+  virtual int         GetFollowerIdForName(const std::string& sName) const;
+  virtual bool        GetFollowerIsAlive(const int nID) const;
+  virtual int         GetLastChangedFollower();
+  virtual bool        DeactivateFollower(const std::string& sName);
+  virtual bool        DeactivateFollower(const int nID);
 
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+ private:
+  virtual bool DoSendMessage();
 
-private:
-	virtual bool DoSendMessage();
+  struct Follower;
+  bool RemoveFollower(Follower* pFollower);
 
-	struct Follower;
-	bool RemoveFollower( Follower* pFollower );
+ private:
+  std::vector<Follower*> m_vecFollowers;
+  std::vector<Follower*> m_vecAliveFollowers;
+  int                    m_nLastChangedFollower;
 
-private:
-	std::vector<Follower*>	m_vecFollowers;
-	std::vector<Follower*>	m_vecAliveFollowers;
-	int						m_nLastChangedFollower;
-
-	int						m_nBlockByteCount;
+  int m_nBlockByteCount;
 };
 
-class VISTAINTERPROCCOMMAPI VistaTCPIPClusterFollowerDataSync : public VistaClusterBytebufferFollowerDataSyncBase
-{
-public:
-	VistaTCPIPClusterFollowerDataSync( VistaConnectionIP* pLeaderConnection,
-									const bool bSwap,
-									const bool bManageDeletion = false,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaTCPIPClusterFollowerDataSync
+    : public VistaClusterBytebufferFollowerDataSyncBase {
+ public:
+  VistaTCPIPClusterFollowerDataSync(VistaConnectionIP* pLeaderConnection, const bool bSwap,
+      const bool bManageDeletion = false, const bool bVerbose = true);
 
-	virtual ~VistaTCPIPClusterFollowerDataSync();
+  virtual ~VistaTCPIPClusterFollowerDataSync();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-private:
-	bool DoReceiveMessage();
-	void Cleanup();
+ private:
+  bool DoReceiveMessage();
+  void Cleanup();
 
-private:
-	VistaConnectionIP*	m_pLeaderConn;
-	bool				m_bManageDeletion;
+ private:
+  VistaConnectionIP* m_pLeaderConn;
+  bool               m_bManageDeletion;
 };
 
 /*============================================================================*/

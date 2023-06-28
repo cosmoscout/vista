@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_POSIX)
 
 #ifndef _VISTAPTHREADSPRIORITYIMP_H
@@ -43,14 +42,11 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
-class VistaPthreadsPriorityImp : public IVistaPriorityImp
-{
-public:
-	VistaPthreadsPriorityImp();
-	virtual ~VistaPthreadsPriorityImp();
+class VistaPthreadsPriorityImp : public IVistaPriorityImp {
+ public:
+  VistaPthreadsPriorityImp();
+  virtual ~VistaPthreadsPriorityImp();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -59,5 +55,3 @@ public:
 #endif //_VISTAWIN32PRIORITY_H
 
 #endif // VISTA_THREADING_POSIX
-
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _BOUNDBOXGEOMETRY
 #define _BOUNDBOXGEOMETRY
 
@@ -32,19 +31,17 @@ class VistaGroupNode;
 class VistaTransformNode;
 class VistaSceneGraph;
 
-class BoundingboxGeometry
-{
-public:
-	BoundingboxGeometry( VistaSceneGraph *, VistaBoundingBox & );
-	virtual ~BoundingboxGeometry();
+class BoundingboxGeometry {
+ public:
+  BoundingboxGeometry(VistaSceneGraph*, VistaBoundingBox&);
+  virtual ~BoundingboxGeometry();
 
-	VistaGroupNode *getVistaNode();
+  VistaGroupNode* getVistaNode();
 
-private:
+ private:
+  VistaTransformNode* createLine(VistaSceneGraph*, const VistaVector3D&, const VistaVector3D&);
 
-	VistaTransformNode* createLine( VistaSceneGraph *, const VistaVector3D &, const VistaVector3D & );
-
-	VistaGroupNode * pNode;
+  VistaGroupNode* pNode;
 };
 
 #endif /* _BOUNDBOXGEOMETRY */

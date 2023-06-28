@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROPERTY_H
 #define _VISTAPROPERTY_H
 
@@ -70,178 +69,168 @@ class VistaPropertyList;
  * the IVistaPropertyAwareable() interface, if you have a property awareable at hand.
  * @see PropertyList()
  */
-class VISTAASPECTSAPI VistaProperty : public IVistaNameable
-{
-public:
+class VISTAASPECTSAPI VistaProperty : public IVistaNameable {
+ public:
+  enum ePropType {
+    PROPT_NIL = 0,
+    PROPT_STRING,      /**< default */
+    PROPT_INT,         /**< captures int as a std::string */
+    PROPT_BOOL,        /**< captures true/false/on/off */
+    PROPT_DOUBLE,      /**< captures a real as a std::string */
+    PROPT_LIST,        /**< is a list of things, possibly all of the same type */
+    PROPT_ID,          /**< is a std::string'ed adress pointer */
+    PROPT_PROPERTYLIST /**< is a tree in itself */
+  };
 
-	enum ePropType
-	{
-		PROPT_NIL = 0,
-		PROPT_STRING,   /**< default */
-		PROPT_INT,      /**< captures int as a std::string */
-		PROPT_BOOL,     /**< captures true/false/on/off */
-		PROPT_DOUBLE,   /**< captures a real as a std::string */
-		PROPT_LIST,     /**< is a list of things, possibly all of the same type */
-		PROPT_ID,       /**< is a std::string'ed adress pointer */
-		PROPT_PROPERTYLIST  /**< is a tree in itself */
-	};
+  /**
+   * Creates an unamed, no-value property
+   * @see SetNameForNameable()
+   * @see SetValue()
+   */
+  VistaProperty();
 
-	/**
-	 * Creates an unamed, no-value property
-	 * @see SetNameForNameable()
-	 * @see SetValue()
-	 */
-	VistaProperty();
+  /**
+   * Creates a no-value property with name sName
+   * @see SetNameForNameable()
+   * @see SetValue()
+   * @param sName the name for this property
+   */
+  VistaProperty(const std::string& sName);
 
-	/**
-	 * Creates a no-value property with name sName
-	 * @see SetNameForNameable()
-	 * @see SetValue()
-	 * @param sName the name for this property
-	 */
-	VistaProperty( const std::string& sName );
+  VistaProperty(const std::string& sName, const std::string& sValue, ePropType eType = PROPT_STRING,
+      ePropType eListType = PROPT_NIL);
 
-	VistaProperty( const std::string& sName,
-				   const std::string& sValue,
-				   ePropType eType = PROPT_STRING,
-				   ePropType eListType = PROPT_NIL );
+  /**
+   * Copies name and value. In case oOther is a PropertyList
+   * property, the sublist is <emph>copied</emph>. This can
+   * be costly.
+   */
+  VistaProperty(const VistaProperty& oOther);
 
-	/**
-	 * Copies name and value. In case oOther is a PropertyList
-	 * property, the sublist is <emph>copied</emph>. This can
-	 * be costly.
-	 */
-	VistaProperty(const VistaProperty &oOther);
+  /**
+   * Destructor. Deletes any subproperty PropertyList.
+   * As we are working with copies here, this should
+   * not be a problem.
+   */
+  virtual ~VistaProperty();
 
-	/**
-	 * Destructor. Deletes any subproperty PropertyList.
-	 * As we are working with copies here, this should
-	 * not be a problem.
-	 */
-	virtual ~VistaProperty();
+  /**
+   * @return the value of this property in human-readable format.
+   */
+  std::string        GetValue() const;
+  const std::string& GetValueConstRef() const;
 
+  /**
+   * Returns the value of this property in <emph>copy</emph>.
+   * Use like PropertyList p(oProperty.GetPropertyListValue()); during
+   * construction.
+   * @return a copy of the internal PropertyList value.
+   */
+  VistaPropertyList GetPropertyListValue() const;
 
-	/**
-	 * @return the value of this property in human-readable format.
-	 */
-	std::string GetValue() const;
-	const std::string& GetValueConstRef() const;
+  /**
+   * Returns a <emph>reference</emph> to the internal PropertyList value.
+   * This can be used to change it via PropertyList calls. If no PropertyList
+   * is currently present, one will be created on the fly.
+   * Note, too, that we provide this a const and non-const.
+   * @return a reference to the internal PropertyList to be changed
+   * @see GetPropertyListConstRef()
+   */
+  VistaPropertyList& GetPropertyListRef();
 
-	/**
-	 * Returns the value of this property in <emph>copy</emph>.
-	 * Use like PropertyList p(oProperty.GetPropertyListValue()); during
-	 * construction.
-	 * @return a copy of the internal PropertyList value.
-	 */
-	VistaPropertyList  GetPropertyListValue() const;
+  /**
+   *	Note that this
+   * method can throw an exception, in case the property is not
+   * of type PROPT_PROPERTYLIST or the internal PropertyList pointer is not
+   * created for whatever reason. Although we could create on on the
+   * fly, the exception reveals an error in the access logic a bit better.
+   * @return a const reference to the internal PropertyList to be changed
+   * @see GetPropertyListRef()
+   */
+  const VistaPropertyList& GetPropertyListConstRef() const;
 
-	/**
-	 * Returns a <emph>reference</emph> to the internal PropertyList value.
-	 * This can be used to change it via PropertyList calls. If no PropertyList
-	 * is currently present, one will be created on the fly.
-	 * Note, too, that we provide this a const and non-const.
-	 * @return a reference to the internal PropertyList to be changed
-	 * @see GetPropertyListConstRef()
-	 */
-	VistaPropertyList &GetPropertyListRef();
+  /**
+   * Sets the value as a std::string type. "1.23" will be of type PROPT_STRING.
+   * There is no intention to guess the type of a value, the user has to
+   * switch to the correct type using SetPropertyType(). The only effect
+   * on the type is that a PROPT_NIL property switches to PROPT_STRING.
+   * @see SetPropertyType()
+   */
+  void SetValue(const std::string& sValue);
 
-	/**
-	 *	Note that this
-	 * method can throw an exception, in case the property is not
-	 * of type PROPT_PROPERTYLIST or the internal PropertyList pointer is not
-	 * created for whatever reason. Although we could create on on the
-	 * fly, the exception reveals an error in the access logic a bit better.
-	 * @return a const reference to the internal PropertyList to be changed
-	 * @see GetPropertyListRef()
-	 */
-	const VistaPropertyList &GetPropertyListConstRef() const;
+  /**
+   * Sets a PropertyList value. The oOther will be <emph>copied</emph> to the
+   * internal storage of this property. The type of this property will be
+   * set to PROPT_PROPERTYLIST. GetValue() still returns the empty std::string.
+   *
+   * @param oOther the PropertyList to be copied and serve as a value.
+   */
+  void SetPropertyListValue(const VistaPropertyList& oOther);
 
+  /**
+   * Returns human-readable strings for the ePropType enumeration.
+   * This can be useful for debugging purposes.
+   * @see ePropType()
+   * @see GetPropertyType()
+   * @return a human readable std::string for the ePropType enumeration
+   */
+  static std::string GetPropTypeName(VistaProperty::ePropType eTypeId);
 
-	/**
-	 * Sets the value as a std::string type. "1.23" will be of type PROPT_STRING.
-	 * There is no intention to guess the type of a value, the user has to
-	 * switch to the correct type using SetPropertyType(). The only effect
-	 * on the type is that a PROPT_NIL property switches to PROPT_STRING.
-	 * @see SetPropertyType()
-	 */
-	void   SetValue(const std::string &sValue);
+  /**
+   * Returns an enumeration value for a given int. This is needed
+   * during the serialization process and does something like a
+   * safe-case.
+   * @return a proper ePropType for iPropType or PROPT_NIL if iPropType is out of range.
+   */
+  static VistaProperty::ePropType GetPropTypeEnum(int iPropType);
 
-	/**
-	 * Sets a PropertyList value. The oOther will be <emph>copied</emph> to the
-	 * internal storage of this property. The type of this property will be
-	 * set to PROPT_PROPERTYLIST. GetValue() still returns the empty std::string.
-	 *
-	 * @param oOther the PropertyList to be copied and serve as a value.
-	 */
-	void   SetPropertyListValue(const VistaPropertyList &oOther);
+  /**
+   * @return the type of this property.
+   * @see ePropType()
+   */
+  ePropType GetPropertyType() const;
 
+  ePropType GetPropertyListSubType() const;
 
-	/**
-	 * Returns human-readable strings for the ePropType enumeration.
-	 * This can be useful for debugging purposes.
-	 * @see ePropType()
-	 * @see GetPropertyType()
-	 * @return a human readable std::string for the ePropType enumeration
-	 */
-	static std::string GetPropTypeName(VistaProperty::ePropType eTypeId);
+  /**
+   * Sets the property type for this property. In case one switches
+   * from or to PROPT_PROPERTYLIST, the internal PropertyList will be deleted
+   * or created.
+   * @param eType the new type.
+   */
+  void SetPropertyType(ePropType eType);
 
-	/**
-	 * Returns an enumeration value for a given int. This is needed
-	 * during the serialization process and does something like a
-	 * safe-case.
-	 * @return a proper ePropType for iPropType or PROPT_NIL if iPropType is out of range.
-	 */
-	static VistaProperty::ePropType GetPropTypeEnum( int iPropType );
+  void SetPropertyListSubType(ePropType eType);
 
+  /**
+   * Checks, whether this property has a type or not.
+   * Fast way of writing if(GetPropertyType() == VistaProperty::PROPT_NIL).
+   * @return true iff GetPropertyType() == VistaProperty::PROPT_NIL
+   */
+  bool GetIsNilProperty() const;
 
-	/**
-	 * @return the type of this property.
-	 * @see ePropType()
-	 */
-	ePropType  GetPropertyType() const;
+  // ######################################################
+  // OPERATORS
+  // ######################################################
+  bool operator==(const std::string&) const;
+  bool operator==(const VistaPropertyList&) const;
+  bool operator==(const VistaProperty&) const;
 
-	ePropType  GetPropertyListSubType() const;
+  VistaProperty& operator=(const VistaProperty&);
 
-	/**
-	 * Sets the property type for this property. In case one switches
-	 * from or to PROPT_PROPERTYLIST, the internal PropertyList will be deleted
-	 * or created.
-	 * @param eType the new type.
-	 */
-	void SetPropertyType(ePropType eType);
+  // ########################################################################
+  // IVistaNameable-Interface
+  // ########################################################################
+  virtual std::string GetNameForNameable() const;
+  virtual void        SetNameForNameable(const std::string& sNewName);
 
-	void SetPropertyListSubType(ePropType eType);
-
-	/**
-	 * Checks, whether this property has a type or not.
-	 * Fast way of writing if(GetPropertyType() == VistaProperty::PROPT_NIL).
-	 * @return true iff GetPropertyType() == VistaProperty::PROPT_NIL
-	 */
-	bool GetIsNilProperty() const;
-
-	// ######################################################
-	// OPERATORS
-	// ######################################################
-	bool operator==(const std::string &) const;
-	bool operator==(const VistaPropertyList &) const;
-	bool operator==(const VistaProperty &) const;
-
-	VistaProperty &operator=(const VistaProperty &);
-
-
-	// ########################################################################
-	// IVistaNameable-Interface
-	// ########################################################################
-	virtual std::string GetNameForNameable() const;
-	virtual void   SetNameForNameable(const std::string &sNewName);
-
-protected:
-private:
-	std::string			m_sName;
-	std::string			m_sValue;
-	ePropType			m_ePropType;
-	ePropType			m_eListSubType;
-	VistaPropertyList*	m_pSubProps;
+ protected:
+ private:
+  std::string        m_sName;
+  std::string        m_sValue;
+  ePropType          m_ePropType;
+  ePropType          m_eListSubType;
+  VistaPropertyList* m_pSubProps;
 };
 
 /*============================================================================*/
@@ -249,4 +238,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAPROPERTYAWARE_H
-

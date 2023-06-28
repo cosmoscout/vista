@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _GREEDYOBSERVER_H
 #define _GREEDYOBSERVER_H
 
@@ -29,9 +28,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaKernel/EventManager/VistaEventObserver.h>
-#include <iostream>
 #include <fstream>
-
+#include <iostream>
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -39,34 +37,32 @@
 /**
  * GreedyObserver - an example for an application-defined event
  */
-class GreedyObserver : public VistaEventObserver
-{
-public:
-    /**
-     * Creates a GreedyObserver object
-     * 
-     * @AUTHOR  Marc Schirski  
-     * @DATE    08.11.2002
-     */    
-	GreedyObserver();
+class GreedyObserver : public VistaEventObserver {
+ public:
+  /**
+   * Creates a GreedyObserver object
+   *
+   * @AUTHOR  Marc Schirski
+   * @DATE    08.11.2002
+   */
+  GreedyObserver();
 
-	virtual ~GreedyObserver();
+  virtual ~GreedyObserver();
 
-    /**
-     * Notify the observer of the given event.
-     * 
-     * @AUTHOR  Marc Schirski  
-     * @DATE    08.11.2002
-     *
-     * @INPUT   VistaEvent * pEvent    (MUST NOT BE NULL!)
-     * @RETURN  --
-     */    
-	virtual void Notify(const VistaEvent *pEvent);
+  /**
+   * Notify the observer of the given event.
+   *
+   * @AUTHOR  Marc Schirski
+   * @DATE    08.11.2002
+   *
+   * @INPUT   VistaEvent * pEvent    (MUST NOT BE NULL!)
+   * @RETURN  --
+   */
+  virtual void Notify(const VistaEvent* pEvent);
 
-protected:
-	//@TODO Make this reference?
-	std::ofstream *m_pOuputFileStream;
+ protected:
+  //@TODO Make this reference?
+  std::ofstream* m_pOuputFileStream;
 };
-
 
 #endif // _GREEDYOBSERVER_H

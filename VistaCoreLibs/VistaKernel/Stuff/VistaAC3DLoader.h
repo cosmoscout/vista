@@ -21,17 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAAC3DLOADER_H
 #define _VISTAAC3DLOADER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
+#include <VistaKernel/VistaKernelConfig.h>
 #include <string>
 #include <vector>
-#include <VistaKernel/VistaKernelConfig.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -48,17 +46,16 @@ class VistaSceneGraph;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaAC3DLoader
-{
-public:
-	VistaAC3DLoader();
-	virtual ~VistaAC3DLoader();
+class VISTAKERNELAPI VistaAC3DLoader {
+ public:
+  VistaAC3DLoader();
+  virtual ~VistaAC3DLoader();
 
-	IVistaNode *LoadNode(VistaSceneGraph *, VistaGroupNode *pParent,
-						 const std::string &sFileName,
-						 const std::string &sTexturePathPrefix = "");
-protected:
-private:
+  IVistaNode* LoadNode(VistaSceneGraph*, VistaGroupNode* pParent, const std::string& sFileName,
+      const std::string& sTexturePathPrefix = "");
+
+ protected:
+ private:
 };
 
 /*============================================================================*/
@@ -66,5 +63,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAAC3DLOADER_H
-
-

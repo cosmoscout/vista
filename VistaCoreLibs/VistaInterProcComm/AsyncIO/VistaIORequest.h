@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIOREQUEST_H
 #define _VISTAIOREQUEST_H
 
@@ -38,8 +37,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaInterProcComm/Concurrency/VistaThreadPool.h>
 #include <VistaInterProcComm/AsyncIO/VistaIOMultiplexer.h>
+#include <VistaInterProcComm/Concurrency/VistaThreadPool.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -47,69 +46,53 @@
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
-//class VistaConnection;
+// class VistaConnection;
 class VistaIOScheduler;
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IVistaIORequest : public IVistaThreadPoolWorkInstance
-{
-public:
-	// request direction
-	enum eRequestDir
-	{
-		RD_NONE=0,
-		RD_IN,
-		RD_OUT,
-		RD_ERR,
-		RD_INOUT
-	};
+class VISTAINTERPROCCOMMAPI IVistaIORequest : public IVistaThreadPoolWorkInstance {
+ public:
+  // request direction
+  enum eRequestDir { RD_NONE = 0, RD_IN, RD_OUT, RD_ERR, RD_INOUT };
 
-	// request state
-   enum eRequestState
-	{
-		REQ_NONE=0,
-		REQ_PENDING,
-		REQ_FINISHED,
-		REQ_PROCESSING,
-		REQ_ABORTED
-	};
+  // request state
+  enum eRequestState { REQ_NONE = 0, REQ_PENDING, REQ_FINISHED, REQ_PROCESSING, REQ_ABORTED };
 
+  virtual ~IVistaIORequest();
 
-	virtual ~IVistaIORequest();
+  //###################################################
+  // STATS
+  //###################################################
+  eRequestDir   GetRequestDir() const;
+  eRequestState GetRequestState() const;
 
-	//###################################################
-	// STATS
-	//###################################################
-	eRequestDir GetRequestDir() const;
-	eRequestState GetRequestState() const;
+  //   virtual HANDLE GetMultiplexHandle() = 0;
+  virtual bool RegisterAtMultiplexer(
+      VistaIOMultiplexer* multiplexer, int iTicket, VistaIOMultiplexer::eIODir eDir) = 0;
 
- //   virtual HANDLE GetMultiplexHandle() = 0;
-	virtual bool RegisterAtMultiplexer (VistaIOMultiplexer* multiplexer, int iTicket, VistaIOMultiplexer::eIODir eDir) = 0;
+ protected:
+  IVistaIORequest();
+  /**
+   * signals done-condition
+   */
+  virtual void PostWork();
+  virtual void PreWork();
 
-protected:
-	IVistaIORequest();
-	/**
-	* signals done-condition
-	 */
-	virtual void PostWork();
-	virtual void PreWork();
+  /**
+   * Reads things off the connection
+   */
+  virtual void DefinedThreadWork() = 0;
 
-	/**
-	 * Reads things off the connection
-	 */
-	virtual void DefinedThreadWork() = 0;
+  void SetRequestDir(eRequestDir eDir);
+  void SetRequestState(eRequestState eState);
 
-	void SetRequestDir(eRequestDir eDir);
-	void SetRequestState(eRequestState eState);
-
-private:
-
-	 eRequestState m_eState;
-	 eRequestDir   m_eReqDir;
-//     VistaIOScheduler*   m_pCallingScheduler;
+ private:
+  eRequestState m_eState;
+  eRequestDir   m_eReqDir;
+  //     VistaIOScheduler*   m_pCallingScheduler;
 };
 
 /*============================================================================*/

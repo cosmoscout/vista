@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSixenseDriver.h"
 
 #if defined(WIN32) && !defined(VISTASIXENSEDRIVERPLUGIN_STATIC)
@@ -34,57 +33,45 @@
 #define VISTASIXENSEPLUGINAPI
 #endif
 
-namespace
-{
-	VistaSixenseCreationMethod *SpFactory = NULL;
+namespace {
+VistaSixenseCreationMethod* SpFactory = NULL;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-extern "C" VISTASIXENSEPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaSixenseDriver(crm);
+extern "C" VISTASIXENSEPLUGINAPI IVistaDeviceDriver* CreateDevice(IVistaDriverCreationMethod* crm) {
+  return new VistaSixenseDriver(crm);
 }
 
-extern "C" VISTASIXENSEPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaSixenseCreationMethod(fac);
+extern "C" VISTASIXENSEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaSixenseCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTASIXENSEPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTASIXENSEPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTASIXENSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTASIXENSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-
-extern "C" VISTASIXENSEPLUGINAPI const char *GetDeviceClassName()
-{
-	return "SIXENSE";
+extern "C" VISTASIXENSEPLUGINAPI const char* GetDeviceClassName() {
+  return "SIXENSE";
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

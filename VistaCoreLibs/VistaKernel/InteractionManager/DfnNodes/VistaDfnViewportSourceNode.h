@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNVIEWPORTSOURCENODE_H
 #define _VISTADFNVIEWPORTSOURCENODE_H
 
@@ -31,11 +30,10 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
-
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -49,45 +47,39 @@ class VistaEventManager;
 class VistaViewport;
 class VistaDisplayManager;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
  * Retrieves width and height of the associated viewport.
- * 
+ *
  * @ingroup VdfnNodes
  *
- * @outport{vp_w, int, viewport width} 
- * @outport{vp_h, int, viewport height} 
+ * @outport{vp_w, int, viewport width}
+ * @outport{vp_h, int, viewport height}
  */
-class VISTAKERNELAPI VistaDfnViewportSourceNode : public IVdfnNode
-{
-public:
-	VistaDfnViewportSourceNode(VistaViewport *pWindow);
+class VISTAKERNELAPI VistaDfnViewportSourceNode : public IVdfnNode {
+ public:
+  VistaDfnViewportSourceNode(VistaViewport* pWindow);
 
-	~VistaDfnViewportSourceNode();
+  ~VistaDfnViewportSourceNode();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-protected:
-	virtual bool   DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-	virtual unsigned int    CalcUpdateNeededScore() const;
+  virtual unsigned int CalcUpdateNeededScore() const;
 
-private:
-	TVdfnPort<int> *m_pW,
-				   *m_pH;
+ private:
+  TVdfnPort<int>*m_pW, *m_pH;
 
+  class ViewportObserver;
+  VistaViewport*    m_pViewport;
+  ViewportObserver* m_pObs;
 
-	class ViewportObserver;
-	VistaViewport *m_pViewport;
-	ViewportObserver *m_pObs;
-
-
-	mutable unsigned int m_nUpdateCount;
-	mutable bool m_bNeedsUpdate;
-
+  mutable unsigned int m_nUpdateCount;
+  mutable bool         m_bNeedsUpdate;
 };
 
 /*============================================================================*/
@@ -95,4 +87,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNVIEWPORTSOURCENODE_H
-

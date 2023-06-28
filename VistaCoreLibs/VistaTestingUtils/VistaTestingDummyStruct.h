@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATESTINGDUMMYSTRUCT_H
 #define _VISTATESTINGDUMMYSTRUCT_H
 
@@ -29,111 +28,89 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaTestingUtils/VistaTestingRandom.h>
 #include <VistaTestingUtils/VistaTestingCompare.h>
+#include <VistaTestingUtils/VistaTestingRandom.h>
 
 /*============================================================================*/
 /* HELPERS                                                                    */
 /*============================================================================*/
 
-struct DummyStruct
-{
-	DummyStruct() : m_fData1( 42.0f ), m_bData2( false ) {};
-	
-	bool operator() ( const DummyStruct& oOther ) const
-	{
-		return ( m_fData1 == oOther.m_fData1
-				&& m_bData2 == oOther.m_bData2 );
-	}
+struct DummyStruct {
+  DummyStruct()
+      : m_fData1(42.0f)
+      , m_bData2(false){};
 
-	static std::string ConvertToString( const DummyStruct& oObject )
-	{
-		return ( VistaConversion::ToString( oObject.m_fData1 )
-			+ " | "
-			+ VistaConversion::ToString( oObject.m_bData2 ) );
-	}
-	static DummyStruct ConvertFromString( const std::string& sString )
-	{
-		DummyStruct oNew;
-		// can throw exceptions!
-		std::vector<std::string> vecEntries;
-		if( VistaConversion::FromString( sString, vecEntries, '|' ) == false
-			|| vecEntries.size() != 2)
-		{
-			VISTA_THROW( "String-To_DummyObject conversion failed", -1 );
-		}
-		oNew.m_fData1 = VistaConversion::FromString<float>( vecEntries[0] );
-		oNew.m_bData2 = VistaConversion::FromString<bool>( vecEntries[1] );
-		return oNew;
-	}
+  bool operator()(const DummyStruct& oOther) const {
+    return (m_fData1 == oOther.m_fData1 && m_bData2 == oOther.m_bData2);
+  }
 
-	float	m_fData1;
-	bool	m_bData2;
+  static std::string ConvertToString(const DummyStruct& oObject) {
+    return (VistaConversion::ToString(oObject.m_fData1) + " | " +
+            VistaConversion::ToString(oObject.m_bData2));
+  }
+  static DummyStruct ConvertFromString(const std::string& sString) {
+    DummyStruct oNew;
+    // can throw exceptions!
+    std::vector<std::string> vecEntries;
+    if (VistaConversion::FromString(sString, vecEntries, '|') == false || vecEntries.size() != 2) {
+      VISTA_THROW("String-To_DummyObject conversion failed", -1);
+    }
+    oNew.m_fData1 = VistaConversion::FromString<float>(vecEntries[0]);
+    oNew.m_bData2 = VistaConversion::FromString<bool>(vecEntries[1]);
+    return oNew;
+  }
+
+  float m_fData1;
+  bool  m_bData2;
 };
 
-namespace VistaTesting
-{
-	template<>
-	inline DummyStruct GenerateRandom<DummyStruct>()
-	{
-		DummyStruct oDummy;
-		oDummy.m_bData2 = GenerateRandom<bool>();
-		oDummy.m_fData1 = GenerateRandom<float>();
-		return oDummy;
-	}
+namespace VistaTesting {
+template <>
+inline DummyStruct GenerateRandom<DummyStruct>() {
+  DummyStruct oDummy;
+  oDummy.m_bData2 = GenerateRandom<bool>();
+  oDummy.m_fData1 = GenerateRandom<float>();
+  return oDummy;
 }
+} // namespace VistaTesting
 
-namespace VistaTesting
-{
-	template<>
-	inline ::testing::AssertionResult Compare<DummyStruct>( const DummyStruct& oLeft,
-														const DummyStruct& oRight, const double nMaxRelDeviation, const double nMinRelevantSize )
-	{
-		::testing::AssertionResult oRes = Compare( oLeft.m_fData1, oRight.m_fData1, nMaxRelDeviation, nMinRelevantSize );
-		if( oRes == false )
-		{
-			return oRes << "(floatdata)";
-		}
-		::testing::AssertionResult oRes2 = Compare( oLeft.m_bData2, oRight.m_bData2, nMaxRelDeviation, nMinRelevantSize );
-		if( oRes2 == false )
-		{
-			return oRes2 << "(booldata)";
-		}
-		return ::testing::AssertionSuccess();
-	}
+namespace VistaTesting {
+template <>
+inline ::testing::AssertionResult Compare<DummyStruct>(const DummyStruct& oLeft,
+    const DummyStruct& oRight, const double nMaxRelDeviation, const double nMinRelevantSize) {
+  ::testing::AssertionResult oRes =
+      Compare(oLeft.m_fData1, oRight.m_fData1, nMaxRelDeviation, nMinRelevantSize);
+  if (oRes == false) {
+    return oRes << "(floatdata)";
+  }
+  ::testing::AssertionResult oRes2 =
+      Compare(oLeft.m_bData2, oRight.m_bData2, nMaxRelDeviation, nMinRelevantSize);
+  if (oRes2 == false) {
+    return oRes2 << "(booldata)";
+  }
+  return ::testing::AssertionSuccess();
 }
+} // namespace VistaTesting
 
-namespace VistaConversion
-{ 
-	template<>
-	struct StringConvertObject<DummyStruct>
-	{
-		static void ToString( const DummyStruct& oSource, std::string& sTarget,
-									char cSeparator = S_cDefaultSeparator )
-		{		
-			sTarget = DummyStruct::ConvertToString( oSource );
-		}
-		static bool FromString( const std::string& sSource, DummyStruct& oTarget,
-								char cSeparator = S_cDefaultSeparator )
-		{		
-			try
-			{
-				oTarget = DummyStruct::ConvertFromString( sSource );
-			}
-			catch( VistaExceptionBase& )
-			{
-				return false;
-			}
-			return true;
-		}
-	};
-}
-
-
+namespace VistaConversion {
+template <>
+struct StringConvertObject<DummyStruct> {
+  static void ToString(
+      const DummyStruct& oSource, std::string& sTarget, char cSeparator = S_cDefaultSeparator) {
+    sTarget = DummyStruct::ConvertToString(oSource);
+  }
+  static bool FromString(
+      const std::string& sSource, DummyStruct& oTarget, char cSeparator = S_cDefaultSeparator) {
+    try {
+      oTarget = DummyStruct::ConvertFromString(sSource);
+    } catch (VistaExceptionBase&) { return false; }
+    return true;
+  }
+};
+} // namespace VistaConversion
 
 /*============================================================================*/
 /* TESTS                                                                      */
 /*============================================================================*/
 
 #endif //_VISTATESTINGUTILS_H
-

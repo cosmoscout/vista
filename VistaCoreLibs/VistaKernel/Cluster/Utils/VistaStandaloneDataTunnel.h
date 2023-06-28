@@ -21,14 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASTANDALONEDATATUNNEL_H
 #define _VISTASTANDALONEDATATUNNEL_H
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/Cluster/VistaDataTunnel.h>
+#include <VistaKernel/VistaKernelConfig.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -41,36 +40,35 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
-* VistaStandaloneDataTunnel is a concrete implementation of IVistaDataTunnel for standalone applications,
-* i.e. applications not using ViSTA cluster capabilities. Basically this is just composed of two tubes,
-* through which data can be routed.
-*
-* The standalone version of the data tunnel just pumps the data through its two tubes. Therefore the given
-* producers and consumers are directly connected to each other. The pipes are therefore completely passive.
-*
-* For basic concepts see VistaDataTunnel.h.
-*
-*/
+ * VistaStandaloneDataTunnel is a concrete implementation of IVistaDataTunnel for standalone
+ * applications, i.e. applications not using ViSTA cluster capabilities. Basically this is just
+ * composed of two tubes, through which data can be routed.
+ *
+ * The standalone version of the data tunnel just pumps the data through its two tubes. Therefore
+ * the given producers and consumers are directly connected to each other. The pipes are therefore
+ * completely passive.
+ *
+ * For basic concepts see VistaDataTunnel.h.
+ *
+ */
 
-class VISTAKERNELAPI VistaStandaloneDataTunnel : public IVistaDataTunnel
-{
-public:
-	VistaStandaloneDataTunnel();
-	virtual ~VistaStandaloneDataTunnel();
+class VISTAKERNELAPI VistaStandaloneDataTunnel : public IVistaDataTunnel {
+ public:
+  VistaStandaloneDataTunnel();
+  virtual ~VistaStandaloneDataTunnel();
 
-	virtual bool ConnectUpstreamInput(IDLVistaPipeComponent* pInput);
-	virtual bool ConnectUpstreamOutput(IDLVistaPipeComponent *pOutput);
-	virtual bool ConnectDownstreamInput(IDLVistaPipeComponent* pInput);
-	virtual bool ConnectDownstreamOutput(IDLVistaPipeComponent *pOutput);
+  virtual bool ConnectUpstreamInput(IDLVistaPipeComponent* pInput);
+  virtual bool ConnectUpstreamOutput(IDLVistaPipeComponent* pOutput);
+  virtual bool ConnectDownstreamInput(IDLVistaPipeComponent* pInput);
+  virtual bool ConnectDownstreamOutput(IDLVistaPipeComponent* pOutput);
 
-	virtual bool DisconnectUpstreamInput();
-	virtual bool DisconnectUpstreamOutput();
-	virtual bool DisconnectDownstreamInput();
-	virtual bool DisconnectDownstreamOutput();
+  virtual bool DisconnectUpstreamInput();
+  virtual bool DisconnectUpstreamOutput();
+  virtual bool DisconnectDownstreamInput();
+  virtual bool DisconnectDownstreamOutput();
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASTANDALONEDATATUNNEL_H
-

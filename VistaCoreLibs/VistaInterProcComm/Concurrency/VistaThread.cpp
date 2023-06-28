@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaThread.h"
 #include "Imp/VistaThreadImp.h"
 #include <VistaBase/VistaStreamUtils.h>
@@ -32,154 +31,125 @@
 
 /*============================================================================*/
 
-VistaThread::VistaThread (IVistaThreadImp *pImp)
-: m_bIsRunning(false), m_bIsFinished(false),
-  m_pImp(NULL)
-{
+VistaThread::VistaThread(IVistaThreadImp* pImp)
+    : m_bIsRunning(false)
+    , m_bIsFinished(false)
+    , m_pImp(NULL) {
   m_pImp = (pImp ? pImp : IVistaThreadImp::CreateThreadImp(*this));
 }
 
 /*============================================================================*/
 
-VistaThread::~VistaThread ()
-{
-	delete m_pImp; /** @todo use factory-method from imp-interface? */
+VistaThread::~VistaThread() {
+  delete m_pImp; /** @todo use factory-method from imp-interface? */
 }
 
 /*============================================================================*/
 
-bool VistaThread::IsRunning() const
-{
-	return m_bIsRunning;
+bool VistaThread::IsRunning() const {
+  return m_bIsRunning;
 }
 
-
-bool VistaThread::Run ()
-{
-	return (m_bIsRunning=m_pImp->Run()) == true;
+bool VistaThread::Run() {
+  return (m_bIsRunning = m_pImp->Run()) == true;
 }
 
 /*============================================================================*/
 
-bool VistaThread::Suspend ()
-{
-	return m_pImp->Suspend();
+bool VistaThread::Suspend() {
+  return m_pImp->Suspend();
 }
 
-bool VistaThread::Resume ()
-{
-	return m_pImp->Resume();
+bool VistaThread::Resume() {
+  return m_pImp->Resume();
 }
 
-bool VistaThread::Join ()
-{
-	return m_pImp->Join();
+bool VistaThread::Join() {
+  return m_pImp->Join();
 }
 
-bool VistaThread::Abort ()
-{
+bool VistaThread::Abort() {
 #ifdef DEBUG
-	vstr::warnp() <<
-		"WARNING: You are using VistaThread::Abort(). The concrete behavior " << std::endl <<
-		"of this method is not defined, probably differs between systems " << std::endl <<
-		"and can lead to undefined behavior of the overall application." << std::endl <<
-		"Consider using an own implementation to exit a thread." << std::endl;
+  vstr::warnp() << "WARNING: You are using VistaThread::Abort(). The concrete behavior "
+                << std::endl
+                << "of this method is not defined, probably differs between systems " << std::endl
+                << "and can lead to undefined behavior of the overall application." << std::endl
+                << "Consider using an own implementation to exit a thread." << std::endl;
 #endif
-	return (m_bIsRunning = m_pImp->Abort()) == true;
-}
-
-
-/*============================================================================*/
-
-void VistaThread::GetPriority (VistaPriority &prio) const
-{
-	m_pImp->GetPriority(prio);
+  return (m_bIsRunning = m_pImp->Abort()) == true;
 }
 
 /*============================================================================*/
 
-bool VistaThread::SetPriority ( const VistaPriority &prio )
-{
-	return m_pImp->SetPriority(prio);
+void VistaThread::GetPriority(VistaPriority& prio) const {
+  m_pImp->GetPriority(prio);
 }
 
-void VistaThread::YieldThread ()
-{
-	m_pImp->YieldThread();
+/*============================================================================*/
+
+bool VistaThread::SetPriority(const VistaPriority& prio) {
+  return m_pImp->SetPriority(prio);
 }
 
-void VistaThread::PreRun()
-{
-	m_bIsFinished = false;
-	m_pImp->PreRun();
+void VistaThread::YieldThread() {
+  m_pImp->YieldThread();
 }
 
-void VistaThread::PostRun()
-{
-	m_pImp->PostRun();
-	m_bIsRunning = false;
-	m_bIsFinished = true;
+void VistaThread::PreRun() {
+  m_bIsFinished = false;
+  m_pImp->PreRun();
 }
 
-bool VistaThread::Equals(const VistaThread &oOther) const
-{
-	return m_pImp->Equals(*oOther.m_pImp);
+void VistaThread::PostRun() {
+  m_pImp->PostRun();
+  m_bIsRunning  = false;
+  m_bIsFinished = true;
 }
 
-bool VistaThread::operator==(const VistaThread &oOther)
-{
-	return Equals(oOther);
+bool VistaThread::Equals(const VistaThread& oOther) const {
+  return m_pImp->Equals(*oOther.m_pImp);
 }
 
-
-bool VistaThread::SetProcessorAffinity(int iProcessorNum)
-{
-	return m_pImp->SetProcessorAffinity(iProcessorNum);
+bool VistaThread::operator==(const VistaThread& oOther) {
+  return Equals(oOther);
 }
 
-int VistaThread::GetCpu() const
-{
-	return m_pImp->GetCpu();
+bool VistaThread::SetProcessorAffinity(int iProcessorNum) {
+  return m_pImp->SetProcessorAffinity(iProcessorNum);
 }
 
-bool VistaThread::GetIsFinished() const
-{
-	return m_bIsFinished;
+int VistaThread::GetCpu() const {
+  return m_pImp->GetCpu();
 }
 
-bool VistaThread::SetThreadName(const std::string &sName)
-{
-	return m_pImp->SetThreadName(sName);
+bool VistaThread::GetIsFinished() const {
+  return m_bIsFinished;
 }
 
-std::string VistaThread::GetThreadName() const
-{
-	return m_pImp->GetThreadName();
+bool VistaThread::SetThreadName(const std::string& sName) {
+  return m_pImp->SetThreadName(sName);
 }
 
-long VistaThread::GetThreadIdentity() const
-{
-	return m_pImp->GetThreadIdentity();
+std::string VistaThread::GetThreadName() const {
+  return m_pImp->GetThreadName();
 }
 
-long VistaThread::GetCallingThreadIdentity()
-{
-	return IVistaThreadImp::GetCallingThreadIdentity();
+long VistaThread::GetThreadIdentity() const {
+  return m_pImp->GetThreadIdentity();
 }
 
-
-IVistaThreadImp *VistaThread::GetThreadImp() const
-{
-	return m_pImp;
+long VistaThread::GetCallingThreadIdentity() {
+  return IVistaThreadImp::GetCallingThreadIdentity();
 }
 
-bool VistaThread::SetCallingThreadPriority( const VistaPriority& oPrio )
-{
-	return IVistaThreadImp::SetCallingThreadPriority( oPrio );
+IVistaThreadImp* VistaThread::GetThreadImp() const {
+  return m_pImp;
 }
 
-bool VistaThread::GetCallingThreadPriority( VistaPriority& oPrio )
-{
-	return IVistaThreadImp::GetCallingThreadPriority( oPrio );
+bool VistaThread::SetCallingThreadPriority(const VistaPriority& oPrio) {
+  return IVistaThreadImp::SetCallingThreadPriority(oPrio);
 }
 
+bool VistaThread::GetCallingThreadPriority(VistaPriority& oPrio) {
+  return IVistaThreadImp::GetCallingThreadPriority(oPrio);
+}

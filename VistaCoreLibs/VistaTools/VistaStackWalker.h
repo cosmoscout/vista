@@ -26,7 +26,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASTACKWALKER_H
 #define _VISTASTACKWALKER_H
 
@@ -51,27 +50,24 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTATOOLSAPI VistaStackWalker
-{
-public:
-	//This is the struct all entries get stored in.
-	typedef struct CallStackEntry
-	{
-		std::string m_sFilename;
-		unsigned int m_iLineNumber;
-		std::string m_sFunctionName;
-	} CallStackEntry;
+class VISTATOOLSAPI VistaStackWalker {
+ public:
+  // This is the struct all entries get stored in.
+  typedef struct CallStackEntry {
+    std::string  m_sFilename;
+    unsigned int m_iLineNumber;
+    std::string  m_sFunctionName;
+  } CallStackEntry;
 
-	typedef std::vector<CallStackEntry> CallStack;
-	
-	// Retrieves the Callstack
-	static bool GetCallstack( CallStack& vecCallStack );
+  typedef std::vector<CallStackEntry> CallStack;
 
-	//Output Functions. Basically these functions print out output. NOTE: These functions are Static!
-	static bool PrintCallStack( std::ostream& oOut = std::cout );
-	static bool PrintCallStack( const CallStack& vecCallStack, std::ostream& oOut = std::cout );
-	static bool PrintCallStackEntry( const CallStackEntry& oEntry, std::ostream& oOut = std::cout );
+  // Retrieves the Callstack
+  static bool GetCallstack(CallStack& vecCallStack);
+
+  // Output Functions. Basically these functions print out output. NOTE: These functions are Static!
+  static bool PrintCallStack(std::ostream& oOut = std::cout);
+  static bool PrintCallStack(const CallStack& vecCallStack, std::ostream& oOut = std::cout);
+  static bool PrintCallStackEntry(const CallStackEntry& oEntry, std::ostream& oOut = std::cout);
 };
 
 #endif //_VISTASTACKWALKER_H
-

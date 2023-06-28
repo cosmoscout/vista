@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASIMPLECALLBACK_H
 #define _VISTASIMPLECALLBACK_H
 
@@ -31,8 +30,8 @@
 #include "VistaAspectsConfig.h"
 #include "VistaExplicitCallbackInterface.h"
 
-#include <string>
 #include <functional>
+#include <string>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -46,20 +45,16 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAASPECTSAPI VistaSimpleCallback : public IVistaExplicitCallbackInterface
-{
-public:
+class VISTAASPECTSAPI VistaSimpleCallback : public IVistaExplicitCallbackInterface {
+ public:
+  VistaSimpleCallback(std::function<void(void)> funcCallback);
+  virtual ~VistaSimpleCallback();
 
-	VistaSimpleCallback(std::function<void(void)> funcCallback);
-	virtual ~VistaSimpleCallback();
+  virtual bool Do();
 
-	virtual bool Do();
-
-protected:
-
-	std::function<void(void)> m_funcCallback;
+ protected:
+  std::function<void(void)> m_funcCallback;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNDIFFERENCENODE_H
 #define _VDFNDIFFERENCENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,8 +30,8 @@
 #include "VdfnConfig.h"
 
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
 #include "VdfnUtil.h"
 
 /*============================================================================*/
@@ -65,39 +63,38 @@
  * name. The conversion function can be free floating function and is performed
  * by a copy-in, so it can be expensive.
  */
-template<class T>
-class TVdfnDifferenceNode : public IVdfnNode
-{
-public:
-	TVdfnDifferenceNode()
-	: IVdfnNode()
-	, m_pInport(NULL)
-	, m_pOutport( new TVdfnPort<T>() )
-	, m_nLastValue( 0 )
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare< TVdfnPort<T> >);
-		RegisterOutPort( "out", m_pOutport );
-	}
+template <class T>
+class TVdfnDifferenceNode : public IVdfnNode {
+ public:
+  TVdfnDifferenceNode()
+      : IVdfnNode()
+      , m_pInport(NULL)
+      , m_pOutport(new TVdfnPort<T>())
+      , m_nLastValue(0) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterOutPort("out", m_pOutport);
+  }
 
-	~TVdfnDifferenceNode() {}
+  ~TVdfnDifferenceNode() {
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pInport = VdfnUtil::GetInPortTyped< TVdfnPort<T>* >( "in", this );
-		return GetIsValid();
-	}
-protected:
-	bool DoEvalNode()
-	{
-		T nNewValue = m_pInport->GetValue();
-		m_pOutport->SetValue( nNewValue - m_nLastValue, GetUpdateTimeStamp() );
-		m_nLastValue = nNewValue;
-		return true;
-	}
-private:
-	TVdfnPort<T>* m_pInport;
-	TVdfnPort<T>* m_pOutport;
-	T m_nLastValue;
+  bool PrepareEvaluationRun() {
+    m_pInport = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>("in", this);
+    return GetIsValid();
+  }
+
+ protected:
+  bool DoEvalNode() {
+    T nNewValue = m_pInport->GetValue();
+    m_pOutport->SetValue(nNewValue - m_nLastValue, GetUpdateTimeStamp());
+    m_nLastValue = nNewValue;
+    return true;
+  }
+
+ private:
+  TVdfnPort<T>* m_pInport;
+  TVdfnPort<T>* m_pOutport;
+  T             m_nLastValue;
 };
 
 /*============================================================================*/
@@ -105,4 +102,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNDIFFERENCENODE_H
-

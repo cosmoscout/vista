@@ -21,13 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnSetTransformNode.h"
 
 #include "VdfnObjectRegistry.h"
 
 #include <VistaAspects/VistaTransformable.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -39,88 +37,74 @@ const std::string VdfnSetTransformNode::STransformInPortName("in");
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VdfnSetTransformNode::VdfnSetTransformNode(VdfnObjectRegistry *pObjReg,
-												 const std::string &strKey)
-: IVdfnNode()
-, m_pInTransform(NULL)
-, m_pTransform(NULL)
-, m_nTCount(0)
-, m_pObjRegistry(pObjReg)
-, m_strKey(strKey)
-{
-	RegisterInPrototypes();
+VdfnSetTransformNode::VdfnSetTransformNode(VdfnObjectRegistry* pObjReg, const std::string& strKey)
+    : IVdfnNode()
+    , m_pInTransform(NULL)
+    , m_pTransform(NULL)
+    , m_nTCount(0)
+    , m_pObjRegistry(pObjReg)
+    , m_strKey(strKey) {
+  RegisterInPrototypes();
 }
-
 
 VdfnSetTransformNode::VdfnSetTransformNode()
-: IVdfnNode()
-, m_pInTransform(NULL)
-, m_pTransform(NULL)
-, m_pObjRegistry(NULL)
-{
-	RegisterInPrototypes();
+    : IVdfnNode()
+    , m_pInTransform(NULL)
+    , m_pTransform(NULL)
+    , m_pObjRegistry(NULL) {
+  RegisterInPrototypes();
 }
 
-VdfnSetTransformNode::VdfnSetTransformNode(IVistaTransformable *pObj)
-: IVdfnNode()
-, m_pInTransform(NULL)
-, m_pTransform(pObj)
-, m_pObjRegistry(NULL)
-{
-	RegisterInPrototypes();
+VdfnSetTransformNode::VdfnSetTransformNode(IVistaTransformable* pObj)
+    : IVdfnNode()
+    , m_pInTransform(NULL)
+    , m_pTransform(pObj)
+    , m_pObjRegistry(NULL) {
+  RegisterInPrototypes();
 }
 
-VdfnSetTransformNode::~VdfnSetTransformNode()
-{
+VdfnSetTransformNode::~VdfnSetTransformNode() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-void VdfnSetTransformNode::RegisterInPrototypes()
-{
-	RegisterInPortPrototype( STransformInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaTransformMatrix> > );
+void VdfnSetTransformNode::RegisterInPrototypes() {
+  RegisterInPortPrototype(
+      STransformInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaTransformMatrix>>);
 }
 
-bool VdfnSetTransformNode::GetIsValid() const
-{
-	return m_pTransform && IVdfnNode::GetIsValid();
+bool VdfnSetTransformNode::GetIsValid() const {
+  return m_pTransform && IVdfnNode::GetIsValid();
 }
 
-bool VdfnSetTransformNode::PrepareEvaluationRun()
-{
-	if( m_pObjRegistry && (m_pTransform == NULL) && !m_strKey.empty() )
-		m_pTransform = m_pObjRegistry->GetObjectTransform( m_strKey );
+bool VdfnSetTransformNode::PrepareEvaluationRun() {
+  if (m_pObjRegistry && (m_pTransform == NULL) && !m_strKey.empty())
+    m_pTransform = m_pObjRegistry->GetObjectTransform(m_strKey);
 
-	m_pInTransform   = dynamic_cast<TVdfnPort<VistaTransformMatrix>*>( GetInPort( STransformInPortName ) );
-	return GetIsValid();
+  m_pInTransform = dynamic_cast<TVdfnPort<VistaTransformMatrix>*>(GetInPort(STransformInPortName));
+  return GetIsValid();
 }
 
-bool VdfnSetTransformNode::DoEvalNode()
-{
-	m_nTCount = m_pInTransform->GetUpdateCounter();
-	const VistaTransformMatrix &m = (*m_pInTransform).GetValueConstRef();
+bool VdfnSetTransformNode::DoEvalNode() {
+  m_nTCount                     = m_pInTransform->GetUpdateCounter();
+  const VistaTransformMatrix& m = (*m_pInTransform).GetValueConstRef();
 
-	float m4x4[16];
-	m.GetValues(m4x4);
+  float m4x4[16];
+  m.GetValues(m4x4);
 
-	m_pTransform->SetTransform(m4x4);
-	return true;
+  m_pTransform->SetTransform(m4x4);
+  return true;
 }
 
-IVistaTransformable *VdfnSetTransformNode::GetTransformTarget() const
-{
-	return m_pTransform;
+IVistaTransformable* VdfnSetTransformNode::GetTransformTarget() const {
+  return m_pTransform;
 }
 
-void VdfnSetTransformNode::SetTransformTarget( IVistaTransformable *pTransform )
-{
-	m_pTransform = pTransform;
+void VdfnSetTransformNode::SetTransformTarget(IVistaTransformable* pTransform) {
+  m_pTransform = pTransform;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

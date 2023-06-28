@@ -31,12 +31,12 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
- const std::string VdfnMatrixComposeNode::SOutputMatrixOutPortName("out");
+const std::string VdfnMatrixComposeNode::SOutputMatrixOutPortName("out");
 
- const std::string VdfnMatrixComposeNode::STranslationInPortName("translation");
- const std::string VdfnMatrixComposeNode::SOrientationInPortName("orientation");
- const std::string VdfnMatrixComposeNode::SScaleInPortName("scale");
- const std::string VdfnMatrixComposeNode::SScaleOrientationInPortName("scale_orientation");
+const std::string VdfnMatrixComposeNode::STranslationInPortName("translation");
+const std::string VdfnMatrixComposeNode::SOrientationInPortName("orientation");
+const std::string VdfnMatrixComposeNode::SScaleInPortName("scale");
+const std::string VdfnMatrixComposeNode::SScaleOrientationInPortName("scale_orientation");
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
@@ -44,80 +44,75 @@
 /*
  */
 
-VdfnMatrixComposeNode::VdfnMatrixComposeNode()						 
-: IVdfnNode(),
-  m_pInTranslation(NULL),
-  m_pInOrientation(NULL),
-  m_pInScale(NULL),
-  m_pInScaleOrientation(NULL),
-  m_pOutputMatrix( new TVdfnPort<VistaTransformMatrix> )
-{
+VdfnMatrixComposeNode::VdfnMatrixComposeNode()
+    : IVdfnNode()
+    , m_pInTranslation(NULL)
+    , m_pInOrientation(NULL)
+    , m_pInScale(NULL)
+    , m_pInScaleOrientation(NULL)
+    , m_pOutputMatrix(new TVdfnPort<VistaTransformMatrix>) {
   RegisterInPrototypes();
 }
 
-VdfnMatrixComposeNode::~VdfnMatrixComposeNode()
-{
+VdfnMatrixComposeNode::~VdfnMatrixComposeNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-void VdfnMatrixComposeNode::RegisterInPrototypes()
-{
-  RegisterInPortPrototype( STranslationInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> > );
-  RegisterInPortPrototype( SOrientationInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion> > );
-  RegisterInPortPrototype( SScaleInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> > );
-  RegisterInPortPrototype( SScaleOrientationInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion> > );
-  
-  RegisterOutPort( SOutputMatrixOutPortName, m_pOutputMatrix );
+void VdfnMatrixComposeNode::RegisterInPrototypes() {
+  RegisterInPortPrototype(
+      STranslationInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype(
+      SOrientationInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion>>);
+  RegisterInPortPrototype(SScaleInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype(
+      SScaleOrientationInPortName, new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion>>);
+
+  RegisterOutPort(SOutputMatrixOutPortName, m_pOutputMatrix);
 }
 
-bool VdfnMatrixComposeNode::GetIsValid() const
-{
+bool VdfnMatrixComposeNode::GetIsValid() const {
   // all inports are optional, if nothing is connected,
   // we default to the VistaTransformMatrix default constructor
   // (identity transformation).
   return true;
 }
 
-bool VdfnMatrixComposeNode::PrepareEvaluationRun()
-{
-  m_pInTranslation	= dynamic_cast<TVdfnPort<VistaVector3D>*>( GetInPort( STranslationInPortName ) );
-  m_pInOrientation	= dynamic_cast<TVdfnPort<VistaQuaternion>*>( GetInPort( SOrientationInPortName ) );
-  m_pInScale		= dynamic_cast<TVdfnPort<VistaVector3D>*>( GetInPort( SScaleInPortName ) );
-  m_pInScaleOrientation	= dynamic_cast<TVdfnPort<VistaQuaternion>*>( GetInPort( SScaleOrientationInPortName ) );
-  
+bool VdfnMatrixComposeNode::PrepareEvaluationRun() {
+  m_pInTranslation = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort(STranslationInPortName));
+  m_pInOrientation = dynamic_cast<TVdfnPort<VistaQuaternion>*>(GetInPort(SOrientationInPortName));
+  m_pInScale       = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort(SScaleInPortName));
+  m_pInScaleOrientation =
+      dynamic_cast<TVdfnPort<VistaQuaternion>*>(GetInPort(SScaleOrientationInPortName));
+
   return GetIsValid();
 }
 
-bool VdfnMatrixComposeNode::DoEvalNode()
-{
-  VistaVector3D v3Translation;
+bool VdfnMatrixComposeNode::DoEvalNode() {
+  VistaVector3D   v3Translation;
   VistaQuaternion qOrientation;
-  VistaVector3D v3Scale(1,1,1,0);
+  VistaVector3D   v3Scale(1, 1, 1, 0);
   VistaQuaternion qScaleOrientation;
 
-  if( m_pInTranslation )
+  if (m_pInTranslation)
     v3Translation = m_pInTranslation->GetValueConstRef();
-  if( m_pInOrientation )
+  if (m_pInOrientation)
     qOrientation = m_pInOrientation->GetValueConstRef();
-  if( m_pInScale )
+  if (m_pInScale)
     v3Scale = m_pInScale->GetValueConstRef();
-  if( m_pInScaleOrientation )
+  if (m_pInScaleOrientation)
     qScaleOrientation = m_pInScaleOrientation->GetValueConstRef();
 
-  m_pOutputMatrix->GetValueRef().Compose( v3Translation,
-											qOrientation,
-											v3Scale,
-											qScaleOrientation );
+  m_pOutputMatrix->GetValueRef().Compose(v3Translation, qOrientation, v3Scale, qScaleOrientation);
   m_pOutputMatrix->IncUpdateCounter();
 
-  //m_pOutputMatrix->SetValue(VistaMatrixDeComposer::Compose(v3Translation,
-		//	qOrientation,
-		//	v3Scale,
-		//	qScaleOrientation),GetUpdateTimeStamp());
+  // m_pOutputMatrix->SetValue(VistaMatrixDeComposer::Compose(v3Translation,
+  //	qOrientation,
+  //	v3Scale,
+  //	qScaleOrientation),GetUpdateTimeStamp());
 
-  return true;								   
+  return true;
 }
 
 /*============================================================================*/
@@ -129,4 +124,3 @@ bool VdfnMatrixComposeNode::DoEvalNode()
 /*============================================================================*/
 
 /************************** CR / LF nicht vergessen! **************************/
-

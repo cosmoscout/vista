@@ -21,13 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 // project includes
 
 #include "VistaThreadEventImp.h"
-
 
 #if !defined(NULL)
 #define NULL 0
@@ -40,7 +38,6 @@
 #include "VistaPthreadThreadEventImp.h"
 #endif
 
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -48,28 +45,26 @@
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
-IVistaThreadEventImp::IVistaThreadEventImp()
-{
+IVistaThreadEventImp::IVistaThreadEventImp() {
 }
 
-IVistaThreadEventImp::~IVistaThreadEventImp()
-{}
+IVistaThreadEventImp::~IVistaThreadEventImp() {
+}
 
-IVistaThreadEventImp *IVistaThreadEventImp::CreateThreadEventImp(bool bUsePipes)
-{
+IVistaThreadEventImp* IVistaThreadEventImp::CreateThreadEventImp(bool bUsePipes) {
 #if defined(VISTA_THREADING_WIN32)
-	return new VistaWin32ThreadEventImp;
-	
+  return new VistaWin32ThreadEventImp;
+
 #elif defined(VISTA_THREADING_POSIX)
-	if(bUsePipes)
-		return new VistaPosixThreadEventImp;
-	else
-		return new VistaPthreadThreadEventImp;
+  if (bUsePipes)
+    return new VistaPosixThreadEventImp;
+  else
+    return new VistaPthreadThreadEventImp;
 #elif defined(VISTA_THREADING_SPROC)
-	return new VistaPosixThreadEventImp;
+  return new VistaPosixThreadEventImp;
 #else
-	printf("WARNING: NO THREAD-EVENT-IMP!\n");
-	return 0;
+  printf("WARNING: NO THREAD-EVENT-IMP!\n");
+  return 0;
 #endif
 }
 

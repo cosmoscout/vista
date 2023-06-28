@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTAPIPECONSTRUCTIONKIT_H
 #define IDLVISTAPIPECONSTRUCTIONKIT_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -43,33 +41,27 @@
 class IDLVistaPipeComponent;
 class DLVistaCheckError;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaPipeConstructionKit
-{
-private:
-protected:
-public:
-	DLVistaPipeConstructionKit();
-	/**
-	 * Pure virtual destructor. Does nothing.
-	 */
-	virtual ~DLVistaPipeConstructionKit();
+class VISTAINTERPROCCOMMAPI DLVistaPipeConstructionKit {
+ private:
+ protected:
+ public:
+  DLVistaPipeConstructionKit();
+  /**
+   * Pure virtual destructor. Does nothing.
+   */
+  virtual ~DLVistaPipeConstructionKit();
 
-	static DLVistaCheckError Join(IDLVistaPipeComponent *pIn, IDLVistaPipeComponent *pOut);
+  static DLVistaCheckError Join(IDLVistaPipeComponent* pIn, IDLVistaPipeComponent* pOut);
 
-	static DLVistaCheckError LinearJoin(const std::list<IDLVistaPipeComponent *> &liComponents);
+  static DLVistaCheckError LinearJoin(const std::list<IDLVistaPipeComponent*>& liComponents);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTAACTIVECOMPONENT_H
-
-
+#endif // DLVISTAACTIVECOMPONENT_H

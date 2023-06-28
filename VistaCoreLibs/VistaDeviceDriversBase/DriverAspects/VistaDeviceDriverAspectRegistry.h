@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADEVICEDRIVERASPECTREGISTRY_H
 #define _VISTADEVICEDRIVERASPECTREGISTRY_H
 
@@ -48,40 +47,40 @@
  * Singleton to manage the registration and deregistration of aspects.
  * @todo Should be used with care in the context of plugins.
  */
-class VISTADEVICEDRIVERSAPI VistaDeviceDriverAspectRegistry
-{
-public:
-	/**
-	 * retrieve the one and only registry for aspects ids
-	 */
-	static VistaDeviceDriverAspectRegistry *GetSingleton();
+class VISTADEVICEDRIVERSAPI VistaDeviceDriverAspectRegistry {
+ public:
+  /**
+   * retrieve the one and only registry for aspects ids
+   */
+  static VistaDeviceDriverAspectRegistry* GetSingleton();
 
-	/**
-	 * register a string and get back a token for that aspect.
-	 * The token defines the user-level side, e.g., 'WINDOW'
-	 * is a string the will be seen and used by, well..., users.
-	 * Internally, only an int is used for processing.
-	 * @param strAspectToken the aspects token to register
-	 * @return an uint >= 0
-	 */
-	unsigned int RegisterAspect( const std::string &strAspectToken );
+  /**
+   * register a string and get back a token for that aspect.
+   * The token defines the user-level side, e.g., 'WINDOW'
+   * is a string the will be seen and used by, well..., users.
+   * Internally, only an int is used for processing.
+   * @param strAspectToken the aspects token to register
+   * @return an uint >= 0
+   */
+  unsigned int RegisterAspect(const std::string& strAspectToken);
 
-	/**
-	 * the reverse mapping of the RegisterAspect() api, get back the
-	 * string for the uint that was registered beforehand. Mostly
-	 * used for debugging prints and the like. Can take some time
-	 * to evaluate, so do not call frequently.
-	 * @see RegisterAspect()
-	 * @param a uint to query an id for
-	 * @return the string that was registered to the id given
-	 */
-	std::string  GetTokenForId( unsigned int ) const;
-protected:
-private:
-	VistaDeviceDriverAspectRegistry();
+  /**
+   * the reverse mapping of the RegisterAspect() api, get back the
+   * string for the uint that was registered beforehand. Mostly
+   * used for debugging prints and the like. Can take some time
+   * to evaluate, so do not call frequently.
+   * @see RegisterAspect()
+   * @param a uint to query an id for
+   * @return the string that was registered to the id given
+   */
+  std::string GetTokenForId(unsigned int) const;
 
-	std::map<unsigned int, std::string> m_mpTokenMap;
-	unsigned int m_nNextAspectId;
+ protected:
+ private:
+  VistaDeviceDriverAspectRegistry();
+
+  std::map<unsigned int, std::string> m_mpTokenMap;
+  unsigned int                        m_nNextAspectId;
 };
 
 /*============================================================================*/
@@ -89,4 +88,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADEVICEDRIVERASPECTREGISTRY_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -30,31 +29,26 @@
 
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-namespace
-{
-	VistaJswJoystickDriverCreationMethod *g_SpFactory = NULL;
+namespace {
+VistaJswJoystickDriverCreationMethod* g_SpFactory = NULL;
 }
 
+extern "C" IVistaDriverCreationMethod* GetCreationMethod(IVistaTranscoderFactoryFactory* fac) {
+  if (g_SpFactory == NULL)
+    g_SpFactory = new VistaJswJoystickDriverCreationMethod(fac);
 
-extern "C" IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( g_SpFactory == NULL )
-		g_SpFactory = new VistaJswJoystickDriverCreationMethod(fac);
-
-	IVistaReferenceCountable::refup(g_SpFactory);
-	return g_SpFactory;
+  IVistaReferenceCountable::refup(g_SpFactory);
+  return g_SpFactory;
 }
 
-extern "C" const char *GetDeviceClassName()
-{
-	return "JSWJOYSTICK";
+extern "C" const char* GetDeviceClassName() {
+  return "JSWJOYSTICK";
 }
 
-extern "C" void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( crm == g_SpFactory )
-		if(IVistaReferenceCountable::refdown(g_SpFactory))
-			g_SpFactory = NULL;
+extern "C" void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == g_SpFactory)
+    if (IVistaReferenceCountable::refdown(g_SpFactory))
+      g_SpFactory = NULL;
 }
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -67,8 +61,3 @@ extern "C" void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-
-
-
-

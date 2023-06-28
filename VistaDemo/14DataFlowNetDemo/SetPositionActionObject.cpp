@@ -21,7 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-#include "SetPositionActionObject.h" 
+#include "SetPositionActionObject.h"
 
 #include <VistaKernel/GraphicsManager/VistaTransformNode.h>
 
@@ -33,8 +33,7 @@
  * Don't forget this line! It defines the inheritance relationship for
  * the reflectionable interface. Additionally, it provides the SsReflectionableName
  */
-REFL_IMPLEMENT_FULL( SetPositionActionObject, IVdfnActionObject );
-
+REFL_IMPLEMENT_FULL(SetPositionActionObject, IVdfnActionObject);
 
 /**
  * Now, we define the functors to get and set the colors.
@@ -49,69 +48,56 @@ REFL_IMPLEMENT_FULL( SetPositionActionObject, IVdfnActionObject );
  * While we do not require the GetFunctor for GetPosition in our application,
  * its still here for demo reasons.
  */
-namespace
-{
-	IVistaPropertySetFunctor *SaSetter[] =
-	{
-		new TActionSetFunctor<
-				SetPositionActionObject,		// class of the ActionObject
-				VistaVector3D,				// data type of the setter
-				const VistaVector3D&>(		// actual parameter for the setter
-						&SetPositionActionObject::SetPosition, // pointer to the function
-						NULL,				// Converter from string - we don't need this
-						"position",			// name of the functor - this will also
-											// be the name of the inport in the dfn net
-						SsReflectionName,	// Name of the class, defined by REFL_IMPLEMENT_FULL
-						"set position" ),	// help text
-		NULL
-	};
+namespace {
+IVistaPropertySetFunctor* SaSetter[] = {
+    new TActionSetFunctor<SetPositionActionObject, // class of the ActionObject
+        VistaVector3D,                             // data type of the setter
+        const VistaVector3D&>(                     // actual parameter for the setter
+        &SetPositionActionObject::SetPosition,     // pointer to the function
+        NULL,                                      // Converter from string - we don't need this
+        "position",                                // name of the functor - this will also
+                                                   // be the name of the inport in the dfn net
+        SsReflectionName, // Name of the class, defined by REFL_IMPLEMENT_FULL
+        "set position"),  // help text
+    NULL};
 
-	IVistaPropertyGetFunctor *SaGetter[] =
-	{
-		new TActionGetFunctor<
-				SetPositionActionObject,		// class of the ActionObject
-				VistaVector3D>(				// return type of the function
-						&SetPositionActionObject::GetPosition, // pointer to the function
-						NULL,				// Converter from string - we don't need this
-						"position",			// name of the functor - this will also
-											// be the name of the inport in the dfn net
-						SsReflectionName,	// Name of the class, defined by REFL_IMPLEMENT_FULL
-						"return position" ),// help text
-		NULL
-	};
-}
+IVistaPropertyGetFunctor* SaGetter[] = {
+    new TActionGetFunctor<SetPositionActionObject, // class of the ActionObject
+        VistaVector3D>(                            // return type of the function
+        &SetPositionActionObject::GetPosition,     // pointer to the function
+        NULL,                                      // Converter from string - we don't need this
+        "position",                                // name of the functor - this will also
+                                                   // be the name of the inport in the dfn net
+        SsReflectionName,   // Name of the class, defined by REFL_IMPLEMENT_FULL
+        "return position"), // help text
+    NULL};
+} // namespace
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-SetPositionActionObject::SetPositionActionObject( VistaTransformNode* pTransformNode )
-: IVdfnActionObject()
-, m_pTransformNode( pTransformNode )
-{
+SetPositionActionObject::SetPositionActionObject(VistaTransformNode* pTransformNode)
+    : IVdfnActionObject()
+    , m_pTransformNode(pTransformNode) {
 }
 
-SetPositionActionObject::~SetPositionActionObject()
-{
+SetPositionActionObject::~SetPositionActionObject() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-bool SetPositionActionObject::SetPosition( const VistaVector3D& v3Position )
-{
-	m_pTransformNode->SetTranslation( v3Position );
-	return true;
+bool SetPositionActionObject::SetPosition(const VistaVector3D& v3Position) {
+  m_pTransformNode->SetTranslation(v3Position);
+  return true;
 }
 
-VistaVector3D SetPositionActionObject::GetPosition() const
-{
-	VistaVector3D v3Position;
-	m_pTransformNode->GetTranslation( v3Position );
-	return v3Position;
+VistaVector3D SetPositionActionObject::GetPosition() const {
+  VistaVector3D v3Position;
+  m_pTransformNode->GetTranslation(v3Position);
+  return v3Position;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -120,4 +106,3 @@ VistaVector3D SetPositionActionObject::GetPosition() const
 /*============================================================================*/
 /* END OF FILE "SetPositionActionObject.cpp"                                  */
 /*============================================================================*/
-

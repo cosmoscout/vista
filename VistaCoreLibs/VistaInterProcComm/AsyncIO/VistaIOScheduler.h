@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIOSCHEDULER_H
 #define _VISTAIOSCHEDULER_H
 
@@ -45,38 +44,38 @@ class VistaMultiplexerJob;
 class VistaIOMultiplexer;
 class VistaMutex;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaIOScheduler
-{
-public:
-	VistaIOScheduler(int iRequestThreads, VistaIOMultiplexer *pMultiplexer);
-	virtual ~VistaIOScheduler();
+class VISTAINTERPROCCOMMAPI VistaIOScheduler {
+ public:
+  VistaIOScheduler(int iRequestThreads, VistaIOMultiplexer* pMultiplexer);
+  virtual ~VistaIOScheduler();
 
-	int AddRequest(IVistaIORequest *pRequest);
-	void AbortRequest(int ticket);
-	bool GetIsRequest(int ticket) const;
-	void RemRequest(int ticket);
-	void StartMultiplexing();
-	void StopMultiplexing();
+  int  AddRequest(IVistaIORequest* pRequest);
+  void AbortRequest(int ticket);
+  bool GetIsRequest(int ticket) const;
+  void RemRequest(int ticket);
+  void StartMultiplexing();
+  void StopMultiplexing();
 
-	void HandleRequest(int iTicket);
-	void Cleanup ();
-protected:
-	void AddRequestToMultiplexer (int ticket, IVistaIORequest *pRequest);
-private:
-   VistaMutex*         m_mtxPool;
-	VistaThreadPool *m_pPool;
-	VistaMultiplexerJob *m_pPlexer;
-	VistaIOMultiplexer *m_pMultiplexer;
+  void HandleRequest(int iTicket);
+  void Cleanup();
 
-	int m_iPlexerId;
+ protected:
+  void AddRequestToMultiplexer(int ticket, IVistaIORequest* pRequest);
 
-	typedef std::map<int, IVistaIORequest*> REQUESTMAP;
-	REQUESTMAP m_mpRequestMap;
+ private:
+  VistaMutex*          m_mtxPool;
+  VistaThreadPool*     m_pPool;
+  VistaMultiplexerJob* m_pPlexer;
+  VistaIOMultiplexer*  m_pMultiplexer;
+
+  int m_iPlexerId;
+
+  typedef std::map<int, IVistaIORequest*> REQUESTMAP;
+  REQUESTMAP                              m_mpRequestMap;
 };
 
 /*============================================================================*/

@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnDecomposeQuaternionNode.h" 
+#include "VdfnDecomposeQuaternionNode.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -32,43 +31,38 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VdfnDecomposeQuaternionNode::VdfnDecomposeQuaternionNode()
-: m_pOutX( new TVdfnPort<float>() )
-, m_pOutY( new TVdfnPort<float>() )
-, m_pOutZ( new TVdfnPort<float>() )
-, m_pOutW( new TVdfnPort<float>() )
-, m_pIn( NULL )
-{
-	RegisterInPortPrototype( "in", new TVdfnPortTypeCompare< TVdfnPort<VistaQuaternion> >() );
+    : m_pOutX(new TVdfnPort<float>())
+    , m_pOutY(new TVdfnPort<float>())
+    , m_pOutZ(new TVdfnPort<float>())
+    , m_pOutW(new TVdfnPort<float>())
+    , m_pIn(NULL) {
+  RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion>>());
 
-	RegisterOutPort( "x", m_pOutX );
-	RegisterOutPort( "y", m_pOutY );
-	RegisterOutPort( "z", m_pOutZ );
-	RegisterOutPort( "w", m_pOutW );
+  RegisterOutPort("x", m_pOutX);
+  RegisterOutPort("y", m_pOutY);
+  RegisterOutPort("z", m_pOutZ);
+  RegisterOutPort("w", m_pOutW);
 }
-VdfnDecomposeQuaternionNode::~VdfnDecomposeQuaternionNode()
-{
+VdfnDecomposeQuaternionNode::~VdfnDecomposeQuaternionNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnDecomposeQuaternionNode::PrepareEvaluationRun()
-{
-	m_pIn = dynamic_cast< TVdfnPort< VistaQuaternion >* >( GetInPort( "in" ) );
-	return GetIsValid();
+bool VdfnDecomposeQuaternionNode::PrepareEvaluationRun() {
+  m_pIn = dynamic_cast<TVdfnPort<VistaQuaternion>*>(GetInPort("in"));
+  return GetIsValid();
 }
 
-bool VdfnDecomposeQuaternionNode::DoEvalNode()
-{
-	const VistaQuaternion& qQuat = m_pIn->GetValueConstRef();
-	m_pOutX->SetValue( qQuat[0], GetUpdateTimeStamp() );
-	m_pOutY->SetValue( qQuat[1], GetUpdateTimeStamp() );
-	m_pOutZ->SetValue( qQuat[2], GetUpdateTimeStamp() );
-	m_pOutW->SetValue( qQuat[3], GetUpdateTimeStamp() );
-	return true;
+bool VdfnDecomposeQuaternionNode::DoEvalNode() {
+  const VistaQuaternion& qQuat = m_pIn->GetValueConstRef();
+  m_pOutX->SetValue(qQuat[0], GetUpdateTimeStamp());
+  m_pOutY->SetValue(qQuat[1], GetUpdateTimeStamp());
+  m_pOutZ->SetValue(qQuat[2], GetUpdateTimeStamp());
+  m_pOutW->SetValue(qQuat[3], GetUpdateTimeStamp());
+  return true;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

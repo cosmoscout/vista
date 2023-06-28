@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -29,67 +28,56 @@
 #include "Vista3DCSpaceNavigatorDriver.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-
 #if defined(WIN32) && !defined(VISTA3DCSPACENAVIGATORPLUGIN_STATIC)
-	#ifdef VISTA3DCSPACENAVIGATORPLUGIN_EXPORTS
-		#define VISTA3DCSPACENAVIGATORPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTA3DCSPACENAVIGATORPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTA3DCSPACENAVIGATORPLUGIN_EXPORTS
+#define VISTA3DCSPACENAVIGATORPLUGINAPI __declspec(dllexport)
+#else
+#define VISTA3DCSPACENAVIGATORPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTA3DCSPACENAVIGATORPLUGINAPI
+#define VISTA3DCSPACENAVIGATORPLUGINAPI
 #endif
 
-namespace
-{
-	Vista3DCSpaceNavigatorCreateMethod *SpFactory = NULL;
+namespace {
+Vista3DCSpaceNavigatorCreateMethod* SpFactory = NULL;
 }
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule, 
-					   DWORD  ul_reason_for_call, 
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTA3DCSPACENAVIGATORCONFIG_H
 
-
-extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if(SpFactory == NULL)
-		SpFactory = new Vista3DCSpaceNavigatorCreateMethod(fac);
-	IVistaReferenceCountable::refup( SpFactory );
-	return SpFactory;
+extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new Vista3DCSpaceNavigatorCreateMethod(fac);
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		if( IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI const char *GetDeviceClassName()
-{
-	return "3DCSPACENAVIGATOR";
+extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI const char* GetDeviceClassName() {
+  return "3DCSPACENAVIGATOR";
 }
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -98,5 +86,3 @@ extern "C" VISTA3DCSPACENAVIGATORPLUGINAPI const char *GetDeviceClassName()
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaExplicitCallbackInterface.h"
 
 /*============================================================================*/
@@ -32,28 +31,23 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaExplicitCallbackInterface::IVistaExplicitCallbackInterface()
-{
+IVistaExplicitCallbackInterface::IVistaExplicitCallbackInterface() {
 }
 
-IVistaExplicitCallbackInterface::~IVistaExplicitCallbackInterface()
-{
+IVistaExplicitCallbackInterface::~IVistaExplicitCallbackInterface() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-bool IVistaExplicitCallbackInterface::PrepareCallback()
-{
-	return true;
+bool IVistaExplicitCallbackInterface::PrepareCallback() {
+  return true;
 }
 
-bool IVistaExplicitCallbackInterface::PostCallback()
-{
-	return true;
+bool IVistaExplicitCallbackInterface::PostCallback() {
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDfnMouseWheelChangeDetectNode.h" 
+#include "VistaDfnMouseWheelChangeDetectNode.h"
 #include <VistaDataFlowNet/VdfnPort.h>
 
 #include <VistaDataFlowNet/VdfnUtil.h>
@@ -35,55 +34,44 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaDfnMouseWheelChangeDetectNode::VistaDfnMouseWheelChangeDetectNode() 
-:	IVdfnNode(),
-	m_iLastState( 0 ),
-	m_pWheelChange( new TVdfnPort<int> ),
-	m_pWheelState( NULL )
-{
-	RegisterInPortPrototype( "wheel_state",
-					new TVdfnPortTypeCompare<TVdfnPort<int> >);
-	RegisterOutPort( "wheel_change", m_pWheelChange );
+VistaDfnMouseWheelChangeDetectNode::VistaDfnMouseWheelChangeDetectNode()
+    : IVdfnNode()
+    , m_iLastState(0)
+    , m_pWheelChange(new TVdfnPort<int>)
+    , m_pWheelState(NULL) {
+  RegisterInPortPrototype("wheel_state", new TVdfnPortTypeCompare<TVdfnPort<int>>);
+  RegisterOutPort("wheel_change", m_pWheelChange);
 }
 
-VistaDfnMouseWheelChangeDetectNode::~VistaDfnMouseWheelChangeDetectNode() 
-{
+VistaDfnMouseWheelChangeDetectNode::~VistaDfnMouseWheelChangeDetectNode() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VistaDfnMouseWheelChangeDetectNode::PrepareEvaluationRun()
-{
-	m_pWheelState = VdfnUtil::GetInPortTyped<TVdfnPort<int>*>(
-													"wheel_state", this );
-	return GetIsValid();
+bool VistaDfnMouseWheelChangeDetectNode::PrepareEvaluationRun() {
+  m_pWheelState = VdfnUtil::GetInPortTyped<TVdfnPort<int>*>("wheel_state", this);
+  return GetIsValid();
 }
 
-bool VistaDfnMouseWheelChangeDetectNode::DoEvalNode()
-{
-	int iNewState = m_pWheelState->GetValue();
-	int iChange = iNewState - m_iLastState;
-	m_iLastState = iNewState ;
-	m_pWheelChange->SetValue( iChange, GetUpdateTimeStamp() );
-	return true;
+bool VistaDfnMouseWheelChangeDetectNode::DoEvalNode() {
+  int iNewState = m_pWheelState->GetValue();
+  int iChange   = iNewState - m_iLastState;
+  m_iLastState  = iNewState;
+  m_pWheelChange->SetValue(iChange, GetUpdateTimeStamp());
+  return true;
 }
 // #############################################################################
 
-VistaDfnMouseWheelChangeDetectNodeCreate::VistaDfnMouseWheelChangeDetectNodeCreate()
-{
+VistaDfnMouseWheelChangeDetectNodeCreate::VistaDfnMouseWheelChangeDetectNodeCreate() {
 }
 
-IVdfnNode *VistaDfnMouseWheelChangeDetectNodeCreate::CreateNode( 
-												const VistaPropertyList &oParams ) const
-{
-	return new VistaDfnMouseWheelChangeDetectNode();	
+IVdfnNode* VistaDfnMouseWheelChangeDetectNodeCreate::CreateNode(
+    const VistaPropertyList& oParams) const {
+  return new VistaDfnMouseWheelChangeDetectNode();
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

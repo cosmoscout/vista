@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADCONDITIONIMP_H
 #define _VISTATHREADCONDITIONIMP_H
 
@@ -29,7 +28,6 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -43,27 +41,24 @@ class IVistaMutexImp;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAINTERPROCCOMMAPI IVistaThreadConditionImp
-{
-private:
-protected:
-	IVistaThreadConditionImp();
-public:
+class VISTAINTERPROCCOMMAPI IVistaThreadConditionImp {
+ private:
+ protected:
+  IVistaThreadConditionImp();
 
-	virtual ~IVistaThreadConditionImp();
+ public:
+  virtual ~IVistaThreadConditionImp();
 
-	virtual int SignalCondition() = 0;
-	virtual int BroadcastCondition() = 0;
-	virtual int WaitForCondition(IVistaMutexImp *) = 0;
-	virtual int WaitForConditionWithTimeout(IVistaMutexImp *, int iMsecs) = 0;
+  virtual int SignalCondition()                                        = 0;
+  virtual int BroadcastCondition()                                     = 0;
+  virtual int WaitForCondition(IVistaMutexImp*)                        = 0;
+  virtual int WaitForConditionWithTimeout(IVistaMutexImp*, int iMsecs) = 0;
 
-	static IVistaThreadConditionImp *CreateThreadConditionImp();
+  static IVistaThreadConditionImp* CreateThreadConditionImp();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTATHREADCONDITIONIMP_H
-

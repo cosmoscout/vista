@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaClusterBarrier.h"
 
 /*============================================================================*/
@@ -31,17 +30,13 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaClusterBarrier::IVistaClusterBarrier( const bool bVerbose, const bool bLeader )
-: IVistaClusterSyncEntity( bVerbose, bLeader )
-{
+IVistaClusterBarrier::IVistaClusterBarrier(const bool bVerbose, const bool bLeader)
+    : IVistaClusterSyncEntity(bVerbose, bLeader) {
 }
 
-IVistaClusterBarrier::~IVistaClusterBarrier()
-{
+IVistaClusterBarrier::~IVistaClusterBarrier() {
 }
-
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-

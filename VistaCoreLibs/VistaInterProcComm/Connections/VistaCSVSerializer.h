@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACSVSERIALIZER_H
 #define _VISTACSVSERIALIZER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaAspects/VistaSerializer.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <sstream>
 
@@ -52,52 +51,49 @@
  * ( ';' is standard ) and the serializer will write values to an output string stream
  *  separated by these separator characters.
  *
- *  There could be another implementation with a "marking" character, to mark occurrences of m_cSeparator
- *  in values. In the current implementation, m_cSeparator must not occur in any value !!!
+ *  There could be another implementation with a "marking" character, to mark occurrences of
+ * m_cSeparator in values. In the current implementation, m_cSeparator must not occur in any value
+ * !!!
  */
-class VISTAINTERPROCCOMMAPI VistaCSVSerializer : public IVistaSerializer
-{
-private:
+class VISTAINTERPROCCOMMAPI VistaCSVSerializer : public IVistaSerializer {
+ private:
+  std::ostringstream m_streamOutput;
 
-	std::ostringstream m_streamOutput;
+  char m_cSeparator;
 
-	char               m_cSeparator;
-protected:
-public:
-	//! @remark m_cSeparator must not occur in any value !!!
-	VistaCSVSerializer(char separator = ';');
+ protected:
+ public:
+  //! @remark m_cSeparator must not occur in any value !!!
+  VistaCSVSerializer(char separator = ';');
 
-	virtual ~VistaCSVSerializer();
+  virtual ~VistaCSVSerializer();
 
-	const char* GetBuffer() const;
-	void GetBufferString(std::string & strBuffer) const;
-	int   GetBufferSize() const;
+  const char* GetBuffer() const;
+  void        GetBufferString(std::string& strBuffer) const;
+  int         GetBufferSize() const;
 
-	virtual int WriteShort16(  VistaType::ushort16 us16Val);
-	virtual int WriteInt32(  VistaType::sint32 si32Val) ;
-	virtual int WriteInt32(  VistaType::uint32 si32Val) ;
-	virtual int WriteInt64(  VistaType::sint64 si64Val) ;
-	virtual int WriteUInt64(  VistaType::uint64 si64Val) ;
-	virtual int WriteFloat32(  VistaType::float32 fVal);
-	virtual int WriteFloat64(  VistaType::float64 f64Val);
-	virtual int WriteDouble(  double dVal) ;
-	virtual int WriteRawBuffer( const void *pBuffer, const int iLen) ;
-	virtual int WriteBool( bool bVal) ;
+  virtual int WriteShort16(VistaType::ushort16 us16Val);
+  virtual int WriteInt32(VistaType::sint32 si32Val);
+  virtual int WriteInt32(VistaType::uint32 si32Val);
+  virtual int WriteInt64(VistaType::sint64 si64Val);
+  virtual int WriteUInt64(VistaType::uint64 si64Val);
+  virtual int WriteFloat32(VistaType::float32 fVal);
+  virtual int WriteFloat64(VistaType::float64 f64Val);
+  virtual int WriteDouble(double dVal);
+  virtual int WriteRawBuffer(const void* pBuffer, const int iLen);
+  virtual int WriteBool(bool bVal);
 
-	virtual int WriteString( const std::string &sString) ;	
-	virtual int WriteDelimitedString( const std::string &sString, char cDelim = '\0');
-	virtual int WriteEncodedString( const std::string& sString );
+  virtual int WriteString(const std::string& sString);
+  virtual int WriteDelimitedString(const std::string& sString, char cDelim = '\0');
+  virtual int WriteEncodedString(const std::string& sString);
 
-	virtual int WriteSerializable(const IVistaSerializable &obj);
+  virtual int WriteSerializable(const IVistaSerializable& obj);
 
-	void ClearBuffer();
+  void ClearBuffer();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTACSVSERIALIZER_H
-
-

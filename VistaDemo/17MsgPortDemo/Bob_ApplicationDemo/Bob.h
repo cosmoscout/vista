@@ -27,16 +27,13 @@
 /*============================================================================*/
 /* INCLUDES & DEFINES                                                         */
 /*============================================================================*/
-#include <VistaKernel/VistaSystem.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
-
+#include <VistaKernel/VistaSystem.h>
 
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaDisplaySystem.h>
 #include <VistaKernel/DisplayManager/VistaVirtualPlatform.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
-
-
 
 #include <VistaKernel/GraphicsManager/VistaGraphicsManager.h>
 #include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
@@ -55,45 +52,38 @@ class VistaSystem;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class Bob
-{
-public:
+class Bob {
+ public:
+  //@TODO. CMD Resolution not implemented!
+  enum BOB_COMMANDS {
+    CMD_RESOLUTION = 0,
+    CMD_ZOOM_IN,
+    CMD_ZOOM_OUT,
+    CMD_TURN_LEFT,
+    CMD_TURN_RIGHT,
+    CMD_MOVE_LEFT,
+    CMD_MOVE_RIGHT,
+    CMD_MOVE_UP,
+    CMD_MOVE_DOWN,
+  };
 
-	//@TODO. CMD Resolution not implemented!
-	enum BOB_COMMANDS
-	{
-		CMD_RESOLUTION = 0,
-		CMD_ZOOM_IN,
-		CMD_ZOOM_OUT,
-		CMD_TURN_LEFT,
-		CMD_TURN_RIGHT,
-		CMD_MOVE_LEFT,
-		CMD_MOVE_RIGHT,
-		CMD_MOVE_UP,
-		CMD_MOVE_DOWN,
-	};
+  // Constructor, Destructor
+  // Creates Scene
+  Bob(VistaSystem* pSys);
+  ~Bob();
 
-	// Constructor, Destructor
-	//Creates Scene
-	Bob(VistaSystem *pSys);
-	~Bob();
+  // Actually executes the command!
+  bool OnCmdAction(BOB_COMMANDS eDirection, float fValue = 0.0f);
 
-	// Actually executes the command!
-	bool OnCmdAction(BOB_COMMANDS eDirection, float fValue=0.0f);
+ private:
+  // Used to rotate/translate the scene.
+  bool Translate(const VistaVector3D& v3Trans);
+  bool Rotate(float nDeg);
 
-
-
-private:
-
-	//Used to rotate/translate the scene.
-	bool Translate(const VistaVector3D &v3Trans);
-	bool Rotate(float nDeg);
-
-
-	// VistaSystem, Scene
-	// We need them for our scene.
-	VistaSystem *m_pVistaSystem;
-	VistaVirtualPlatform *m_pVirtualPlatform;
+  // VistaSystem, Scene
+  // We need them for our scene.
+  VistaSystem*          m_pVistaSystem;
+  VistaVirtualPlatform* m_pVirtualPlatform;
 };
 
 #endif //__BOB_H

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNGETTRANSFORMNODE_H
 #define _VDFNGETTRANSFORMNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -60,76 +58,74 @@ class VdfnObjectRegistry;
  *
  *
  */
-class VISTADFNAPI VdfnGetTransformNode : public IVdfnNode
-{
-public:
-    enum eMode
-    {
-        TRANS_RELATIVE=0, /**< calls IVistaTransformable::GetTransform() */
-        TRANS_WORLD       /**< calls IVistaTransformable::GetWorldTransform() */
-    };
+class VISTADFNAPI VdfnGetTransformNode : public IVdfnNode {
+ public:
+  enum eMode {
+    TRANS_RELATIVE = 0, /**< calls IVistaTransformable::GetTransform() */
+    TRANS_WORLD         /**< calls IVistaTransformable::GetWorldTransform() */
+  };
 
+  /**
+   * empty constructor, use SetTransformable() to set the target of this node
+   * @see SetTransformable()
+   */
+  VdfnGetTransformNode();
 
-    /**
-     * empty constructor, use SetTransformable() to set the target of this node
-     * @see SetTransformable()
-     */
-	VdfnGetTransformNode();
+  /**
+   * constructor using the object registry and a name to lookup in it, as
+   * <i>Transform</i>.
+   * @param pReg a non-NULL pointer to the registry to use
+   * @param strKey a non-empty name for a transform to look up
+   */
+  VdfnGetTransformNode(VdfnObjectRegistry* pReg, const std::string& strKey);
 
-	/**
-	 * constructor using the object registry and a name to lookup in it, as
-	 * <i>Transform</i>.
-	 * @param pReg a non-NULL pointer to the registry to use
-	 * @param strKey a non-empty name for a transform to look up
-	 */
-	VdfnGetTransformNode(VdfnObjectRegistry *pReg, const std::string &strKey);
+  /**
+   * use this when you have a transformable at hand and do not want to look
+   * it up in the registry during PrepareEvaluationRun()
+   */
+  VdfnGetTransformNode(IVistaTransformable* pTransform);
 
-	/**
-	 * use this when you have a transformable at hand and do not want to look
-	 * it up in the registry during PrepareEvaluationRun()
-	 */
-	VdfnGetTransformNode( IVistaTransformable *pTransform );
+  /**
+   * @return GetTransformable() != NULL
+   */
+  bool GetIsValid() const;
 
-	/**
-	 * @return GetTransformable() != NULL
-	 */
-	bool GetIsValid() const;
+  /**
+   * when GetTransformable() == NULL and the ObjectRegistry was set, the method
+   * will try to resolve the transformable given the key during construction.
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun();
 
-	/**
-	 * when GetTransformable() == NULL and the ObjectRegistry was set, the method
-	 * will try to resolve the transformable given the key during construction.
-	 * @return GetIsValid()
-	 */
-	bool PrepareEvaluationRun();
+  /**
+   * @return the transformable set/resolved
+   */
+  IVistaTransformable* GetTransformable() const;
 
-	/**
-	 * @return the transformable set/resolved
-	 */
-	IVistaTransformable *GetTransformable() const;
+  /**
+   * set the transformable to work on for the next iteration.
+   */
+  void SetTransformable(IVistaTransformable*);
 
-	/**
-	 * set the transformable to work on for the next iteration.
-	 */
-	void SetTransformable( IVistaTransformable * );
+  /**
+   * @return the transform mode to be used
+   */
+  eMode GetTransformGetMode() const;
 
-	/**
-	 * @return the transform mode to be used
-	 */
-    eMode GetTransformGetMode() const;
+  /**
+   * @param md sets the transform mode to be used.
+   */
+  void SetTransformGetMode(eMode md);
 
-    /**
-     * @param md sets the transform mode to be used.
-     */
-    void SetTransformGetMode( eMode md );
-protected:
-	bool DoEvalNode();
+ protected:
+  bool DoEvalNode();
 
-	IVistaTransformable              *m_pTransform;
-	TVdfnPort<VistaTransformMatrix> *m_pOutMat;
+  IVistaTransformable*             m_pTransform;
+  TVdfnPort<VistaTransformMatrix>* m_pOutMat;
 
-	VdfnObjectRegistry *m_pReg;
-	std::string m_strKey;
-    eMode m_eMode;
+  VdfnObjectRegistry* m_pReg;
+  std::string         m_strKey;
+  eMode               m_eMode;
 };
 
 /*============================================================================*/
@@ -137,4 +133,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VDFNGETTRANSFORMNODE_H
-

@@ -23,19 +23,19 @@
 
 #include <GL/glew.h>
 
-#include "VistaOpenSGGLOverlayForegroundBase.h"
 #include "VistaOpenSGGLOverlayForeground.h"
+#include "VistaOpenSGGLOverlayForegroundBase.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #if defined(WIN32)
-//diable warnings from OpenSG includes
+// diable warnings from OpenSG includes
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -44,215 +44,187 @@
 #pragma warning(pop)
 #endif
 
-
 OSG_USING_NAMESPACE
 
-const BitVector  VistaOpenSGGLOverlayForegroundBase::GLOverlaysFieldMask = 
-	(TypeTraits<BitVector>::One << VistaOpenSGGLOverlayForegroundBase::GLOverlaysFieldId);
+const BitVector VistaOpenSGGLOverlayForegroundBase::GLOverlaysFieldMask =
+    (TypeTraits<BitVector>::One << VistaOpenSGGLOverlayForegroundBase::GLOverlaysFieldId);
 
-const BitVector VistaOpenSGGLOverlayForegroundBase::MTInfluenceMask = 
-	(Inherited::MTInfluenceMask) | 
-	(static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
-
+const BitVector VistaOpenSGGLOverlayForegroundBase::MTInfluenceMask =
+    (Inherited::MTInfluenceMask) | (static_cast<BitVector>(0x0) << Inherited::NextFieldId);
 
 // Field descriptions
 
 /*! \var std::string     TextForegroundBase::_mfFormats
-	The format strings for the given StatElemDesc IDs. If not set, name and value are used.
+        The format strings for the given StatElemDesc IDs. If not set, name and value are used.
 */
 /*! \var Real32          TextForegroundBase::_sfSize
-	Height of a single line, in  pixel.
+        Height of a single line, in  pixel.
 */
 /*! \var Color4f         TextForegroundBase::_sfColor
-	Color of the text.
+        Color of the text.
 */
 
 //! TextForeground description
 
-FieldDescription *VistaOpenSGGLOverlayForegroundBase::_desc[] = 
-{
-	new FieldDescription(MField<void*>::getClassType(), 
-			 "GLOverlays", 
-			 GLOverlaysFieldId, GLOverlaysFieldMask,
-			 false,
-			 (FieldAccessMethod) &VistaOpenSGGLOverlayForegroundBase::getMFGLOverlays),
+FieldDescription* VistaOpenSGGLOverlayForegroundBase::_desc[] = {
+    new FieldDescription(MField<void*>::getClassType(), "GLOverlays", GLOverlaysFieldId,
+        GLOverlaysFieldMask, false,
+        (FieldAccessMethod)&VistaOpenSGGLOverlayForegroundBase::getMFGLOverlays),
 };
 
+FieldContainerType VistaOpenSGGLOverlayForegroundBase::_type("VistaOpenSGGLOverlaysForeground",
+    "Foreground", NULL, (PrototypeCreateF)&VistaOpenSGGLOverlayForegroundBase::createEmpty,
+    VistaOpenSGGLOverlayForeground::initMethod, _desc, sizeof(_desc));
 
-FieldContainerType VistaOpenSGGLOverlayForegroundBase::_type(
-	"VistaOpenSGGLOverlaysForeground",
-	"Foreground",
-	NULL,
-	(PrototypeCreateF) &VistaOpenSGGLOverlayForegroundBase::createEmpty,
-	 VistaOpenSGGLOverlayForeground::initMethod,
-	_desc,
-	sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(TextForegroundBase, TextForegroundPtr)
+// OSG_FIELD_CONTAINER_DEF(TextForegroundBase, TextForegroundPtr)
 
 /*------------------------------ get -----------------------------------*/
 
-
-FieldContainerType &VistaOpenSGGLOverlayForegroundBase::getType(void) 
-{
-	return _type; 
-} 
-
-const FieldContainerType &VistaOpenSGGLOverlayForegroundBase::getType(void) const 
-{
-	return _type;
-} 
-
-
-FieldContainerPtr VistaOpenSGGLOverlayForegroundBase::shallowCopy(void) const 
-{ 
-	VistaOpenSGGLOverlayForegroundPtr returnValue; 
-
-	newPtr(returnValue, dynamic_cast<const VistaOpenSGGLOverlayForeground *>(this)); 
-
-	return returnValue; 
+FieldContainerType& VistaOpenSGGLOverlayForegroundBase::getType(void) {
+  return _type;
 }
 
-UInt32 VistaOpenSGGLOverlayForegroundBase::getContainerSize(void) const 
-{ 
-	return sizeof(VistaOpenSGGLOverlayForeground); 
+const FieldContainerType& VistaOpenSGGLOverlayForegroundBase::getType(void) const {
+  return _type;
 }
 
+FieldContainerPtr VistaOpenSGGLOverlayForegroundBase::shallowCopy(void) const {
+  VistaOpenSGGLOverlayForegroundPtr returnValue;
+
+  newPtr(returnValue, dynamic_cast<const VistaOpenSGGLOverlayForeground*>(this));
+
+  return returnValue;
+}
+
+UInt32 VistaOpenSGGLOverlayForegroundBase::getContainerSize(void) const {
+  return sizeof(VistaOpenSGGLOverlayForeground);
+}
 
 //#if !defined(OSG_FIXED_MFIELDSYNC)
-void VistaOpenSGGLOverlayForegroundBase::executeSync(      FieldContainer &other,
-							   const BitVector      &whichField)
-{
-	this->executeSyncImpl((VistaOpenSGGLOverlayForegroundBase *) &other, whichField);
+void VistaOpenSGGLOverlayForegroundBase::executeSync(
+    FieldContainer& other, const BitVector& whichField) {
+  this->executeSyncImpl((VistaOpenSGGLOverlayForegroundBase*)&other, whichField);
 }
 //#else
 /*void TextForegroundBase::executeSync(      FieldContainer &other,
-									const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+                                                                        const BitVector &whichField,
+const SyncInfo       &sInfo     )
 {
-	this->executeSyncImpl((TextForegroundBase *) &other, whichField, sInfo);
+        this->executeSyncImpl((TextForegroundBase *) &other, whichField, sInfo);
 }
-void TextForegroundBase::execBeginEdit(const BitVector &whichField, 
-											UInt32     uiAspect,
-											UInt32     uiContainerSize) 
+void TextForegroundBase::execBeginEdit(const BitVector &whichField,
+                                                                                        UInt32
+uiAspect, UInt32     uiContainerSize)
 {
-	this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+        this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
 void TextForegroundBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
-	Inherited::onDestroyAspect(uiId, uiAspect);
+        Inherited::onDestroyAspect(uiId, uiAspect);
 
-	_mfFormats.terminateShare(uiAspect, this->getContainerSize());
-	}*/
+        _mfFormats.terminateShare(uiAspect, this->getContainerSize());
+        }*/
 //#endif
 
 /*------------------------- constructors ----------------------------------*/
 
 #ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
+#pragma warning(disable : 383)
 #endif
 
-VistaOpenSGGLOverlayForegroundBase::VistaOpenSGGLOverlayForegroundBase(void) :
-//    _mfTexts                (), 
-	Inherited() 
-{
+VistaOpenSGGLOverlayForegroundBase::VistaOpenSGGLOverlayForegroundBase(void)
+    : //    _mfTexts                (),
+    Inherited() {
 }
 
 #ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
+#pragma warning(default : 383)
 #endif
 
-VistaOpenSGGLOverlayForegroundBase::VistaOpenSGGLOverlayForegroundBase(const VistaOpenSGGLOverlayForegroundBase &source) 
-: Inherited               (source)
-{
+VistaOpenSGGLOverlayForegroundBase::VistaOpenSGGLOverlayForegroundBase(
+    const VistaOpenSGGLOverlayForegroundBase& source)
+    : Inherited(source) {
 }
 
 /*-------------------------- destructors ----------------------------------*/
 
-VistaOpenSGGLOverlayForegroundBase::~VistaOpenSGGLOverlayForegroundBase(void)
-{
+VistaOpenSGGLOverlayForegroundBase::~VistaOpenSGGLOverlayForegroundBase(void) {
 }
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 VistaOpenSGGLOverlayForegroundBase::getBinSize(const BitVector &whichField)
-{
-	UInt32 returnValue = Inherited::getBinSize(whichField);
+UInt32 VistaOpenSGGLOverlayForegroundBase::getBinSize(const BitVector& whichField) {
+  UInt32 returnValue = Inherited::getBinSize(whichField);
 
-	if(FieldBits::NoField != (GLOverlaysFieldMask & whichField))
-	{
-		returnValue += m_mfGLOverlays.getBinSize();
-	}
-	
-	return returnValue;
+  if (FieldBits::NoField != (GLOverlaysFieldMask & whichField)) {
+    returnValue += m_mfGLOverlays.getBinSize();
+  }
+
+  return returnValue;
 }
 
-void VistaOpenSGGLOverlayForegroundBase::copyToBin(      BinaryDataHandler &pMem,
-							const BitVector         &whichField)
-{
-	Inherited::copyToBin(pMem, whichField);
+void VistaOpenSGGLOverlayForegroundBase::copyToBin(
+    BinaryDataHandler& pMem, const BitVector& whichField) {
+  Inherited::copyToBin(pMem, whichField);
 
-	if(FieldBits::NoField != (GLOverlaysFieldMask & whichField))
-	{
-		m_mfGLOverlays.copyToBin(pMem);
-	}
+  if (FieldBits::NoField != (GLOverlaysFieldMask & whichField)) {
+    m_mfGLOverlays.copyToBin(pMem);
+  }
 }
 
-void VistaOpenSGGLOverlayForegroundBase::copyFromBin(      BinaryDataHandler &pMem,
-							   const BitVector    &whichField)
-{
-	Inherited::copyFromBin(pMem, whichField);
+void VistaOpenSGGLOverlayForegroundBase::copyFromBin(
+    BinaryDataHandler& pMem, const BitVector& whichField) {
+  Inherited::copyFromBin(pMem, whichField);
 
-	if(FieldBits::NoField != (GLOverlaysFieldMask & whichField))
-	{
-		m_mfGLOverlays.copyFromBin(pMem);
-	}
+  if (FieldBits::NoField != (GLOverlaysFieldMask & whichField)) {
+    m_mfGLOverlays.copyFromBin(pMem);
+  }
 }
 
 //#if !defined(OSG_FIXED_MFIELDSYNC)
-void VistaOpenSGGLOverlayForegroundBase::executeSyncImpl(      VistaOpenSGGLOverlayForegroundBase *pOther,
-							   const BitVector         &whichField)
-{
-	Inherited::executeSyncImpl(pOther, whichField);
+void VistaOpenSGGLOverlayForegroundBase::executeSyncImpl(
+    VistaOpenSGGLOverlayForegroundBase* pOther, const BitVector& whichField) {
+  Inherited::executeSyncImpl(pOther, whichField);
 
-	if(FieldBits::NoField != (GLOverlaysFieldMask & whichField))
-		m_mfGLOverlays.syncWith(pOther->m_mfGLOverlays);
+  if (FieldBits::NoField != (GLOverlaysFieldMask & whichField))
+    m_mfGLOverlays.syncWith(pOther->m_mfGLOverlays);
 }
 //#else
 /*void TextForegroundBase::executeSyncImpl(      TextForegroundBase *pOther,
-										const BitVector         &whichField,
-										const SyncInfo          &sInfo      )
+                                                                                const BitVector
+&whichField, const SyncInfo          &sInfo      )
 {
 
-	Inherited::executeSyncImpl(pOther, whichField, sInfo);
+        Inherited::executeSyncImpl(pOther, whichField, sInfo);
 
-	if(FieldBits::NoField != (SizeFieldMask & whichField))
-		_sfSize.syncWith(pOther->_sfSize);
+        if(FieldBits::NoField != (SizeFieldMask & whichField))
+                _sfSize.syncWith(pOther->_sfSize);
 
-	if(FieldBits::NoField != (ColorFieldMask & whichField))
-		_sfColor.syncWith(pOther->_sfColor);
+        if(FieldBits::NoField != (ColorFieldMask & whichField))
+                _sfColor.syncWith(pOther->_sfColor);
 
 
-	if(FieldBits::NoField != (FormatsFieldMask & whichField))
-		_mfFormats.syncWith(pOther->_mfFormats, sInfo);
+        if(FieldBits::NoField != (FormatsFieldMask & whichField))
+                _mfFormats.syncWith(pOther->_mfFormats, sInfo);
 
 
 }
 
-void TextForegroundBase::execBeginEditImpl (const BitVector &whichField, 
-												 UInt32     uiAspect,
-												 UInt32     uiContainerSize)
+void TextForegroundBase::execBeginEditImpl (const BitVector &whichField,
+                                                                                                 UInt32
+uiAspect, UInt32     uiContainerSize)
 {
-	Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+        Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
-	if(FieldBits::NoField != (FormatsFieldMask & whichField))
-		_mfFormats.beginEdit(uiAspect, uiContainerSize);
+        if(FieldBits::NoField != (FormatsFieldMask & whichField))
+                _mfFormats.beginEdit(uiAspect, uiContainerSize);
 
-	}*/
+        }*/
 //#endif
 
-DataType FieldDataTraits<VistaOpenSGGLOverlayForegroundPtr>::_type("VistaOpenSGGLOverlayForegroundPtr", "ForegroundPtr");
-
+DataType FieldDataTraits<VistaOpenSGGLOverlayForegroundPtr>::_type(
+    "VistaOpenSGGLOverlayForegroundPtr", "ForegroundPtr");
 
 /*------------------------------------------------------------------------*/
 /*                              cvs id's                                  */
@@ -262,5 +234,5 @@ DataType FieldDataTraits<VistaOpenSGGLOverlayForegroundPtr>::_type("VistaOpenSGG
 #endif
 
 #ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
+#pragma warning(disable : 177)
 #endif

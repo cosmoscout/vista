@@ -169,4 +169,3 @@ vista_create_doxygen_target( "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/Doxyfile
 
 # install license files
 install( FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.LESSER" "README" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/VistaCoreLibs" )
-

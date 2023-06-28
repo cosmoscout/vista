@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTABASETYPES_H
 #define _VISTABASETYPES_H
 
@@ -32,91 +31,97 @@
 /*============================================================================*/
 
 #if !defined(WIN32)
-	#if defined(HANDLE)
-		#error HANDLE already defined?
-	#else
-		typedef long unsigned int HANDLE;
-	#endif
+#if defined(HANDLE)
+#error HANDLE already defined?
 #else
-	#if !defined(HANDLE)
-		typedef void* HANDLE;
-	#endif
+typedef long unsigned int HANDLE;
+#endif
+#else
+#if !defined(HANDLE)
+typedef void* HANDLE;
+#endif
 #endif
 
 #if !defined(WIN32)
-	#if !defined(SOCKET)
-		typedef int SOCKET;
-	#endif
+#if !defined(SOCKET)
+typedef int SOCKET;
+#endif
 #endif
 
+namespace VistaType {
+typedef signed int         sint32;
+typedef unsigned int       uint32;
+typedef unsigned short     ushort16;
+typedef short              sshort16;
+typedef float              float32;
+typedef unsigned char      byte;
+typedef signed long long   sint64;
+typedef unsigned long long uint64;
+typedef double             float64;
 
+typedef double microtime;  /**< sec since arbitrary point in time            */
+typedef double systemtime; /**< sec since 01.01.1970
+                                                                                               (less
+                              precise than microtime)      */
+typedef uint64 microstamp; /**< continuous counter without specific time interval */
 
+/**
+ * a union datatype of 32 bits width
+ *
+ * may be used for automatic conversion into unsigned integer
+ * which is the most suitable datatype for bytewise manipulation
+ * (like byteorder swapping, etc.)
+ */
+union VISTABASEAPI val32 {
+  /// constructor for automatic conversion of float values
+  val32(const float32 nInit)
+      : asFloat(nInit) {
+  }
 
-namespace VistaType
-{
-	typedef signed int              sint32;
-	typedef unsigned int            uint32;
-	typedef unsigned short		  ushort16;
-	typedef short			      sshort16;
-	typedef float                  float32;
-	typedef unsigned char             byte;
-	typedef signed long long        sint64;
-	typedef unsigned long long      uint64;
-	typedef double                 float64;
+  /// constructor for automatic conversion of long values
+  val32(const sint32 nInit)
+      : asSignedInt(nInit) {
+  }
 
-	typedef double  microtime;   /**< sec since arbitrary point in time            */
-	typedef double  systemtime;  /**< sec since 01.01.1970
-													 (less precise than microtime)      */
-	typedef uint64  microstamp;  /**< continuous counter without specific time interval */
+  /// explicit conversion constructor (only for internal use)
+  val32(const uint32 nInit)
+      : asUnsignedInt(nInit) {
+  }
 
-	/**
-	 * a union datatype of 32 bits width
-	 *
-	 * may be used for automatic conversion into unsigned integer
-	 * which is the most suitable datatype for bytewise manipulation
-	 * (like byteorder swapping, etc.)
-	 */
-	union VISTABASEAPI val32
-	{
-		/// constructor for automatic conversion of float values
-		val32( const float32 nInit ) : asFloat( nInit ) {}
+  float32 asFloat;
+  sint32  asSignedInt;
+  uint32  asUnsignedInt;
+  byte    asBytes[4];
+};
 
-		/// constructor for automatic conversion of long values
-		val32( const sint32  nInit ) : asSignedInt( nInit ) {}
+/**
+ * a union datatype of 64 bits width
+ *
+ * may be used for automatic conversion into unsigned integer
+ * which is the most suitable datatype for bytewise manipulation
+ * (like byteorder swapping, etc.)
+ */
+union VISTABASEAPI val64 {
+  /// constructor for automatic conversion of double values
+  val64(const float64 nInit)
+      : asFloat(nInit) {
+  }
 
-		/// explicit conversion constructor (only for internal use)
-		val32( const uint32  nInit ) : asUnsignedInt( nInit ) {}
+  /// constructor for automatic conversion of long long values
+  val64(const sint64 nInit)
+      : asSignedInt(nInit) {
+  }
 
-		float32			asFloat;
-		sint32			asSignedInt;
-		uint32			asUnsignedInt;
-		byte			asBytes[4];
-	};
+  /// explicit conversion constructor (only for internal use)
+  explicit val64(const uint64 nInit)
+      : asUnsignedInt(nInit) {
+  }
 
-	/**
-	 * a union datatype of 64 bits width
-	 *
-	 * may be used for automatic conversion into unsigned integer
-	 * which is the most suitable datatype for bytewise manipulation
-	 * (like byteorder swapping, etc.)
-	 */
-	union VISTABASEAPI val64
-	{
-		/// constructor for automatic conversion of double values
-		val64( const float64 nInit ) : asFloat( nInit ) {}
-
-		/// constructor for automatic conversion of long long values
-		val64( const sint64  nInit ) : asSignedInt( nInit ) {}
-
-		/// explicit conversion constructor (only for internal use)
-		explicit val64( const uint64  nInit ) : asUnsignedInt( nInit ) {}
-
-
-		float64			asFloat;
-		sint64			asSignedInt;
-		uint64			asUnsignedInt;
-		byte			asBytes[8];
-	};
+  float64 asFloat;
+  sint64  asSignedInt;
+  uint64  asUnsignedInt;
+  byte    asBytes[8];
+};
 
 } // namespace VistaType
 

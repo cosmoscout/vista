@@ -21,20 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERSENSORMAPPINGASPECT_H
 #define _VISTADRIVERSENSORMAPPINGASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -63,176 +61,169 @@ class IVistaDriverCreationMethod;
          to the type management API of the sensor mapping and replace by
          referencing the creation method API respectively.
  */
-class VISTADEVICEDRIVERSAPI VistaDriverSensorMappingAspect : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	VistaDriverSensorMappingAspect(IVistaDriverCreationMethod *);
-	virtual ~VistaDriverSensorMappingAspect();
+class VISTADEVICEDRIVERSAPI VistaDriverSensorMappingAspect
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  VistaDriverSensorMappingAspect(IVistaDriverCreationMethod*);
+  virtual ~VistaDriverSensorMappingAspect();
 
+  /**
+   * a driver calls this method to register a new type and a human readable
+   * type name, the number of bytes for a single measures and an estimator
+   * for the update frequency of the sensor type (in Hz) as well as the
+   * transcoder factory to create new sensors of this type.
+   * @return the type id for this sensor type
+   * @see GetTypeId()
+   * @see GetMeasureSizeForType()
+   * @see GetUpdateRateEstimatorForType()
+   */
+  unsigned int RegisterType(const std::string& strTypeName);
 
-	/**
-	 * a driver calls this method to register a new type and a human readable
-	 * type name, the number of bytes for a single measures and an estimator
-	 * for the update frequency of the sensor type (in Hz) as well as the
-	 * transcoder factory to create new sensors of this type.
-	 * @return the type id for this sensor type
-	 * @see GetTypeId()
-	 * @see GetMeasureSizeForType()
-	 * @see GetUpdateRateEstimatorForType()
-	 */
-	unsigned int RegisterType(const std::string &strTypeName);
+  //	/**
+  //	 * retrieve a transcoder factory for a given type symbol
+  //	 * @param strTypeName the symbolic name to look up
+  //	 * @return NULL or the factory
+  //	 */
+  //	IVistaMeasureTranscoderFactory *GetTranscoderFactoryForType(const std::string &strTypeName)
+  //const;
+  //
+  //	/**
+  //	 * retrieve a transcoder factory for a given type id
+  //	 * @param nTypeId the type id to look
+  //	 * @return NULL or the factory
+  //	 */
+  //	IVistaMeasureTranscoderFactory *GetTranscoderFactoryForType(unsigned int nTypeId) const;
 
-//	/**
-//	 * retrieve a transcoder factory for a given type symbol
-//	 * @param strTypeName the symbolic name to look up
-//	 * @return NULL or the factory
-//	 */
-//	IVistaMeasureTranscoderFactory *GetTranscoderFactoryForType(const std::string &strTypeName) const;
-//
-//	/**
-//	 * retrieve a transcoder factory for a given type id
-//	 * @param nTypeId the type id to look
-//	 * @return NULL or the factory
-//	 */
-//	IVistaMeasureTranscoderFactory *GetTranscoderFactoryForType(unsigned int nTypeId) const;
+  /**
+   * upon destruction of the driver, this is a cleanup routine
+   * @return true if a type as given was unregistered
+   */
+  bool UnregisterType(const std::string& strType);
 
+  /**
+   * retrieve the collection of registered type names.
+   */
+  std::list<std::string> GetTypeNames() const;
 
-	/**
-	 * upon destruction of the driver, this is a cleanup routine
-	 * @return true if a type as given was unregistered
-	 */
-	bool         UnregisterType(const std::string &strType);
+  /**
+   * check for the existence of a given type using the symbolic name
+   */
+  bool GetIsType(const std::string& sTypeName) const;
 
-	/**
-	 * retrieve the collection of registered type names.
-	 */
-	std::list<std::string> GetTypeNames() const;
+  /**
+   * get the type id for a given symbol
+   * @see RegisterType()
+   */
+  unsigned int GetTypeId(const std::string& sTypeName) const;
 
-	/**
-	 * check for the existence of a given type using the symbolic name
-	 */
-	bool         GetIsType(const std::string &sTypeName) const;
+  //	/**
+  //	 * retrieve the measure size for a sensor of type strTypeName
+  //	 * @return -1 (~0) for a non registered type
+  //	 */
+  //	unsigned int GetMeasureSizeForType(const std::string &strTypeName) const;
+  //
+  //	/**
+  //	 * retrieve the measure size for a sensor type id nType
+  //	 * @return -1 (~0) for a non registered type
+  //	 */
+  //	unsigned int GetMeasureSizeForType(unsigned int nType) const;
+  //
+  //	/**
+  //	 * retrieve the update estimator for a type with id nType
+  //	 * @return -1 (~0) for a non registered type
+  //	 */
+  //	unsigned int GetUpdateRateEstimatorForType(unsigned int nType) const;
 
-	/**
-	 * get the type id for a given symbol
-	 * @see RegisterType()
-	 */
-	unsigned int GetTypeId(const std::string &sTypeName) const;
+  /**
+   * this call makes only sense when all ids are globally ordered
+   * but the driver knows different types of sensors!
+   * in case an id is a (type,sensor)-tuple, this method will find
+   * the match for the first id with the lowest type!
+   * @return ~0 iff no nRawSensorId registered in all the types.
+   */
+  unsigned int GetSensorIdByRawId(unsigned int nRawSensorId) const;
 
-//	/**
-//	 * retrieve the measure size for a sensor of type strTypeName
-//	 * @return -1 (~0) for a non registered type
-//	 */
-//	unsigned int GetMeasureSizeForType(const std::string &strTypeName) const;
-//
-//	/**
-//	 * retrieve the measure size for a sensor type id nType
-//	 * @return -1 (~0) for a non registered type
-//	 */
-//	unsigned int GetMeasureSizeForType(unsigned int nType) const;
-//
-//	/**
-//	 * retrieve the update estimator for a type with id nType
-//	 * @return -1 (~0) for a non registered type
-//	 */
-//	unsigned int GetUpdateRateEstimatorForType(unsigned int nType) const;
+  /**
+   * enables to retrieve the raw id by giving the logical id.
+   * This call makes sense when the driver has only one available
+   * mapping, but sensors may be optional.
+   * This method may be slow.
+   * @param nType the sensor type to search
+   * @param nMappedId the logical id to search for
+   * @return the physical id or ~0 when the id was not mapped
+   */
+  unsigned int GetRawIdByMappedId(unsigned int nType, unsigned int nMappedId) const;
 
+  /**
+   * retrieve the logical id for a physical sensor of a given type
+   * @param nSensorType the type of sensor to look up
+   * @param nRawSensorId the physical id (as is determined by the driver)
+   * @see IVistaDeviceDriver::AddSensor()
+   * @return the logical sensor id
+   */
+  unsigned int GetSensorId(unsigned int nSensorType, unsigned int nRawSensorId) const;
 
-	/**
-	 * this call makes only sense when all ids are globally ordered
-	 * but the driver knows different types of sensors!
-	 * in case an id is a (type,sensor)-tuple, this method will find
-	 * the match for the first id with the lowest type!
-	 * @return ~0 iff no nRawSensorId registered in all the types.
-	 */
- 	unsigned int GetSensorIdByRawId( unsigned int nRawSensorId ) const;
+  /**
+   * create a mapping from a raw id (determined by driver upon a call to
+   * IVistaDriver::AddSensor()) and a LOGICAL id, maybe determined by the device
+   * itself, all for a different type range
+   * @param nSensorType the type of the sensor id to map
+   * @param nRawSensorId the raw id , as determined by the driver
+   * @param nSensorId the logical sensor id we want to lookup
+   */
+  bool SetSensorId(unsigned int nSensorType, unsigned int nRawSensorId, unsigned int nSensorId);
 
- 	/**
- 	 * enables to retrieve the raw id by giving the logical id.
- 	 * This call makes sense when the driver has only one available
- 	 * mapping, but sensors may be optional.
- 	 * This method may be slow.
- 	 * @param nType the sensor type to search
- 	 * @param nMappedId the logical id to search for
- 	 * @return the physical id or ~0 when the id was not mapped
- 	 */
- 	unsigned int GetRawIdByMappedId( unsigned int nType,
- 			                         unsigned int nMappedId ) const;
+  /**
+   * retrieve the number of registered sensors for a given type.
+   * maybe useful for debugging.
+   * @return 0 for a non registered type.
+   */
+  unsigned int GetNumRegisteredSensorsForType(unsigned int nType) const;
 
- 	/**
- 	 * retrieve the logical id for a physical sensor of a given type
- 	 * @param nSensorType the type of sensor to look up
- 	 * @param nRawSensorId the physical id (as is determined by the driver)
- 	 * @see IVistaDeviceDriver::AddSensor()
- 	 * @return the logical sensor id
- 	 */
-	unsigned int GetSensorId(unsigned int nSensorType,
-							 unsigned int nRawSensorId) const;
+  unsigned int GetNumberOfRegisteredTypes() const;
 
-	/**
-	 * create a mapping from a raw id (determined by driver upon a call to
-	 * IVistaDriver::AddSensor()) and a LOGICAL id, maybe determined by the device
-	 * itself, all for a different type range
-	 * @param nSensorType the type of the sensor id to map
-	 * @param nRawSensorId the raw id , as determined by the driver
-	 * @param nSensorId the logical sensor id we want to lookup
-	 */
-	bool SetSensorId(unsigned int nSensorType,
-					 unsigned int nRawSensorId,
-					 unsigned int nSensorId);
+  /**
+   * purge the complete mapping, but keep sensors
+   * @return true
+   * @todo what's this for?
+   */
+  bool ClearSensorMapping();
 
-	/**
-	 * retrieve the number of registered sensors for a given type.
-	 * maybe useful for debugging.
-	 * @return 0 for a non registered type.
-	 */
-	unsigned int GetNumRegisteredSensorsForType(unsigned int nType) const;
+  /**
+   * purge the type mapping, but keep sensor mapping
+   * @return true
+   * @todo what's this for?
+   */
+  bool ClearTypeMapping();
 
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int          GetAspectId();
+  static void         SetAspectId(int);
+  static unsigned int INVALID_TYPE;
+  static unsigned int INVALID_ID;
 
-	unsigned int GetNumberOfRegisteredTypes() const;
+ protected:
+ private:
+  static int m_nAspectId;
 
-	/**
-	 * purge the complete mapping, but keep sensors
-	 * @return true
-	 * @todo what's this for?
-	 */
-	bool ClearSensorMapping();
+  typedef std::map<unsigned int, unsigned int> IDMAP;
+  class _sL {
+   public:
+    _sL(const std::string& strTypeName)
+        : m_strTypeName(strTypeName) {
+    }
 
-	/**
-	 * purge the type mapping, but keep sensor mapping
-	 * @return true
-	 * @todo what's this for?
-	 */
-	bool ClearTypeMapping();
+    IDMAP       m_mapIds; /**< from logical to real */
+    std::string m_strTypeName;
+    //		unsigned int m_nMeasureSize,
+    //					 m_nUpdateEstimator;
+    //		IVistaMeasureTranscoderFactory *m_pFac;
+  };
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
-	static unsigned int INVALID_TYPE;
-	static unsigned int INVALID_ID;
-protected:
-private:
-	static int m_nAspectId;
-
-	typedef std::map<unsigned int, unsigned int> IDMAP;
-	class _sL
-	{
-	public:
-		_sL(const std::string &strTypeName)
-			: m_strTypeName(strTypeName)
-		{}
-
-		IDMAP        m_mapIds; /**< from logical to real */
-		std::string  m_strTypeName;
-//		unsigned int m_nMeasureSize,
-//					 m_nUpdateEstimator;
-//		IVistaMeasureTranscoderFactory *m_pFac;
-	};
-
-	typedef std::vector<_sL> MAPVEC;
-	MAPVEC m_vecTypeMapping;
+  typedef std::vector<_sL> MAPVEC;
+  MAPVEC                   m_vecTypeMapping;
 };
 
 /*============================================================================*/
@@ -240,4 +231,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADRIVERSENSORMAPPINGASPECT_H
-

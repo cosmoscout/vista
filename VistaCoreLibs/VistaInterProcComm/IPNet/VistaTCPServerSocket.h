@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPSERVERSOCKET_H
 #define _VISTATCPSERVERSOCKET_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaTCPSocket.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -43,50 +42,43 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
 /**
  * A TCP-Socket that can be set into Listen-state in order to accept incoming
  * connections. Note that it has to be bound first! Use VistaTCPServer in case
  * you have simple or common usage for tcp-servers.
  */
-class VISTAINTERPROCCOMMAPI VistaTCPServerSocket : public VistaTCPSocket
-{
-private:
-protected:
+class VISTAINTERPROCCOMMAPI VistaTCPServerSocket : public VistaTCPSocket {
+ private:
+ protected:
+ public:
+  /**
+   * constructs a VistaTCPServerSocket.
+   */
+  VistaTCPServerSocket();
 
-public:
+  /**
+   * deconstructs it, but does NOT close it!
+   */
+  virtual ~VistaTCPServerSocket();
 
-	/**
-	 * constructs a VistaTCPServerSocket.
-	 */
-	VistaTCPServerSocket();
+  /**
+   * turn into listen-state. The backlog is the number that determines the number of
+   * clients that can request connections at the same time before clients get rejected.
+   * non-rejected clients are queued and returned at the next call to accept
+   * @param iBacklog the number of accepted requests that can be served concurrently
+   * @return true iff there was no error ;)
+   */
+  bool Listen(int iBacklog);
 
-	/**
-	 * deconstructs it, but does NOT close it!
-	 */
-	virtual ~VistaTCPServerSocket();
-
-
-	/**
-	 * turn into listen-state. The backlog is the number that determines the number of
-	 * clients that can request connections at the same time before clients get rejected.
-	 * non-rejected clients are queued and returned at the next call to accept
-	 * @param iBacklog the number of accepted requests that can be served concurrently
-	 * @return true iff there was no error ;)
-	 */
-	bool Listen(int iBacklog);
-
-	/**
-	 * blocks this server and returns when a tcp-client requested a connect.
-	 * @return a valid tcp-(client)-socket or NULL in case of ERROR (always check!)
-	 */
-	VistaTCPSocket *Accept() const;
+  /**
+   * blocks this server and returns when a tcp-client requested a connect.
+   * @return a valid tcp-(client)-socket or NULL in case of ERROR (always check!)
+   */
+  VistaTCPSocket* Accept() const;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

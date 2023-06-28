@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA_OPENSG_TEXTFOREGROUND_FIELDS_H_
 #define _VISTA_OPENSG_TEXTFOREGROUND_FIELDS_H_
 
@@ -32,10 +31,10 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -57,20 +56,24 @@ class VistaOpenSGTextForeground;
 typedef FCPtr<ForegroundPtr, VistaOpenSGTextForeground> VistaOpenSGTextForegroundPtr;
 
 template <>
-struct FieldDataTraits<VistaOpenSGTextForegroundPtr> :
-	public FieldTraitsRecurseMapper<VistaOpenSGTextForegroundPtr, true>
-{
-	static DataType             _type;
+struct FieldDataTraits<VistaOpenSGTextForegroundPtr>
+    : public FieldTraitsRecurseMapper<VistaOpenSGTextForegroundPtr, true> {
+  static DataType _type;
 
-	enum                        { StringConvertable = 0x00 };
-	enum                        { bHasParent        = 0x01 };
+  enum { StringConvertable = 0x00 };
+  enum { bHasParent = 0x01 };
 
-	static DataType &getType (void) { return _type;        }
+  static DataType& getType(void) {
+    return _type;
+  }
 
-	static const char     *getSName(void) { return "SFTextForegroundPtr"; }
-	static const char     *getMName(void) { return "MFTextForegroundPtr"; }
+  static const char* getSName(void) {
+    return "SFTextForegroundPtr";
+  }
+  static const char* getMName(void) {
+    return "MFTextForegroundPtr";
+  }
 };
-
 
 typedef SField<VistaOpenSGTextForegroundPtr> SFVistaOpenSGTextForegroundPtr;
 typedef MField<VistaOpenSGTextForegroundPtr> MFVistaOpenSGTextForegroundPtr;

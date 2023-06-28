@@ -32,7 +32,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
 #ifndef _OSGVistaOpenGLDrawCoreFIELDS_H_
 #define _OSGVistaOpenGLDrawCoreFIELDS_H_
 #ifdef __sgi
@@ -42,10 +41,10 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 #include <OpenSG/OSGConfig.h>
 
@@ -62,7 +61,7 @@ OSG_BEGIN_NAMESPACE
 
 class VistaOpenGLDrawCore;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
+#if !defined(OSG_DO_DOC) // created as a dummy class, remove to prevent doubles
 //! VistaOpenGLDrawCorePtr
 
 typedef FCPtr<MaterialDrawablePtr, VistaOpenGLDrawCore> VistaOpenGLDrawCorePtr;
@@ -75,18 +74,23 @@ typedef FCPtr<MaterialDrawablePtr, VistaOpenGLDrawCore> VistaOpenGLDrawCorePtr;
 #endif
 
 template <>
-struct FieldDataTraits<VistaOpenGLDrawCorePtr> :
-    public FieldTraitsRecurseMapper<VistaOpenGLDrawCorePtr, true>
-{
-    static DataType             _type;
+struct FieldDataTraits<VistaOpenGLDrawCorePtr>
+    : public FieldTraitsRecurseMapper<VistaOpenGLDrawCorePtr, true> {
+  static DataType _type;
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+  enum { StringConvertable = 0x00 };
+  enum { bHasParent = 0x01 };
 
-    static DataType   &getType (void) { return _type;        }
+  static DataType& getType(void) {
+    return _type;
+  }
 
-    static const char *getSName(void) { return "SFVistaOpenGLDrawCorePtr"; }
-    static const char *getMName(void) { return "MFVistaOpenGLDrawCorePtr"; }
+  static const char* getSName(void) {
+    return "SFVistaOpenGLDrawCorePtr";
+  }
+  static const char* getMName(void) {
+    return "MFVistaOpenGLDrawCorePtr";
+  }
 };
 
 #if !defined(OSG_DOC_DEV_TRAITS)
@@ -97,11 +101,9 @@ struct FieldDataTraits<VistaOpenGLDrawCorePtr> :
 
 #endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 
-
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
 typedef SField<VistaOpenGLDrawCorePtr> SFVistaOpenGLDrawCorePtr;
 #endif
-
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
 typedef MField<VistaOpenGLDrawCorePtr> MFVistaOpenGLDrawCorePtr;

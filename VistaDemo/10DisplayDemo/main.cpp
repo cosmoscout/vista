@@ -21,27 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "DisplayDemoAppl.h"
 
 #include <VistaBase/VistaExceptionBase.h>
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		DisplayDemoAppl demoAppl( argc, argv );
-		// start universe as an endless loop
-		demoAppl.Run ();
-	}
-	catch ( VistaExceptionBase &e )
-	{
-		e.PrintException();
-	}
-	catch ( std::exception &e )
-	{
-		std::cerr << "Exception:" << e.what() << std::endl;
-	}	
+int main(int argc, char* argv[]) {
+  try {
+    DisplayDemoAppl demoAppl(argc, argv);
+    // start universe as an endless loop
+    demoAppl.Run();
+  } catch (VistaExceptionBase& e) { e.PrintException(); } catch (std::exception& e) {
+    std::cerr << "Exception:" << e.what() << std::endl;
+  }
 }
-
-

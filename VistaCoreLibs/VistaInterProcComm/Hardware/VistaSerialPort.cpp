@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSerialPort.h"
 #include "Imp/VistaSerialPortImp.h"
 
@@ -39,172 +38,137 @@ using namespace std;
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-VistaSerialPort::VistaSerialPort()
-{
-	m_pImp = VistaSerialPortImp::CreateSerialPortImp();
+VistaSerialPort::VistaSerialPort() {
+  m_pImp = VistaSerialPortImp::CreateSerialPortImp();
 }
 
-VistaSerialPort::VistaSerialPort(const string &sPortName)
-{
-	m_pImp = VistaSerialPortImp::CreateSerialPortImp();
-	SetPortByName(sPortName);
+VistaSerialPort::VistaSerialPort(const string& sPortName) {
+  m_pImp = VistaSerialPortImp::CreateSerialPortImp();
+  SetPortByName(sPortName);
 }
 
-
-VistaSerialPort::~VistaSerialPort()
-{
-	CloseSerialPort();
-	VistaSerialPortImp::DestroySerialPortImp(m_pImp);
-	m_pImp = (VistaSerialPortImp*)0xDEADBEEF;
+VistaSerialPort::~VistaSerialPort() {
+  CloseSerialPort();
+  VistaSerialPortImp::DestroySerialPortImp(m_pImp);
+  m_pImp = (VistaSerialPortImp*)0xDEADBEEF;
 }
 
-bool VistaSerialPort::OpenSerialPort()
-{
-	return m_pImp->OpenSerialPort();
+bool VistaSerialPort::OpenSerialPort() {
+  return m_pImp->OpenSerialPort();
 }
 
-bool VistaSerialPort::CloseSerialPort()
-{
-	return m_pImp->CloseSerialPort();
+bool VistaSerialPort::CloseSerialPort() {
+  return m_pImp->CloseSerialPort();
 }
 
-int VistaSerialPort::Receive(void *buffer, const int length, int iTimeout)
-{
-	return m_pImp->Receive(buffer, length, iTimeout);
+int VistaSerialPort::Receive(void* buffer, const int length, int iTimeout) {
+  return m_pImp->Receive(buffer, length, iTimeout);
 }
 
-int VistaSerialPort::Send(const void *buffer, const int length)
-{
-	return m_pImp->Send(buffer, length);
+int VistaSerialPort::Send(const void* buffer, const int length) {
+  return m_pImp->Send(buffer, length);
 }
 
-bool          VistaSerialPort::SetPortByName(const string &sPortName)
-{
-	return m_pImp->SetPortByName(sPortName);
+bool VistaSerialPort::SetPortByName(const string& sPortName) {
+  return m_pImp->SetPortByName(sPortName);
 }
 
-string   VistaSerialPort::GetPortName() const
-{
-	return m_pImp->GetPortName();
+string VistaSerialPort::GetPortName() const {
+  return m_pImp->GetPortName();
 }
 
-bool          VistaSerialPort::SetPortByIndex(int iIndex)
-{
-	return m_pImp->SetPortByIndex((VistaSerialPortStateDesc::VistaPortIndex)iIndex);
+bool VistaSerialPort::SetPortByIndex(int iIndex) {
+  return m_pImp->SetPortByIndex((VistaSerialPortStateDesc::VistaPortIndex)iIndex);
 }
 
-int           VistaSerialPort::GetPortIndex() const
-{
-	return (int)m_pImp->GetPortIndex();
+int VistaSerialPort::GetPortIndex() const {
+  return (int)m_pImp->GetPortIndex();
 }
 
-
-bool          VistaSerialPort::SetSpeed( int eSpeed)
-{
-	return m_pImp->SetSpeed((VistaSerialPortStateDesc::VistaSpeed)eSpeed);
+bool VistaSerialPort::SetSpeed(int eSpeed) {
+  return m_pImp->SetSpeed((VistaSerialPortStateDesc::VistaSpeed)eSpeed);
 }
 
-int           VistaSerialPort::GetSpeed() const
-{
-	return m_pImp->GetSpeed();
+int VistaSerialPort::GetSpeed() const {
+  return m_pImp->GetSpeed();
 }
 
-unsigned long VistaSerialPort::GetMaximumSpeed () const
-{
-	return m_pImp->GetMaximumSpeed();
+unsigned long VistaSerialPort::GetMaximumSpeed() const {
+  return m_pImp->GetMaximumSpeed();
 }
 
-bool          VistaSerialPort::SetParity ( int eParam )
-{
-	return m_pImp->SetParity( (VistaSerialPortStateDesc::VistaParity)eParam );
+bool VistaSerialPort::SetParity(int eParam) {
+  return m_pImp->SetParity((VistaSerialPortStateDesc::VistaParity)eParam);
 }
 
-int           VistaSerialPort::GetParity () const
-{
-	return m_pImp->GetParity();
+int VistaSerialPort::GetParity() const {
+  return m_pImp->GetParity();
 }
 
-bool          VistaSerialPort::SetDataBits ( int eParam )
-{
-	return m_pImp->SetDataBits( (VistaSerialPortStateDesc::VistaDataBits)eParam);
+bool VistaSerialPort::SetDataBits(int eParam) {
+  return m_pImp->SetDataBits((VistaSerialPortStateDesc::VistaDataBits)eParam);
 }
 
-int           VistaSerialPort::GetDataBits () const
-{
-	return (int)m_pImp->GetDataBits();
+int VistaSerialPort::GetDataBits() const {
+  return (int)m_pImp->GetDataBits();
 }
 
-bool          VistaSerialPort::SetStopBits ( float eParam )
-{
-	if(eParam == 1.5f)
-		return m_pImp->SetStopBits(VistaSerialPortStateDesc::CSST_15);
-	else
-		return m_pImp->SetStopBits((VistaSerialPortStateDesc::VistaStopBits)((int)eParam));
+bool VistaSerialPort::SetStopBits(float eParam) {
+  if (eParam == 1.5f)
+    return m_pImp->SetStopBits(VistaSerialPortStateDesc::CSST_15);
+  else
+    return m_pImp->SetStopBits((VistaSerialPortStateDesc::VistaStopBits)((int)eParam));
 }
 
+float VistaSerialPort::GetStopBits() const {
+  VistaSerialPortStateDesc::VistaStopBits e = m_pImp->GetStopBits();
+  if (e == VistaSerialPortStateDesc::CSST_15)
+    return 1.5;
 
-float         VistaSerialPort::GetStopBits () const
-{
-	VistaSerialPortStateDesc::VistaStopBits e = m_pImp->GetStopBits();
-	if(e == VistaSerialPortStateDesc::CSST_15)
-		return 1.5;
-
-	return (float)e;
+  return (float)e;
 }
 
-bool          VistaSerialPort::SetHardwareFlow( bool bInHandshaking )
-{
-	return m_pImp->SetHardwareFlow(bInHandshaking);
+bool VistaSerialPort::SetHardwareFlow(bool bInHandshaking) {
+  return m_pImp->SetHardwareFlow(bInHandshaking);
 }
 
-bool VistaSerialPort::GetIsHardwareFlow() const
-{
-	return m_pImp->GetIsHardwareFlow();
+bool VistaSerialPort::GetIsHardwareFlow() const {
+  return m_pImp->GetIsHardwareFlow();
 }
 
-bool          VistaSerialPort::SetSoftwareFlow ( bool bParam )
-{
-	return m_pImp->SetSoftwareFlow(bParam);
+bool VistaSerialPort::SetSoftwareFlow(bool bParam) {
+  return m_pImp->SetSoftwareFlow(bParam);
 }
 
-bool          VistaSerialPort::GetIsSoftwareFlow () const
-{
-	return m_pImp->GetIsSoftwareFlow();
+bool VistaSerialPort::GetIsSoftwareFlow() const {
+  return m_pImp->GetIsSoftwareFlow();
 }
 
-bool          VistaSerialPort::SetBlockingMode ( unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant )
-{
-	return m_pImp->SetBlockingMode(inReadInterval, inReadMultiplyer, inReadConstant);
+bool VistaSerialPort::SetBlockingMode(
+    unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant) {
+  return m_pImp->SetBlockingMode(inReadInterval, inReadMultiplyer, inReadConstant);
 }
 
-unsigned long VistaSerialPort::WaitForIncomingData(int timeout)
-{
-	return m_pImp->WaitForIncomingData(timeout);
+unsigned long VistaSerialPort::WaitForIncomingData(int timeout) {
+  return m_pImp->WaitForIncomingData(timeout);
 }
 
-
-unsigned long VistaSerialPort::PendingDataSize() const
-{
-	return m_pImp->PendingDataSize();
+unsigned long VistaSerialPort::PendingDataSize() const {
+  return m_pImp->PendingDataSize();
 }
 
-void VistaSerialPort::SetIsBlocking(bool bBlocking)
-{
-	m_pImp->SetIsBlocking(bBlocking);
+void VistaSerialPort::SetIsBlocking(bool bBlocking) {
+  m_pImp->SetIsBlocking(bBlocking);
 }
 
-bool VistaSerialPort:: GetIsBlocking() const
-{
-	return m_pImp->GetIsBlocking();
+bool VistaSerialPort::GetIsBlocking() const {
+  return m_pImp->GetIsBlocking();
 }
 
-HANDLE VistaSerialPort::GetDescriptor() const
-{
-	return m_pImp->GetDescriptor();
+HANDLE VistaSerialPort::GetDescriptor() const {
+  return m_pImp->GetDescriptor();
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

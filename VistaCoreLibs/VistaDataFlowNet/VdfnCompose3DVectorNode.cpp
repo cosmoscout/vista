@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnCompose3DVectorNode.h" 
+#include "VdfnCompose3DVectorNode.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -32,58 +31,48 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VdfnCompose3DVectorNode::VdfnCompose3DVectorNode()
-: m_pInX(NULL)
-, m_pInY(NULL)
-, m_pInZ(NULL)
-, m_pInW(NULL)
-, m_pOut( new TVdfnPort<VistaVector3D> )
-{
-	RegisterInPortPrototype( "x", 
-		new TVdfnPortTypeCompare<TVdfnPort<float> > );
-	RegisterInPortPrototype( "y", 
-		new TVdfnPortTypeCompare<TVdfnPort<float> > );
-	RegisterInPortPrototype( "z", 
-		new TVdfnPortTypeCompare<TVdfnPort<float> > );
-	RegisterInPortPrototype( "w", 
-		new TVdfnPortTypeCompare<TVdfnPort<float> > );
+    : m_pInX(NULL)
+    , m_pInY(NULL)
+    , m_pInZ(NULL)
+    , m_pInW(NULL)
+    , m_pOut(new TVdfnPort<VistaVector3D>) {
+  RegisterInPortPrototype("x", new TVdfnPortTypeCompare<TVdfnPort<float>>);
+  RegisterInPortPrototype("y", new TVdfnPortTypeCompare<TVdfnPort<float>>);
+  RegisterInPortPrototype("z", new TVdfnPortTypeCompare<TVdfnPort<float>>);
+  RegisterInPortPrototype("w", new TVdfnPortTypeCompare<TVdfnPort<float>>);
 
-	RegisterOutPort( "out", m_pOut );
+  RegisterOutPort("out", m_pOut);
 }
-VdfnCompose3DVectorNode::~VdfnCompose3DVectorNode()
-{
+VdfnCompose3DVectorNode::~VdfnCompose3DVectorNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnCompose3DVectorNode::GetIsValid() const
-{
-	// w may be NULL, then defaults to 0
-	return ( m_pInX != NULL && m_pInY != NULL && m_pInZ != NULL );
+bool VdfnCompose3DVectorNode::GetIsValid() const {
+  // w may be NULL, then defaults to 0
+  return (m_pInX != NULL && m_pInY != NULL && m_pInZ != NULL);
 }
 
-bool VdfnCompose3DVectorNode::PrepareEvaluationRun()
-{
-	m_pInX = dynamic_cast<TVdfnPort<float>*>( GetInPort( "x" ) );
-	m_pInY = dynamic_cast<TVdfnPort<float>*>( GetInPort( "y" ) );
-	m_pInZ = dynamic_cast<TVdfnPort<float>*>( GetInPort( "z" ) );
-	m_pInW = dynamic_cast<TVdfnPort<float>*>( GetInPort( "w" ) );
-	return GetIsValid();
+bool VdfnCompose3DVectorNode::PrepareEvaluationRun() {
+  m_pInX = dynamic_cast<TVdfnPort<float>*>(GetInPort("x"));
+  m_pInY = dynamic_cast<TVdfnPort<float>*>(GetInPort("y"));
+  m_pInZ = dynamic_cast<TVdfnPort<float>*>(GetInPort("z"));
+  m_pInW = dynamic_cast<TVdfnPort<float>*>(GetInPort("w"));
+  return GetIsValid();
 }
 
-bool VdfnCompose3DVectorNode::DoEvalNode()
-{
-	VistaVector3D& v3Out = m_pOut->GetValueRef();
-	v3Out[0] = m_pInX->GetValueConstRef();
-	v3Out[1] = m_pInY->GetValueConstRef();
-	v3Out[2] = m_pInZ->GetValueConstRef();
-	v3Out[3] = m_pInW ? m_pInW->GetValueConstRef() : 1.0f;
+bool VdfnCompose3DVectorNode::DoEvalNode() {
+  VistaVector3D& v3Out = m_pOut->GetValueRef();
+  v3Out[0]             = m_pInX->GetValueConstRef();
+  v3Out[1]             = m_pInY->GetValueConstRef();
+  v3Out[2]             = m_pInZ->GetValueConstRef();
+  v3Out[3]             = m_pInW ? m_pInW->GetValueConstRef() : 1.0f;
 
-	m_pOut->IncUpdateCounter();
-	return true;
+  m_pOut->IncUpdateCounter();
+  return true;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

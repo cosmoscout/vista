@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_POSIX) && defined(_USE_PTHREAD_RWLOCK)
 
 #ifndef _VISTAPTHREADREADERWRITERLOCKIMP_H
@@ -44,21 +43,19 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaPthreadReaderWriterLockImp : public IVistaReaderWriterLockImp
-{
-public:
-	VistaPthreadReaderWriterLockImp();
-	virtual ~VistaPthreadReaderWriterLockImp();
+class VistaPthreadReaderWriterLockImp : public IVistaReaderWriterLockImp {
+ public:
+  VistaPthreadReaderWriterLockImp();
+  virtual ~VistaPthreadReaderWriterLockImp();
 
+  bool ReaderLock();
+  bool WriterLock();
+  bool ReaderUnlock();
+  bool WriterUnlock();
 
-	bool ReaderLock();
-	bool WriterLock();
-	bool ReaderUnlock();
-	bool WriterUnlock();
-
-protected:
-private:
-	pthread_rwlock_t m_rwLock;
+ protected:
+ private:
+  pthread_rwlock_t m_rwLock;
 };
 
 /*============================================================================*/
@@ -68,4 +65,3 @@ private:
 #endif //_VISTAPTHREADREADERWRITERLOCKIMP_H
 
 #endif // VISTA_THREADINGPOSIX ...
-

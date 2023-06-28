@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATICKTIMER_H
 #define _VISTATICKTIMER_H
 
@@ -33,8 +32,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEventObserver.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /*  MACROS AND DEFINES                                                        */
@@ -64,144 +63,135 @@ class VistaClusterMode;
  * <li>No more :)
  * </ul>
  */
-class VISTAKERNELAPI VistaTickTimer : public VistaEventObserver
-{
-public:
-	/**
-	 * This is a modifier for the timestamp that is received by VistaTimer.
-	 * You can wait in second-intervalls or milliseconds, but do not expect a
-	 * real granularity of a millisecond ;)
-	 * @see SetGranularity()
-	 */
-	enum GRANULARITY
-	{
-		SWT_SEC=1, /**< sets granularity to seconds */
-		SWT_MILLI=1000 /**< sets granularity to milliseconds. */
-	};
+class VISTAKERNELAPI VistaTickTimer : public VistaEventObserver {
+ public:
+  /**
+   * This is a modifier for the timestamp that is received by VistaTimer.
+   * You can wait in second-intervalls or milliseconds, but do not expect a
+   * real granularity of a millisecond ;)
+   * @see SetGranularity()
+   */
+  enum GRANULARITY {
+    SWT_SEC   = 1,   /**< sets granularity to seconds */
+    SWT_MILLI = 1000 /**< sets granularity to milliseconds. */
+  };
 
-public:
+ public:
+  /**
+   * Constructor, registeres a new event-type for this particular TickTimerEvent, in case
+   * you specify a specific handler for TickTimerEvents like this, give it as second argument.
+   * Note that this observer is registered to the given EventManager and registered type-id.
+   * @see VistaEventManager()
+   * @see VistaEventHandler()
+   * @param pEvMa the EventManager to receive a type-id and register to
+   * @param han a special handler for TickTimerEvents thrown from this TickTimer
+   */
+  VistaTickTimer(VistaEventManager* pEvMa, VistaClusterMode* pClusterAux);
 
-	/**
-	 * Constructor, registeres a new event-type for this particular TickTimerEvent, in case
-	 * you specify a specific handler for TickTimerEvents like this, give it as second argument.
-	 * Note that this observer is registered to the given EventManager and registered type-id.
-	 * @see VistaEventManager()
-	 * @see VistaEventHandler()
-	 * @param pEvMa the EventManager to receive a type-id and register to
-	 * @param han a special handler for TickTimerEvents thrown from this TickTimer
-	 */
-	VistaTickTimer(VistaEventManager *pEvMa,
-					VistaClusterMode *pClusterAux );
+  /**
+   * Unregisters this observer, stops this stop watch
+   */
+  virtual ~VistaTickTimer();
 
-	/**
-	 * Unregisters this observer, stops this stop watch
-	 */
-	virtual ~VistaTickTimer();
+  /**
+   * Measures the difference between this and the last PreDrawGfxEvent, the difference is summed
+   * up, and if it is greater that the give TickValue t0, an event is given to the EventManager.
+   * @param pEvent the event that this observer is registered to
+   */
+  virtual void Notify(const VistaEvent* pEvent);
 
-	/**
-	 * Measures the difference between this and the last PreDrawGfxEvent, the difference is summed
-	 * up, and if it is greater that the give TickValue t0, an event is given to the EventManager.
-	 * @param pEvent the event that this observer is registered to
-	 */
-	virtual void Notify(const VistaEvent *pEvent);
+  /**
+   * Sets the modifier to have an influence on the time granularity.
+   * In case you set this to SWT_MILLI, a call to SetTickTime(50) will wait for at least 50ms.
+   * In case you set this to SWT_SEC, a call to SetTickTime(50) will wait for at least 50s.
+   * @param eG the modifier to use.
+   * @see GRANULARITY
+   */
+  void SetGranularity(GRANULARITY eG);
 
+  GRANULARITY GetGranularity() const;
 
-	/**
-	 * Sets the modifier to have an influence on the time granularity.
-	 * In case you set this to SWT_MILLI, a call to SetTickTime(50) will wait for at least 50ms.
-	 * In case you set this to SWT_SEC, a call to SetTickTime(50) will wait for at least 50s.
-	 * @param eG the modifier to use.
-	 * @see GRANULARITY
-	 */
-	void SetGranularity(GRANULARITY eG);
+  /**
+   * Specifies the tick time interval. This value has to be understood according to the granularity
+   * set.
+   * @see SetGranularity()
+   * @parm dTickTime the length of the time interval according to the granularity set.
+   */
+  void SetTickTime(double dTickTime);
 
-	GRANULARITY GetGranularity() const;
+  /**
+   * Starts this TickTimer. A started stop watch can be started again, without effect.
+   * A started TickTimer will constantly throw Events every passed time interval as specified
+   * using SetTickTime.
+   * @return true always
+   */
+  bool StartTickTimer();
 
+  /**
+   * Stops this TickTimer. A stopped TickTimer can be stopped again.
+   * A StoppedTickTimer will receive observation notifications, but will not react on them.
+   * @return true always.
+   */
+  bool StopTickTimer();
 
-	/**
-	 * Specifies the tick time interval. This value has to be understood according to the granularity
-	 * set.
-	 * @see SetGranularity()
-	 * @parm dTickTime the length of the time interval according to the granularity set.
-	 */
-	void SetTickTime(double dTickTime);
+  /**
+   * Indicates whether this TickTimer is running or not.
+   * @return true iff this TickTimer is counting, living and breathing.
+   */
+  bool IsRunning() const;
 
-	/**
-	 * Starts this TickTimer. A started stop watch can be started again, without effect.
-	 * A started TickTimer will constantly throw Events every passed time interval as specified
-	 * using SetTickTime.
-	 * @return true always
-	 */
-	bool StartTickTimer();
+  /**
+   * Resets this TickTimer. The interval counting will start over, but this watch will not be
+   * stopped if it was started.
+   * @return true always.
+   */
+  bool ResetTickTimer();
 
-	/**
-	 * Stops this TickTimer. A stopped TickTimer can be stopped again.
-	 * A StoppedTickTimer will receive observation notifications, but will not react on them.
-	 * @return true always.
-	 */
-	bool StopTickTimer();
+  bool GetPulsingTimer() const;
+  void SetPulsingTimer(bool bPulsing);
 
-	/**
-	 * Indicates whether this TickTimer is running or not.
-	 * @return true iff this TickTimer is counting, living and breathing.
-	 */
-	bool IsRunning() const;
+  double GetRealIntervalLength() const;
+  double GetTickTime() const;
 
-	/**
-	 * Resets this TickTimer. The interval counting will start over, but this watch will not be stopped
-	 * if it was started.
-	 * @return true always.
-	 */
-	bool ResetTickTimer();
+ protected:
+  /**
+   * A pointer to the EventManager to register with.
+   */
+  VistaEventManager* m_pEventManager;
 
-	bool GetPulsingTimer() const;
-	void SetPulsingTimer(bool bPulsing);
+  /**
+   * A corresponding TickTimerEvent to throw for this TickTimer.
+   */
+  VistaTickTimerEvent* m_pTickTimerTick;
 
-	double GetRealIntervalLength() const;
-	double GetTickTime() const;
+  /**
+   * Needed for the global timing in a vista frame (frame clock)
+   */
+  VistaClusterMode* m_pClusterAux;
 
-protected:
+ private:
+  /**
+   * The ticker granularity modifier as set by SetGranularity
+   */
+  GRANULARITY m_eTickerGranularity;
 
-	/**
-	 * A pointer to the EventManager to register with.
-	 */
-	VistaEventManager *m_pEventManager;
+  /**
+   * the amount of intervalls to wait for until a TickTimerEvent is thrown.
+   */
+  double m_dTickTime, m_dOriginValue;
 
-	/**
-	 * A corresponding TickTimerEvent to throw for this TickTimer.
-	 */
-	VistaTickTimerEvent *m_pTickTimerTick;
+  /**
+   * Indicates whether this stop watch is up and running.
+   */
+  bool m_bIsRunning;
 
+  /**
+   * Intermediate value, saves the last tick time to compare to
+   */
+  double m_dLastTick, m_dRealLength;
 
-	/**
-	 * Needed for the global timing in a vista frame (frame clock)
-	 */
-	VistaClusterMode *m_pClusterAux;
-
-private:
-	/**
-	 * The ticker granularity modifier as set by SetGranularity
-	 */
-	GRANULARITY m_eTickerGranularity;
-
-	/**
-	 * the amount of intervalls to wait for until a TickTimerEvent is thrown.
-	 */
-	double m_dTickTime, m_dOriginValue;
-
-	/**
-	 * Indicates whether this stop watch is up and running.
-	 */
-	bool m_bIsRunning;
-
-	/**
-	 * Intermediate value, saves the last tick time to compare to
-	 */
-	double m_dLastTick, m_dRealLength;
-
-	bool m_bIsPulsingTimer;
+  bool m_bIsPulsingTimer;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

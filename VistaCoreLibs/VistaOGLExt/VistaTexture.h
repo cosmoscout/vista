@@ -21,17 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 #ifndef _VISTATEXTURE_H
 #define _VISTATEXTURE_H
 
 /*============================================================================*/
 /* INCLUDES			                                                          */
 /*============================================================================*/
-#include <GL/glew.h>
 #include "VistaOGLExtConfig.h"
-
+#include <GL/glew.h>
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -39,116 +36,113 @@
 /**
  * VistaTexture provides a basic abstraction for OpenGL textures.
  */
-class VISTAOGLEXTAPI VistaTexture
-{
-public:
-	/**
-	 * Creates a new OpenGL texture.
-	 * Note, that the newly-generated texture will be bound to texture unit 0
-	 * after the c'tor returns successfully.
-	 */
-	VistaTexture(GLenum eTarget);
-	VistaTexture(GLenum eTarget, GLuint iId, bool bManaged = false);
-	virtual ~VistaTexture();
+class VISTAOGLEXTAPI VistaTexture {
+ public:
+  /**
+   * Creates a new OpenGL texture.
+   * Note, that the newly-generated texture will be bound to texture unit 0
+   * after the c'tor returns successfully.
+   */
+  VistaTexture(GLenum eTarget);
+  VistaTexture(GLenum eTarget, GLuint iId, bool bManaged = false);
+  virtual ~VistaTexture();
 
-	virtual void Bind();
-	virtual void Unbind();
+  virtual void Bind();
+  virtual void Unbind();
 
-	/**
-	 * Activate the given texture unit and bind the texure.
-	 * Note, that the specified texture unit DOES NOT remain active after this
-	 * method returns.
-	 */
-	virtual void Bind(GLenum eTextureUnit);
-	virtual void Unbind(GLenum eTextureUnit);
-		
-	/**
-	 * En-/disable the texture target that was passed to the c'tor at creation
-	 * for the currently active texture unit.
-	 */
-	virtual void Enable();
-	virtual void Disable();
+  /**
+   * Activate the given texture unit and bind the texure.
+   * Note, that the specified texture unit DOES NOT remain active after this
+   * method returns.
+   */
+  virtual void Bind(GLenum eTextureUnit);
+  virtual void Unbind(GLenum eTextureUnit);
 
-	/**
-	 * Same as Enable() but also activates the specified texture unit before
-	 * enabling the texture target.
-	 */
-	virtual void Enable(GLenum eTextureUnit);
-	virtual void Disable(GLenum eTextureUnit);
+  /**
+   * En-/disable the texture target that was passed to the c'tor at creation
+   * for the currently active texture unit.
+   */
+  virtual void Enable();
+  virtual void Disable();
 
-	GLenum GetTarget() const;
-	GLuint GetId() const;
+  /**
+   * Same as Enable() but also activates the specified texture unit before
+   * enabling the texture target.
+   */
+  virtual void Enable(GLenum eTextureUnit);
+  virtual void Disable(GLenum eTextureUnit);
 
-	/**
-	 * Set and retrieve maximum texture coordinates. Typically, they will be
-	 * set to 1.0f (as is the default), but if you are using RECT textures or
-	 * textures, which are padded, you can set (and use) these purely for
-	 * convenience reasons ...
-	 */
-	void  SetMaxS(float fMax);
-	float GetMaxS() const;
-	void  SetMaxT(float fMax);
-	float GetMaxT() const;
-	void  SetMaxR(float fMax);
-	float GetMaxR() const;
+  GLenum GetTarget() const;
+  GLuint GetId() const;
 
-	/**
-	 * Set and retrieve texture min/mag filter settings.
-	 * Side-effect: binds the texture to the current texture unit.
-	 */
-	void   SetMinFilter(GLenum eMode);
-	GLenum GetMinFilter();
-	void   SetMagFilter(GLenum eMode);
-	GLenum GetMagFilter();
-	
-	/**
-	 * Set and retrieve texture wrapping settings.
-	 * Side-effect: binds the texture to the current texture unit.
-	 */
-	void   SetWrapS(GLenum eMode);
-	GLenum GetWrapS();
-	void   SetWrapT(GLenum eMode);
-	GLenum GetWrapT();
-	void   SetWrapR(GLenum eMode);
-	GLenum GetWrapR();
+  /**
+   * Set and retrieve maximum texture coordinates. Typically, they will be
+   * set to 1.0f (as is the default), but if you are using RECT textures or
+   * textures, which are padded, you can set (and use) these purely for
+   * convenience reasons ...
+   */
+  void  SetMaxS(float fMax);
+  float GetMaxS() const;
+  void  SetMaxT(float fMax);
+  float GetMaxT() const;
+  void  SetMaxR(float fMax);
+  float GetMaxR() const;
 
-	/**
-	 * Generates all mipmap levels.
-	 * @return true on success.
-	 */
-	bool GenerateMipmaps();
+  /**
+   * Set and retrieve texture min/mag filter settings.
+   * Side-effect: binds the texture to the current texture unit.
+   */
+  void   SetMinFilter(GLenum eMode);
+  GLenum GetMinFilter();
+  void   SetMagFilter(GLenum eMode);
+  GLenum GetMagFilter();
 
-	/**
-	 *  Upload texture to OpenGL server.
-	 *  Hint: internal format is always set to GL_RGBA8
-	 *  Sets min filters to LINEAR or LINEAR_MIPMAP_LINEAR!
-	 *
-	 *  @param   width              texture width
-	 *  @param   height             texture height (ignored for GL_TEXTURE_1D)
-	 *  @param   pData              texture data
-	 *  @param   bGenMipmaps        generate mipmaps
-	 *  @param   eInputPixelFormat  the format of the texture pData is pointing to - or the number of components
-	 *  @param   eDataFormat        the data format of pData (GL_UNSIGNED_CHAR)
-	 *  @returns bool true on success, else false
-	 */
-	bool UploadTexture(	const int &iWidth, const int &iHeight, void *pData,
-						bool bGenMipmaps = true, GLenum ePixelFormat = GL_RGBA,
-						GLenum eDataFormat = GL_UNSIGNED_BYTE);
+  /**
+   * Set and retrieve texture wrapping settings.
+   * Side-effect: binds the texture to the current texture unit.
+   */
+  void   SetWrapS(GLenum eMode);
+  GLenum GetWrapS();
+  void   SetWrapT(GLenum eMode);
+  GLenum GetWrapT();
+  void   SetWrapR(GLenum eMode);
+  GLenum GetWrapR();
 
-protected:
-	GLenum	m_eTarget;
-	GLuint	m_uiId;
-	bool	m_bManaged;
+  /**
+   * Generates all mipmap levels.
+   * @return true on success.
+   */
+  bool GenerateMipmaps();
 
-	float	m_fMaxS;
-	float	m_fMaxT;
-	float	m_fMaxR;
+  /**
+   *  Upload texture to OpenGL server.
+   *  Hint: internal format is always set to GL_RGBA8
+   *  Sets min filters to LINEAR or LINEAR_MIPMAP_LINEAR!
+   *
+   *  @param   width              texture width
+   *  @param   height             texture height (ignored for GL_TEXTURE_1D)
+   *  @param   pData              texture data
+   *  @param   bGenMipmaps        generate mipmaps
+   *  @param   eInputPixelFormat  the format of the texture pData is pointing to - or the number of
+   * components
+   *  @param   eDataFormat        the data format of pData (GL_UNSIGNED_CHAR)
+   *  @returns bool true on success, else false
+   */
+  bool UploadTexture(const int& iWidth, const int& iHeight, void* pData, bool bGenMipmaps = true,
+      GLenum ePixelFormat = GL_RGBA, GLenum eDataFormat = GL_UNSIGNED_BYTE);
+
+ protected:
+  GLenum m_eTarget;
+  GLuint m_uiId;
+  bool   m_bManaged;
+
+  float m_fMaxS;
+  float m_fMaxT;
+  float m_fMaxR;
 };
 
 #endif // _VISTATEXTURE_H
 
-
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-

@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNSHALLOWNODE_H
 #define _VDFNSHALLOWNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include "VdfnNode.h"
 #include "VdfnConfig.h"
+#include "VdfnNode.h"
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -53,22 +51,22 @@ class IVdfnPortTypeCompare;
  * as in and outports.
  * @ingroup VdfnNodes
  */
-class VISTADFNAPI VdfnShallowNode : public IVdfnNode
-{
-public:
-	VdfnShallowNode();
-	~VdfnShallowNode();
+class VISTADFNAPI VdfnShallowNode : public IVdfnNode {
+ public:
+  VdfnShallowNode();
+  ~VdfnShallowNode();
 
-	virtual bool SetInPort(const std::string &sName,
-						   IVdfnPort *pPort );
+  virtual bool SetInPort(const std::string& sName, IVdfnPort* pPort);
 
-	void SetOutPort( const std::string &sName, IVdfnPort *pPort );
-protected:
-	bool DoEvalNode() { return true; }
+  void SetOutPort(const std::string& sName, IVdfnPort* pPort);
+
+ protected:
+  bool DoEvalNode() {
+    return true;
+  }
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNSHALLOWNODE_H
-

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPTITRACKCOMMONSHARE_H
 #define _VISTAOPTITRACKCOMMONSHARE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,18 +30,15 @@
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaBase/VistaVectorMath.h>
 
-namespace VistaOptitrackMeasures
-{
-	struct RigidBodyMeasure
-	{
-		int m_nIndex;
-		VistaVector3D m_v3Position;
-		VistaQuaternion m_qOrientation;
-		float m_fMeanError;
-	};
+namespace VistaOptitrackMeasures {
+struct RigidBodyMeasure {
+  int             m_nIndex;
+  VistaVector3D   m_v3Position;
+  VistaQuaternion m_qOrientation;
+  float           m_fMeanError;
+};
 
-}
-
+} // namespace VistaOptitrackMeasures
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

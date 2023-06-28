@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaDataFlowNet/VdfnObjectRegistry.h>
 #include <VistaDataFlowNet/VdfnReadWorkspaceNode.h>
 
@@ -33,29 +32,26 @@
 
 #include "PhantomWorkspaceHandler.h"
 
-PhantomWorkspaceHandler::PhantomWorkspaceHandler( VdfnObjectRegistry *pDFNRegistry, IVistaTransformable * pTransformable )
-: m_pDFNRegistry( pDFNRegistry )
-, m_pTransformable( pTransformable )
-{
+PhantomWorkspaceHandler::PhantomWorkspaceHandler(
+    VdfnObjectRegistry* pDFNRegistry, IVistaTransformable* pTransformable)
+    : m_pDFNRegistry(pDFNRegistry)
+    , m_pTransformable(pTransformable) {
 }
 
-PhantomWorkspaceHandler::~PhantomWorkspaceHandler()
-{
+PhantomWorkspaceHandler::~PhantomWorkspaceHandler() {
 }
 
-void PhantomWorkspaceHandler::HandleEvent(VistaEvent *pEvent)
-{
-	/**
-	 * Transform the transformable like the cam moves,
-	 * this simulates hanging the transformable under
-	 * the cam in the scenegraph
-	 */
-	IVistaTransformable *pCam = m_pDFNRegistry->GetObjectTransform("CAM:MAIN");
-	if( pCam )
-	{
-		float v[16];
-		pCam->GetTransform(v);
+void PhantomWorkspaceHandler::HandleEvent(VistaEvent* pEvent) {
+  /**
+   * Transform the transformable like the cam moves,
+   * this simulates hanging the transformable under
+   * the cam in the scenegraph
+   */
+  IVistaTransformable* pCam = m_pDFNRegistry->GetObjectTransform("CAM:MAIN");
+  if (pCam) {
+    float v[16];
+    pCam->GetTransform(v);
 
-		m_pTransformable->SetTransform(v);
-	}
+    m_pTransformable->SetTransform(v);
+  }
 }

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEYETESTER_H
 #define _VISTAEYETESTER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -45,21 +43,18 @@ class VistaOpenGLNode;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaEyeTester
-{
-public:
-	VistaEyeTester( VistaGroupNode* pUserTransNode,
-					VistaSceneGraph* pSceneGraph );
-	virtual ~VistaEyeTester();
+class VISTAKERNELAPI VistaEyeTester {
+ public:
+  VistaEyeTester(VistaGroupNode* pUserTransNode, VistaSceneGraph* pSceneGraph);
+  virtual ~VistaEyeTester();
 
-	bool GetIsEnabled() const;
-	void SetIsEnabled( const bool bSet );
+  bool GetIsEnabled() const;
+  void SetIsEnabled(const bool bSet);
 
-private:
-	class EyeTestDraw;
-	EyeTestDraw* m_pDraw;
-	VistaOpenGLNode* m_pDrawNode;
+ private:
+  class EyeTestDraw;
+  EyeTestDraw*     m_pDraw;
+  VistaOpenGLNode* m_pDrawNode;
 };
 
 #endif //_VISTAEYETESTER_H
-

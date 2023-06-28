@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNAPPLYTRANSFORMNODE_H
 #define _VDFNAPPLYTRANSFORMNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -34,7 +32,6 @@
 #include "VdfnPort.h"
 #include "VdfnSerializer.h"
 #include <VistaBase/VistaVectorMath.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -72,73 +69,76 @@ class VdfnObjectRegistry;
          incoming state change, and it will evaluate on and inport set. This can be
          confusing.
  */
-class VISTADFNAPI VdfnApplyTransformNode : public IVdfnNode
-{
-public:
-	/**
-	 * empty constructor, use ApplyTransformTarget() to make this node work.
-	 */
-	VdfnApplyTransformNode();
+class VISTADFNAPI VdfnApplyTransformNode : public IVdfnNode {
+ public:
+  /**
+   * empty constructor, use ApplyTransformTarget() to make this node work.
+   */
+  VdfnApplyTransformNode();
 
-	/**
-	 * delayed construction constructor, give an object registry to look for
-	 * a transformable upon the call to PrepareEvaluationRun().
-	 * @param a non NULL object registry
-	 * @param strKey the name to look for in the registry, case sensitive
-	 * @param applyLocal set true if you want to apply the changes in local coordsystem (right hand side)
-	 */
-	VdfnApplyTransformNode( VdfnObjectRegistry *, const std::string &strKey, const bool bApplyLocal = false );
+  /**
+   * delayed construction constructor, give an object registry to look for
+   * a transformable upon the call to PrepareEvaluationRun().
+   * @param a non NULL object registry
+   * @param strKey the name to look for in the registry, case sensitive
+   * @param applyLocal set true if you want to apply the changes in local coordsystem (right hand
+   * side)
+   */
+  VdfnApplyTransformNode(
+      VdfnObjectRegistry*, const std::string& strKey, const bool bApplyLocal = false);
 
-	/**
-	 * use when the transformable is known already.
-	 * @param pObj the transformable
-	 * @param applyLocal set true if you want to apply the changes in local coordsystem (right hand side)
-	 */
-	VdfnApplyTransformNode(IVistaTransformable *pObj, const bool bApplyLocal = false );
+  /**
+   * use when the transformable is known already.
+   * @param pObj the transformable
+   * @param applyLocal set true if you want to apply the changes in local coordsystem (right hand
+   * side)
+   */
+  VdfnApplyTransformNode(IVistaTransformable* pObj, const bool bApplyLocal = false);
 
-	/**
-	 * does nothing.
-	 */
-	~VdfnApplyTransformNode();
+  /**
+   * does nothing.
+   */
+  ~VdfnApplyTransformNode();
 
-	/**
-	 * is valid when GetTransformTarget() != NULL and at least one inport is set
-	 */
-	virtual bool GetIsValid() const;
+  /**
+   * is valid when GetTransformTarget() != NULL and at least one inport is set
+   */
+  virtual bool GetIsValid() const;
 
-	/**
-	 * in case a registry was provided, the name key is not empty and no transform
-	 * target was set, the method tries to claim a transform target from the
-	 * registry and caches the node ports
-	 * @return GetIsValid()
-	 */
-	virtual bool PrepareEvaluationRun();
+  /**
+   * in case a registry was provided, the name key is not empty and no transform
+   * target was set, the method tries to claim a transform target from the
+   * registry and caches the node ports
+   * @return GetIsValid()
+   */
+  virtual bool PrepareEvaluationRun();
 
-	/**
-	 * @return the current transform target
-	 */
-	IVistaTransformable *GetTransformTarget() const;
+  /**
+   * @return the current transform target
+   */
+  IVistaTransformable* GetTransformTarget() const;
 
-	/**
-	 * set the current transfom target.
-	 */
-	void SetTransformTarget( IVistaTransformable * );
+  /**
+   * set the current transfom target.
+   */
+  void SetTransformTarget(IVistaTransformable*);
 
-	static const std::string STransformInPortName;
-protected:
-	virtual bool DoEvalNode();
+  static const std::string STransformInPortName;
 
-private:
-	void RegisterInPrototypes();
+ protected:
+  virtual bool DoEvalNode();
 
-	TVdfnPort<VistaTransformMatrix> *m_pInTransform;
+ private:
+  void RegisterInPrototypes();
 
-	unsigned int m_nTCount; // update count for transform inport
+  TVdfnPort<VistaTransformMatrix>* m_pInTransform;
 
-	IVistaTransformable *m_pOutTransform;
-	VdfnObjectRegistry *m_pObjRegistry;
-	std::string          m_strKey;
-	bool				 m_bApplyLocal;
+  unsigned int m_nTCount; // update count for transform inport
+
+  IVistaTransformable* m_pOutTransform;
+  VdfnObjectRegistry*  m_pObjRegistry;
+  std::string          m_strKey;
+  bool                 m_bApplyLocal;
 };
 
 /*============================================================================*/
@@ -146,4 +146,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNAPPLYTRANSFORMNODE_H
-

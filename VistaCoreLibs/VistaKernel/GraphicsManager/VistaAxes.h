@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAXES_H
 #define _VISTAXES_H
 
@@ -50,30 +49,26 @@ class VistaGroupNode;
 /**
  * Creates coordinate axes rendering
  */
-class VISTAKERNELAPI VistaAxes
-{
-public:
+class VISTAKERNELAPI VistaAxes {
+ public:
+  /**
+   * VistaAxes constructor
+   *
+   * @param pParent
+   * The parent group node. Pass NULL here to create the axes below
+   * the root node.
+   */
+  VistaAxes(VistaSceneGraph* pVistaSceneGraph, VistaGroupNode* pParent = NULL, float fSizeX = 1.0f,
+      float fSizeY = 1.0f, float fSizeZ = 1.0f);
+  virtual ~VistaAxes();
 
-	/**
-	 * VistaAxes constructor
-	 *
-	 * @param pParent
-	 * The parent group node. Pass NULL here to create the axes below
-	 * the root node.
-	 */
-	VistaAxes( VistaSceneGraph * pVistaSceneGraph,
-			   VistaGroupNode *pParent = NULL,
-			   float fSizeX = 1.0f, float fSizeY = 1.0f, float fSizeZ = 1.0f);
-	virtual ~VistaAxes();
+  IVistaNode* GetVistaNode();
 
-	IVistaNode * GetVistaNode();
-
-private:
-
-	std::vector<VistaGeometry*>	m_vecAxes;
-	std::vector<VistaGeometry*>	m_vecTips;
-	VistaGeometry*				m_pCenter;
-	VistaGroupNode*				m_pGroup;
+ private:
+  std::vector<VistaGeometry*> m_vecAxes;
+  std::vector<VistaGeometry*> m_vecTips;
+  VistaGeometry*              m_pCenter;
+  VistaGroupNode*             m_pGroup;
 };
 
 /*============================================================================*/
@@ -81,5 +76,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAXES_H
-
-

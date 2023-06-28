@@ -21,49 +21,43 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_POSIX)
 
 #ifndef _VISTAPTHREADTHREADEVENTIMPL_H
 #define _VISTAPTHREADTHREADEVENTIMPL_H
 
-
 #include "VistaThreadEventImp.h"
 
 #include <pthread.h>
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaPthreadThreadEventImp : public IVistaThreadEventImp
-{
-public:
-	VistaPthreadThreadEventImp( );
-	virtual ~VistaPthreadThreadEventImp();
+class VistaPthreadThreadEventImp : public IVistaThreadEventImp {
+ public:
+  VistaPthreadThreadEventImp();
+  virtual ~VistaPthreadThreadEventImp();
 
-	void SignalEvent();
+  void SignalEvent();
 
-	bool WaitForEvent(bool bBlock);
-	bool WaitForEvent(int iTimeoutMSecs);
+  bool WaitForEvent(bool bBlock);
+  bool WaitForEvent(int iTimeoutMSecs);
 
-	virtual HANDLE GetEventSignalHandle() const;
-	virtual HANDLE GetEventWaitHandle() const;
+  virtual HANDLE GetEventSignalHandle() const;
+  virtual HANDLE GetEventWaitHandle() const;
 
-	bool ResetThisEvent( ResetBehavior reset_behavior );
+  bool ResetThisEvent(ResetBehavior reset_behavior);
 
-private:
-	pthread_mutex_t mtx;
-	pthread_cond_t cond;
-	int state;
-	bool autoreset;
+ private:
+  pthread_mutex_t mtx;
+  pthread_cond_t  cond;
+  int             state;
+  bool            autoreset;
 };
-
 
 /*============================================================================*/
 
 #endif // _VISTAPTHREADTHREADEVENTIMPL_H
 
 #endif // VISTA_THREADING_POSIX
-

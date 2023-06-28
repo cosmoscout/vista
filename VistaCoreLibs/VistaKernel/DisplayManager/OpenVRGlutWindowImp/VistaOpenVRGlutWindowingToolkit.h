@@ -32,7 +32,7 @@
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
-    
+
 #include <openvr/openvr.h>
 #include <openvr/openvr_capi.h>
 
@@ -50,24 +50,23 @@
 /**
  * OpenVR Window extensions around the Glut windowing toolkit
  */
-class VISTAKERNELAPI VistaOpenVRGlutWindowingToolkit : public VistaGlutWindowingToolkit
-{
-public:
-	VistaOpenVRGlutWindowingToolkit();
-	~VistaOpenVRGlutWindowingToolkit();
+class VISTAKERNELAPI VistaOpenVRGlutWindowingToolkit : public VistaGlutWindowingToolkit {
+ public:
+  VistaOpenVRGlutWindowingToolkit();
+  ~VistaOpenVRGlutWindowingToolkit();
 
-	virtual void DisplayWindow( const VistaWindow* pWindow );
+  virtual void DisplayWindow(const VistaWindow* pWindow);
 
-	virtual bool RegisterWindow( VistaWindow* pWindow );
-	
-	vr::IVRSystem* GetVRSystem();
+  virtual bool RegisterWindow(VistaWindow* pWindow);
 
-	virtual bool InitWindow( VistaWindow* pWindow );
-private:
+  vr::IVRSystem* GetVRSystem();
 
-	vr::IVRSystem* m_pVRSystem;
-	// class Internal;
-	// Internal* m_pData;
+  virtual bool InitWindow(VistaWindow* pWindow);
+
+ private:
+  vr::IVRSystem* m_pVRSystem;
+  // class Internal;
+  // Internal* m_pData;
 };
 
 /*============================================================================*/

@@ -1,5 +1,3 @@
-
-
 vista_adopt_version( VistaKernel VistaCoreLibs )
 
 set( VISTAKERNEL_INTERNAL_DEPENDENCIES 

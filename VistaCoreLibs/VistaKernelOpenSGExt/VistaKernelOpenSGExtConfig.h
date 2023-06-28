@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAKERNELOPENSGEXTCONFIG_H
 #define _VISTAKERNELOPENSGEXTCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAKERNELOPENSGEXT_STATIC) 
-	#ifdef VISTAKERNELOPENSGEXT_EXPORTS
-		#define VISTAKERNELOPENSGEXTAPI __declspec(dllexport)
-	#else
-		#define VISTAKERNELOPENSGEXTAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTAKERNELOPENSGEXT_STATIC)
+#ifdef VISTAKERNELOPENSGEXT_EXPORTS
+#define VISTAKERNELOPENSGEXTAPI __declspec(dllexport)
+#else
+#define VISTAKERNELOPENSGEXTAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAKERNELOPENSGEXTAPI
+#define VISTAKERNELOPENSGEXTAPI
 #endif
 
 #endif //_VISTAKERNELOPENSGEXTCONFIG_H

@@ -22,7 +22,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAOPENVRDRIVERPLUGINPLUGIN_H
 #define __VISTAOPENVRDRIVERPLUGINPLUGIN_H
 
@@ -31,7 +30,7 @@
 /*============================================================================*/
 
 #if defined(WIN32)
-#pragma warning (disable: 4786)
+#pragma warning(disable : 4786)
 
 #define VISTAOPENVRDRIVERPLUGINEXPORT __declspec(dllexport)
 #define VISTAOPENVRDRIVERPLUGINIMPORT __declspec(dllimport)
@@ -56,8 +55,6 @@
 #define VISTAOPENVRDRIVERPLUGINAPI
 #endif
 
-
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -65,12 +62,10 @@
 class IVistaDeviceDriver;
 class IVistaDriverCreationMethod;
 
-
-extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(unsigned int);
-extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod();
-extern "C" VISTAOPENVRDRIVERPLUGINAPI const char *GetDeviceClassName();
-extern "C" VISTAOPENVRDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod *);
-
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(unsigned int);
+extern "C" VISTAOPENVRDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod();
+extern "C" VISTAOPENVRDRIVERPLUGINAPI const char*                 GetDeviceClassName();
+extern "C" VISTAOPENVRDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod*);
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -80,8 +75,3 @@ extern "C" VISTAOPENVRDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod *);
 /* END OF FILE                                                                */
 /*============================================================================*/
 #endif //__VISTAOPENVRDRIVERPLUGINPLUGIN_H
-
-
-
-
-

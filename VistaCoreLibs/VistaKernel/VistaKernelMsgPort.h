@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAKERNELMSGPORT_H
 #define _VISTAKERNELMSGPORT_H
 
@@ -29,14 +28,13 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-
-#include <string>
 #include <map>
+#include <string>
 
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaInterProcComm/DataLaVista/Base/VistaDataPacket.h>
 #include <VistaAspects/VistaSerializable.h>
 #include <VistaInterProcComm/Connections/VistaMsg.h>
+#include <VistaInterProcComm/DataLaVista/Base/VistaDataPacket.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -61,7 +59,6 @@ class IDLVistaPipeComponent;
 class VistaByteBufferDeSerializer;
 class VistaProgressMessage;
 
-
 // for progress-messages
 class VistaConnectionIP;
 
@@ -69,135 +66,117 @@ class VistaConnectionIP;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
-class VISTAKERNELAPI VistaKernelMsgType
-{
-public:
-	enum
-	{
-		VKM_KERNEL_MSG=-1,
-		VKM_SCRIPTED_MSG=-2,
-		VKM_PROPERTYLIST_MSG=-3,
-		VKM_APPLICATION_MSG=0,
-		VKM_MSGLAST
-	};
+class VISTAKERNELAPI VistaKernelMsgType {
+ public:
+  enum {
+    VKM_KERNEL_MSG       = -1,
+    VKM_SCRIPTED_MSG     = -2,
+    VKM_PROPERTYLIST_MSG = -3,
+    VKM_APPLICATION_MSG  = 0,
+    VKM_MSGLAST
+  };
 };
 
+class VISTAKERNELAPI VistaKernelMsgPacket : public IDLVistaDataPacket {
+ public:
+  VistaKernelMsgPacket(IDLVistaPipeComponent*);
+  virtual ~VistaKernelMsgPacket();
 
-class VISTAKERNELAPI VistaKernelMsgPacket : public IDLVistaDataPacket
-{
-public:
-	VistaKernelMsgPacket(IDLVistaPipeComponent*);
-	virtual ~VistaKernelMsgPacket();
+  virtual int         GetPacketSize() const;
+  virtual void        SetDataSize(int);
+  virtual int         GetDataSize() const;
+  virtual std::string GetClName() const;
 
-	virtual int GetPacketSize() const;
-	virtual void SetDataSize(int );
-	virtual int GetDataSize() const;
-	virtual std::string GetClName() const;
+  virtual int Serialize(IVistaSerializer&) const;
+  virtual int DeSerialize(IVistaDeSerializer&);
 
-	virtual int Serialize(IVistaSerializer &) const ;
-	virtual int DeSerialize(IVistaDeSerializer &) ;
+  VistaMsg* GetPacketMessage() const;
+  void      SetPacketMessage(VistaMsg*);
 
-	VistaMsg *GetPacketMessage() const;
-	void        SetPacketMessage(VistaMsg *);
+  std::string GetSignature() const;
 
-	std::string GetSignature() const;
+  virtual IDLVistaDataPacket* CreateInstance(IDLVistaPipeComponent*) const;
 
-	virtual IDLVistaDataPacket* CreateInstance(IDLVistaPipeComponent*) const;
+  int                 GetPacketNumber() const;
+  void                SetPacketNumber(int i);
+  VistaKernelMsgPort* GetSourcePort() const;
+  void                SetSourcePort(VistaKernelMsgPort*);
 
-
-	int GetPacketNumber() const;
-	void SetPacketNumber(int i);
-	VistaKernelMsgPort *GetSourcePort() const;
-	void                 SetSourcePort(VistaKernelMsgPort*);
-protected:
-private:
-	VistaMsg *m_pMessage;
-	int              m_iPacketNumber;
-	VistaKernelMsgPort *m_pSourcePort;
+ protected:
+ private:
+  VistaMsg*           m_pMessage;
+  int                 m_iPacketNumber;
+  VistaKernelMsgPort* m_pSourcePort;
 };
 
-class VISTAKERNELAPI VistaKernelMsgPort
-{
-public:
-	//VistaKernelMsgPort(VistaSystem &, const std::string &sIniFile,
-	//                    const std::string &sIniSection,
-	//                    const std::string &sApplicationName,
-				//		IDLVistaPipeComponent *pFrontPipe = NULL);
+class VISTAKERNELAPI VistaKernelMsgPort {
+ public:
+  // VistaKernelMsgPort(VistaSystem &, const std::string &sIniFile,
+  //                    const std::string &sIniSection,
+  //                    const std::string &sApplicationName,
+  //		IDLVistaPipeComponent *pFrontPipe = NULL);
 
-	VistaKernelMsgPort( VistaSystem* pVistaSystem,
-						const std::string &sHost,
-						int iPort,
-						const std::string &sApplicationName,
-						bool bCreateIndicator = false,
-						const std::string &sIndicatorHost = "",
-						int iIndicatorPort = 0,
-						IDLVistaPipeComponent *pFrontPipe = NULL);
-	virtual ~VistaKernelMsgPort();
+  VistaKernelMsgPort(VistaSystem* pVistaSystem, const std::string& sHost, int iPort,
+      const std::string& sApplicationName, bool bCreateIndicator = false,
+      const std::string& sIndicatorHost = "", int iIndicatorPort = 0,
+      IDLVistaPipeComponent* pFrontPipe = NULL);
+  virtual ~VistaKernelMsgPort();
 
-	int HasMessage();
+  int HasMessage();
 
-	VistaMsg *GetNextMsg();
-	void             AnswerQuery(VistaMsg *);
+  VistaMsg* GetNextMsg();
+  void      AnswerQuery(VistaMsg*);
 
-	bool             PutQuery(VistaMsg *);
+  bool PutQuery(VistaMsg*);
 
-	void Disconnect();
-	bool GetIsConnected() const;
+  void Disconnect();
+  bool GetIsConnected() const;
 
-	void SetRescheduleFlag(bool b);
-	bool GetRescheduleFlag() const;
+  void SetRescheduleFlag(bool b);
+  bool GetRescheduleFlag() const;
 
-	bool DispatchKernelMsg(VistaMsg &rMsg);
+  bool DispatchKernelMsg(VistaMsg& rMsg);
 
-	enum eProgressType
-	{
-		PRG_SYSTEM=0,
-		PRG_APP,
-		PRG_DONE,
-		PRG_LAST
-	};
+  enum eProgressType { PRG_SYSTEM = 0, PRG_APP, PRG_DONE, PRG_LAST };
 
-	/**
-	 * @param eType its a system message, or it is an application message
-	 * @param iProg the progress indicator (0<=iProg<=100 for app messages)
-	 * @param sProgMessage the optional message for this progress
-	 */
-	bool WriteProgress(eProgressType eType, int iProg, const std::string &sProgMessage="");
+  /**
+   * @param eType its a system message, or it is an application message
+   * @param iProg the progress indicator (0<=iProg<=100 for app messages)
+   * @param sProgMessage the optional message for this progress
+   */
+  bool WriteProgress(eProgressType eType, int iProg, const std::string& sProgMessage = "");
 
-protected:
-private:
-	bool DispatchInteractionMsg(int iMsgType, VistaMsg *pMsg, VistaByteBufferDeSerializer &dsSer);
-	bool DispatchSystemMsg(int iMsgType, VistaMsg *pMsg, VistaByteBufferDeSerializer &dsSer);
-	bool DispatchDisplayMsg(int iMsgType, VistaMsg *pMsg, VistaByteBufferDeSerializer &dsSer);
-	bool DispatchInteractionDeviceMsg(int iMsgType, VistaMsg *pMsg, VistaByteBufferDeSerializer &dsSer);
+ protected:
+ private:
+  bool DispatchInteractionMsg(int iMsgType, VistaMsg* pMsg, VistaByteBufferDeSerializer& dsSer);
+  bool DispatchSystemMsg(int iMsgType, VistaMsg* pMsg, VistaByteBufferDeSerializer& dsSer);
+  bool DispatchDisplayMsg(int iMsgType, VistaMsg* pMsg, VistaByteBufferDeSerializer& dsSer);
+  bool DispatchInteractionDeviceMsg(
+      int iMsgType, VistaMsg* pMsg, VistaByteBufferDeSerializer& dsSer);
 
-	typedef std::map<VistaMsg *, VistaKernelMsgPacket*> MSGMAP;
+  typedef std::map<VistaMsg*, VistaKernelMsgPacket*> MSGMAP;
 
-	MSGMAP                      m_mpMsgMap;
-	VistaMsgSource     *       m_pSource;
-	VistaMsgSink       *       m_pSink;
-	DLVistaActiveDataProducer     *m_pProducer;
-	//VistaThread               *m_pAcceptThread;
-	DLVistaRamQueuePipe       *m_pQueue;
-	VistaThreadPool           *m_pPool;
-	VistaAcceptWork           *m_pAcceptWork;
-	VistaSystem               *m_pSystem;
-	VistaProgressMessage      *m_pMsg;
+  MSGMAP                     m_mpMsgMap;
+  VistaMsgSource*            m_pSource;
+  VistaMsgSink*              m_pSink;
+  DLVistaActiveDataProducer* m_pProducer;
+  // VistaThread               *m_pAcceptThread;
+  DLVistaRamQueuePipe*  m_pQueue;
+  VistaThreadPool*      m_pPool;
+  VistaAcceptWork*      m_pAcceptWork;
+  VistaSystem*          m_pSystem;
+  VistaProgressMessage* m_pMsg;
 
-	IDLVistaPipeComponent      *m_pUserFront;
+  IDLVistaPipeComponent* m_pUserFront;
 
+  VistaConnectionIP* m_pProgressConnection;
 
-	VistaConnectionIP         *m_pProgressConnection;
-
-	std::string                m_sApplicationName;
-	bool m_bRescheduleFlag;
+  std::string m_sApplicationName;
+  bool        m_bRescheduleFlag;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAKERNELMSGPORT_H
-

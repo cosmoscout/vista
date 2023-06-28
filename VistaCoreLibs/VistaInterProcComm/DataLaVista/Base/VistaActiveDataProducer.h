@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTAACTIVEDATAPRODUCER_H
 #define IDLVISTAACTIVEDATAPRODUCER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,9 +31,9 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaActiveComponent.h"
 #include "VistaDataProducer.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <string>
 
@@ -51,106 +49,110 @@ class DLVistaProducerLoop;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaActiveDataProducer : public IDLVistaDataProducer, public IDLVistaActiveComponent
-{
-private:
-	DLVistaProducerLoop *m_pThreadLoop;
-	IDLVistaDataProducer *m_pRealProducer;
+class VISTAINTERPROCCOMMAPI DLVistaActiveDataProducer : public IDLVistaDataProducer,
+                                                        public IDLVistaActiveComponent {
+ private:
+  DLVistaProducerLoop*  m_pThreadLoop;
+  IDLVistaDataProducer* m_pRealProducer;
 
-	bool m_bStopOnDestruct;
-public:
-	DLVistaActiveDataProducer(IDLVistaDataProducer *);
-	virtual ~DLVistaActiveDataProducer();
+  bool m_bStopOnDestruct;
 
-	virtual IDLVistaDataPacket *ProducePacket() ;
+ public:
+  DLVistaActiveDataProducer(IDLVistaDataProducer*);
+  virtual ~DLVistaActiveDataProducer();
 
-	virtual bool PushPacket(IDLVistaDataPacket *pPacket = 0) ;
+  virtual IDLVistaDataPacket* ProducePacket();
 
-	virtual bool HasPacket() const ;
+  virtual bool PushPacket(IDLVistaDataPacket* pPacket = 0);
 
-	virtual bool IsDataProducer() const { return true;}
+  virtual bool HasPacket() const;
 
-	virtual bool IsDataConsumer() const { return false; }
+  virtual bool IsDataProducer() const {
+    return true;
+  }
 
-	virtual bool AttachInputComponent(IDLVistaPipeComponent *pComp);
-	virtual bool AttachOutputComponent(IDLVistaPipeComponent *pComp);
+  virtual bool IsDataConsumer() const {
+    return false;
+  }
 
-	virtual IDLVistaPipeComponent *GetOutboundByIndex(int iIndex) const;
+  virtual bool AttachInputComponent(IDLVistaPipeComponent* pComp);
+  virtual bool AttachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual IDLVistaPipeComponent *GetInboundByIndex(int iIndex) const;
-	virtual int GetNumberOfOutbounds() const;
+  virtual IDLVistaPipeComponent* GetOutboundByIndex(int iIndex) const;
 
-	virtual int GetNumberOfInbounds() const;
+  virtual IDLVistaPipeComponent* GetInboundByIndex(int iIndex) const;
+  virtual int                    GetNumberOfOutbounds() const;
 
-	virtual int GetInputPacketType() const;
-	virtual int GetOutputPacketType() const;
+  virtual int GetNumberOfInbounds() const;
 
-	virtual std::list<IDLVistaPipeComponent *> GetInputComponents() const;
-	virtual std::list<IDLVistaPipeComponent *> GetOutputComponents() const;
+  virtual int GetInputPacketType() const;
+  virtual int GetOutputPacketType() const;
 
-	virtual int TryToReclaimPendingPackets();
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false) ;
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false) ;
+  virtual std::list<IDLVistaPipeComponent*> GetInputComponents() const;
+  virtual std::list<IDLVistaPipeComponent*> GetOutputComponents() const;
 
-	virtual IDLVistaDataPacket *GivePacket(bool bBlock) ;
-	virtual IDLVistaDataPacket *ReturnPacket();
+  virtual int  TryToReclaimPendingPackets();
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	virtual bool IsActiveComponent() const { return true; }
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
+  virtual IDLVistaDataPacket* ReturnPacket();
 
-	virtual bool InitPacketMgmt() ;
+  virtual bool IsActiveComponent() const {
+    return true;
+  }
 
-	virtual IDLVistaDataPacket *CreatePacket();
+  virtual bool InitPacketMgmt();
 
-	virtual void DeletePacket(IDLVistaDataPacket *pPacket);
+  virtual IDLVistaDataPacket* CreatePacket();
 
-	bool StartComponent();
+  virtual void DeletePacket(IDLVistaDataPacket* pPacket);
 
-	bool StopComponentGently(bool bJoin);
+  bool StartComponent();
 
-	/**
-	 * tell the component that active sucking is about to be stopped.
-	 * Use this to indicate termination whenever the component may
-	 * be in a blocking wait internally.
-	 */
-	void IndicateProductionEnd();
+  bool StopComponentGently(bool bJoin);
 
-	bool PauseComponent(bool bJoin);
+  /**
+   * tell the component that active sucking is about to be stopped.
+   * Use this to indicate termination whenever the component may
+   * be in a blocking wait internally.
+   */
+  void IndicateProductionEnd();
 
-	bool UnPauseComponent(bool bJoin);
+  bool PauseComponent(bool bJoin);
 
-	bool StopComponent(bool bJoin);
+  bool UnPauseComponent(bool bJoin);
 
-	bool HaltComponent();
+  bool StopComponent(bool bJoin);
 
+  bool HaltComponent();
 
-	int  SetComponentPriority(const VistaPriority &pPrio);
-	bool IsComponentRunning() const;
+  int  SetComponentPriority(const VistaPriority& pPrio);
+  bool IsComponentRunning() const;
 
+  bool GetWaitForData() const;
+  void SetWaitForData(bool bWait);
 
-	bool GetWaitForData() const;
-	void SetWaitForData(bool bWait);
+  void SetWaitTimeout(int iTimeout);
+  int  GetWaitTimeout() const;
 
-	void SetWaitTimeout(int iTimeout);
-	int  GetWaitTimeout() const;
+  void SetThreadName(const std::string& strName);
 
-	void SetThreadName(const std::string& strName);
+  std::string GetThreadName() const;
 
-	std::string GetThreadName() const;
+  virtual bool WaitForNextPacket(int iTimeout) const;
 
+  bool GetStopOnDestruct() const;
+  void SetStopOnDestruct(bool bStop);
 
-	virtual bool WaitForNextPacket(int iTimeout) const;
-
-	bool GetStopOnDestruct() const;
-	void SetStopOnDestruct(bool bStop);
-protected:
-	virtual void FillPacket(IDLVistaDataPacket * pPacket) ;
+ protected:
+  virtual void FillPacket(IDLVistaDataPacket* pPacket);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //IDLVISTADATAPRODUCER_H
-
+#endif // IDLVISTADATAPRODUCER_H

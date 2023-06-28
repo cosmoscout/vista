@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENGLNODE_H
 #define _VISTAOPENGLNODE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/GraphicsManager/VistaExtensionNode.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,24 +44,22 @@ class IVistaOpenGLDraw;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaOpenGLNode : public VistaExtensionNode
-{
-	friend class IVistaNodeBridge;
-	friend class VistaSceneGraph;
-public:
-	virtual ~VistaOpenGLNode();
+class VISTAKERNELAPI VistaOpenGLNode : public VistaExtensionNode {
+  friend class IVistaNodeBridge;
+  friend class VistaSceneGraph;
 
-	bool Init();
-	using VistaExtensionNode::GetBoundingBox;
-	virtual bool GetBoundingBox(VistaVector3D &pMin, VistaVector3D &pMax) const;
-	virtual bool GetBoundingBox( VistaBoundingBox& oBox ) const;
-	virtual VistaBoundingBox GetBoundingBox() const;
-protected:
-	VistaOpenGLNode( VistaGroupNode*				pParent,
-						IVistaOpenGLDraw*					pDI,
-						IVistaNodeBridge*				pBridge,
-						IVistaNodeData*					pData,
-						const std::string &strName="");
+ public:
+  virtual ~VistaOpenGLNode();
+
+  bool Init();
+  using VistaExtensionNode::GetBoundingBox;
+  virtual bool             GetBoundingBox(VistaVector3D& pMin, VistaVector3D& pMax) const;
+  virtual bool             GetBoundingBox(VistaBoundingBox& oBox) const;
+  virtual VistaBoundingBox GetBoundingBox() const;
+
+ protected:
+  VistaOpenGLNode(VistaGroupNode* pParent, IVistaOpenGLDraw* pDI, IVistaNodeBridge* pBridge,
+      IVistaNodeData* pData, const std::string& strName = "");
 };
 
 /*============================================================================*/

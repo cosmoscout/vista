@@ -21,39 +21,33 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASPACEMOUSEDRIVERCONFIG_H
 #define _VISTASPACEMOUSEDRIVERCONFIG_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-namespace VistaSpaceMouseMeasures
-{
-	/**
-	 * the memory layout of a space mouse measure.
-	 */
-	struct sSpaceMouseMeasure
-	{
-		float  m_nPos[4],  // make it 4, that's easier to convert for the vista
-						   // vector
-			   m_nOri[4];
-		float  m_nRotAx[4]; // raw values for the rotation axis
+namespace VistaSpaceMouseMeasures {
+/**
+ * the memory layout of a space mouse measure.
+ */
+struct sSpaceMouseMeasure {
+  float m_nPos[4], // make it 4, that's easier to convert for the vista
+                   // vector
+      m_nOri[4];
+  float m_nRotAx[4]; // raw values for the rotation axis
 
-		double m_nButtonStates[9];
-	};
-}
+  double m_nButtonStates[9];
+};
+} // namespace VistaSpaceMouseMeasures
 
 #endif // _VISTASPACEMOUSEDRIVERCONFIG_H

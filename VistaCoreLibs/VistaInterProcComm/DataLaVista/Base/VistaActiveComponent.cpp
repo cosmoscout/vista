@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -33,9 +31,8 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-IDLVistaActiveComponent::IDLVistaActiveComponent()
-{}
+IDLVistaActiveComponent::IDLVistaActiveComponent() {
+}
 
-
-IDLVistaActiveComponent::~IDLVistaActiveComponent()
-{}
+IDLVistaActiveComponent::~IDLVistaActiveComponent() {
+}

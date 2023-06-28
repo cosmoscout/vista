@@ -21,174 +21,146 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTimeoutHandler.h"
 
 #include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/EventManager/VistaSystemEvent.h>
 
-
 #include "VistaTickTimer.h"
 #include "VistaTickTimerEvent.h"
 
-
 #include <algorithm>
-
 
 //#include <stdio.h>
 
-
-VistaTimeoutHandler::VistaTimeoutHandler(VistaEventManager *pEvMgr,
-						 VistaClusterMode *pClusterMode)
-: VistaEventHandler(),
-  m_pEventManager(pEvMgr),
-  m_pClusterAux(pClusterMode)
-{
+VistaTimeoutHandler::VistaTimeoutHandler(VistaEventManager* pEvMgr, VistaClusterMode* pClusterMode)
+    : VistaEventHandler()
+    , m_pEventManager(pEvMgr)
+    , m_pClusterAux(pClusterMode) {
 }
 
+VistaTimeoutHandler::~VistaTimeoutHandler() {
+  std::vector<VistaTickTimer*>::iterator it;
+  for (it = m_veWatches.begin(); it != m_veWatches.end(); ++it)
+    delete *it;
 
-VistaTimeoutHandler::~VistaTimeoutHandler()
-{
-	std::vector<VistaTickTimer *>::iterator it;
-	for(it = m_veWatches.begin(); it != m_veWatches.end(); ++it)
-		delete *it;
+  // m_veWatches.clear();
 
-	//m_veWatches.clear();
+  for (std::list<VistaTickTimer*>::const_iterator cit = m_liGarbage.begin();
+       cit != m_liGarbage.end(); ++cit) {
+    delete *cit;
+  }
 
-	for(std::list<VistaTickTimer*>::const_iterator cit = m_liGarbage.begin();
-		cit != m_liGarbage.end(); ++cit)
-		{
-			delete *cit;
-		}
-
-	m_pEventManager->RemEventHandler(this, VistaEventManager::NVET_ALL,
-		VistaEventManager::NVET_ALL);
+  m_pEventManager->RemEventHandler(this, VistaEventManager::NVET_ALL, VistaEventManager::NVET_ALL);
 }
 
-void VistaTimeoutHandler::ResetTimeout(HD_TIMER hd)
-{
-	if(hd->IsRunning())
-		hd->StopTickTimer();
+void VistaTimeoutHandler::ResetTimeout(HD_TIMER hd) {
+  if (hd->IsRunning())
+    hd->StopTickTimer();
 
-	hd->ResetTickTimer();
-	hd->StartTickTimer();
+  hd->ResetTickTimer();
+  hd->StartTickTimer();
 }
 
-bool VistaTimeoutHandler::IsValidHandle(HD_TIMER handle) const
-{
-	if(ConvertFromHandle(handle) == NULL)
-		return false;
+bool VistaTimeoutHandler::IsValidHandle(HD_TIMER handle) const {
+  if (ConvertFromHandle(handle) == NULL)
+    return false;
 
-	std::vector<VistaTickTimer *>::const_iterator it = std::find(m_veWatches.begin(), m_veWatches.end(), handle);
-	if(it!=m_veWatches.end())
-		return true;
+  std::vector<VistaTickTimer*>::const_iterator it =
+      std::find(m_veWatches.begin(), m_veWatches.end(), handle);
+  if (it != m_veWatches.end())
+    return true;
 
-	return false;
+  return false;
 }
 
+void VistaTimeoutHandler::SetTimeout(HD_TIMER hd, double dTime) {
 
-void VistaTimeoutHandler::SetTimeout(HD_TIMER hd, double dTime)
-{
+  VistaTickTimer* pTickTimer = hd;
 
-	VistaTickTimer *pTickTimer = hd;
+  if (pTickTimer->IsRunning())
+    pTickTimer->StopTickTimer();
 
-	if(pTickTimer->IsRunning())
-		pTickTimer->StopTickTimer();
+  pTickTimer->SetTickTime(dTime);
 
-	pTickTimer->SetTickTime(dTime);
-
-	ResetTimeout(hd);
-
+  ResetTimeout(hd);
 }
 
-VistaTimeoutHandler::HD_TIMER VistaTimeoutHandler::AddTimeout(double dTime)
-{
-	VistaTickTimer *pWatch = NULL;
-	if(VistaTickTimerEvent::GetTypeId() == VistaEvent::VET_INVALID)
-	{
-		VistaTickTimerEvent::RegisterEventTypes( m_pEventManager );
-	}
+VistaTimeoutHandler::HD_TIMER VistaTimeoutHandler::AddTimeout(double dTime) {
+  VistaTickTimer* pWatch = NULL;
+  if (VistaTickTimerEvent::GetTypeId() == VistaEvent::VET_INVALID) {
+    VistaTickTimerEvent::RegisterEventTypes(m_pEventManager);
+  }
 
-	m_pEventManager->AddEventHandler(this, VistaTickTimerEvent::GetTypeId(), VistaTickTimerEvent::TTID_TIMEOUT);
+  m_pEventManager->AddEventHandler(
+      this, VistaTickTimerEvent::GetTypeId(), VistaTickTimerEvent::TTID_TIMEOUT);
 
-	if(m_liGarbage.empty())
-	{
-	   pWatch = new VistaTickTimer(m_pEventManager, m_pClusterAux);
-	}
-	else
-	{
-	   pWatch = m_liGarbage.front();
-	   m_liGarbage.pop_front(); // remove from list
-	}
+  if (m_liGarbage.empty()) {
+    pWatch = new VistaTickTimer(m_pEventManager, m_pClusterAux);
+  } else {
+    pWatch = m_liGarbage.front();
+    m_liGarbage.pop_front(); // remove from list
+  }
 
+  m_veWatches.push_back(pWatch);
 
-	m_veWatches.push_back(pWatch);
-
-	HD_TIMER ti = pWatch;
-	SetTimeout(ti, dTime);
-	return ti;
+  HD_TIMER ti = pWatch;
+  SetTimeout(ti, dTime);
+  return ti;
 }
 
-void VistaTimeoutHandler::HandleEvent(VistaEvent *pEvent)
-{
-	// we do only listen for tick-timer events, so this is safe
-	VistaTickTimerEvent *ev = static_cast<VistaTickTimerEvent *>(pEvent);
+void VistaTimeoutHandler::HandleEvent(VistaEvent* pEvent) {
+  // we do only listen for tick-timer events, so this is safe
+  VistaTickTimerEvent* ev = static_cast<VistaTickTimerEvent*>(pEvent);
 
-	// call subclass with the demultiplexed handle
-	HandleTimeout(ev->GetSourceTickTimer());
+  // call subclass with the demultiplexed handle
+  HandleTimeout(ev->GetSourceTickTimer());
 
-	// check for pulsing timers
-	if(!ev->GetSourceTickTimer()->GetPulsingTimer())
-	{
-		// no pulsing timer, so we will stop this timer here
-		ev->GetSourceTickTimer()->StopTickTimer();
-	}
+  // check for pulsing timers
+  if (!ev->GetSourceTickTimer()->GetPulsingTimer()) {
+    // no pulsing timer, so we will stop this timer here
+    ev->GetSourceTickTimer()->StopTickTimer();
+  }
 
-	// in any case: we did something to this event, so we advise the
-	// EventManager not to propagate in any longer
-	pEvent->SetHandled(true);
+  // in any case: we did something to this event, so we advise the
+  // EventManager not to propagate in any longer
+  pEvent->SetHandled(true);
 }
 
-VistaTimeoutHandler::HD_TIMER VistaTimeoutHandler::FindTimer(double dTimeout) const
-{
-	for(std::vector<VistaTickTimer *>::const_iterator it = m_veWatches.begin();
-		it != m_veWatches.end(); ++it)
-	{
-		if((*it)->GetTickTime() == dTimeout)
-			return (*it);
-	}
-	return NULL;
+VistaTimeoutHandler::HD_TIMER VistaTimeoutHandler::FindTimer(double dTimeout) const {
+  for (std::vector<VistaTickTimer*>::const_iterator it = m_veWatches.begin();
+       it != m_veWatches.end(); ++it) {
+    if ((*it)->GetTickTime() == dTimeout)
+      return (*it);
+  }
+  return NULL;
 }
 
-bool VistaTimeoutHandler::RemoveTimeout(HD_TIMER handle)
-{
-	std::vector<VistaTickTimer *>::iterator it = std::find(m_veWatches.begin(), m_veWatches.end(), handle);
-	if(it!=m_veWatches.end())
-	{
-		//printf("Removing timer @ %x\n", handle);
-		(*it)->StopTickTimer();
-		m_liGarbage.push_back(*it);
-		m_veWatches.erase(it);
+bool VistaTimeoutHandler::RemoveTimeout(HD_TIMER handle) {
+  std::vector<VistaTickTimer*>::iterator it =
+      std::find(m_veWatches.begin(), m_veWatches.end(), handle);
+  if (it != m_veWatches.end()) {
+    // printf("Removing timer @ %x\n", handle);
+    (*it)->StopTickTimer();
+    m_liGarbage.push_back(*it);
+    m_veWatches.erase(it);
 
-		//printf("current registered timers: %d\n", m_veWatches.size());
-		return true;
-	}
+    // printf("current registered timers: %d\n", m_veWatches.size());
+    return true;
+  }
 
-	return false;
-//    pWatch->StopTickTimer();
+  return false;
+  //    pWatch->StopTickTimer();
   //  m_
-	//delete pWatch;
+  // delete pWatch;
 }
 
-VistaTickTimer *VistaTimeoutHandler::GetTimerForHandle(HD_TIMER tim) const
-{
-	if(IsValidHandle(tim)) // check if this is our handle
-		return tim; 
-	return NULL; 
+VistaTickTimer* VistaTimeoutHandler::GetTimerForHandle(HD_TIMER tim) const {
+  if (IsValidHandle(tim)) // check if this is our handle
+    return tim;
+  return NULL;
 }
 
-VistaTickTimer *VistaTimeoutHandler::ConvertFromHandle(HD_TIMER tim) const
-{
-	return tim;
+VistaTickTimer* VistaTimeoutHandler::ConvertFromHandle(HD_TIMER tim) const {
+  return tim;
 }
-

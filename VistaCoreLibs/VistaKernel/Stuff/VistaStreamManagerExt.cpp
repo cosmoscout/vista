@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaStreamManagerExt.h"
 
 #include <VistaBase/VistaStreamUtils.h>
 
-#include <VistaKernel/VistaSystem.h>
-#include <VistaKernel/EventManager/VistaSystemEvent.h>
-#include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/Cluster/VistaClusterMode.h>
+#include <VistaKernel/EventManager/VistaEventManager.h>
+#include <VistaKernel/EventManager/VistaSystemEvent.h>
 #include <VistaKernel/VistaFrameLoop.h>
+#include <VistaKernel/VistaSystem.h>
 
 #include <algorithm>
 
@@ -38,111 +37,85 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* VistaKernelStreamInfoInterface                                            */
 /*============================================================================*/
 
-
-VistaKernelStreamInfoInterface::VistaKernelStreamInfoInterface( VistaSystem* pVistaSystem )
-: VistaStreamManager::IInfoInterface()
-, m_pVistaSystem( pVistaSystem )
-{
+VistaKernelStreamInfoInterface::VistaKernelStreamInfoInterface(VistaSystem* pVistaSystem)
+    : VistaStreamManager::IInfoInterface()
+    , m_pVistaSystem(pVistaSystem) {
 }
 
-VistaKernelStreamInfoInterface::~VistaKernelStreamInfoInterface()
-{
+VistaKernelStreamInfoInterface::~VistaKernelStreamInfoInterface() {
 }
 
-VistaType::systemtime VistaKernelStreamInfoInterface::GetFrameClock() const
-{
-	return m_pVistaSystem->GetFrameClock();
+VistaType::systemtime VistaKernelStreamInfoInterface::GetFrameClock() const {
+  return m_pVistaSystem->GetFrameClock();
 }
 
-std::string VistaKernelStreamInfoInterface::GetNodeName() const
-{
-	return m_pVistaSystem->GetClusterMode()->GetNodeName();
+std::string VistaKernelStreamInfoInterface::GetNodeName() const {
+  return m_pVistaSystem->GetClusterMode()->GetNodeName();
 }
 
-unsigned int VistaKernelStreamInfoInterface::GetFrameCount() const
-{
-	return m_pVistaSystem->GetFrameLoop()->GetFrameCount();
+unsigned int VistaKernelStreamInfoInterface::GetFrameCount() const {
+  return m_pVistaSystem->GetFrameLoop()->GetFrameCount();
 }
 
-float VistaKernelStreamInfoInterface::GetFrameRate() const
-{
-	return m_pVistaSystem->GetFrameLoop()->GetFrameRate();
+float VistaKernelStreamInfoInterface::GetFrameRate() const {
+  return m_pVistaSystem->GetFrameLoop()->GetFrameRate();
 }
-
 
 /*============================================================================*/
 /* VistaSystemEventLogger                                                    */
 /*============================================================================*/
 
-VistaSystemEventLogger::VistaSystemEventLogger( VistaEventManager* pManager )
-: VistaEventObserver()
-, m_pManager( pManager )
-, m_bRegistered( false )
-{
-	m_vecLogStreams.resize( VistaSystemEvent::VSE_UPPER_BOUND );
+VistaSystemEventLogger::VistaSystemEventLogger(VistaEventManager* pManager)
+    : VistaEventObserver()
+    , m_pManager(pManager)
+    , m_bRegistered(false) {
+  m_vecLogStreams.resize(VistaSystemEvent::VSE_UPPER_BOUND);
 }
 
-VistaSystemEventLogger::~VistaSystemEventLogger()
-{
-	m_pManager->UnregisterObserver( this, VistaSystemEvent::GetTypeId() );
+VistaSystemEventLogger::~VistaSystemEventLogger() {
+  m_pManager->UnregisterObserver(this, VistaSystemEvent::GetTypeId());
 }
 
-void VistaSystemEventLogger::UnregisterStream( std::ostream& oStream )
-{
-	for( std::vector<std::list<std::ostream*> >::iterator 
-			itVec = m_vecLogStreams.begin();
-			itVec != m_vecLogStreams.end();
-			++itVec )
-	{
-		std::list<std::ostream*>::iterator itStream = std::find( 
-						(*itVec).begin(), (*itVec).end(), &oStream );
-		if( itStream != (*itVec).end() )
-			(*itVec).erase( itStream );
-	}
+void VistaSystemEventLogger::UnregisterStream(std::ostream& oStream) {
+  for (std::vector<std::list<std::ostream*>>::iterator itVec = m_vecLogStreams.begin();
+       itVec != m_vecLogStreams.end(); ++itVec) {
+    std::list<std::ostream*>::iterator itStream =
+        std::find((*itVec).begin(), (*itVec).end(), &oStream);
+    if (itStream != (*itVec).end())
+      (*itVec).erase(itStream);
+  }
 }
 
-void VistaSystemEventLogger::SetStreamEventMask( std::ostream& oStream, unsigned int iEventMask )
-{
-	if( m_bRegistered == false )
-		m_pManager->RegisterObserver( this, VistaSystemEvent::GetTypeId() );
+void VistaSystemEventLogger::SetStreamEventMask(std::ostream& oStream, unsigned int iEventMask) {
+  if (m_bRegistered == false)
+    m_pManager->RegisterObserver(this, VistaSystemEvent::GetTypeId());
 
-	int iEventId = 0;
-	for( std::vector<std::list<std::ostream*> >::iterator 
-			itVec = m_vecLogStreams.begin();
-			itVec != m_vecLogStreams.end();
-			++itVec, ++iEventId )
-	{
-		std::list<std::ostream*>::iterator itStream = std::find( 
-			(*itVec).begin(), (*itVec).end(), &oStream );
+  int iEventId = 0;
+  for (std::vector<std::list<std::ostream*>>::iterator itVec = m_vecLogStreams.begin();
+       itVec != m_vecLogStreams.end(); ++itVec, ++iEventId) {
+    std::list<std::ostream*>::iterator itStream =
+        std::find((*itVec).begin(), (*itVec).end(), &oStream);
 
-		int iEventIndex = 1 << iEventId;
-		if( iEventMask & iEventIndex )
-		{
-			if( itStream == (*itVec).end() )
-				(*itVec).push_back( &oStream );
-		}
-		else
-		{
-			if( itStream != (*itVec).end() )
-				(*itVec).erase( itStream );
-		}
-	}
+    int iEventIndex = 1 << iEventId;
+    if (iEventMask & iEventIndex) {
+      if (itStream == (*itVec).end())
+        (*itVec).push_back(&oStream);
+    } else {
+      if (itStream != (*itVec).end())
+        (*itVec).erase(itStream);
+    }
+  }
 }
 
-void VistaSystemEventLogger::Notify( const VistaEvent *pEvent )
-{
-	for( std::list<std::ostream*>::iterator 
-			itStream = m_vecLogStreams[pEvent->GetId()].begin();
-			itStream != m_vecLogStreams[pEvent->GetId()].end();
-			++itStream )
-	{
-		(*(*itStream)) << vstr::info << "System Event with ID " << std::setw(2) << pEvent->GetId() << ":"
-						<< std::setw(31) << VistaSystemEvent::GetIdString( pEvent->GetId() )
-						<< " | time " << vstr::formattime( pEvent->GetTime() ) << std::endl;
-	}
+void VistaSystemEventLogger::Notify(const VistaEvent* pEvent) {
+  for (std::list<std::ostream*>::iterator itStream = m_vecLogStreams[pEvent->GetId()].begin();
+       itStream != m_vecLogStreams[pEvent->GetId()].end(); ++itStream) {
+    (*(*itStream)) << vstr::info << "System Event with ID " << std::setw(2) << pEvent->GetId()
+                   << ":" << std::setw(31) << VistaSystemEvent::GetIdString(pEvent->GetId())
+                   << " | time " << vstr::formattime(pEvent->GetTime()) << std::endl;
+  }
 }

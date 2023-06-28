@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*
 Okay. What does Alice do?
 
@@ -35,34 +34,31 @@ Bob does something with these commands and sends a Message back to Alice.
 /*============================================================================*/
 /* INCLUDES & DEFINES                                                         */
 /*============================================================================*/
-//This is the header file where we define the Window that is to be created.
+// This is the header file where we define the Window that is to be created.
 #include "Alice.h"
 #include <VistaKernel/VistaSystem.h>
 
 /*============================================================================*/
 /* main()                                                                     */
 /*============================================================================*/
-int main(int argc , char **argv)
-{
-	VistaSystem *pVistaSystem = new VistaSystem();
-	pVistaSystem->IntroMsg();
+int main(int argc, char** argv) {
+  VistaSystem* pVistaSystem = new VistaSystem();
+  pVistaSystem->IntroMsg();
 
-	std::list<std::string> liSearchPaths;
-	liSearchPaths.push_back("../configfiles/");
-	liSearchPaths.push_back("./configfiles/");
-	pVistaSystem->SetIniSearchPaths(liSearchPaths); 
+  std::list<std::string> liSearchPaths;
+  liSearchPaths.push_back("../configfiles/");
+  liSearchPaths.push_back("./configfiles/");
+  pVistaSystem->SetIniSearchPaths(liSearchPaths);
 
-	if(pVistaSystem->Init(argc, argv))
-	{
-		Alice* pAlice = new Alice(pVistaSystem->GetKeyboardSystemControl(),pVistaSystem->GetIniFile());
-		
-		pVistaSystem->Run();
+  if (pVistaSystem->Init(argc, argv)) {
+    Alice* pAlice = new Alice(pVistaSystem->GetKeyboardSystemControl(), pVistaSystem->GetIniFile());
 
-		delete pAlice;
-	}
+    pVistaSystem->Run();
 
-	delete pVistaSystem;
-  
-	return 0;
+    delete pAlice;
+  }
+
+  delete pVistaSystem;
+
+  return 0;
 };
-

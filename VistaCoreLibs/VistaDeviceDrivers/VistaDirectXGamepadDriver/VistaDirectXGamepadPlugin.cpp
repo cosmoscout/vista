@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
 #if defined(WIN32) && !defined(VISTADIRECTXGAMEPADPLUGIN_STATIC)
-	#ifdef VISTADIRECTXGAMEPADPLUGIN_EXPORTS
-		#define VISTADIRECTXGAMEPADPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTADIRECTXGAMEPADPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTADIRECTXGAMEPADPLUGIN_EXPORTS
+#define VISTADIRECTXGAMEPADPLUGINAPI __declspec(dllexport)
+#else
+#define VISTADIRECTXGAMEPADPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTADIRECTXGAMEPADPLUGINAPI
+#define VISTADIRECTXGAMEPADPLUGINAPI
 #endif
 
 #include "VistaDirectXGamepadDriver.h"
@@ -41,39 +40,30 @@
 
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-
-namespace
-{
-	CreateProxy *SpFactory = NULL;
+namespace {
+CreateProxy* SpFactory = NULL;
 }
 
-
-extern "C" VISTADIRECTXGAMEPADPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if(SpFactory == NULL)
-	{
-		SpFactory = new CreateProxy( fac );
-	}
-	return SpFactory;
+extern "C" VISTADIRECTXGAMEPADPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL) {
+    SpFactory = new CreateProxy(fac);
+  }
+  return SpFactory;
 }
 
-
-extern "C" VISTADIRECTXGAMEPADPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTADIRECTXGAMEPADPLUGINAPI void DisposeCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTADIRECTXGAMEPADPLUGINAPI const char *GetDeviceClassName()
-{
-	return "DIRECTXGAMEPAD";
+extern "C" VISTADIRECTXGAMEPADPLUGINAPI const char* GetDeviceClassName() {
+  return "DIRECTXGAMEPAD";
 }
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -82,5 +72,3 @@ extern "C" VISTADIRECTXGAMEPADPLUGINAPI const char *GetDeviceClassName()
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

@@ -1,5 +1,3 @@
-
-
 include( FindPackageHandleStandardArgs )
 include( VistaFindUtils )
 

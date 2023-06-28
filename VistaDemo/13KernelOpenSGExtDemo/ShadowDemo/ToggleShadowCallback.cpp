@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "ToggleShadowCallback.h"
 #include "ShadowDemo.h"
 
@@ -35,23 +34,22 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-ToggleShadowCallback::ToggleShadowCallback( ShadowDemo *pAppl )
-	:	m_pShadowDemo( pAppl )
-{}
+ToggleShadowCallback::ToggleShadowCallback(ShadowDemo* pAppl)
+    : m_pShadowDemo(pAppl) {
+}
 
-ToggleShadowCallback::~ToggleShadowCallback(){}
+ToggleShadowCallback::~ToggleShadowCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool ToggleShadowCallback::Do()
-{
-	// parses the Parameters again
-	m_pShadowDemo->SetShadowEnabled(!m_pShadowDemo->GetShadowEnabled());
-        std::cout << "ShadowEnabled is now"
-                << m_pShadowDemo->GetShadowEnabled() << std::endl;
-	return true;
+bool ToggleShadowCallback::Do() {
+  // parses the Parameters again
+  m_pShadowDemo->SetShadowEnabled(!m_pShadowDemo->GetShadowEnabled());
+  std::cout << "ShadowEnabled is now" << m_pShadowDemo->GetShadowEnabled() << std::endl;
+  return true;
 }
 
 /*============================================================================*/

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPROPERTYFUNCTOR_H
 #define _VISTAPROPERTYFUNCTOR_H
 
@@ -46,60 +45,57 @@ class VistaPropertyFunctorRegistry;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAASPECTSAPI IVistaPropertyGetFunctor : public IVistaNameable
-{
-public:
-	virtual ~IVistaPropertyGetFunctor();
+class VISTAASPECTSAPI IVistaPropertyGetFunctor : public IVistaNameable {
+ public:
+  virtual ~IVistaPropertyGetFunctor();
 
-	virtual bool operator()(const IVistaPropertyAwareable &,
-							VistaProperty &) const = 0;
+  virtual bool operator()(const IVistaPropertyAwareable&, VistaProperty&) const = 0;
 
-	void   SetNameForNameable(const std::string &sFunctorName);
-	std::string GetNameForNameable() const;
+  void        SetNameForNameable(const std::string& sFunctorName);
+  std::string GetNameForNameable() const;
 
-	std::string GetPropertyDescription() const;
+  std::string GetPropertyDescription() const;
 
-	std::string GetPropertyClassName() const;
-protected:
-	IVistaPropertyGetFunctor(const std::string &sPropname,
-							const std::string &sClassName,
-							const std::string &sDescription = "<none>");
+  std::string GetPropertyClassName() const;
 
-private:
-	IVistaPropertyGetFunctor(const IVistaPropertyGetFunctor &);
-	IVistaPropertyGetFunctor &operator=(const IVistaPropertyGetFunctor &);
+ protected:
+  IVistaPropertyGetFunctor(const std::string& sPropname, const std::string& sClassName,
+      const std::string& sDescription = "<none>");
 
-	VistaPropertyFunctorRegistry *m_pRegistry;
-	std::string m_sFunctorName;
-	std::string m_sFunctorClass;
-	std::string m_sDescription;
+ private:
+  IVistaPropertyGetFunctor(const IVistaPropertyGetFunctor&);
+  IVistaPropertyGetFunctor& operator=(const IVistaPropertyGetFunctor&);
+
+  VistaPropertyFunctorRegistry* m_pRegistry;
+  std::string                   m_sFunctorName;
+  std::string                   m_sFunctorClass;
+  std::string                   m_sDescription;
 };
 
+class VISTAASPECTSAPI IVistaPropertySetFunctor : public IVistaNameable {
+ public:
+  virtual ~IVistaPropertySetFunctor();
 
-class VISTAASPECTSAPI IVistaPropertySetFunctor : public IVistaNameable
-{
-public:
-	virtual ~IVistaPropertySetFunctor();
+  virtual bool operator()(IVistaPropertyAwareable&, const VistaProperty&) = 0;
 
-	virtual bool operator()(IVistaPropertyAwareable &, const VistaProperty &) = 0;
+  void        SetNameForNameable(const std::string& sFunctorName);
+  std::string GetNameForNameable() const;
 
-	void SetNameForNameable(const std::string &sFunctorName);
-	std::string GetNameForNameable() const;
+  std::string GetPropertyDescription() const;
+  std::string GetPropertyClassName() const;
 
-	std::string GetPropertyDescription() const;
-	std::string GetPropertyClassName() const;
-protected:
-	IVistaPropertySetFunctor(const std::string &sPropname,
-							const std::string &sClassName,
-							const std::string &sDescription = "<none>");
-private:
-	IVistaPropertySetFunctor(const IVistaPropertySetFunctor &);
-	IVistaPropertySetFunctor &operator=(const IVistaPropertySetFunctor &);
+ protected:
+  IVistaPropertySetFunctor(const std::string& sPropname, const std::string& sClassName,
+      const std::string& sDescription = "<none>");
 
-	VistaPropertyFunctorRegistry *m_pRegistry;
-	std::string m_sFunctorName;
-	std::string m_sFunctorClass;
-	std::string m_sDescription;
+ private:
+  IVistaPropertySetFunctor(const IVistaPropertySetFunctor&);
+  IVistaPropertySetFunctor& operator=(const IVistaPropertySetFunctor&);
+
+  VistaPropertyFunctorRegistry* m_pRegistry;
+  std::string                   m_sFunctorName;
+  std::string                   m_sFunctorClass;
+  std::string                   m_sDescription;
 };
 
 /*============================================================================*/
@@ -107,4 +103,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAPROPERTYFUNCTOR_H
-

@@ -22,7 +22,6 @@
 /*============================================================================*/
 // $Id: VistaAutoBuffer.cpp 31862 2012-08-31 22:54:08Z ingoassenmacher $
 
-
 #include "VistaImage.h"
 
 #include "VistaNativeGLImageAndTextureFactory.h"
@@ -32,54 +31,46 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-namespace
-{
-	static IVistaImageAndTextureCoreFactory* g_pSingleton = NULL;
+namespace {
+static IVistaImageAndTextureCoreFactory* g_pSingleton = NULL;
 };
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 IVistaImageAndTextureCoreFactory::IVistaImageAndTextureCoreFactory()
-: m_pCachedImagesMutex( new VistaMutex )
-{
+    : m_pCachedImagesMutex(new VistaMutex) {
 }
 
-IVistaImageAndTextureCoreFactory::~IVistaImageAndTextureCoreFactory()
-{
-	delete m_pCachedImagesMutex;
+IVistaImageAndTextureCoreFactory::~IVistaImageAndTextureCoreFactory() {
+  delete m_pCachedImagesMutex;
 }
 
-void IVistaImageAndTextureCoreFactory::SetSingleton( IVistaImageAndTextureCoreFactory* pFactory )
-{
-	delete g_pSingleton;
-	g_pSingleton = pFactory;
+void IVistaImageAndTextureCoreFactory::SetSingleton(IVistaImageAndTextureCoreFactory* pFactory) {
+  delete g_pSingleton;
+  g_pSingleton = pFactory;
 }
 
-IVistaImageAndTextureCoreFactory* IVistaImageAndTextureCoreFactory::GetSingleton()
-{
-	if( g_pSingleton == NULL )
-	{
-		g_pSingleton = new VistaNativeOpenGLImageAndTextureCoreFactory();
-	}
-	return g_pSingleton;
+IVistaImageAndTextureCoreFactory* IVistaImageAndTextureCoreFactory::GetSingleton() {
+  if (g_pSingleton == NULL) {
+    g_pSingleton = new VistaNativeOpenGLImageAndTextureCoreFactory();
+  }
+  return g_pSingleton;
 }
 
-VistaImage* IVistaImageAndTextureCoreFactory::GetCachedImage( const std::string& sFilename )
-{
-	VistaMutexLock oLock( *m_pCachedImagesMutex );
-	std::map<std::string, VistaImage>::iterator itCached = m_mapCachedImages.find( sFilename );
-	if( itCached != m_mapCachedImages.end() )
-		return &(*itCached).second;
-	else
-		return NULL;
+VistaImage* IVistaImageAndTextureCoreFactory::GetCachedImage(const std::string& sFilename) {
+  VistaMutexLock                              oLock(*m_pCachedImagesMutex);
+  std::map<std::string, VistaImage>::iterator itCached = m_mapCachedImages.find(sFilename);
+  if (itCached != m_mapCachedImages.end())
+    return &(*itCached).second;
+  else
+    return NULL;
 }
 
-void IVistaImageAndTextureCoreFactory::StoreCachedImage( const std::string& sFilename, const VistaImage& oImage )
-{
-	VistaMutexLock oLock( *m_pCachedImagesMutex );
-	m_mapCachedImages[sFilename] = oImage;
+void IVistaImageAndTextureCoreFactory::StoreCachedImage(
+    const std::string& sFilename, const VistaImage& oImage) {
+  VistaMutexLock oLock(*m_pCachedImagesMutex);
+  m_mapCachedImages[sFilename] = oImage;
 }
 
 /*============================================================================*/

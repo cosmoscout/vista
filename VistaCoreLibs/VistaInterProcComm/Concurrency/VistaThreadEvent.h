@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADEVENT_H
 #define _VISTATHREADEVENT_H
 
@@ -31,79 +30,65 @@
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaBase/VistaUtilityMacros.h>
 
-
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
 class IVistaThreadEventImp;
 
+class VISTAINTERPROCCOMMAPI VistaThreadEvent {
+ public:
+  virtual ~VistaThreadEvent();
 
-class VISTAINTERPROCCOMMAPI VistaThreadEvent
-{
-public:
-	virtual ~VistaThreadEvent();
-	
-	enum WaitBehavior
-	{
-		NON_WAITABLE_EVENT=0,
-		WAITABLE_EVENT=1
-	};
-	
-	//! @deprecated left in for compatibility
-	//! @FIXME remove this c'tor
-	VISTA_DEPRECATED VistaThreadEvent( bool waitable_event );
+  enum WaitBehavior { NON_WAITABLE_EVENT = 0, WAITABLE_EVENT = 1 };
 
-	VistaThreadEvent(WaitBehavior wait_behavior = WAITABLE_EVENT );
+  //! @deprecated left in for compatibility
+  //! @FIXME remove this c'tor
+  VISTA_DEPRECATED VistaThreadEvent(bool waitable_event);
 
-	/**
-	 * Set this event to the signaled state. This wakes one of the
-	 * threads currently blocking on the signal using the WaitForEvent
-	 * methods. Iff a waiting thread is released by this, the event
-	 * will automatically be reset to the non-signaled state, see
-	 * ResetThisEvent().
-	 */
-	 void SignalEvent();
+  VistaThreadEvent(WaitBehavior wait_behavior = WAITABLE_EVENT);
 
-	/**
-	 * Poll/Wait for signaled event. If bBlock is true, do a blocking
-	 * wait, otherwise just poll and return immediately.
-	 *
-	 * @return true if event was signaled, false otherwise.
-	 */
-	bool WaitForEvent(bool bBlock);
+  /**
+   * Set this event to the signaled state. This wakes one of the
+   * threads currently blocking on the signal using the WaitForEvent
+   * methods. Iff a waiting thread is released by this, the event
+   * will automatically be reset to the non-signaled state, see
+   * ResetThisEvent().
+   */
+  void SignalEvent();
 
-	/**
-	 * Block on this event until the timeout specified in milliseconds
-	 * has elapsed.
-	 *
-	 * @return true if signaled, false upon timeout.
-	 */
-	bool WaitForEvent(int iTimeoutMSecs);
+  /**
+   * Poll/Wait for signaled event. If bBlock is true, do a blocking
+   * wait, otherwise just poll and return immediately.
+   *
+   * @return true if event was signaled, false otherwise.
+   */
+  bool WaitForEvent(bool bBlock);
 
+  /**
+   * Block on this event until the timeout specified in milliseconds
+   * has elapsed.
+   *
+   * @return true if signaled, false upon timeout.
+   */
+  bool WaitForEvent(int iTimeoutMSecs);
 
-	HANDLE GetEventSignalHandle() const;
-	HANDLE GetEventWaitHandle() const;
+  HANDLE GetEventSignalHandle() const;
+  HANDLE GetEventWaitHandle() const;
 
-	enum ResetBehavior
-	{
-		RESET_ALL_EVENTS=0,
-		RESET_JUST_ONE_EVENT
-	};
-	
-	/**
-	 * Manually reset the event to the non-signaled state. This is for
-	 * the case that the event has been set to signaled, but no thread
-	 * was resumed by it, i.e. no one was listening.
-	 */
+  enum ResetBehavior { RESET_ALL_EVENTS = 0, RESET_JUST_ONE_EVENT };
 
-	bool ResetThisEvent( ResetBehavior reset_behavior = RESET_ALL_EVENTS );
+  /**
+   * Manually reset the event to the non-signaled state. This is for
+   * the case that the event has been set to signaled, but no thread
+   * was resumed by it, i.e. no one was listening.
+   */
 
-private:
-	IVistaThreadEventImp *m_pImpl;
+  bool ResetThisEvent(ResetBehavior reset_behavior = RESET_ALL_EVENTS);
+
+ private:
+  IVistaThreadEventImp* m_pImpl;
 };
-
 
 /*============================================================================*/
 

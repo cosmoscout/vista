@@ -21,20 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADEVICEDRIVERSCONFIG_H
 #define _VISTADEVICEDRIVERSCONFIG_H
 
-
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTADEVICEDRIVERSBASE_STATIC) 
-	#ifdef VISTADEVICEDRIVERSBASE_EXPORTS
-		#define VISTADEVICEDRIVERSAPI __declspec(dllexport)
-	#else
-		#define VISTADEVICEDRIVERSAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTADEVICEDRIVERSBASE_STATIC)
+#ifdef VISTADEVICEDRIVERSBASE_EXPORTS
+#define VISTADEVICEDRIVERSAPI __declspec(dllexport)
+#else
+#define VISTADEVICEDRIVERSAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTADEVICEDRIVERSAPI
+#define VISTADEVICEDRIVERSAPI
 #endif
 
 #endif //_VISTADEVICEDRIVERSCONFIG_H

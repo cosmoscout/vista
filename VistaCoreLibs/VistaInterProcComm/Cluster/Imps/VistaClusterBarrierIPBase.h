@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACLUSTERBARRIERIPBASE_H
 #define _VISTACLUSTERBARRIERIPBASE_H
 
@@ -32,8 +31,8 @@
 
 #include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,93 +43,87 @@ class VistaConnectionIP;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaClusterLeaderBarrierIPBase : public IVistaClusterBarrier
-{
-public:
-	VistaClusterLeaderBarrierIPBase( const bool bVerbose );
-	virtual ~VistaClusterLeaderBarrierIPBase();
-	
-	int AddFollower( const std::string& sName,
-						VistaConnectionIP* pConnection,
-						const bool bManageConnectionDeletion = true );
+class VISTAINTERPROCCOMMAPI VistaClusterLeaderBarrierIPBase : public IVistaClusterBarrier {
+ public:
+  VistaClusterLeaderBarrierIPBase(const bool bVerbose);
+  virtual ~VistaClusterLeaderBarrierIPBase();
 
-	virtual int GetNumberOfFollowers() const;
-	virtual int GetNumberOfActiveFollowers() const;
-	virtual int GetNumberOfDeadFollowers() const;
-	virtual std::string GetFollowerNameForId( const int nID ) const;
-	virtual int GetFollowerIdForName( const std::string& sName ) const;
-	virtual bool GetFollowerIsAlive( const int nID ) const;
-	virtual int GetLastChangedFollower();
-	virtual bool DeactivateFollower( const std::string& sName );
-	virtual bool DeactivateFollower( const int nID );
+  int AddFollower(const std::string& sName, VistaConnectionIP* pConnection,
+      const bool bManageConnectionDeletion = true);
 
-	virtual bool GetIsValid() const;
+  virtual int         GetNumberOfFollowers() const;
+  virtual int         GetNumberOfActiveFollowers() const;
+  virtual int         GetNumberOfDeadFollowers() const;
+  virtual std::string GetFollowerNameForId(const int nID) const;
+  virtual int         GetFollowerIdForName(const std::string& sName) const;
+  virtual bool        GetFollowerIsAlive(const int nID) const;
+  virtual int         GetLastChangedFollower();
+  virtual bool        DeactivateFollower(const std::string& sName);
+  virtual bool        DeactivateFollower(const int nID);
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
-	
-	int GetAllowedConsecutiveSyncFailures() const;
-	void SetAllowedConsecutiveSyncFailures( const int oValue );
+  virtual bool GetIsValid() const;
 
-protected:
-	bool WaitForAllFollowers( int iTimeOut );
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 
-	struct Follower
-	{
-		Follower( const std::string& sName, VistaConnectionIP* pConn,
-					bool bDelete, int nID );
-		std::string			m_sName;
-		int					m_nID;
-		VistaConnectionIP*	m_pLeaderConn;
-		bool				m_bManageConnDeletion;
-		int					m_nSyncFailures;
-	};
-	bool RemoveFollower( Follower* pFollower );
+  int  GetAllowedConsecutiveSyncFailures() const;
+  void SetAllowedConsecutiveSyncFailures(const int oValue);
 
-	std::vector<Follower*>& GetFollowersRef();
+ protected:
+  bool WaitForAllFollowers(int iTimeOut);
 
-	VistaType::sint32 GetBarrierWaitCount();
+  struct Follower {
+    Follower(const std::string& sName, VistaConnectionIP* pConn, bool bDelete, int nID);
+    std::string        m_sName;
+    int                m_nID;
+    VistaConnectionIP* m_pLeaderConn;
+    bool               m_bManageConnDeletion;
+    int                m_nSyncFailures;
+  };
+  bool RemoveFollower(Follower* pFollower);
 
-private:
-	VistaType::sint32		m_nBarrierWaitCount;
+  std::vector<Follower*>& GetFollowersRef();
 
-	std::vector<Follower*>	m_vecFollowers;
-	std::vector<Follower*>	m_vecAliveFollowers;
-	int						m_nLastChangedFollower;
-	int						m_nAllowedConsecutiveSyncFailures;
+  VistaType::sint32 GetBarrierWaitCount();
+
+ private:
+  VistaType::sint32 m_nBarrierWaitCount;
+
+  std::vector<Follower*> m_vecFollowers;
+  std::vector<Follower*> m_vecAliveFollowers;
+  int                    m_nLastChangedFollower;
+  int                    m_nAllowedConsecutiveSyncFailures;
 };
 
-class VISTAINTERPROCCOMMAPI VistaClusterFollowerBarrierIPBase : public IVistaClusterBarrier
-{
-public:
-	VistaClusterFollowerBarrierIPBase( VistaConnectionIP* pLeaderConnection,
-									const bool bManageConnection = true,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaClusterFollowerBarrierIPBase : public IVistaClusterBarrier {
+ public:
+  VistaClusterFollowerBarrierIPBase(VistaConnectionIP* pLeaderConnection,
+      const bool bManageConnection = true, const bool bVerbose = true);
 
-	virtual ~VistaClusterFollowerBarrierIPBase();
+  virtual ~VistaClusterFollowerBarrierIPBase();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-protected:
-	bool SendReadyTokenToLeader( int iTimeOut );
-	void ProcessError();
+ protected:
+  bool SendReadyTokenToLeader(int iTimeOut);
+  void ProcessError();
 
-	VistaType::sint32 GetBarrierWaitCount() const;
-	void SetBarrierWaitCount( VistaType::sint32 nCount );
+  VistaType::sint32 GetBarrierWaitCount() const;
+  void              SetBarrierWaitCount(VistaType::sint32 nCount);
 
-	bool GetDoesSwap() const;
+  bool GetDoesSwap() const;
 
-	VistaConnectionIP* GetConnection();
+  VistaConnectionIP* GetConnection();
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 
-private:	
-	VistaType::sint32	m_nBarrierWaitCount;
+ private:
+  VistaType::sint32 m_nBarrierWaitCount;
 
-	VistaConnectionIP*	m_pLeaderConn;
-	bool				m_bManageConnection;
-	bool				m_bSwap;
+  VistaConnectionIP* m_pLeaderConn;
+  bool               m_bManageConnection;
+  bool               m_bSwap;
 };
 
 /*============================================================================*/

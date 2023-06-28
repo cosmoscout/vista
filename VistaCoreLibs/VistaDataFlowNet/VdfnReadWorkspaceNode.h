@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNREADWORKSPACENODE_H
 #define _VDFNREADWORKSPACENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,10 +30,10 @@
 #include "VdfnConfig.h"
 #include <string>
 
-#include "VdfnSerializer.h"
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -67,92 +65,84 @@ class VistaDriverWorkspaceAspect;
  * @outport{depth,float,the depth value of the workspace}
  *
  */
-class VISTADFNAPI VdfnReadWorkspaceNode : public IVdfnNode
-{
-public:
-	VdfnReadWorkspaceNode();
-	~VdfnReadWorkspaceNode();
+class VISTADFNAPI VdfnReadWorkspaceNode : public IVdfnNode {
+ public:
+  VdfnReadWorkspaceNode();
+  ~VdfnReadWorkspaceNode();
 
-	/**
-	 * @return true when a workspace token was set (non-empty) and
-	           a workspace aspect was set.
-	 */
-	bool GetIsValid() const;
+  /**
+   * @return true when a workspace token was set (non-empty) and
+             a workspace aspect was set.
+   */
+  bool GetIsValid() const;
 
-    // ############### WORKSPACE API ################
+  // ############### WORKSPACE API ################
 
-	/**
-	 * @return the name of the workspace that was given to this node
-	 */
-	std::string GetWorkspaceToken() const;
+  /**
+   * @return the name of the workspace that was given to this node
+   */
+  std::string GetWorkspaceToken() const;
 
-	/**
-	 * the workspace aspect can represent more than one workspace, so
-	 * this API is used to define the workspace aspect to select.
-	 * Setting the workspace token will cause the node to re-evaluate
-	 * his outports.
-	 * @param strWorkspaceToken the name of the workspace that
-	          is represented by this node
-	 */
-	void SetWorkspaceToken( const std::string & strWorkspaceToken);
+  /**
+   * the workspace aspect can represent more than one workspace, so
+   * this API is used to define the workspace aspect to select.
+   * Setting the workspace token will cause the node to re-evaluate
+   * his outports.
+   * @param strWorkspaceToken the name of the workspace that
+            is represented by this node
+   */
+  void SetWorkspaceToken(const std::string& strWorkspaceToken);
 
-	/**
-	 * @return the workspace aspect that was assigned to this node
-	 */
-	VistaDriverWorkspaceAspect *GetWorkspaceAspect() const;
+  /**
+   * @return the workspace aspect that was assigned to this node
+   */
+  VistaDriverWorkspaceAspect* GetWorkspaceAspect() const;
 
-	/**
-	 * setting the workspace will cause the node to re-evaluate his
-	 * outports. Setting NULL is ok.
-	 * @param pWS the workspace aspect to represent
-	 */
-	void SetWorkspaceAspect( VistaDriverWorkspaceAspect *pWS );
+  /**
+   * setting the workspace will cause the node to re-evaluate his
+   * outports. Setting NULL is ok.
+   * @param pWS the workspace aspect to represent
+   */
+  void SetWorkspaceAspect(VistaDriverWorkspaceAspect* pWS);
 
-protected:
-	bool DoEvalNode();
-	virtual unsigned int    CalcUpdateNeededScore() const;
-private:
-	TVdfnPort<float> *m_pMinX,
-	                 *m_pMaxX,
-	                 *m_pMinY,
-	                 *m_pMaxY,
-	                 *m_pMinZ,
-	                 *m_pMaxZ,
-                     *m_pWidth,
-                     *m_pHeight,
-                     *m_pDepth;
-	TVdfnPort<VistaBoundingBox> *m_pBounds;
+ protected:
+  bool                 DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const;
 
-	VistaDriverWorkspaceAspect *m_pWorkspace;
-	std::string m_strWorkspaceToken;
+ private:
+  TVdfnPort<float>*m_pMinX, *m_pMaxX, *m_pMinY, *m_pMaxY, *m_pMinZ, *m_pMaxZ, *m_pWidth, *m_pHeight,
+      *m_pDepth;
+  TVdfnPort<VistaBoundingBox>* m_pBounds;
 
+  VistaDriverWorkspaceAspect* m_pWorkspace;
+  std::string                 m_strWorkspaceToken;
 
-    mutable bool m_bDirty;
-    mutable unsigned int m_nCnt;
+  mutable bool         m_bDirty;
+  mutable unsigned int m_nCnt;
 };
 
 /**
  * creates a VdfnReadWorkspaceNode
  */
-class VISTADFNAPI VdfnReadWorkspaceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	/**
-	 * @param pMap a pointer to the driver map to query for devices.
-	          The pointer must outlive this creator.
-	 */
-	VdfnReadWorkspaceNodeCreate( VistaDriverMap *pMap );
+class VISTADFNAPI VdfnReadWorkspaceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  /**
+   * @param pMap a pointer to the driver map to query for devices.
+            The pointer must outlive this creator.
+   */
+  VdfnReadWorkspaceNodeCreate(VistaDriverMap* pMap);
 
-	/**
-	 * creates a VdfnReadWorkspaceNode. accepts
-	 * - device_id: the <i>name</i> of the driver to look for in the driver map
-	 * - workspace: the <i>name</i> of the workspace to assign to the node
-	                (some drivers may offer more than one workspace)
-	 * @return a proper node having its workspace set
-	 */
-	virtual IVdfnNode *CreateNode(const VistaPropertyList &oParams ) const;
-private:
-	VistaDriverMap *m_pMap;
+  /**
+   * creates a VdfnReadWorkspaceNode. accepts
+   * - device_id: the <i>name</i> of the driver to look for in the driver map
+   * - workspace: the <i>name</i> of the workspace to assign to the node
+                  (some drivers may offer more than one workspace)
+   * @return a proper node having its workspace set
+   */
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaDriverMap* m_pMap;
 };
 
 /*============================================================================*/
@@ -160,4 +150,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNREADWORKSPACENODE_H
-

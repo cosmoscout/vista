@@ -21,173 +21,136 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaObjectRegistry.h"
 #include "VistaNameable.h"
 
-#include <string>
 #include <algorithm>
 #include <functional>
+#include <string>
 using std::string;
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
-namespace
-{
-	class _count : public std::unary_function<VistaObjectRegistry::value_type&,bool>
-	{
-	public:
-		_count( const std::string &strName )
-		: m_strName(strName)
-		, m_cnt(0)
-		{}
+namespace {
+class _count : public std::unary_function<VistaObjectRegistry::value_type&, bool> {
+ public:
+  _count(const std::string& strName)
+      : m_strName(strName)
+      , m_cnt(0) {
+  }
 
-		std::string m_strName;
-		VistaObjectRegistry::size_type m_cnt;
-		bool operator()( const VistaObjectRegistry::value_type &v )
-		{
-			if( v->GetNameForNameable() == m_strName )
-			{
-				++m_cnt;
-				return true;
-			}
-			return false;
-		}
-	};
-}
+  std::string                    m_strName;
+  VistaObjectRegistry::size_type m_cnt;
+  bool                           operator()(const VistaObjectRegistry::value_type& v) {
+    if (v->GetNameForNameable() == m_strName) {
+      ++m_cnt;
+      return true;
+    }
+    return false;
+  }
+};
+} // namespace
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaObjectRegistry::VistaObjectRegistry()
-{
+VistaObjectRegistry::VistaObjectRegistry() {
 }
 
-VistaObjectRegistry::~VistaObjectRegistry()
-{
+VistaObjectRegistry::~VistaObjectRegistry() {
 }
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-unsigned int VistaObjectRegistry::RegisterNameable(IVistaNameable* pNameable)
-{
-	m_vecObjectRegistry.push_back(pNameable);
-	return (unsigned int)m_vecObjectRegistry.size()-1;
+unsigned int VistaObjectRegistry::RegisterNameable(IVistaNameable* pNameable) {
+  m_vecObjectRegistry.push_back(pNameable);
+  return (unsigned int)m_vecObjectRegistry.size() - 1;
 }
 
-IVistaNameable *VistaObjectRegistry::UnregisterNameable(int iID)
-{
-	if(iID < 0 || iID >= (int)m_vecObjectRegistry.size())
-		return NULL;
-	IVistaNameable *pNam(m_vecObjectRegistry[iID]);
-	m_vecObjectRegistry[iID] = NULL;
-	return pNam;
+IVistaNameable* VistaObjectRegistry::UnregisterNameable(int iID) {
+  if (iID < 0 || iID >= (int)m_vecObjectRegistry.size())
+    return NULL;
+  IVistaNameable* pNam(m_vecObjectRegistry[iID]);
+  m_vecObjectRegistry[iID] = NULL;
+  return pNam;
 }
 
-
-IVistaNameable *VistaObjectRegistry::UnregisterNameable(const string& strName)
-{
-	int iID(this->FindNameable(strName));
-	if(iID < 0)
-		return NULL;
-	return this->UnregisterNameable(iID);
+IVistaNameable* VistaObjectRegistry::UnregisterNameable(const string& strName) {
+  int iID(this->FindNameable(strName));
+  if (iID < 0)
+    return NULL;
+  return this->UnregisterNameable(iID);
 }
 
-
-bool VistaObjectRegistry::UnregisterNameable(IVistaNameable* pNameable)
-{
-	for(unsigned int i =0; i < m_vecObjectRegistry.size(); ++i)
-	{
-		if(m_vecObjectRegistry[i]== pNameable)
-		{
-			m_vecObjectRegistry[i] = 0;
-			return true;
-		}
-	}
-	return false;
+bool VistaObjectRegistry::UnregisterNameable(IVistaNameable* pNameable) {
+  for (unsigned int i = 0; i < m_vecObjectRegistry.size(); ++i) {
+    if (m_vecObjectRegistry[i] == pNameable) {
+      m_vecObjectRegistry[i] = 0;
+      return true;
+    }
+  }
+  return false;
 }
 
-
-IVistaNameable *VistaObjectRegistry::RetrieveNameable(int iID) const
-{
-	if(iID < 0 || iID >= (int)m_vecObjectRegistry.size())
-		return NULL;
-	return m_vecObjectRegistry[iID];
+IVistaNameable* VistaObjectRegistry::RetrieveNameable(int iID) const {
+  if (iID < 0 || iID >= (int)m_vecObjectRegistry.size())
+    return NULL;
+  return m_vecObjectRegistry[iID];
 }
 
-
-IVistaNameable *VistaObjectRegistry::RetrieveNameable(const string& strName) const
-{
-	int iID(this->FindNameable(strName));
-	if(iID < 0)
-		return NULL;
-	return m_vecObjectRegistry[iID];
+IVistaNameable* VistaObjectRegistry::RetrieveNameable(const string& strName) const {
+  int iID(this->FindNameable(strName));
+  if (iID < 0)
+    return NULL;
+  return m_vecObjectRegistry[iID];
 }
 
-bool VistaObjectRegistry::HasNameable( const std::string &strName ) const
-{
-	return (FindNameable(strName) >= 0);
+bool VistaObjectRegistry::HasNameable(const std::string& strName) const {
+  return (FindNameable(strName) >= 0);
 }
 
-void VistaObjectRegistry::ClearRegistry()
-{
-	m_vecObjectRegistry.clear();
+void VistaObjectRegistry::ClearRegistry() {
+  m_vecObjectRegistry.clear();
 }
 
-int VistaObjectRegistry::FindNameable(const std::string& strName) const
-{
-	for(unsigned int i=0; i<m_vecObjectRegistry.size(); ++i)
-	{
-		if(m_vecObjectRegistry[i] // can be NULL
-		&& m_vecObjectRegistry[i]->GetNameForNameable() == strName)
-			return i;
-
-	}
-	return -1;
+int VistaObjectRegistry::FindNameable(const std::string& strName) const {
+  for (unsigned int i = 0; i < m_vecObjectRegistry.size(); ++i) {
+    if (m_vecObjectRegistry[i] // can be NULL
+        && m_vecObjectRegistry[i]->GetNameForNameable() == strName)
+      return i;
+  }
+  return -1;
 }
 
-VistaObjectRegistry::const_iterator VistaObjectRegistry::begin() const
-{
-	return m_vecObjectRegistry.begin();
+VistaObjectRegistry::const_iterator VistaObjectRegistry::begin() const {
+  return m_vecObjectRegistry.begin();
 }
 
-VistaObjectRegistry::const_iterator VistaObjectRegistry::end() const
-{
-	return m_vecObjectRegistry.end();
+VistaObjectRegistry::const_iterator VistaObjectRegistry::end() const {
+  return m_vecObjectRegistry.end();
 }
 
-
-VistaObjectRegistry::iterator VistaObjectRegistry::begin()
-{
-	return m_vecObjectRegistry.begin();
+VistaObjectRegistry::iterator VistaObjectRegistry::begin() {
+  return m_vecObjectRegistry.begin();
 }
 
-VistaObjectRegistry::iterator VistaObjectRegistry::end()
-{
-	return m_vecObjectRegistry.end();
+VistaObjectRegistry::iterator VistaObjectRegistry::end() {
+  return m_vecObjectRegistry.end();
 }
 
-
-VistaObjectRegistry::reverse_iterator VistaObjectRegistry::rbegin()
-{
-	return m_vecObjectRegistry.rbegin();
+VistaObjectRegistry::reverse_iterator VistaObjectRegistry::rbegin() {
+  return m_vecObjectRegistry.rbegin();
 }
 
-VistaObjectRegistry::reverse_iterator VistaObjectRegistry::rend()
-{
-	return m_vecObjectRegistry.rend();
+VistaObjectRegistry::reverse_iterator VistaObjectRegistry::rend() {
+  return m_vecObjectRegistry.rend();
 }
 
-VistaObjectRegistry::size_type VistaObjectRegistry::count( const std::string &sname ) const
-{
-	_count c = std::for_each( m_vecObjectRegistry.begin(), m_vecObjectRegistry.end(), _count( sname ) );
-	return c.m_cnt;
+VistaObjectRegistry::size_type VistaObjectRegistry::count(const std::string& sname) const {
+  _count c = std::for_each(m_vecObjectRegistry.begin(), m_vecObjectRegistry.end(), _count(sname));
+  return c.m_cnt;
 }
-
-
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

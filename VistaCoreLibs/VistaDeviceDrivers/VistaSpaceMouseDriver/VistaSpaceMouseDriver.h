@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASPACEMOUSEDRIVER_H
 #define _VISTASPACEMOUSEDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -36,7 +34,7 @@
 
 #include <string>
 
-//CRM
+// CRM
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,7 +42,7 @@
 
 // Shared library support
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTASPACEMOUSE_STATIC) 
+#if defined(WIN32) && !defined(VISTASPACEMOUSE_STATIC)
 #ifdef VISTASPACEMOUSEDRIVER_EXPORTS
 #define VISTASPACEMOUSEDRIVERAPI __declspec(dllexport)
 #else
@@ -73,62 +71,57 @@ class VistaDriverConnectionAspect;
  *
  * @todo more documentation on this
  */
-class VISTASPACEMOUSEDRIVERAPI VistaSpaceMouseDriver : public IVistaDeviceDriver
-{
+class VISTASPACEMOUSEDRIVERAPI VistaSpaceMouseDriver : public IVistaDeviceDriver {
 
-public:
-	VistaSpaceMouseDriver(IVistaDriverCreationMethod *crm);
-	~VistaSpaceMouseDriver();
+ public:
+  VistaSpaceMouseDriver(IVistaDriverCreationMethod* crm);
+  ~VistaSpaceMouseDriver();
 
-	virtual bool PostUpdate();
+  virtual bool PostUpdate();
 
-public:
-	// ########################################################################
-	// COMMANDTABLE
-	// ########################################################################
-	bool CmdBeep(int nDuration);
-	bool CmdKeyboard();
-	bool CmdSetMode(int nDominant,int nTranslation,int nRotation);
-	bool CmdRequestData();
-	bool CmdSetNullRadius(int nRadius);
-	bool CmdReset(void);
-	bool CmdGetDeviceName(std::string &sName);
+ public:
+  // ########################################################################
+  // COMMANDTABLE
+  // ########################################################################
+  bool CmdBeep(int nDuration);
+  bool CmdKeyboard();
+  bool CmdSetMode(int nDominant, int nTranslation, int nRotation);
+  bool CmdRequestData();
+  bool CmdSetNullRadius(int nRadius);
+  bool CmdReset(void);
+  bool CmdGetDeviceName(std::string& sName);
 
-protected:
-	bool DoConnect();
-	bool DoDisconnect();
-	bool DoSensorUpdate(VistaType::microtime dTs);
-	virtual bool PhysicalEnable(bool bEnable);
-private:
-	// ########################################################################
-	// HELPERS
-	// ########################################################################
-	unsigned char EncodeValue(unsigned int nValue);
-	unsigned int  DecodeValue(unsigned char cKey);
-	float         BuildCoordinate(unsigned char *cBuffer);
+ protected:
+  bool         DoConnect();
+  bool         DoDisconnect();
+  bool         DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool PhysicalEnable(bool bEnable);
 
-	VistaDriverConnectionAspect *m_pConnection;
-	VistaVector3D m_v3Pos;
-	VistaQuaternion m_qOri;
-	std::vector<double> m_nVecButtonStates;
+ private:
+  // ########################################################################
+  // HELPERS
+  // ########################################################################
+  unsigned char EncodeValue(unsigned int nValue);
+  unsigned int  DecodeValue(unsigned char cKey);
+  float         BuildCoordinate(unsigned char* cBuffer);
 
+  VistaDriverConnectionAspect* m_pConnection;
+  VistaVector3D                m_v3Pos;
+  VistaQuaternion              m_qOri;
+  std::vector<double>          m_nVecButtonStates;
 };
 
-class VISTASPACEMOUSEDRIVERAPI VistaSpaceMouseCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaSpaceMouseCreationMethod(IVistaTranscoderFactoryFactory *metaFac)
-		:IVistaDriverCreationMethod(metaFac)
-	{
-		RegisterSensorType( "",
-			sizeof(VistaSpaceMouseMeasures::sSpaceMouseMeasure),
-			20, metaFac->CreateFactoryForType("VistaSpaceMouseTranscode") );
-	}
+class VISTASPACEMOUSEDRIVERAPI VistaSpaceMouseCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaSpaceMouseCreationMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("", sizeof(VistaSpaceMouseMeasures::sSpaceMouseMeasure), 20,
+        metaFac->CreateFactoryForType("VistaSpaceMouseTranscode"));
+  }
 
-	virtual IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaSpaceMouseDriver(this);
-	}
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaSpaceMouseDriver(this);
+  }
 };
 
 /*============================================================================*/

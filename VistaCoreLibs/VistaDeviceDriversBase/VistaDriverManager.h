@@ -21,14 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTADRIVERMANAGER_H
 #define __VISTADRIVERMANAGER_H
 
-
 #include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
-#include <VistaDeviceDriversBase/VistaDriverUtils.h>
 #include <VistaDeviceDriversBase/VistaDriverMap.h>
+#include <VistaDeviceDriversBase/VistaDriverUtils.h>
 
 #include <vector>
 /*============================================================================*/
@@ -52,91 +50,79 @@ class VistaConnectionUpdater;
  * - keeping a driver map to work with
  * - Update all active devices correctly
  */
-class VISTADEVICEDRIVERSAPI VistaDriverManager
-{
-public:
-	/**
-	 * The constructor sets up the Vdd for you. It will
-	 * - call VddUtils::InitVdd()
-	 * - initialize plugins for you
-	 *
-	 * The plugins are loaded from:
-	 * - the path pointed to using the environment variable VDD_DRIVERS
-	 * - if that one is empty, the
-	 */
-	VistaDriverManager( VistaDriverMap & );
-	~VistaDriverManager();
+class VISTADEVICEDRIVERSAPI VistaDriverManager {
+ public:
+  /**
+   * The constructor sets up the Vdd for you. It will
+   * - call VddUtils::InitVdd()
+   * - initialize plugins for you
+   *
+   * The plugins are loaded from:
+   * - the path pointed to using the environment variable VDD_DRIVERS
+   * - if that one is empty, the
+   */
+  VistaDriverManager(VistaDriverMap&);
+  ~VistaDriverManager();
 
+  ///@name management API
+  IVistaDeviceDriver* CreateAndRegisterDriver(
+      const std::string& strDriverName, const std::string& strDriverClassName);
 
-	///@name management API
-	IVistaDeviceDriver *CreateAndRegisterDriver( const std::string &strDriverName,
-			                                     const std::string &strDriverClassName );
+  IVistaDriverCreationMethod* GetCreationMethodForClass(
+      const std::string& strDriverClassName) const;
 
-	IVistaDriverCreationMethod *GetCreationMethodForClass( const std::string &strDriverClassName ) const;
+  void RegisterDriver(const std::string& strDriverName, IVistaDeviceDriver* pDriver);
+  void RegisterDriverPlugin(const VddUtil::VistaDriverPlugin& oPlugin);
 
-	void RegisterDriver( const std::string &strDriverName, IVistaDeviceDriver *pDriver );
-	void RegisterDriverPlugin( const VddUtil::VistaDriverPlugin & oPlugin );
+  void UnregisterDriver(IVistaDeviceDriver*);
 
-	void UnregisterDriver( IVistaDeviceDriver * );
+  void SetEnableStateOnAllDrivers(bool bState);
 
-	void SetEnableStateOnAllDrivers( bool bState );
+  ///@name runtime-API
 
-	///@name runtime-API
+  bool ConnectAllDrivers();
+  bool DisconnectAllDrivers();
 
-	bool ConnectAllDrivers();
-	bool DisconnectAllDrivers();
+  VistaDriverMap&       GetDriverMap();
+  const VistaDriverMap& GetDriverMap() const;
 
-	VistaDriverMap &GetDriverMap();
-	const VistaDriverMap &GetDriverMap() const;
+  enum eLauchOption { E_LAUNCH_ALL_AS_THREAD = 0, E_LAUNCH_ONLY_THOSE_WITH_THREAD_ASPECT };
 
-	enum eLauchOption
-	{
-		E_LAUNCH_ALL_AS_THREAD=0,
-		E_LAUNCH_ONLY_THOSE_WITH_THREAD_ASPECT
-	};
+  bool StartAsyncDriverDispatch(eLauchOption launch_option = E_LAUNCH_ALL_AS_THREAD);
+  bool StopAsyncDriverDispatch();
 
-	bool StartAsyncDriverDispatch( eLauchOption launch_option = E_LAUNCH_ALL_AS_THREAD );
-	bool StopAsyncDriverDispatch();
+  int InitAllAvailablePlugins(const std::string& search_dir_root = "");
 
-	int InitAllAvailablePlugins( const std::string &search_dir_root = "" );
+  bool InitPlugin(const std::string& driver_name, const std::string& search_dir_root = "");
 
-	bool InitPlugin( const std::string &driver_name, const std::string &search_dir_root = "" );
+  struct PlugDesc {
+    PlugDesc() {
+    }
 
+    PlugDesc(const std::string& transcoderName, const std::string& crmSourceName)
+        : m_TranscoderSourceName(transcoderName)
+        , m_DriverCreationSourceName(crmSourceName) {
+    }
 
-	struct PlugDesc
-	{
-		PlugDesc() {}
+    std::string m_TranscoderSourceName, m_DriverCreationSourceName;
 
-		PlugDesc( const std::string &transcoderName,
-			      const std::string &crmSourceName )
-			: m_TranscoderSourceName( transcoderName )
-			, m_DriverCreationSourceName( crmSourceName )
-		{}
+    VddUtil::VistaDriverPlugin m_plg;
+  };
 
-		std::string m_TranscoderSourceName,
-			        m_DriverCreationSourceName;
+  bool LoadPlugin(PlugDesc& dsc) const;
+  bool UnloadPlugin(PlugDesc& dsc) const;
 
-		VddUtil::VistaDriverPlugin m_plg;
-	};
+ private:
+  int DisposePlugins();
 
-	bool LoadPlugin( PlugDesc &dsc ) const;
-	bool UnloadPlugin( PlugDesc &dsc ) const;
+  void StopThreadedDevices();
 
-private:
+  std::vector<VddUtil::VistaDriverPlugin> m_vecDriverPlugins;
 
-	int DisposePlugins();
+  VistaDriverMap& m_Drivers;
 
-
-	void StopThreadedDevices();
-
-	std::vector<VddUtil::VistaDriverPlugin> m_vecDriverPlugins;
-
-	VistaDriverMap& m_Drivers;
-
-	VistaConnectionUpdater *m_pConnUpdater;
+  VistaConnectionUpdater* m_pConnUpdater;
 };
-
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

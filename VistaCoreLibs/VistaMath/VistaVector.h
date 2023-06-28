@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAVECTOR_H
 #define _VISTAVECTOR_H
 
@@ -62,7 +61,6 @@
 /* ENUMERATIONS                                                               */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* VistaVector                                                            */
 /*============================================================================*/
@@ -73,110 +71,109 @@
 template <class Type, int dim>
 class VistaVector //: public VistaMatrix<Type>
 {
-public:
-	/// constructs nDim vector, defaults are zero
-	inline VistaVector (bool bSetNull = true);
-	inline VistaVector (const VistaVector<Type,dim> & orgVec);
-	//explicit inline VistaVector (const Type ...);
-	explicit inline VistaVector (const Type *pInitVals);
-	inline ~VistaVector();
+ public:
+  /// constructs nDim vector, defaults are zero
+  inline VistaVector(bool bSetNull = true);
+  inline VistaVector(const VistaVector<Type, dim>& orgVec);
+  // explicit inline VistaVector (const Type ...);
+  explicit inline VistaVector(const Type* pInitVals);
+  inline ~VistaVector();
 
-protected:
-//    inline void AllocCoeff();
-//    inline void ReleaseCoeff();
+ protected:
+  //    inline void AllocCoeff();
+  //    inline void ReleaseCoeff();
 
+ public:
+  inline bool SetNull();
+  inline Type GetVal(int idx) const {
+    return m_pVec[idx];
+  }
+  inline bool SetVal(int idx, const Type& newVal);
+  //    {m_pMat[idx] = newVal; return true;}
+  inline int GetDimension() const {
+    return m_nDimension;
+  }
+  inline bool IsNull() const;
+  inline bool Transpose();
+  inline bool IsTransposed() const {
+    return m_bTransposed;
+  }
 
-public:
-	inline bool SetNull();
-	inline Type GetVal (int idx) const
-		{return m_pVec[idx];}
-	inline bool SetVal (int idx, const Type & newVal);
-	//    {m_pMat[idx] = newVal; return true;}
-	inline int GetDimension () const
-		{return m_nDimension;}
-	inline bool IsNull() const;
-	inline bool Transpose();
-	inline bool IsTransposed() const
-	   {return m_bTransposed;}
+  inline bool HasNAN() const {
+    for (int n = 0; n < GetDimension(); ++n)
+      if (m_pVec[n] != m_pVec[n])
+        return true;
+    return false;
+  }
 
-	inline bool HasNAN() const
-	{
-		for( int n=0; n < GetDimension(); ++n )
-			if( m_pVec[n] != m_pVec[n] )
-				return true;
-		return false;
-	}
+ public:
+  /*========================================================================*/
+  /* OPERATORS                                                              */
+  /*========================================================================*/
+  // assignment operator
+  inline VistaVector<Type, dim>& operator=(const VistaVector<Type, dim>& vec2);
 
+  // calculation operators
+  inline VistaVector<Type, dim> operator+(const VistaVector<Type, dim>& other) const;
+  inline VistaVector<Type, dim> operator-(const VistaVector<Type, dim>& other) const;
+  inline VistaVector<Type, dim> operator+(const Type& scale) const;
+  inline VistaVector<Type, dim> operator*(const Type scale) const;
+  inline VistaVector<Type, dim> operator/(const Type scale) const;
 
-public:
-	/*========================================================================*/
-	/* OPERATORS                                                              */
-	/*========================================================================*/
-	// assignment operator
-	inline VistaVector<Type,dim>& operator= (const VistaVector<Type,dim>& vec2);
+  inline VistaVector<Type, dim> operator-() const;
 
-	// calculation operators
-	inline       VistaVector<Type,dim>    operator+    ( const VistaVector<Type,dim> & other ) const;
-	inline       VistaVector<Type,dim>    operator-    ( const VistaVector<Type,dim> & other ) const;
-	inline       VistaVector<Type,dim>    operator+    ( const Type                      & scale ) const;
-	inline       VistaVector<Type,dim>    operator*    ( const Type                        scale ) const;
-	inline       VistaVector<Type,dim>    operator/    ( const Type                        scale ) const;
+  inline const VistaVector<Type, dim>& operator+=(const VistaVector<Type, dim>& other);
+  inline const VistaVector<Type, dim>& operator-=(const VistaVector<Type, dim>& other);
+  inline const VistaVector<Type, dim>& operator*=(const Type scale);
+  inline const VistaVector<Type, dim>& operator/=(const Type scale);
 
-	inline		 VistaVector<Type,dim>    operator-    ( ) const;
+  inline bool operator==(const VistaVector<Type, dim>& other) const;
+  inline bool operator!=(const VistaVector<Type, dim>& other) const;
 
-	inline const VistaVector<Type,dim> &  operator+=   ( const VistaVector<Type,dim> & other );
-	inline const VistaVector<Type,dim> &  operator-=   ( const VistaVector<Type,dim> & other );
-	inline const VistaVector<Type,dim> &  operator*=   ( const Type                        scale );
-	inline const VistaVector<Type,dim> &  operator/=   ( const Type                        scale );
+  // dot product
+  inline Type operator*(const VistaVector<Type, dim>& other) const;
+  inline void operator=(const Type*);
 
-	inline       bool             operator==   ( const VistaVector<Type,dim> & other ) const;
-	inline       bool             operator!=   ( const VistaVector<Type,dim> & other ) const;
+  /*========================================================================*/
+  /* DATA ACCESS                                                            */
+  /*========================================================================*/
 
-	// dot product
-	inline       Type             operator*    ( const VistaVector<Type,dim> & other ) const;
-	inline       void             operator=    ( const Type * );
+ public:
+  inline const Type& operator[](const int axis) const;
+  inline Type&       operator[](const int axis);
 
+  inline void GetValues(Type out[dim]) const;
+  inline void SetValues(const Type in[dim]);
 
-	/*========================================================================*/
-	/* DATA ACCESS                                                            */
-	/*========================================================================*/
+  inline VistaVector<Type, dim> Absolute() const;
+  inline VistaVector<Type, dim> Interpolate(const VistaVector<Type, dim>& in, const Type& t) const;
 
-public:
+  inline VistaVector<Type, dim> GetNormalized() const;
+  inline Type                   GetLength() const;
+  inline Type                   GetLengthSquared() const;
 
-	inline const Type &  operator[]  ( const int axis ) const;
-	inline       Type &  operator[]  ( const int axis );
+  /// normalize this vector
+  inline void Normalize();
 
-	inline void  GetValues  (       Type out[dim] ) const;
-	inline void  SetValues  ( const Type in [dim] );
+  /// dot product or scalar product
+  inline Type Dot(const VistaVector<Type, dim>& other) const;
+  /*
+          /// cross product or vector product
+          inline       VistaVector<Type,dim>    Cross         ( const VistaVector<Type,dim> & other
+     )  const;
+  */
 
-	inline	VistaVector<Type,dim>   Absolute ( ) const;
-	inline	VistaVector<Type,dim>   Interpolate (const VistaVector<Type,dim>& in, const Type& t ) const;
+  inline bool Debug();
 
-	inline       VistaVector<Type,dim>    GetNormalized ()                        const;
-	inline       Type             GetLength     ()                                const;
-	inline       Type             GetLengthSquared     ()                         const;
-
-	/// normalize this vector
-	inline       void              Normalize     ();
-
-	/// dot product or scalar product
-	inline       Type             Dot           ( const VistaVector<Type,dim> & other  )  const;
-/*
-	/// cross product or vector product
-	inline       VistaVector<Type,dim>    Cross         ( const VistaVector<Type,dim> & other  )  const;
-*/
-
-	inline bool Debug();
-
-protected:
-	bool        m_bTransposed;
-	int         m_nDimension;
-	//Type *      m_pVec;
-	Type        m_pVec[dim];
+ protected:
+  bool m_bTransposed;
+  int  m_nDimension;
+  // Type *      m_pVec;
+  Type m_pVec[dim];
 };
 
 template <class Type, int dim>
-std::ostream& operator<< ( std::ostream& oStream, VistaVector<Type, dim> oVector );
+std::ostream& operator<<(std::ostream& oStream, VistaVector<Type, dim> oVector);
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
@@ -185,24 +182,22 @@ std::ostream& operator<< ( std::ostream& oStream, VistaVector<Type, dim> oVector
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>::VistaVector(bool bSetNull)
-:m_bTransposed(false),m_nDimension(dim)
-{
-	if(bSetNull)
-		SetNull();
+inline VistaVector<Type, dim>::VistaVector(bool bSetNull)
+    : m_bTransposed(false)
+    , m_nDimension(dim) {
+  if (bSetNull)
+    SetNull();
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>::VistaVector(const Type * pVals)
-  :m_bTransposed(false),m_nDimension(dim)
-{
-	//SetNull(); is overwriten form next line //av006ss
-	for (int idx=0; idx < dim; ++idx)
-		m_pVec[idx] = pVals[idx];
+inline VistaVector<Type, dim>::VistaVector(const Type* pVals)
+    : m_bTransposed(false)
+    , m_nDimension(dim) {
+  // SetNull(); is overwriten form next line //av006ss
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] = pVals[idx];
 }
 
 /*============================================================================*/
@@ -227,32 +222,28 @@ VistaVector<Type,dim>::VistaVector (const Type first ...)
 /*============================================================================*/
 #if 1
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>::VistaVector(const VistaVector<Type,dim> & orgVec)
-:m_nDimension(dim)
-{
-	//SetNull(); // gets overwriten => obsolete?
-	m_bTransposed = orgVec.IsTransposed();
+inline VistaVector<Type, dim>::VistaVector(const VistaVector<Type, dim>& orgVec)
+    : m_nDimension(dim) {
+  // SetNull(); // gets overwriten => obsolete?
+  m_bTransposed = orgVec.IsTransposed();
 
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] = orgVec.GetVal (idx);
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] = orgVec.GetVal(idx);
 }
 #endif
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>::~VistaVector()
-{
-	//ReleaseCoeff();
+inline VistaVector<Type, dim>::~VistaVector() {
+  // ReleaseCoeff();
 }
 
 /*============================================================================*/
 /*============================================================================*/
-//template <class Type, int dim>
-//inline
-//void VistaVector<Type,dim>::AllocCoeff()
+// template <class Type, int dim>
+// inline
+// void VistaVector<Type,dim>::AllocCoeff()
 //{
 //    m_pVec = new Type[dim];
 //    SetNull();
@@ -260,9 +251,9 @@ VistaVector<Type,dim>::~VistaVector()
 
 /*============================================================================*/
 /*============================================================================*/
-//template <class Type, int dim>
-//inline
-//void VistaVector<Type,dim>::ReleaseCoeff()
+// template <class Type, int dim>
+// inline
+// void VistaVector<Type,dim>::ReleaseCoeff()
 //{
 //    delete [] m_pVec;
 //}
@@ -270,47 +261,38 @@ VistaVector<Type,dim>::~VistaVector()
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::SetNull()
-{
-	for (int idx = 0; idx < dim; ++idx)
-	{
-		m_pVec[idx] = 0;
-	}
-	return true;
+inline bool VistaVector<Type, dim>::SetNull() {
+  for (int idx = 0; idx < dim; ++idx) {
+    m_pVec[idx] = 0;
+  }
+  return true;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 // Determine if this is a null vector
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::IsNull () const
-{
-	for (int idx = 0; idx < dim; ++idx)
-		if (m_pVec[idx] != 0)
-				return false;
-	return true;
+inline bool VistaVector<Type, dim>::IsNull() const {
+  for (int idx = 0; idx < dim; ++idx)
+    if (m_pVec[idx] != 0)
+      return false;
+  return true;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::SetVal (int idx, const Type & newVal)
-{
-	m_pVec[idx] = newVal;
-	return true;
+inline bool VistaVector<Type, dim>::SetVal(int idx, const Type& newVal) {
+  m_pVec[idx] = newVal;
+  return true;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::Transpose()
-{
-	m_bTransposed = !m_bTransposed;
-	return true;
+inline bool VistaVector<Type, dim>::Transpose() {
+  m_bTransposed = !m_bTransposed;
+  return true;
 }
 
 /*============================================================================*/
@@ -318,14 +300,12 @@ bool VistaVector<Type,dim>::Transpose()
 // assignment operator
 #if 1
 template <class Type, int dim>
-inline
-VistaVector<Type,dim> &
-VistaVector<Type,dim>::operator= (const VistaVector<Type,dim>& vec2)
-{
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] = vec2.GetVal (idx);
-	m_bTransposed = vec2.IsTransposed();
-	return *this;
+inline VistaVector<Type, dim>& VistaVector<Type, dim>::operator=(
+    const VistaVector<Type, dim>& vec2) {
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] = vec2.GetVal(idx);
+  m_bTransposed = vec2.IsTransposed();
+  return *this;
 }
 #endif
 
@@ -333,308 +313,254 @@ VistaVector<Type,dim>::operator= (const VistaVector<Type,dim>& vec2)
 /*============================================================================*/
 // binary scalar multiplication operator
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>
-VistaVector<Type,dim>::operator+ (const Type& num) const
-{
-	VistaVector<Type,dim> tempVec;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::operator+(const Type& num) const {
+  VistaVector<Type, dim> tempVec;
 
-	for (int idx = 0; idx < dim; ++idx)
-		tempVec[idx] = num + m_pVec[idx];
+  for (int idx = 0; idx < dim; ++idx)
+    tempVec[idx] = num + m_pVec[idx];
 
-	return tempVec;
+  return tempVec;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim> VistaVector<Type,dim>::operator- ( ) const
-{
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = -m_pVec[idx];
-	return res;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::operator-() const {
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = -m_pVec[idx];
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim> VistaVector<Type,dim>::operator*  ( const Type scaleVal ) const
-{
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = m_pVec[idx] * scaleVal;
-	return res;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::operator*(const Type scaleVal) const {
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = m_pVec[idx] * scaleVal;
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim> VistaVector<Type,dim>::operator/  ( const Type scaleVal ) const
-{
-	const Type scaleValInv = 1.0f/scaleVal;
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = m_pVec[idx] * scaleValInv;
-	return res;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::operator/(const Type scaleVal) const {
+  const Type             scaleValInv = 1.0f / scaleVal;
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = m_pVec[idx] * scaleValInv;
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim> VistaVector<Type,dim>::operator+ ( const VistaVector<Type,dim> & other ) const
-{
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = m_pVec[idx] + other[idx];
-	return res;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::operator+(
+    const VistaVector<Type, dim>& other) const {
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = m_pVec[idx] + other[idx];
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim> VistaVector<Type,dim>::operator- ( const VistaVector<Type,dim> & other ) const
-{
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = m_pVec[idx] - other[idx];
-	return res;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::operator-(
+    const VistaVector<Type, dim>& other) const {
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = m_pVec[idx] - other[idx];
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-Type VistaVector<Type,dim>::operator* ( const VistaVector<Type,dim> & other ) const
-{
-	Type res = 0;
-	for (int idx = 0; idx < dim; ++idx)
-		res += m_pVec[idx]*other[idx];
-	return res;
+inline Type VistaVector<Type, dim>::operator*(const VistaVector<Type, dim>& other) const {
+  Type res = 0;
+  for (int idx = 0; idx < dim; ++idx)
+    res += m_pVec[idx] * other[idx];
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-const VistaVector<Type,dim> & VistaVector<Type,dim>::operator*= ( const Type scaleVal )
-{
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] *= scaleVal;
-	return *this;
+inline const VistaVector<Type, dim>& VistaVector<Type, dim>::operator*=(const Type scaleVal) {
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] *= scaleVal;
+  return *this;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-const VistaVector<Type,dim> & VistaVector<Type,dim>::operator/= ( const Type scaleVal )
-{
-	const Type scaleValInv = 1.0f/scaleVal;
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] *= scaleValInv;
-	return *this;
+inline const VistaVector<Type, dim>& VistaVector<Type, dim>::operator/=(const Type scaleVal) {
+  const Type scaleValInv = 1.0f / scaleVal;
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] *= scaleValInv;
+  return *this;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-const VistaVector<Type,dim> & VistaVector<Type,dim>::operator+= ( const VistaVector<Type,dim> & other )
-{
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] += other[idx];
-	return *this;
+inline const VistaVector<Type, dim>& VistaVector<Type, dim>::operator+=(
+    const VistaVector<Type, dim>& other) {
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] += other[idx];
+  return *this;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-const VistaVector<Type,dim> & VistaVector<Type,dim>::operator-= ( const VistaVector<Type,dim> & other )
-{
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] -= other[idx];
+inline const VistaVector<Type, dim>& VistaVector<Type, dim>::operator-=(
+    const VistaVector<Type, dim>& other) {
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] -= other[idx];
 
-	return *this;
+  return *this;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::operator== ( const VistaVector<Type,dim> & other ) const
-{
-	for (int idx = 0; idx < dim; ++idx)
-		if (std::abs( m_pVec[idx] - other[idx] ) > Vista::Epsilon)
-			return false;
-	return true;
+inline bool VistaVector<Type, dim>::operator==(const VistaVector<Type, dim>& other) const {
+  for (int idx = 0; idx < dim; ++idx)
+    if (std::abs(m_pVec[idx] - other[idx]) > Vista::Epsilon)
+      return false;
+  return true;
 }
 
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::operator!= ( const VistaVector<Type,dim> & other ) const
-{
-	return !((*this)==other);
+inline bool VistaVector<Type, dim>::operator!=(const VistaVector<Type, dim>& other) const {
+  return !((*this) == other);
 }
 
 template <class Type, int dim>
-inline
-void VistaVector<Type,dim>::operator=    ( const Type *pOther )
-{
-	for(int n=0; n < dim; ++n)
-		m_pVec[n] = pOther[n];
+inline void VistaVector<Type, dim>::operator=(const Type* pOther) {
+  for (int n = 0; n < dim; ++n)
+    m_pVec[n] = pOther[n];
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>   VistaVector<Type,dim>::Absolute ( ) const
-{
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = (m_pVec[idx]>=0) ? m_pVec[idx] : -m_pVec[idx];
-	return res;
+inline VistaVector<Type, dim> VistaVector<Type, dim>::Absolute() const {
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = (m_pVec[idx] >= 0) ? m_pVec[idx] : -m_pVec[idx];
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-VistaVector<Type,dim>    VistaVector<Type,dim>::GetNormalized () const
-{
-	return *this / GetLength ();
+inline VistaVector<Type, dim> VistaVector<Type, dim>::GetNormalized() const {
+  return *this / GetLength();
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-Type  VistaVector<Type,dim>::GetLength () const
-{
-	return static_cast<Type> ( sqrt ( GetLengthSquared()) );
+inline Type VistaVector<Type, dim>::GetLength() const {
+  return static_cast<Type>(sqrt(GetLengthSquared()));
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-Type  VistaVector<Type,dim>::GetLengthSquared () const
-{
-	Type res = 0;
-	for (int idx = 0; idx < dim; ++idx)
-		res += m_pVec[idx] * m_pVec[idx];
+inline Type VistaVector<Type, dim>::GetLengthSquared() const {
+  Type res = 0;
+  for (int idx = 0; idx < dim; ++idx)
+    res += m_pVec[idx] * m_pVec[idx];
 
-	return res;
+  return res;
 }
-
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
 /// normalize this vector
-inline
-void VistaVector<Type,dim>::Normalize ()
-{
-	(*this) /= this->GetLength();
+inline void VistaVector<Type, dim>::Normalize() {
+  (*this) /= this->GetLength();
 }
-
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
 /// dot product or scalar product
-inline
-Type VistaVector<Type,dim>::Dot ( const VistaVector<Type,dim> & other  )  const
-{
-	// this is just a convenient form of "operator* "
-	return (*this) * other;
-}
-
-
-/*============================================================================*/
-/*============================================================================*/
-template <class Type, int dim>
-inline
-VistaVector<Type,dim>   VistaVector<Type,dim>::Interpolate (
-					const VistaVector<Type,dim>& in, const Type& t ) const
-{
-	if(t<=0.0)
-		return *this;
-
-	if(t>=1.0)
-		return in;
-
-	VistaVector<Type,dim> res;
-	for (int idx = 0; idx < dim; ++idx)
-		res[idx] = (1.0-t) * m_pVec[idx] + t * in[idx];
-	return res;
+inline Type VistaVector<Type, dim>::Dot(const VistaVector<Type, dim>& other) const {
+  // this is just a convenient form of "operator* "
+  return (*this) * other;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-void VistaVector<Type,dim>::GetValues ( Type out[dim] ) const
-{
-	for (int idx = 0; idx < dim; ++idx)
-		out[idx] = m_pVec[idx];
+inline VistaVector<Type, dim> VistaVector<Type, dim>::Interpolate(
+    const VistaVector<Type, dim>& in, const Type& t) const {
+  if (t <= 0.0)
+    return *this;
+
+  if (t >= 1.0)
+    return in;
+
+  VistaVector<Type, dim> res;
+  for (int idx = 0; idx < dim; ++idx)
+    res[idx] = (1.0 - t) * m_pVec[idx] + t * in[idx];
+  return res;
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-void VistaVector<Type,dim>::SetValues ( const Type in[dim] )
-{
-	for (int idx = 0; idx < dim; ++idx)
-		m_pVec[idx] = in[idx];
+inline void VistaVector<Type, dim>::GetValues(Type out[dim]) const {
+  for (int idx = 0; idx < dim; ++idx)
+    out[idx] = m_pVec[idx];
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-const Type & VistaVector<Type,dim>::operator[] ( const int axis ) const
-{
-	return m_pVec[axis];
+inline void VistaVector<Type, dim>::SetValues(const Type in[dim]) {
+  for (int idx = 0; idx < dim; ++idx)
+    m_pVec[idx] = in[idx];
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-Type & VistaVector<Type,dim>::operator[] ( const int axis )
-{
-	return m_pVec[axis];
+inline const Type& VistaVector<Type, dim>::operator[](const int axis) const {
+  return m_pVec[axis];
 }
 
 /*============================================================================*/
 /*============================================================================*/
 template <class Type, int dim>
-inline
-bool VistaVector<Type,dim>::Debug ()
-{
-	for (int idx = 0; idx < dim; ++idx)
-	{
-		vstr::out() << m_pVec[idx];
-		if (m_bTransposed)
-			vstr::out() << "  ";
-		else
-			vstr::out() << std::endl;
-	}
-	if (m_bTransposed)
-		vstr::out() << std::endl;
-
-	return true;
+inline Type& VistaVector<Type, dim>::operator[](const int axis) {
+  return m_pVec[axis];
 }
 
+/*============================================================================*/
+/*============================================================================*/
+template <class Type, int dim>
+inline bool VistaVector<Type, dim>::Debug() {
+  for (int idx = 0; idx < dim; ++idx) {
+    vstr::out() << m_pVec[idx];
+    if (m_bTransposed)
+      vstr::out() << "  ";
+    else
+      vstr::out() << std::endl;
+  }
+  if (m_bTransposed)
+    vstr::out() << std::endl;
+
+  return true;
+}
 
 /*============================================================================*/
 /*============================================================================*/
@@ -661,29 +587,26 @@ bool VecExample ()
 }
 #endif
 
-
 template <class Type, int dim>
-inline std::ostream& operator<< ( std::ostream& oStream, VistaVector<Type, dim> oVector )
-{
-	const std::streamsize iOldPrecision( oStream.precision( 3 ) );
-	const std::ios::fmtflags iOldflags( oStream.flags() );
+inline std::ostream& operator<<(std::ostream& oStream, VistaVector<Type, dim> oVector) {
+  const std::streamsize    iOldPrecision(oStream.precision(3));
+  const std::ios::fmtflags iOldflags(oStream.flags());
 
-	// set fix point notation
-	oStream.setf( std::ios::fixed | std::ios::showpos );
+  // set fix point notation
+  oStream.setf(std::ios::fixed | std::ios::showpos);
 
-	// write to the stream
-	oStream << "( " << oVector[0];
-	for( int i = 1; i < dim; ++i )
-		oStream << ", " << oVector[i];
-	oStream << " )";
-	oStream.unsetf( std::ios::fixed | std::ios::showpos );	
+  // write to the stream
+  oStream << "( " << oVector[0];
+  for (int i = 1; i < dim; ++i)
+    oStream << ", " << oVector[i];
+  oStream << " )";
+  oStream.unsetf(std::ios::fixed | std::ios::showpos);
 
-	// restore old stream settings
-	oStream.precision( iOldPrecision );
-	oStream.flags( iOldflags );
+  // restore old stream settings
+  oStream.precision(iOldPrecision);
+  oStream.flags(iOldflags);
 
-	return oStream;
+  return oStream;
 }
-
 
 #endif //_VISTAVECTOR_H

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _RESETCALLBACK_H
 #define _RESETCALLBACK_H
 
@@ -49,35 +48,31 @@ class VrmlVisualizer;
  * CResetCallback
  * This Callback let the application parse the parameters again.
  */
-class ResetCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	
-	/**
-	 * Constructor
-	 * The CResetCallback needs an instance of CVrmlVisualizer
-	 */
-	ResetCallback( VrmlVisualizer *pVrmlVisualizer );
-	
-	/**
-	 * Destructor
-	 * Nothing todo here yet
-	 */
-	virtual ~ResetCallback();
+class ResetCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * The CResetCallback needs an instance of CVrmlVisualizer
+   */
+  ResetCallback(VrmlVisualizer* pVrmlVisualizer);
 
-	/**
-	 * Do
-	 * Invoked by the application
-	 */
-	bool Do();
+  /**
+   * Destructor
+   * Nothing todo here yet
+   */
+  virtual ~ResetCallback();
 
-private:
+  /**
+   * Do
+   * Invoked by the application
+   */
+  bool Do();
 
-	/**
-	 * The pointer to the instance of the application.
-	 */
-	VrmlVisualizer *m_pVrmlVisualizer;
-
+ private:
+  /**
+   * The pointer to the instance of the application.
+   */
+  VrmlVisualizer* m_pVrmlVisualizer;
 };
 
 /*============================================================================*/

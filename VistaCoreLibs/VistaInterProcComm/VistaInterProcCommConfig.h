@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINTERPROCCOMMCONFIG_H
 #define _VISTAINTERPROCCOMMCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAINTERPROCCOMM_STATIC) 
-	#ifdef VISTAINTERPROCCOMM_EXPORTS
-		#define VISTAINTERPROCCOMMAPI __declspec(dllexport)
-	#else
-		#define VISTAINTERPROCCOMMAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTAINTERPROCCOMM_STATIC)
+#ifdef VISTAINTERPROCCOMM_EXPORTS
+#define VISTAINTERPROCCOMMAPI __declspec(dllexport)
+#else
+#define VISTAINTERPROCCOMMAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAINTERPROCCOMMAPI
+#define VISTAINTERPROCCOMMAPI
 #endif
 
 #endif //_VISTAINTERPROCCOMMCONFIG_H

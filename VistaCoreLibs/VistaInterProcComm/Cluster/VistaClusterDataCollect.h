@@ -21,18 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTANETWORKCOLLECT_H
 #define _VISTANETWORKCOLLECT_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/Cluster/VistaClusterSyncEntity.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaBase/VistaBaseTypes.h>
 #include <VistaAspects/VistaPropertyList.h>
+#include <VistaBase/VistaBaseTypes.h>
 
 #include <string>
 #include <vector>
@@ -53,23 +52,21 @@ class IVistaSerializable;
  * the leader has a properly filled vector, followers will have no data at all.
  * If followers require the data too, use a DataSync to distribute it.
  */
-class VISTAINTERPROCCOMMAPI IVistaClusterDataCollect : public IVistaClusterSyncEntity
-{
-public:
-	virtual ~IVistaClusterDataCollect();
-	
-	virtual bool CollectTime( const VistaType::systemtime nOwnTime,
-							std::vector<VistaType::systemtime>& vecCollected ) = 0;
-	virtual bool CollectData( const VistaPropertyList& oList,
-							std::vector<VistaPropertyList>& vecCollected ) = 0;
-	virtual bool CollectData( const VistaType::byte* pDataBuffer, 
-							const int iBufferSize,
-							std::vector<std::vector<VistaType::byte> >& vecCollected ) = 0;
+class VISTAINTERPROCCOMMAPI IVistaClusterDataCollect : public IVistaClusterSyncEntity {
+ public:
+  virtual ~IVistaClusterDataCollect();
 
-	virtual std::string GetDataCollectType() const = 0;
+  virtual bool CollectTime(
+      const VistaType::systemtime nOwnTime, std::vector<VistaType::systemtime>& vecCollected) = 0;
+  virtual bool CollectData(
+      const VistaPropertyList& oList, std::vector<VistaPropertyList>& vecCollected) = 0;
+  virtual bool CollectData(const VistaType::byte* pDataBuffer, const int iBufferSize,
+      std::vector<std::vector<VistaType::byte>>& vecCollected)                      = 0;
 
-protected:
-	IVistaClusterDataCollect( const bool bVerbose, const bool bIsLeader );
+  virtual std::string GetDataCollectType() const = 0;
+
+ protected:
+  IVistaClusterDataCollect(const bool bVerbose, const bool bIsLeader);
 };
 
 /*============================================================================*/

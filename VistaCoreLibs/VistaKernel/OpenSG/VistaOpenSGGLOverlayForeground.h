@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA_OPENSG_GLOVERLAYFOREGROUND_H_
 #define _VISTA_OPENSG_GLOVERLAYFOREGROUND_H_
 
@@ -34,12 +33,12 @@
 #include <VistaKernel/OpenSG/VistaOpenSGGLOverlayForegroundBase.h>
 
 #if defined(WIN32)
-//diable warnings from OpenSG includes
+// diable warnings from OpenSG includes
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -49,84 +48,72 @@
 #pragma warning(pop)
 #endif
 
-
-
 OSG_BEGIN_NAMESPACE
 
+class VISTAKERNELAPI VistaOpenSGGLOverlayForeground : public VistaOpenSGGLOverlayForegroundBase {
+ private:
+  typedef VistaOpenSGGLOverlayForegroundBase Inherited;
 
-class VISTAKERNELAPI VistaOpenSGGLOverlayForeground : public VistaOpenSGGLOverlayForegroundBase
-{
-  private:
+  /*==========================  PUBLIC  =================================*/
+ public:
+  /*---------------------------------------------------------------------*/
+  /*                             Sync                                    */
+  /*---------------------------------------------------------------------*/
 
-	typedef VistaOpenSGGLOverlayForegroundBase Inherited;
+  virtual void changed(BitVector whichField, UInt32 origin);
 
-	/*==========================  PUBLIC  =================================*/
-  public:
+  /*---------------------------------------------------------------------*/
+  /*                            Output                                   */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                             Sync                                    */
-	/*---------------------------------------------------------------------*/
+  virtual void dump(UInt32 uiIndent = 0, const BitVector bvFlags = 0) const;
 
-	virtual void changed(BitVector whichField,
-						 UInt32    origin    );
+  /*---------------------------------------------------------------------*/
+  /*                             Draw                                    */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                            Output                                   */
-	/*---------------------------------------------------------------------*/
+  virtual void draw(DrawActionBase* action, Viewport* port);
 
-	virtual void dump(      UInt32     uiIndent = 0,
-					  const BitVector  bvFlags  = 0) const;
+  /*---------------------------------------------------------------------*/
+  /*                      Convenience Functions                          */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                             Draw                                    */
-	/*---------------------------------------------------------------------*/
+  /*=========================  PROTECTED  ===============================*/
+ protected:
+  // Variables should all be in TextForegroundBase.
 
-	virtual void draw( DrawActionBase * action, Viewport * port );
+  /*---------------------------------------------------------------------*/
+  /*                         Constructors                                */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                      Convenience Functions                          */
-	/*---------------------------------------------------------------------*/
+  VistaOpenSGGLOverlayForeground(void);
+  VistaOpenSGGLOverlayForeground(const VistaOpenSGGLOverlayForeground& source);
 
-	/*=========================  PROTECTED  ===============================*/
-  protected:
+  /*---------------------------------------------------------------------*/
+  /*                          Destructors                                */
+  /*---------------------------------------------------------------------*/
 
-	// Variables should all be in TextForegroundBase.
+  virtual ~VistaOpenSGGLOverlayForeground(void);
 
-	/*---------------------------------------------------------------------*/
-	/*                         Constructors                                */
-	/*---------------------------------------------------------------------*/
+  /*==========================  PRIVATE  ================================*/
+ private:
+  friend class FieldContainer;
+  friend class VistaOpenSGGLOverlayForegroundBase;
 
-	VistaOpenSGGLOverlayForeground(void);
-	VistaOpenSGGLOverlayForeground(const VistaOpenSGGLOverlayForeground &source);
+  static void initMethod(void);
 
-	/*---------------------------------------------------------------------*/
-	/*                          Destructors                                */
-	/*---------------------------------------------------------------------*/
+  //    static void initText(void);
 
-	virtual ~VistaOpenSGGLOverlayForeground(void);
+  // prohibit default functions (move to 'public' if you need one)
 
-
-	/*==========================  PRIVATE  ================================*/
-  private:
-
-
-	friend class FieldContainer;
-	friend class VistaOpenSGGLOverlayForegroundBase;
-
-	static void initMethod(void);
-
-//    static void initText(void);
-
-	// prohibit default functions (move to 'public' if you need one)
-
-	void operator =(const VistaOpenSGGLOverlayForeground &source);
+  void operator=(const VistaOpenSGGLOverlayForeground& source);
 };
 
-typedef VistaOpenSGGLOverlayForeground *VistaOpenSGGLOverlayForegroundP;
+typedef VistaOpenSGGLOverlayForeground* VistaOpenSGGLOverlayForegroundP;
 
 OSG_END_NAMESPACE
 
-#include "VistaOpenSGGLOverlayForegroundBase.inl"
 #include "VistaOpenSGGLOverlayForeground.inl"
+#include "VistaOpenSGGLOverlayForegroundBase.inl"
 
 #endif

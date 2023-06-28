@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAWIIMOTEDRIVERCOMMONSHARE_H_
 #define _VISTAWIIMOTEDRIVERCOMMONSHARE_H_
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -42,8 +40,7 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-namespace VistaWiimoteDriverCommonShare
-{
+namespace VistaWiimoteDriverCommonShare {
 //
 //	struct vec3b_t
 //	{
@@ -57,12 +54,13 @@ namespace VistaWiimoteDriverCommonShare
 //
 //	struct orient_t
 //	{
-//			float roll;						/**< roll, this may be smoothed if enabled	*/
-//			float pitch;					/**< pitch, this may be smoothed if enabled	*/
-//			float yaw;
+//			float roll;						/**< roll, this may be smoothed
+//if enabled	*/
+//			float pitch;					/**< pitch, this may be smoothed if
+//enabled	*/ 			float yaw;
 //
-//			float a_roll;					/**< absolute roll, unsmoothed				*/
-//			float a_pitch;
+//			float a_roll;					/**< absolute roll, unsmoothed
+//*/ 			float a_pitch;
 //	};
 //
 //	struct gforce_t {
@@ -80,49 +78,60 @@ namespace VistaWiimoteDriverCommonShare
 //	};
 //
 //	struct ir_dot_t {
-//		VistaType::byte visible;					/**< if the IR source is visible		*/
+//		VistaType::byte visible;					/**< if the IR source is visible
+//*/
 //
-//		unsigned int x;					/**< interpolated X coordinate			*/
-//		unsigned int y;					/**< interpolated Y coordinate			*/
+//		unsigned int x;					/**< interpolated X coordinate
+//*/ 		unsigned int y;					/**< interpolated Y coordinate
+//*/
 //
-//		short rx;						/**< raw X coordinate (0-1023)			*/
-//		short ry;						/**< raw Y coordinate (0-767)			*/
+//		short rx;						/**< raw X coordinate (0-1023)
+//*/ 		short ry;						/**< raw Y coordinate (0-767)
+//*/
 //
-//		VistaType::byte order;						/**< increasing order by x-axis value	*/
+//		VistaType::byte order;						/**< increasing order by
+//x-axis value	*/
 //
-//		VistaType::byte size;						/**< size of the IR dot (0-15)			*/
+//		VistaType::byte size;						/**< size of the IR dot
+//(0-15)			*/
 //	};
 //
 //	struct ir_t {
-//		struct ir_dot_t dot[4];			/**< IR dots							*/
-//		VistaType::byte num_dots;					/**< number of dots at this time		*/
+//		struct ir_dot_t dot[4];			/**< IR dots
+//*/ 		VistaType::byte num_dots;					/**< number of dots at this time
+//*/
 //
-//		enum aspect_t aspect;			/**< aspect ratio of the screen			*/
+//		enum aspect_t aspect;			/**< aspect ratio of the screen
+//*/
 //
-//		enum ir_position_t pos;			/**< IR sensor bar position				*/
+//		enum ir_position_t pos;			/**< IR sensor bar position
+//*/
 //
-//		unsigned int vres[2];			/**< IR virtual screen resolution		*/
-//		int offset[2];					/**< IR XY correction offset			*/
-//		int state;						/**< keeps track of the IR state		*/
+//		unsigned int vres[2];			/**< IR virtual screen resolution
+//*/ 		int offset[2];					/**< IR XY correction offset
+//*/ 		int state;						/**< keeps track of the IR state
+//*/
 //
-//		int ax;							/**< absolute X coordinate				*/
-//		int ay;							/**< absolute Y coordinate				*/
+//		int ax;							/**< absolute X coordinate
+//*/ 		int ay;							/**< absolute Y coordinate
+//*/
 //
-//		int x;							/**< calculated X coordinate			*/
-//		int y;							/**< calculated Y coordinate			*/
+//		int x;							/**< calculated X coordinate
+//*/ 		int y;							/**< calculated Y coordinate
+//*/
 //
-//		float distance;					/**< pixel distance between first 2 dots*/
-//		float z;
+//		float distance;					/**< pixel distance between first 2
+//dots*/ 		float z;
 //	};
 //
 //	struct accel_t
 //	{
-//		struct vec3b_t cal_zero;		/**< zero calibration					*/
-//		struct vec3b_t cal_g;			/**< 1g difference around 0cal			*/
+//		struct vec3b_t cal_zero;		/**< zero calibration
+//*/ 		struct vec3b_t cal_g;			/**< 1g difference around 0cal			*/
 //
-//		float st_roll;					/**< last smoothed roll value			*/
-//		float st_pitch;					/**< last smoothed roll pitch			*/
-//		float st_alpha;					/**< alpha value for smoothing [0-1]	*/
+//		float st_roll;					/**< last smoothed roll value
+//*/ 		float st_pitch;					/**< last smoothed roll pitch
+//*/ 		float st_alpha;					/**< alpha value for smoothing [0-1]	*/
 //	};
 //
 //	struct joystick_t {
@@ -130,96 +139,95 @@ namespace VistaWiimoteDriverCommonShare
 //		struct vec2b_t min;				/**< minimum joystick values	*/
 //		struct vec2b_t center;			/**< center joystick values		*/
 //
-//		float ang;						/**< angle the joystick is being held		*/
-//		float mag;						/**< magnitude of the joystick (range 0-1)	*/
+//		float ang;						/**< angle the joystick is being held
+//*/ 		float mag;						/**< magnitude of the joystick (range 0-1)
+//*/
 //	};
 //
 //	struct nunchuk_t
 //	{
-//		struct accel_t accel_calib;		/**< nunchuk accelerometer calibration		*/
-//		struct joystick_t js;			/**< joystick calibration					*/
+//		struct accel_t accel_calib;		/**< nunchuk accelerometer calibration
+//*/ 		struct joystick_t js;			/**< joystick calibration
+//*/
 //
-//		int* flags;						/**< options flag (points to wiimote_t.flags) */
+//		int* flags;						/**< options flag (points to
+//wiimote_t.flags) */
 //
-//		VistaType::byte btns;						/**< what buttons have just been pressed	*/
-//		VistaType::byte btns_held;					/**< what buttons are being held down		*/
-//		VistaType::byte btns_released;				/**< what buttons were just released this	*/
+//		VistaType::byte btns;						/**< what buttons have just
+//been pressed	*/
+//		VistaType::byte btns_held;					/**< what buttons are being
+//held down		*/
+//		VistaType::byte btns_released;				/**< what buttons were just
+//released this	*/
 //
-//		float orient_threshold;			/**< threshold for orient to generate an event */
-//		int accel_threshold;			/**< threshold for accel to generate an event */
+//		float orient_threshold;			/**< threshold for orient to generate an
+//event */ 		int accel_threshold;			/**< threshold for accel to generate an event */
 //
-//		struct vec3b_t accel;			/**< current raw acceleration data			*/
-//		struct orient_t orient;			/**< current orientation on each axis		*/
-//		struct gforce_t gforce;			/**< current gravity forces on each axis	*/
+//		struct vec3b_t accel;			/**< current raw acceleration data
+//*/ 		struct orient_t orient;			/**< current orientation on each axis		*/
+//		struct gforce_t gforce;			/**< current gravity forces on each axis
+//*/
 //	};
 //
 //	struct classic_ctrl_t {
-//		short btns;						/**< what buttons have just been pressed	*/
-//		short btns_held;				/**< what buttons are being held down		*/
-//		short btns_released;			/**< what buttons were just released this	*/
+//		short btns;						/**< what buttons have just been
+//pressed	*/
+//		short btns_held;				/**< what buttons are being held down
+//*/ 		short btns_released;			/**< what buttons were just released this	*/
 //
-//		float r_shoulder;				/**< right shoulder button (range 0-1)		*/
-//		float l_shoulder;				/**< left shoulder button (range 0-1)		*/
+//		float r_shoulder;				/**< right shoulder button (range 0-1)
+//*/ 		float l_shoulder;				/**< left shoulder button (range 0-1)		*/
 //
-//		struct joystick_t ljs;			/**< left joystick calibration				*/
-//		struct joystick_t rjs;			/**< right joystick calibration				*/
+//		struct joystick_t ljs;			/**< left joystick calibration
+//*/ 		struct joystick_t rjs;			/**< right joystick calibration
+//*/
 //	};
 //
 //	struct guitar_hero_3_t {
-//		short btns;						/**< what buttons have just been pressed	*/
-//		short btns_held;				/**< what buttons are being held down		*/
-//		short btns_released;			/**< what buttons were just released this	*/
+//		short btns;						/**< what buttons have just been
+//pressed	*/
+//		short btns_held;				/**< what buttons are being held down
+//*/ 		short btns_released;			/**< what buttons were just released this	*/
 //
-//		float whammy_bar;				/**< whammy bar (range 0-1)					*/
+//		float whammy_bar;				/**< whammy bar (range 0-1)
+//*/
 //
-//		struct joystick_t js;			/**< joystick calibration					*/
+//		struct joystick_t js;			/**< joystick calibration
+//*/
 //	};
 
-	struct _wiimoteMeasure
-	{
-		vec3b_t  m_Acceleration;
-		orient_t m_Orientation;
-		gforce_t m_GravityForce;
+struct _wiimoteMeasure {
+  vec3b_t  m_Acceleration;
+  orient_t m_Orientation;
+  gforce_t m_GravityForce;
 
-		ir_t    m_IR;
-		accel_t m_Acceleration_calib;
+  ir_t    m_IR;
+  accel_t m_Acceleration_calib;
 
-		unsigned short m_buttons;
-	};
+  unsigned short m_buttons;
+};
 
-	typedef _wiimoteMeasure MeasureType;
+typedef _wiimoteMeasure MeasureType;
 
+enum eState { ST_NOEXP = 0, ST_NUNCHUK = 1, ST_GUITAR = 2, ST_CLASSIC = 4 };
 
-	enum eState
-	{
-		ST_NOEXP   = 0,
-		ST_NUNCHUK =  1,
-		ST_GUITAR  =  2,
-		ST_CLASSIC =  4
-	};
+struct _wiistateMeasure {
+  int             m_nState;          /**< see wiiuse docu */
+  int             m_nExpansionState; /**< see eState */
+  float           m_nBatteryLevel;   /**< between 0 and 1 */
+  VistaType::byte m_cLEDs;           /**< bit-mask */
+};
 
+typedef _wiistateMeasure StateMeasureType;
 
-	struct _wiistateMeasure
-	{
-		int   m_nState;          /**< see wiiuse docu */
-		int   m_nExpansionState; /**< see eState */
-		float m_nBatteryLevel;   /**< between 0 and 1 */
-		VistaType::byte  m_cLEDs;           /**< bit-mask */
-	};
-
-	typedef _wiistateMeasure StateMeasureType;
-
-}
+} // namespace VistaWiimoteDriverCommonShare
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif // _VISTAWIIMOTEDRIVERCOMMONSHARE_H_
-
-

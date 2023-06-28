@@ -21,65 +21,56 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32) && !defined(VISTASPACEMOUSEDRIVERPLUGIN_STATIC)
-	#ifdef VISTASPACEMOUSEPLUGIN_EXPORTS
-	#define VISTASPACEMOUSEDRIVERPLUGINAPI __declspec(dllexport)
-	#else
-	#define VISTASPACEMOUSEDRIVERPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTASPACEMOUSEPLUGIN_EXPORTS
+#define VISTASPACEMOUSEDRIVERPLUGINAPI __declspec(dllexport)
+#else
+#define VISTASPACEMOUSEDRIVERPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
 #define VISTASPACEMOUSEDRIVERPLUGINAPI
 #endif
 
-#include "VistaSpaceMouseDriver.h"
 #include "VistaSpaceMouseCommonShare.h"
+#include "VistaSpaceMouseDriver.h"
 
+namespace {
+namespace {
+VistaSpaceMouseCreationMethod* SpFactory = NULL;
+}
+} // namespace
 
-namespace
-{
-	namespace
-	{
-		VistaSpaceMouseCreationMethod *SpFactory = NULL;
-	}
+extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaSpaceMouseDriver(crm);
 }
 
-extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaSpaceMouseDriver(crm);
+extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaSpaceMouseCreationMethod(fac);
+
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaSpaceMouseCreationMethod(fac);
-
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI void DisposeCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
-}
-
-
-extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "VISTASPACEMOUSE";
+extern "C" VISTASPACEMOUSEDRIVERPLUGINAPI const char* GetDeviceClassName() {
+  return "VISTASPACEMOUSE";
 }

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSimpleCallback.h"
 
 /*============================================================================*/
@@ -33,29 +32,22 @@
 /*============================================================================*/
 
 VistaSimpleCallback::VistaSimpleCallback(std::function<void(void)> funcCallback)
-: m_funcCallback(funcCallback)
-{
-
+    : m_funcCallback(funcCallback) {
 }
 
-VistaSimpleCallback::~VistaSimpleCallback()
-{
+VistaSimpleCallback::~VistaSimpleCallback() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VistaSimpleCallback::Do()
-{
-	m_funcCallback();
+bool VistaSimpleCallback::Do() {
+  m_funcCallback();
 
-	return true;
+  return true;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

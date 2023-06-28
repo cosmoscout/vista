@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNDECOMPOSE3DVECTORNODE_H
 #define _VDFNDECOMPOSE3DVECTORNODE_H
 
@@ -60,25 +59,24 @@
  * @outport{z,float, z-component of the input vector}
  * @outport{w,float, w-component of the input vector}
  */
-class VISTADFNAPI VdfnDecompose3DVectorNode : public IVdfnNode
-{
-public:
-	VdfnDecompose3DVectorNode();
-	virtual ~VdfnDecompose3DVectorNode();
+class VISTADFNAPI VdfnDecompose3DVectorNode : public IVdfnNode {
+ public:
+  VdfnDecompose3DVectorNode();
+  virtual ~VdfnDecompose3DVectorNode();
 
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
-	TVdfnPort<float>*				m_pOutX;
-	TVdfnPort<float>*				m_pOutY;
-	TVdfnPort<float>*				m_pOutZ;
-	TVdfnPort<float>*				m_pOutW;
-	TVdfnPort<VistaVector3D>*		m_pIn;
+ private:
+  TVdfnPort<float>*         m_pOutX;
+  TVdfnPort<float>*         m_pOutY;
+  TVdfnPort<float>*         m_pOutZ;
+  TVdfnPort<float>*         m_pOutW;
+  TVdfnPort<VistaVector3D>* m_pIn;
 };
 
 /*============================================================================*/

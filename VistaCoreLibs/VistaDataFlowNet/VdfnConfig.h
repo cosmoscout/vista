@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCONFIG_H
 #define _VDFNCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTADATAFLOWNET_STATIC) 
-	#ifdef VISTADATAFLOWNET_EXPORTS
-		#define VISTADFNAPI __declspec(dllexport)
-	#else
-		#define VISTADFNAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTADATAFLOWNET_STATIC)
+#ifdef VISTADATAFLOWNET_EXPORTS
+#define VISTADFNAPI __declspec(dllexport)
+#else
+#define VISTADFNAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTADFNAPI
+#define VISTADFNAPI
 #endif
 
 #endif //_VISTADFNCONFIG_H

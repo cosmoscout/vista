@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaObserver.h"
 #include <algorithm>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -34,114 +32,93 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-
-IVistaObserver::IVistaObserver(IVistaObserver &)
-{}
+IVistaObserver::IVistaObserver(IVistaObserver&) {
+}
 
 IVistaObserver::IVistaObserver()
-: m_bObserverEnabled(true)
-{}
+    : m_bObserverEnabled(true) {
+}
 
-IVistaObserver::~IVistaObserver()
-{
-	// copy vector of observables, because the original (member) version
-	// is altered during the ReleaseObserveable call
-	std::vector<IVistaObserveable *> vecObs = m_vecObserveables;
+IVistaObserver::~IVistaObserver() {
+  // copy vector of observables, because the original (member) version
+  // is altered during the ReleaseObserveable call
+  std::vector<IVistaObserveable*> vecObs = m_vecObserveables;
 
-	std::vector<IVistaObserveable *>::iterator it;
-	for (it = vecObs.begin(); it != vecObs.end(); ++it)
-	{
-		ReleaseObserveable(*it, IVistaObserveable::TICKET_NONE);
-	}
+  std::vector<IVistaObserveable*>::iterator it;
+  for (it = vecObs.begin(); it != vecObs.end(); ++it) {
+    ReleaseObserveable(*it, IVistaObserveable::TICKET_NONE);
+  }
 
-	m_vecObserveables.clear();
-
+  m_vecObserveables.clear();
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool IVistaObserver::GetIsObserverEnabled() const
-{
-	return m_bObserverEnabled;
+bool IVistaObserver::GetIsObserverEnabled() const {
+  return m_bObserverEnabled;
 }
 
-void IVistaObserver::SetIsObserverEnabled(bool bEnabled)
-{
-	m_bObserverEnabled = bEnabled;
+void IVistaObserver::SetIsObserverEnabled(bool bEnabled) {
+  m_bObserverEnabled = bEnabled;
 }
 
-void IVistaObserver::UpdateRequest(IVistaObserveable *pObserveable, int msg, int nTicket)
-{
-	if(m_bObserverEnabled)
-		ObserverUpdate(pObserveable, msg, nTicket);
+void IVistaObserver::UpdateRequest(IVistaObserveable* pObserveable, int msg, int nTicket) {
+  if (m_bObserverEnabled)
+    ObserverUpdate(pObserveable, msg, nTicket);
 }
 
 bool IVistaObserver::ObserveableDeleteRequest(
-	IVistaObserveable* pObserveable, 
-	int nTicket /*= IVistaObserveable::TICKET_NONE */
-	)
-{
-	return true;
+    IVistaObserveable* pObserveable, int nTicket /*= IVistaObserveable::TICKET_NONE */
+) {
+  return true;
 }
 
 void IVistaObserver::ObserveableDelete(
-	IVistaObserveable* pObserveable, 
-	int nTicket /*= IVistaObserveable::TICKET_NONE */
-	)
-{
-	// just delete pObserveable from list
+    IVistaObserveable* pObserveable, int nTicket /*= IVistaObserveable::TICKET_NONE */
+) {
+  // just delete pObserveable from list
 
-	std::vector<IVistaObserveable*>::iterator it =
-		std::find(m_vecObserveables.begin(), m_vecObserveables.end(), pObserveable);
+  std::vector<IVistaObserveable*>::iterator it =
+      std::find(m_vecObserveables.begin(), m_vecObserveables.end(), pObserveable);
 
-	if (it != m_vecObserveables.end())
-	{
-		m_vecObserveables.erase(it);
-	}
+  if (it != m_vecObserveables.end()) {
+    m_vecObserveables.erase(it);
+  }
 }
 
 void IVistaObserver::ReleaseObserveable(
-	IVistaObserveable* pObserveable, 
-	int nTicket /*= IVistaObserveable::TICKET_NONE */
-	)
-{
-	if (Observes(pObserveable))
-	{
-		pObserveable->DetachObserver(this);
+    IVistaObserveable* pObserveable, int nTicket /*= IVistaObserveable::TICKET_NONE */
+) {
+  if (Observes(pObserveable)) {
+    pObserveable->DetachObserver(this);
 
-		std::vector<IVistaObserveable*>::iterator it =
-			std::find(m_vecObserveables.begin(), m_vecObserveables.end(), pObserveable);
+    std::vector<IVistaObserveable*>::iterator it =
+        std::find(m_vecObserveables.begin(), m_vecObserveables.end(), pObserveable);
 
-		if (it != m_vecObserveables.end())
-		{
-			m_vecObserveables.erase(it);
-		}
-	}
+    if (it != m_vecObserveables.end()) {
+      m_vecObserveables.erase(it);
+    }
+  }
 }
 
-bool IVistaObserver::Observes(IVistaObserveable* pObserveable)
-{
-	std::vector<IVistaObserveable *>::iterator it =
-		std::find(m_vecObserveables.begin(), m_vecObserveables.end(), pObserveable);
+bool IVistaObserver::Observes(IVistaObserveable* pObserveable) {
+  std::vector<IVistaObserveable*>::iterator it =
+      std::find(m_vecObserveables.begin(), m_vecObserveables.end(), pObserveable);
 
-	return (it != m_vecObserveables.end());
+  return (it != m_vecObserveables.end());
 }
 
 void IVistaObserver::Observe(
-	IVistaObserveable* pObserveable, 
-	int nTicket /*= IVistaObserveable::TICKET_NONE */
-	)
-{
-	if (!Observes(pObserveable))
-	{
-		if (pObserveable->AttachObserver(this, nTicket))
-			m_vecObserveables.push_back(pObserveable);
-	}
+    IVistaObserveable* pObserveable, int nTicket /*= IVistaObserveable::TICKET_NONE */
+) {
+  if (!Observes(pObserveable)) {
+    if (pObserveable->AttachObserver(this, nTicket))
+      m_vecObserveables.push_back(pObserveable);
+  }
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

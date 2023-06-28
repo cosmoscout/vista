@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASYSTEMCOMMANDS_H
 #define _VISTASYSTEMCOMMANDS_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -34,10 +32,9 @@
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
 #include <VistaBase/VistaStreamUtils.h>
 
+#include <iostream>
 #include <map>
 #include <string>
-#include <iostream>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -63,205 +60,184 @@ class IVistaClusterDataCollect;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAKERNELAPI VistaQuitCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaQuitCommand(VistaSystem* pSys);
+  virtual bool Do();
 
-class VISTAKERNELAPI VistaQuitCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaQuitCommand(VistaSystem *pSys);
-	virtual bool Do();
-
-	VistaSystem *m_pSys;
+  VistaSystem* m_pSys;
 };
 
-class VISTAKERNELAPI VistaToggleFramerateCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleFramerateCommand( VistaFramerateDisplay* pFramerateDisplay );
+class VISTAKERNELAPI VistaToggleFramerateCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleFramerateCommand(VistaFramerateDisplay* pFramerateDisplay);
 
-	virtual bool Do();
+  virtual bool Do();
 
-	VistaFramerateDisplay* m_pFramerateDisplay;
+  VistaFramerateDisplay* m_pFramerateDisplay;
 };
 
-class VISTAKERNELAPI VistaToggleCursorCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleCursorCommand( VistaDisplayManager *pDisMgr );
-	virtual bool Do();
+class VISTAKERNELAPI VistaToggleCursorCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleCursorCommand(VistaDisplayManager* pDisMgr);
+  virtual bool Do();
 
-	VistaDisplayManager *m_pDisMgr;
+  VistaDisplayManager* m_pDisMgr;
 };
 
-class VISTAKERNELAPI VistaShowAvailableCommands : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaShowAvailableCommands(VistaKeyboardSystemControl *pSysCtrl,
-								VistaSystem *pSys);
-	virtual bool Do();
+class VISTAKERNELAPI VistaShowAvailableCommands : public IVistaExplicitCallbackInterface {
+ public:
+  VistaShowAvailableCommands(VistaKeyboardSystemControl* pSysCtrl, VistaSystem* pSys);
+  virtual bool Do();
 
-	VistaKeyboardSystemControl *m_pCtrl;
-	VistaSystem *m_pSys;
+  VistaKeyboardSystemControl* m_pCtrl;
+  VistaSystem*                m_pSys;
 };
 
+class VISTAKERNELAPI VistaReloadContextGraphCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaReloadContextGraphCommand(VistaSystem* pSys, VistaInteractionContext* pCtx,
+      const std::string& strRoleId, bool bDumpGraph, bool bWritePorts);
 
-class VISTAKERNELAPI VistaReloadContextGraphCommand : public IVistaExplicitCallbackInterface
-{
-public:
-    VistaReloadContextGraphCommand( VistaSystem *pSys,
-                                     VistaInteractionContext *pCtx,
-                                     const std::string &strRoleId,
-                                     bool bDumpGraph, bool bWritePorts );
+  virtual bool Do();
 
-    virtual bool Do();
-private:
-    VistaInteractionContext    *m_pInteractionContext;
-    VistaSystem                *m_pSys;
-    std::string m_sRoleId;
-    bool m_bDumpGraph,
-         m_bWritePorts;
+ private:
+  VistaInteractionContext* m_pInteractionContext;
+  VistaSystem*             m_pSys;
+  std::string              m_sRoleId;
+  bool                     m_bDumpGraph, m_bWritePorts;
 };
 
-class VISTAKERNELAPI VistaDebugContextGraphCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaDebugContextGraphCommand( VistaInteractionContext *pCtx );
+class VISTAKERNELAPI VistaDebugContextGraphCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaDebugContextGraphCommand(VistaInteractionContext* pCtx);
 
-	virtual bool Do();
-private:
-	VistaInteractionContext    *m_pInteractionContext;
+  virtual bool Do();
+
+ private:
+  VistaInteractionContext* m_pInteractionContext;
 };
 
+template <class T>
+class TVistaDebugToConsoleCommand : public IVistaExplicitCallbackInterface {
+ public:
+  TVistaDebugToConsoleCommand(T* pObj)
+      : IVistaExplicitCallbackInterface()
+      , m_pObj(pObj) {
+  }
 
-template<class T>
-class TVistaDebugToConsoleCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	TVistaDebugToConsoleCommand( T *pObj )
-	: IVistaExplicitCallbackInterface(),
-	  m_pObj(pObj)
-	  {
+  bool Do() {
+    (*m_pObj).Debug(vstr::out());
+    return true;
+  }
 
-	  }
-
-	bool Do()
-	{
-		(*m_pObj).Debug( vstr::out() );
-		return true;
-	}
-
-	T *m_pObj;
+  T* m_pObj;
 };
 
-class VISTAKERNELAPI VistaPrintProfilerOutputCommand : public IVistaExplicitCallbackInterface
-{
-public:
-    virtual bool Do();
-private:   
-};
-class VISTAKERNELAPI VistaPrintProfilerOutputForAllNodesCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaPrintProfilerOutputForAllNodesCommand( VistaClusterMode* pClusterMode );
-    virtual bool Do();
-private:  
-	VistaClusterMode* m_pClusterMode;
-	IVistaClusterDataCollect* m_pCollect;
-};
-class VISTAKERNELAPI VistaResetProfilerCommand : public IVistaExplicitCallbackInterface
-{
-public:
-    virtual bool Do();
-private:   
-};
+class VISTAKERNELAPI VistaPrintProfilerOutputCommand : public IVistaExplicitCallbackInterface {
+ public:
+  virtual bool Do();
 
+ private:
+};
+class VISTAKERNELAPI VistaPrintProfilerOutputForAllNodesCommand
+    : public IVistaExplicitCallbackInterface {
+ public:
+  VistaPrintProfilerOutputForAllNodesCommand(VistaClusterMode* pClusterMode);
+  virtual bool Do();
 
-class VistaToggleFrustumCullingCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleFrustumCullingCommand( VistaGraphicsManager *pGfxMgr );
+ private:
+  VistaClusterMode*         m_pClusterMode;
+  IVistaClusterDataCollect* m_pCollect;
+};
+class VISTAKERNELAPI VistaResetProfilerCommand : public IVistaExplicitCallbackInterface {
+ public:
+  virtual bool Do();
 
-	bool Do();
-private:
-	VistaGraphicsManager *m_pGfxMgr;
+ private:
 };
 
-class VistaToggleOcclusionCullingCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleOcclusionCullingCommand( VistaGraphicsManager *pGfxMgr );
+class VistaToggleFrustumCullingCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleFrustumCullingCommand(VistaGraphicsManager* pGfxMgr);
 
-	bool Do();
-private:
-	VistaGraphicsManager *m_pGfxMgr;
+  bool Do();
 
+ private:
+  VistaGraphicsManager* m_pGfxMgr;
 };
 
-class VistaToggleBBoxDrawingCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleBBoxDrawingCommand(VistaGraphicsManager *pGfxMgr);
+class VistaToggleOcclusionCullingCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleOcclusionCullingCommand(VistaGraphicsManager* pGfxMgr);
 
-	bool Do();
-private:
-	VistaGraphicsManager *m_pGfxMgr;
+  bool Do();
+
+ private:
+  VistaGraphicsManager* m_pGfxMgr;
 };
 
-class VISTAKERNELAPI VistaChangeEyeDistanceCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaChangeEyeDistanceCommand( const float fChangeValue,
-									VistaDisplayManager* pDisplayManager );
-	virtual bool Do();
-private:
-	float					m_fChangeValue;
-	VistaDisplayManager*	m_pDisplayManager;
+class VistaToggleBBoxDrawingCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleBBoxDrawingCommand(VistaGraphicsManager* pGfxMgr);
+
+  bool Do();
+
+ private:
+  VistaGraphicsManager* m_pGfxMgr;
 };
 
-class VISTAKERNELAPI VistaToggleEyeTesterCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleEyeTesterCommand( VistaSystem* pSystem );
-	~VistaToggleEyeTesterCommand();
-	virtual bool Do();
-private:
-	VistaSystem*			m_pSystem;
-	VistaEyeTester*			m_pTester;
+class VISTAKERNELAPI VistaChangeEyeDistanceCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaChangeEyeDistanceCommand(const float fChangeValue, VistaDisplayManager* pDisplayManager);
+  virtual bool Do();
+
+ private:
+  float                m_fChangeValue;
+  VistaDisplayManager* m_pDisplayManager;
 };
 
-class VISTAKERNELAPI VistaToggleVSyncCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleVSyncCommand( VistaDisplayManager* pDisplayManager );
-	virtual bool Do();
-private:
-	VistaDisplayManager*	m_pDisplayManager;
+class VISTAKERNELAPI VistaToggleEyeTesterCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleEyeTesterCommand(VistaSystem* pSystem);
+  ~VistaToggleEyeTesterCommand();
+  virtual bool Do();
+
+ private:
+  VistaSystem*    m_pSystem;
+  VistaEyeTester* m_pTester;
 };
 
-class VISTAKERNELAPI VistaToggleFullscreenCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaToggleFullscreenCommand( VistaDisplayManager* pDisplayManager );
-	virtual bool Do();
-private:
-	VistaDisplayManager*	m_pDisplayManager;
+class VISTAKERNELAPI VistaToggleVSyncCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleVSyncCommand(VistaDisplayManager* pDisplayManager);
+  virtual bool Do();
+
+ private:
+  VistaDisplayManager* m_pDisplayManager;
 };
 
-class VISTAKERNELAPI VistaMakeScreenshotCommand : public IVistaExplicitCallbackInterface
-{
-public:
-	VistaMakeScreenshotCommand( VistaDisplayManager* pDisplayManager,
-								VistaClusterMode* pCluster,
-								const std::string& m_sExtension = "png",
-								const std::string& sScreenshotDir = "screenshots" );
-	virtual bool Do();
-private:
-	VistaDisplayManager*	m_pDisplayManager;
-	VistaClusterMode*		m_pCluster;
-	std::string				m_sExtension;
-	std::string				m_sScreenshotDir;
+class VISTAKERNELAPI VistaToggleFullscreenCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaToggleFullscreenCommand(VistaDisplayManager* pDisplayManager);
+  virtual bool Do();
+
+ private:
+  VistaDisplayManager* m_pDisplayManager;
 };
 
+class VISTAKERNELAPI VistaMakeScreenshotCommand : public IVistaExplicitCallbackInterface {
+ public:
+  VistaMakeScreenshotCommand(VistaDisplayManager* pDisplayManager, VistaClusterMode* pCluster,
+      const std::string& m_sExtension = "png", const std::string& sScreenshotDir = "screenshots");
+  virtual bool Do();
 
+ private:
+  VistaDisplayManager* m_pDisplayManager;
+  VistaClusterMode*    m_pCluster;
+  std::string          m_sExtension;
+  std::string          m_sScreenshotDir;
+};
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

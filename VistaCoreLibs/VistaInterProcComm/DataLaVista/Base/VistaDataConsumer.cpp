@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -31,97 +29,75 @@
 
 #include <cstddef>
 #include <list>
-#include <cstddef>
 using namespace std;
 
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-IDLVistaDataConsumer::IDLVistaDataConsumer()
-{
-	m_pDataInput = 0;
+IDLVistaDataConsumer::IDLVistaDataConsumer() {
+  m_pDataInput = 0;
 }
 
-
-IDLVistaDataConsumer::~IDLVistaDataConsumer()
-{
-	m_pDataInput = 0;
+IDLVistaDataConsumer::~IDLVistaDataConsumer() {
+  m_pDataInput = 0;
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-
-bool IDLVistaDataConsumer::AttachOutputComponent(IDLVistaPipeComponent * )
-{
-	return false;
+bool IDLVistaDataConsumer::AttachOutputComponent(IDLVistaPipeComponent*) {
+  return false;
 }
 
-bool IDLVistaDataConsumer::AttachInputComponent(IDLVistaPipeComponent * pIn)
-{
-	m_pDataInput = pIn;
-	return true;
+bool IDLVistaDataConsumer::AttachInputComponent(IDLVistaPipeComponent* pIn) {
+  m_pDataInput = pIn;
+  return true;
 }
 
+bool IDLVistaDataConsumer::DetachInputComponent(IDLVistaPipeComponent* pComp) {
+  if (IsInputComponent(pComp)) {
+    m_pDataInput = 0;
+    return true;
+  }
 
-bool IDLVistaDataConsumer::DetachInputComponent(IDLVistaPipeComponent *pComp)
-{
-	if(IsInputComponent(pComp))
-	{
-		m_pDataInput = 0;
-		return true;
-	}
-
-	return false;
+  return false;
 }
 
-bool IDLVistaDataConsumer::DetachOutputComponent(IDLVistaPipeComponent *pComp)
-{
-	return false;
+bool IDLVistaDataConsumer::DetachOutputComponent(IDLVistaPipeComponent* pComp) {
+  return false;
 }
 
-
-bool IDLVistaDataConsumer::IsInputComponent(IDLVistaPipeComponent *pComp) const
-{
-	return (pComp == m_pDataInput);
+bool IDLVistaDataConsumer::IsInputComponent(IDLVistaPipeComponent* pComp) const {
+  return (pComp == m_pDataInput);
 }
 
-list<IDLVistaPipeComponent *> IDLVistaDataConsumer::GetOutputComponents() const
-{
-	list<IDLVistaPipeComponent *> list; 
-	return list;// return empty list
+list<IDLVistaPipeComponent*> IDLVistaDataConsumer::GetOutputComponents() const {
+  list<IDLVistaPipeComponent*> list;
+  return list; // return empty list
 }
 
-list<IDLVistaPipeComponent *> IDLVistaDataConsumer::GetInputComponents() const
-{
-	list<IDLVistaPipeComponent *> list;
-	if(m_pDataInput)
-	{
-		list.push_back(m_pDataInput);
-	}
-	return list;
+list<IDLVistaPipeComponent*> IDLVistaDataConsumer::GetInputComponents() const {
+  list<IDLVistaPipeComponent*> list;
+  if (m_pDataInput) {
+    list.push_back(m_pDataInput);
+  }
+  return list;
 }
 
-IDLVistaPipeComponent *IDLVistaDataConsumer::GetOutboundByIndex(int iIndex) const
-{
-	return NULL;
+IDLVistaPipeComponent* IDLVistaDataConsumer::GetOutboundByIndex(int iIndex) const {
+  return NULL;
 }
 
-
-IDLVistaPipeComponent *IDLVistaDataConsumer::GetInboundByIndex(int iIndex) const
-{
-	return (iIndex == 0 ? m_pDataInput : NULL);
+IDLVistaPipeComponent* IDLVistaDataConsumer::GetInboundByIndex(int iIndex) const {
+  return (iIndex == 0 ? m_pDataInput : NULL);
 }
 
-int IDLVistaDataConsumer::GetNumberOfOutbounds() const
-{
-	return 0;
+int IDLVistaDataConsumer::GetNumberOfOutbounds() const {
+  return 0;
 }
 
-int IDLVistaDataConsumer::GetNumberOfInbounds() const
-{
-	return m_pDataInput ? 1 : 0;
+int IDLVistaDataConsumer::GetNumberOfInbounds() const {
+  return m_pDataInput ? 1 : 0;
 }
-

@@ -21,20 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCONDITIONALROUTENODE_H__
 #define _VDFNCONDITIONALROUTENODE_H__
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaDataFlowNet/VdfnConfig.h>
 
-#include "VdfnSerializer.h"
-#include "VdfnShallowNode.h"
 #include "VdfnNodeFactory.h"
 #include "VdfnPort.h"
+#include "VdfnSerializer.h"
+#include "VdfnShallowNode.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -53,33 +51,29 @@
  *
  * @ingroup VdfnNodes
  */
-class VISTADFNAPI VdfnConditionalRouteNode : public VdfnShallowNode
-{
-public:
-	VdfnConditionalRouteNode();
-	virtual ~VdfnConditionalRouteNode();
+class VISTADFNAPI VdfnConditionalRouteNode : public VdfnShallowNode {
+ public:
+  VdfnConditionalRouteNode();
+  virtual ~VdfnConditionalRouteNode();
 
-	virtual bool SetInPort(const std::string &sName,
-						   IVdfnPort *pPort );
+  virtual bool SetInPort(const std::string& sName, IVdfnPort* pPort);
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-protected:
-	bool DoEvalNode();
-	virtual unsigned int    CalcUpdateNeededScore() const;
+ protected:
+  bool                 DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const;
 
-private:
-	typedef std::map<IVdfnPort*, unsigned int> REVMAP;
+ private:
+  typedef std::map<IVdfnPort*, unsigned int> REVMAP;
 
-	mutable unsigned int m_nUpdateScore;
-	REVMAP m_mpRevisions;
-	TVdfnPort<bool> *m_pTrigger;
+  mutable unsigned int m_nUpdateScore;
+  REVMAP               m_mpRevisions;
+  TVdfnPort<bool>*     m_pTrigger;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif // _VDFNCONDITIONALROUTENODE_H__
-

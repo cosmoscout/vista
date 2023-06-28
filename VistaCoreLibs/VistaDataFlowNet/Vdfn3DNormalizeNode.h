@@ -21,19 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFN3DNORMALIZENODE_H
 #define _VDFN3DNORMALIZENODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
 #include "VdfnNode.h"
+#include "VdfnNodeFactory.h"
 #include "VdfnPort.h"
 #include "VdfnSerializer.h"
-#include "VdfnNodeFactory.h"
 
 #include <VistaAspects/VistaPropertyAwareable.h>
 #include <VistaBase/VistaExceptionBase.h>
@@ -70,107 +68,109 @@
  * @inport{source_h,float}
  * @outport{transform,VistaTransformMatrix}
  */
-class VISTADFNAPI Vdfn3DNormalizeNode : public IVdfnNode
-{
-public:
-	Vdfn3DNormalizeNode();
+class VISTADFNAPI Vdfn3DNormalizeNode : public IVdfnNode {
+ public:
+  Vdfn3DNormalizeNode();
 
-	bool GetIsValid() const;
-	bool PrepareEvaluationRun();
+  bool GetIsValid() const;
+  bool PrepareEvaluationRun();
 
-	void SetMinX( float f ) { m_minx = f; };
-	void SetMinY( float f ) { m_miny = f; };
-	void SetMinZ( float f ) { m_minz = f; };
+  void SetMinX(float f) {
+    m_minx = f;
+  };
+  void SetMinY(float f) {
+    m_miny = f;
+  };
+  void SetMinZ(float f) {
+    m_minz = f;
+  };
 
-	void SetFlipX( bool b ) { m_flipx = b; };
-	void SetFlipY( bool b ) { m_flipy = b; };
-	void SetFlipZ( bool b ) { m_flipz = b; };
+  void SetFlipX(bool b) {
+    m_flipx = b;
+  };
+  void SetFlipY(bool b) {
+    m_flipy = b;
+  };
+  void SetFlipZ(bool b) {
+    m_flipz = b;
+  };
 
-	void SetTargetW( float f ) { m_targetw = f; };
-	void SetTargetH( float f ) { m_targeth = f; };
-	void SetTargetD( float f ) { m_targetd = f; };
+  void SetTargetW(float f) {
+    m_targetw = f;
+  };
+  void SetTargetH(float f) {
+    m_targeth = f;
+  };
+  void SetTargetD(float f) {
+    m_targetd = f;
+  };
 
-protected:
-	bool DoEvalNode();
+ protected:
+  bool DoEvalNode();
 
-	TVdfnPort<float> *m_pMinX,
-					 *m_pMinY,
-					 *m_pMinZ,
-					 *m_pTgW,
-					 *m_pTgH,
-					 *m_pTgD,
-					 *m_pSrW,
-					 *m_pSrH,
-					 *m_pSrD;
+  TVdfnPort<float>*m_pMinX, *m_pMinY, *m_pMinZ, *m_pTgW, *m_pTgH, *m_pTgD, *m_pSrW, *m_pSrH,
+      *m_pSrD;
 
-	TVdfnPort<bool> *m_pFlipX,
-					*m_pFlipY,
-					*m_pFlipZ;
+  TVdfnPort<bool>*m_pFlipX, *m_pFlipY, *m_pFlipZ;
 
-	float m_minx;
-	float m_miny;
-	float m_minz;
+  float m_minx;
+  float m_miny;
+  float m_minz;
 
-	float m_targetw;
-	float m_targeth;
-	float m_targetd;
+  float m_targetw;
+  float m_targeth;
+  float m_targetd;
 
-	bool m_flipx;
-	bool m_flipy;
-	bool m_flipz;
+  bool m_flipx;
+  bool m_flipy;
+  bool m_flipz;
 
-	TVdfnPort<VistaTransformMatrix> *m_pOut;
-
+  TVdfnPort<VistaTransformMatrix>* m_pOut;
 };
 
-class VISTADFNAPI Vista3DNormalizeNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	Vista3DNormalizeNodeCreate()
-	{
+class VISTADFNAPI Vista3DNormalizeNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  Vista3DNormalizeNodeCreate() {
+  }
 
-	}
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const {
+    Vdfn3DNormalizeNode* pNode = new Vdfn3DNormalizeNode;
+    try {
+      const VistaPropertyList& prams =
+          oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
+      float fValue;
+      bool  bFlipState = false;
+      if (prams.GetValue("min_x", fValue)) {
+        pNode->SetMinX(fValue);
+      }
+      if (prams.GetValue("min_y", fValue)) {
+        pNode->SetMinY(fValue);
+      }
+      if (prams.GetValue("min_z", fValue)) {
+        pNode->SetMinZ(fValue);
+      }
+      if (prams.GetValue("target_w", fValue)) {
+        pNode->SetTargetW(fValue);
+      }
+      if (prams.GetValue("target_h", fValue)) {
+        pNode->SetTargetH(fValue);
+      }
+      if (prams.GetValue("target_d", fValue)) {
+        pNode->SetTargetD(fValue);
+      }
+      if (prams.GetValue("flip_x", bFlipState)) {
+        pNode->SetFlipX(bFlipState);
+      }
+      if (prams.GetValue("flip_y", bFlipState)) {
+        pNode->SetFlipY(bFlipState);
+      }
+      if (prams.GetValue("flip_z", bFlipState)) {
+        pNode->SetFlipZ(bFlipState);
+      }
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const
-	{
-		Vdfn3DNormalizeNode *pNode = new Vdfn3DNormalizeNode;
-        try {
-            const VistaPropertyList &prams = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
-			float fValue;
-			bool bFlipState = false;
-            if( prams.GetValue( "min_x", fValue ) ) {
-                pNode->SetMinX( fValue );
-            }
-			if( prams.GetValue( "min_y", fValue ) ) {
-                pNode->SetMinY( fValue );
-            }
-			if( prams.GetValue( "min_z", fValue ) ) {
-                pNode->SetMinZ( fValue );
-            }
-			if( prams.GetValue( "target_w", fValue ) ) {
-                pNode->SetTargetW( fValue );
-            }
-			if( prams.GetValue( "target_h", fValue ) ) {
-                pNode->SetTargetH( fValue );
-            }
-			if( prams.GetValue( "target_d", fValue ) ) {
-                pNode->SetTargetD( fValue );
-            }
-			if( prams.GetValue( "flip_x", bFlipState ) ) {
-                pNode->SetFlipX( bFlipState );
-            }
-			if( prams.GetValue( "flip_y", bFlipState ) ) {
-                pNode->SetFlipY( bFlipState );
-            }
-			if( prams.GetValue( "flip_z", bFlipState ) ) {
-                pNode->SetFlipZ( bFlipState );
-            }
-
-        } catch (VistaExceptionBase &x) {
-            x.PrintException();
-        }
-        return pNode;
-	}
+    } catch (VistaExceptionBase& x) { x.PrintException(); }
+    return pNode;
+  }
 };
 
 /*============================================================================*/
@@ -178,4 +178,3 @@ public:
 /*============================================================================*/
 
 #endif //_VDFN3DNORMALIZENODE_H
-

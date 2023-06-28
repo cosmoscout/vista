@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _SWITCHMAPRESOLUTIONCALLBACK_H
 #define _SWITCHMAPRESOLUTIONCALLBACK_H
 
@@ -49,27 +48,23 @@ class ShadowDemo;
  * CResetCallback
  * This Callback let the application parse the parameters again.
  */
-class SwitchMapResolutionCallback : public IVistaExplicitCallbackInterface
-{
-public:	
-	SwitchMapResolutionCallback( ShadowDemo* pShadowDemo, float nFactor );	
-	virtual ~SwitchMapResolutionCallback();
+class SwitchMapResolutionCallback : public IVistaExplicitCallbackInterface {
+ public:
+  SwitchMapResolutionCallback(ShadowDemo* pShadowDemo, float nFactor);
+  virtual ~SwitchMapResolutionCallback();
 
-	/**
-	 * Do
-	 * Invoked by the application
-	 */
-	bool Do();
+  /**
+   * Do
+   * Invoked by the application
+   */
+  bool Do();
 
-private:
-
-	/**
-	 * The pointer to the instance of the application.
-	 */
-	ShadowDemo*	m_pShadowDemo;
-    float		m_nFactor;
-
+ private:
+  /**
+   * The pointer to the instance of the application.
+   */
+  ShadowDemo* m_pShadowDemo;
+  float       m_nFactor;
 };
-
 
 #endif // _SWITCHMAPRESOLUTIONCALLBACK_H

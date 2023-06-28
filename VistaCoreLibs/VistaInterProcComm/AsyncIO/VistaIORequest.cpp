@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaIORequest.h"
 #include "VistaIOScheduler.h"
 
@@ -32,107 +31,99 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaIORequest::IVistaIORequest()
-{
+IVistaIORequest::IVistaIORequest() {
 
-   m_eReqDir = RD_NONE;
-	m_eState = REQ_NONE;
+  m_eReqDir = RD_NONE;
+  m_eState  = REQ_NONE;
 }
 
-IVistaIORequest::~IVistaIORequest()
-{
+IVistaIORequest::~IVistaIORequest() {
 }
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-IVistaIORequest::eRequestDir IVistaIORequest::GetRequestDir() const
-{
-	return m_eReqDir;
+IVistaIORequest::eRequestDir IVistaIORequest::GetRequestDir() const {
+  return m_eReqDir;
 }
 
-IVistaIORequest::eRequestState IVistaIORequest::GetRequestState() const
-{
-	return m_eState;
+IVistaIORequest::eRequestState IVistaIORequest::GetRequestState() const {
+  return m_eState;
 }
 
-void IVistaIORequest::SetRequestDir(eRequestDir eDir)
-{
-	m_eReqDir = eDir;
+void IVistaIORequest::SetRequestDir(eRequestDir eDir) {
+  m_eReqDir = eDir;
 }
 
-void IVistaIORequest::SetRequestState(eRequestState eState)
-{
-	m_eState = eState;
+void IVistaIORequest::SetRequestState(eRequestState eState) {
+  m_eState = eState;
 }
 
-void IVistaIORequest::PreWork()
-{
-	SetRequestState(REQ_PENDING);
+void IVistaIORequest::PreWork() {
+  SetRequestState(REQ_PENDING);
 }
 
-void IVistaIORequest::PostWork()
-{
-	SetRequestState(REQ_FINISHED);
+void IVistaIORequest::PostWork() {
+  SetRequestState(REQ_FINISHED);
 }
 
 /*
  void IVistaIORequest::DefinedThreadWork()
 {
-	try
-	{
-	   int iChannelTicket = (*m_pMultiplexer).GetNextTicket();
-		VistaIOMultiplexer::eIODir eDir = VistaIOMultiplexer::MP_IONONE;
-		switch(GetRequestDir())
-		{
-		case RD_IN:
-			{
-				eDir = VistaIOMultiplexer::MP_IOIN;
-				break;
-			}
-		case RD_OUT:
-			{
-				eDir = VistaIOMultiplexer::MP_IOOUT;
-				break;
-			}
-		case RD_ERR:
-			{
-				eDir = VistaIOMultiplexer::MP_IOERR;
-				break;
-			}
-		case RD_INOUT:
-		case RD_NONE:
-		default:
-			break; // we *should* panic here
-		}
+        try
+        {
+           int iChannelTicket = (*m_pMultiplexer).GetNextTicket();
+                VistaIOMultiplexer::eIODir eDir = VistaIOMultiplexer::MP_IONONE;
+                switch(GetRequestDir())
+                {
+                case RD_IN:
+                        {
+                                eDir = VistaIOMultiplexer::MP_IOIN;
+                                break;
+                        }
+                case RD_OUT:
+                        {
+                                eDir = VistaIOMultiplexer::MP_IOOUT;
+                                break;
+                        }
+                case RD_ERR:
+                        {
+                                eDir = VistaIOMultiplexer::MP_IOERR;
+                                break;
+                        }
+                case RD_INOUT:
+                case RD_NONE:
+                default:
+                        break; // we *should* panic here
+                }
 
 
-		(*m_pMultiplexer).AddMultiplexPoint(GetMultiplexHandle(), iChannelTicket, eDir);
+                (*m_pMultiplexer).AddMultiplexPoint(GetMultiplexHandle(), iChannelTicket, eDir);
 
-		SetRequestState(REQ_PENDING);
+                SetRequestState(REQ_PENDING);
 
-		int iRet = iChannelTicket;
-		do
-		{
-			SetRequestState(REQ_PROCESSING);
-			// ok
-			if(iRet == iChannelTicket)
-			{
-				if(!PerformRequest() || (GetPerformedSize() == GetRequestSize()))
-					// done
-					break;
-			}
-			else
-			{
-				// ?? 
-				break; // leave loop
-			}
-		 }
-		 while((iRet=(*m_pMultiplexer).Demultiplex())!=-1);
-	}
-	catch(...)
-	{
-	}
+                int iRet = iChannelTicket;
+                do
+                {
+                        SetRequestState(REQ_PROCESSING);
+                        // ok
+                        if(iRet == iChannelTicket)
+                        {
+                                if(!PerformRequest() || (GetPerformedSize() == GetRequestSize()))
+                                        // done
+                                        break;
+                        }
+                        else
+                        {
+                                // ??
+                                break; // leave loop
+                        }
+                 }
+                 while((iRet=(*m_pMultiplexer).Demultiplex())!=-1);
+        }
+        catch(...)
+        {
+        }
 
 }
 */
@@ -140,5 +131,3 @@ void IVistaIORequest::PostWork()
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

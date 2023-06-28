@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTADTRACKSDKDRIVERDRIVER_H
 #define __VISTADTRACKSDKDRIVERDRIVER_H
 
@@ -36,8 +35,8 @@
 /*============================================================================*/
 // Shared library support
 
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTADTRACKSDK_STATIC) 
+// Windows DLL build
+#if defined(WIN32) && !defined(VISTADTRACKSDK_STATIC)
 #ifdef VISTADTRACKSDK_EXPORTS
 #define VISTADTRACKSDKDRIVERAPI __declspec(dllexport)
 #else
@@ -91,31 +90,26 @@ class VistaDriverThreadAspect;
  * and no device backwards communication.
  *
  */
-class VISTADTRACKSDKDRIVERAPI VistaDTrackSDKDriver : public IVistaDeviceDriver
-{
-public:
-	VistaDTrackSDKDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaDTrackSDKDriver();
+class VISTADTRACKSDKDRIVERAPI VistaDTrackSDKDriver : public IVistaDeviceDriver {
+ public:
+  VistaDTrackSDKDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaDTrackSDKDriver();
 
+ protected:
+  virtual bool PhysicalEnable(bool bEnabled);
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
+  bool DoConnect();
+  bool DoDisconnect();
 
+ private:
+  DTrack* m_pDriver;
 
+  VistaDriverThreadAspect* m_pThread;
 
-protected:
-	virtual bool PhysicalEnable(bool bEnabled);
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-
-	bool DoConnect();
-	bool DoDisconnect();
-private:
-	DTrack *m_pDriver;
-
-	VistaDriverThreadAspect *m_pThread;
-
-	bool UpdateBodySensor( VistaType::microtime dTs, int nIdx = 0 );
-	bool UpdateMarker( VistaType::microtime dTs, int nIdx = 0 );
+  bool UpdateBodySensor(VistaType::microtime dTs, int nIdx = 0);
+  bool UpdateMarker(VistaType::microtime dTs, int nIdx = 0);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

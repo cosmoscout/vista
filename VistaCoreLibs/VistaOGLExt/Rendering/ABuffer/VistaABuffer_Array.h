@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef VISTA_A_BUFFER_ARRAY_H
 #define VISTA_A_BUFFER_ARRAY_H
 /*============================================================================*/
@@ -36,33 +35,32 @@
  * This class implements the A-Buffer by using an Array to store Fragments.
  * For each pixel a separate array is used to store the data of fragments,
  * which are associated with that pixel.
- * All thetas Arrays have the same size, there for only a fixed amount of 
+ * All thetas Arrays have the same size, there for only a fixed amount of
  * fragments can be stored for each Pixel.
  */
-class VISTAOGLEXTAPI VistaABufferArray : public IVistaABuffer
-{
-public: 
-	/**************************************************************************/
-	/* CONSTRUCTORS / DESTRUCTOR                                              */
-	/**************************************************************************/
-	VistaABufferArray();
-	virtual ~VistaABufferArray();
+class VISTAOGLEXTAPI VistaABufferArray : public IVistaABuffer {
+ public:
+  /**************************************************************************/
+  /* CONSTRUCTORS / DESTRUCTOR                                              */
+  /**************************************************************************/
+  VistaABufferArray();
+  virtual ~VistaABufferArray();
 
-	/**************************************************************************/
-	/* PUBLIC INTERFACE                                                       */
-	/**************************************************************************/
-	virtual VistaGLSLShader* CreateShaderPrototype() const;
+  /**************************************************************************/
+  /* PUBLIC INTERFACE                                                       */
+  /**************************************************************************/
+  virtual VistaGLSLShader* CreateShaderPrototype() const;
 
-protected:
-	virtual bool InitShader();
-	virtual bool InitBuffer();
-	virtual void ResizePerPixelBuffer();
+ protected:
+  virtual bool InitShader();
+  virtual bool InitBuffer();
+  virtual void ResizePerPixelBuffer();
 
-	virtual void AssignUniforms( VistaGLSLShader* pShader );
+  virtual void AssignUniforms(VistaGLSLShader* pShader);
 
-private:
-	GLuint			m_uiFragCountBuffer;
-	GLuint64EXT		m_addrFragCountBuffer;
+ private:
+  GLuint      m_uiFragCountBuffer;
+  GLuint64EXT m_addrFragCountBuffer;
 };
 #endif // Include guard.
 /*============================================================================*/

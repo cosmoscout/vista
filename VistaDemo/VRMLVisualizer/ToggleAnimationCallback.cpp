@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "ToggleAnimationCallback.h"
 
 #include <VistaKernel/GraphicsManager/VistaTransformNode.h>
@@ -34,21 +33,21 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-ToggleAnimationCallback::ToggleAnimationCallback( VistaPropertyList &props )
-	:	mProps( props )
-{}
+ToggleAnimationCallback::ToggleAnimationCallback(VistaPropertyList& props)
+    : mProps(props) {
+}
 
-ToggleAnimationCallback::~ToggleAnimationCallback(){}
+ToggleAnimationCallback::~ToggleAnimationCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool ToggleAnimationCallback::Do()
-{
-	// toggle animation state
-	mProps.SetValue<bool>("animation", !mProps.GetValueOrDefault<bool>("animation"));
-	return true;
+bool ToggleAnimationCallback::Do() {
+  // toggle animation state
+  mProps.SetValue<bool>("animation", !mProps.GetValueOrDefault<bool>("animation"));
+  return true;
 }
 
 /*============================================================================*/

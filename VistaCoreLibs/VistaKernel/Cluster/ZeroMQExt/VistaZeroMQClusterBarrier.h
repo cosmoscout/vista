@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAZEROMQCLUSTERBARRIER_H
 #define _VISTAZEROMQCLUSTERBARRIER_H
 
@@ -32,61 +31,57 @@
 
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBarrierIPBase.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
 /*============================================================================*/
-namespace zmq
-{
-	class socket_t;
-	class message_t;
-}
+namespace zmq {
+class socket_t;
+class message_t;
+} // namespace zmq
 class VistaConnectionIP;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaZeroMQClusterLeaderBarrier : public VistaClusterLeaderBarrierIPBase
-{
-public:
-	explicit VistaZeroMQClusterLeaderBarrier( const std::string& sZeroMQAddress,
-											const bool bVerbose = true );
-	virtual ~VistaZeroMQClusterLeaderBarrier();
+class VISTAKERNELAPI VistaZeroMQClusterLeaderBarrier : public VistaClusterLeaderBarrierIPBase {
+ public:
+  explicit VistaZeroMQClusterLeaderBarrier(
+      const std::string& sZeroMQAddress, const bool bVerbose = true);
+  virtual ~VistaZeroMQClusterLeaderBarrier();
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-	bool WaitForConnection( const std::vector<VistaConnectionIP*>& vecConnections );
-	
-private:
-	zmq::socket_t*	m_pSocket;
+  bool WaitForConnection(const std::vector<VistaConnectionIP*>& vecConnections);
+
+ private:
+  zmq::socket_t* m_pSocket;
 };
 
-class VISTAKERNELAPI VistaZeroMQClusterFollowerBarrier : public VistaClusterFollowerBarrierIPBase
-{
-public:
-	explicit VistaZeroMQClusterFollowerBarrier( const std::string& sZeroMQAddress,
-												VistaConnectionIP* pLeaderConnection,
-												const bool bManageConnection = true,
-												const bool bVerbose = true );
-	virtual ~VistaZeroMQClusterFollowerBarrier();
+class VISTAKERNELAPI VistaZeroMQClusterFollowerBarrier : public VistaClusterFollowerBarrierIPBase {
+ public:
+  explicit VistaZeroMQClusterFollowerBarrier(const std::string& sZeroMQAddress,
+      VistaConnectionIP* pLeaderConnection, const bool bManageConnection = true,
+      const bool bVerbose = true);
+  virtual ~VistaZeroMQClusterFollowerBarrier();
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-	bool WaitForConnection( VistaConnectionIP* pConnection );
+  bool WaitForConnection(VistaConnectionIP* pConnection);
 
-private:
-	zmq::socket_t*	m_pSocket;
-	zmq::message_t*	m_pZmqMessage;
+ private:
+  zmq::socket_t*  m_pSocket;
+  zmq::message_t* m_pZmqMessage;
 };
 
 /*============================================================================*/

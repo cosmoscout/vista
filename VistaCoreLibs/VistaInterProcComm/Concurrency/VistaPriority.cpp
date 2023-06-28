@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaPriority.h"
 #include "Imp/VistaPriorityImp.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,57 +31,44 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaPriority::VistaPriority(int iPrio)
-{
-	m_pPriorityImp = IVistaPriorityImp::CreatePriorityImp();
-	m_iVistaPriority = iPrio;
+VistaPriority::VistaPriority(int iPrio) {
+  m_pPriorityImp   = IVistaPriorityImp::CreatePriorityImp();
+  m_iVistaPriority = iPrio;
 }
 
-VistaPriority::VistaPriority(const VistaPriority &prio)
-{
-	m_pPriorityImp = IVistaPriorityImp::CreatePriorityImp();
-	m_iVistaPriority = prio.m_iVistaPriority;
+VistaPriority::VistaPriority(const VistaPriority& prio) {
+  m_pPriorityImp   = IVistaPriorityImp::CreatePriorityImp();
+  m_iVistaPriority = prio.m_iVistaPriority;
 }
 
-
-VistaPriority::~VistaPriority()
-{
-	delete m_pPriorityImp;
+VistaPriority::~VistaPriority() {
+  delete m_pPriorityImp;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-int VistaPriority::GetVistaPriority() const
-{
-	return m_iVistaPriority;
+int VistaPriority::GetVistaPriority() const {
+  return m_iVistaPriority;
 }
 
-
-void VistaPriority::SetVistaPriority(int iPrio)
-{
-	m_iVistaPriority = iPrio;
+void VistaPriority::SetVistaPriority(int iPrio) {
+  m_iVistaPriority = iPrio;
 }
 
-int VistaPriority::GetSystemPriority() const
-{
-	return m_pPriorityImp->ScalePriorityToSystemPriority(m_iVistaPriority);
+int VistaPriority::GetSystemPriority() const {
+  return m_pPriorityImp->ScalePriorityToSystemPriority(m_iVistaPriority);
 }
 
-int VistaPriority::GetVistaPriorityForSystemPriority( int iSysPrio ) const
-{
-	return m_pPriorityImp->ScaleSystemPriorityToPriority(iSysPrio);
+int VistaPriority::GetVistaPriorityForSystemPriority(int iSysPrio) const {
+  return m_pPriorityImp->ScaleSystemPriorityToPriority(iSysPrio);
 }
 
-VistaPriority &VistaPriority::operator=(const VistaPriority &inPrio)
-{
-	m_iVistaPriority = inPrio.m_iVistaPriority;
-	return *this;
+VistaPriority& VistaPriority::operator=(const VistaPriority& inPrio) {
+  m_iVistaPriority = inPrio.m_iVistaPriority;
+  return *this;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

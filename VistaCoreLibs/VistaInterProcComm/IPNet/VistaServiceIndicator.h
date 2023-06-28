@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASERVICEINDICATOR_H
 #define _VISTASERVICEINDICATOR_H
 
@@ -46,103 +45,97 @@
 class VistaUDPSocket;
 class VistaSocketAddress;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
-struct VISTAINTERPROCCOMMAPI VistaAppMsg
-{
-	char m_acHost[256];
-	char m_acPort[10];
-	char m_acAck[3];
-	char m_cState;
-	char m_acCtrl;
+struct VISTAINTERPROCCOMMAPI VistaAppMsg {
+  char m_acHost[256];
+  char m_acPort[10];
+  char m_acAck[3];
+  char m_cState;
+  char m_acCtrl;
 };
-
 
 /**
  * Ping-like service indicator that can be used as a thread or within
  * one's own PC. It uses UDP-datagrams to send msgs from one point to
  * another, then answering.
  */
-class VISTAINTERPROCCOMMAPI VistaServiceIndicator : public IVistaThreadedTask
-{
-public:
-	/**
-	 * Constructor
-	 * @param adr the socket adress for *this* host (UDP)
-	 */
-	VistaServiceIndicator (const VistaSocketAddress &adr);
+class VISTAINTERPROCCOMMAPI VistaServiceIndicator : public IVistaThreadedTask {
+ public:
+  /**
+   * Constructor
+   * @param adr the socket adress for *this* host (UDP)
+   */
+  VistaServiceIndicator(const VistaSocketAddress& adr);
 
+  /**
+   * Constructor.
+   * @param sHost name of ethernet segment on *this* host
+   * @param iPort port to bind to
+   */
+  VistaServiceIndicator(const std::string& sHost, int iPort);
+  virtual ~VistaServiceIndicator();
 
-	/**
-	 * Constructor.
-	 * @param sHost name of ethernet segment on *this* host
-	 * @param iPort port to bind to
-	 */
-	VistaServiceIndicator(const std::string &sHost, int iPort);
-	virtual ~VistaServiceIndicator();
+  /**
+   * In case you did not know in advance or like to change the
+   * address *before* entering Pong
+   * @see Pong()
+   * @param sHost host to bind to during Pong
+   * @param iPort port to bind to during Pong
+   */
+  void SetAddress(const std::string& sHost, int iPort);
 
+  /**
+   * Returns the address the UDP-Socket is bound to on *this*
+   * host.
+   * @return the local adress for the socket
+   */
+  VistaSocketAddress GetSocketAddress() const;
 
-	/**
-	 * In case you did not know in advance or like to change the
-	 * address *before* entering Pong
-	 * @see Pong()
-	 * @param sHost host to bind to during Pong
-	 * @param iPort port to bind to during Pong
-	 */
-	void SetAddress(const std::string &sHost, int iPort);
+  /**
+   * Init will be called automatically when used as a thread-task.
+   * If you do not call ThreadWork(), but rather whish to Ping(),
+   * call Init *before* you do this.
+   * @see Ping()
+   * @see ThreadWork()
+   * @return false if the socket could not be bound or opened
+   */
+  bool Init();
 
-	/**
-	 * Returns the address the UDP-Socket is bound to on *this*
-	 * host.
-	 * @return the local adress for the socket
-	 */
-	VistaSocketAddress GetSocketAddress() const;
+  /**
+   * @param sPeerName the peer, which should be running Pong() right now
+   * @param iPeerPort the port of the \"listening\" peer
+   * @param bQuit indicate the end the service-indicator on the other side
+   * @param iWaitTime wait time to wait for a Pong() in msecs
+   * @return true iff the Ping() returned a Pong()
+   */
+  bool Ping(const std::string& sPeerName, int iPeerPort, bool bQuit = false, int iWaitTime = 50);
 
-	/**
-	 * Init will be called automatically when used as a thread-task.
-	 * If you do not call ThreadWork(), but rather whish to Ping(),
-	 * call Init *before* you do this.
-	 * @see Ping()
-	 * @see ThreadWork()
-	 * @return false if the socket could not be bound or opened
-	 */
-	bool Init();
+  /**
+   * Pong is a looped action, it will return on communication error or the arrival of
+   * a quit msg from the Ping() side
+   * @return true quit msg arrived, false else (error)
+   */
+  bool Pong();
 
+  void SetControlFlag(char c);
+  char GetControlFlag() const;
 
-	/**
-	 * @param sPeerName the peer, which should be running Pong() right now
-	 * @param iPeerPort the port of the \"listening\" peer
-	 * @param bQuit indicate the end the service-indicator on the other side
-	 * @param iWaitTime wait time to wait for a Pong() in msecs
-	 * @return true iff the Ping() returned a Pong()
-	 */
-	bool Ping(const std::string &sPeerName, int iPeerPort, bool bQuit = false, int iWaitTime=50);
+ protected:
+  virtual void PreWork();
+  virtual void PostWork();
+  virtual void DefinedThreadWork();
 
-	/**
-	 * Pong is a looped action, it will return on communication error or the arrival of
-	 * a quit msg from the Ping() side
-	 * @return true quit msg arrived, false else (error)
-	 */
-	bool Pong();
+  virtual bool HandleQuitMessage();
 
-		void SetControlFlag(char c);
-		char GetControlFlag() const;
-protected:
-	virtual void PreWork();
-	virtual void PostWork();
-	virtual void DefinedThreadWork();
+  virtual bool HandleMessage(const std::string& sMsg);
 
-	virtual bool HandleQuitMessage();
-
-	virtual bool HandleMessage(const std::string &sMsg);
-private:
-	VistaUDPSocket *m_pServiceSocket;
-	VistaSocketAddress *m_pAdr;
-	char m_cCtrl;
+ private:
+  VistaUDPSocket*     m_pServiceSocket;
+  VistaSocketAddress* m_pAdr;
+  char                m_cCtrl;
 };
 
 /*============================================================================*/

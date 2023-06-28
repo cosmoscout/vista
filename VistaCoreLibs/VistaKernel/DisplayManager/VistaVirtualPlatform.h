@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined _VISTAVIRTUALPLATFORM_H
 #define _VISTAVIRTUALPLATFORM_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaBase/VistaVectorMath.h>
-#include <VistaAspects/VistaObserveable.h>
 #include <VistaAspects/VistaNameable.h>
+#include <VistaAspects/VistaObserveable.h>
+#include <VistaBase/VistaVectorMath.h>
 #include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
@@ -49,44 +48,41 @@
  * An extension to VistaReferenceFrame which allows observers to
  * listen for changes to the reference frame.
  */
-class VISTAKERNELAPI VistaVirtualPlatform  : public VistaReferenceFrame,
-											 public IVistaObserveable,
-											 public IVistaNameable
-{
-public:
-	/**
-	 * MSG tags for observers
-	 */
-	enum
-	{
-		MSG_TRANSLATION_CHANGE = IVistaObserveable::MSG_LAST,
-		MSG_ROTATION_CHANGE,
-		MSG_SCALE_CHANGE,
-		MSG_NAME_CHANGE,
-		MSG_LAST
-	};
+class VISTAKERNELAPI VistaVirtualPlatform : public VistaReferenceFrame,
+                                            public IVistaObserveable,
+                                            public IVistaNameable {
+ public:
+  /**
+   * MSG tags for observers
+   */
+  enum {
+    MSG_TRANSLATION_CHANGE = IVistaObserveable::MSG_LAST,
+    MSG_ROTATION_CHANGE,
+    MSG_SCALE_CHANGE,
+    MSG_NAME_CHANGE,
+    MSG_LAST
+  };
 
-	VistaVirtualPlatform();
-	VistaVirtualPlatform(const VistaVector3D &refTranslation,
-						  const VistaQuaternion &refRotation,
-						  float fScale = 1.0f);
-	virtual ~VistaVirtualPlatform();
+  VistaVirtualPlatform();
+  VistaVirtualPlatform(
+      const VistaVector3D& refTranslation, const VistaQuaternion& refRotation, float fScale = 1.0f);
+  virtual ~VistaVirtualPlatform();
 
-	//###############################################################
-	// REFERENCEFRAME SETTERS (adds notification)
-	//###############################################################
-	bool SetTranslation(const VistaVector3D &refTranslation);
-	bool SetRotation(const VistaQuaternion &refRotation);
-	bool SetScale(float fScale);
+  //###############################################################
+  // REFERENCEFRAME SETTERS (adds notification)
+  //###############################################################
+  bool SetTranslation(const VistaVector3D& refTranslation);
+  bool SetRotation(const VistaQuaternion& refRotation);
+  bool SetScale(float fScale);
 
-	//###############################################################
-	// NAMEABLEINTERFACE
-	//###############################################################
-	virtual std::string GetNameForNameable() const;
-	virtual void   SetNameForNameable(const std::string &sNewName);
+  //###############################################################
+  // NAMEABLEINTERFACE
+  //###############################################################
+  virtual std::string GetNameForNameable() const;
+  virtual void        SetNameForNameable(const std::string& sNewName);
 
-private:
-	std::string m_strNameForNameable;
+ private:
+  std::string m_strNameForNameable;
 };
 
 /*============================================================================*/

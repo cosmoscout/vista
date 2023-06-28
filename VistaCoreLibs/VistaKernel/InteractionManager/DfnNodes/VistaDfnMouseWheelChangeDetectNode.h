@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNMOUSEWHEELCONVERERNODE_H
 #define _VISTADFNMOUSEWHEELCONVERERNODE_H
 
@@ -32,9 +31,8 @@
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
-
+#include <VistaDataFlowNet/VdfnPort.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -52,34 +50,34 @@
  *
  * Otherwise it is a bit tedious to read off the mouse wheel state of the history,
  * as the mouse history also changes when the mouse was moved, without a wheel change.
- * 
+ *
  * @ingroup VdfnNodes
- * @inport{wheel_state, int, mandatory, the wheel state value projected from the mouse history.}  
+ * @inport{wheel_state, int, mandatory, the wheel state value projected from the mouse history.}
  * @outport{wheel_change, int, the difference of the wheel state since the last update.}
  */
-class VISTAKERNELAPI VistaDfnMouseWheelChangeDetectNode : public IVdfnNode
-{
-public:
-	VistaDfnMouseWheelChangeDetectNode();
-	~VistaDfnMouseWheelChangeDetectNode();
+class VISTAKERNELAPI VistaDfnMouseWheelChangeDetectNode : public IVdfnNode {
+ public:
+  VistaDfnMouseWheelChangeDetectNode();
+  ~VistaDfnMouseWheelChangeDetectNode();
 
-	bool PrepareEvaluationRun();
-protected:
-	virtual bool DoEvalNode();
-private:
-	TVdfnPort<int>*				m_pWheelState;
-	TVdfnPort<int>*				m_pWheelChange;
+  bool PrepareEvaluationRun();
 
-	int							m_iLastState;
+ protected:
+  virtual bool DoEvalNode();
+
+ private:
+  TVdfnPort<int>* m_pWheelState;
+  TVdfnPort<int>* m_pWheelChange;
+
+  int m_iLastState;
 };
 
 class VISTAKERNELAPI VistaDfnMouseWheelChangeDetectNodeCreate
-								: public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnMouseWheelChangeDetectNodeCreate();
+    : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnMouseWheelChangeDetectNodeCreate();
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 };
 
 /*============================================================================*/
@@ -87,4 +85,3 @@ public:
 /*============================================================================*/
 
 #endif //_VISTADFNMOUSEWHEELCONVERERNODE_H
-

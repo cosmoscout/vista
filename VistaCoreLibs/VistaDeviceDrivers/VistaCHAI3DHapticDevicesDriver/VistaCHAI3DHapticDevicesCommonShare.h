@@ -21,28 +21,25 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACHAI3DHapticDevicesDRIVERCONFIG_H
 #define _VISTACHAI3DHapticDevicesDRIVERCONFIG_H
 
-namespace VistaCHAI3DHapticDevicesMeasures
-{
-	struct sCHAI3DHapticDevicesMeasure
-	{
-		float m_afPosition[3],        /**< in mm */
-			m_afRotMatrix[16],      /**< column major */
-			m_afVelocity[3],        /**< in mm/s */
-			m_afForce[3],           /**< in N */
-			m_afAngularVelocity[3], /**< the gimbal's, in rad/s */
-			m_afJointAngles[3],     /**< radians */
-			m_afGimbalAngles[3],    /**< radians */
-			m_afTorque[3],          /**< in Nm */
-			m_nUpdateRate,          /**< in Hz */
-			m_afOverheatState[6];   /**< degrees Celsius? */
-		long  m_nEncoderValues[6];    /**< raw values */
-		int   m_nButtonState;         /**< button mask */
-		bool  m_bInkwellSwitch;
-	};
-}
+namespace VistaCHAI3DHapticDevicesMeasures {
+struct sCHAI3DHapticDevicesMeasure {
+  float m_afPosition[3],      /**< in mm */
+      m_afRotMatrix[16],      /**< column major */
+      m_afVelocity[3],        /**< in mm/s */
+      m_afForce[3],           /**< in N */
+      m_afAngularVelocity[3], /**< the gimbal's, in rad/s */
+      m_afJointAngles[3],     /**< radians */
+      m_afGimbalAngles[3],    /**< radians */
+      m_afTorque[3],          /**< in Nm */
+      m_nUpdateRate,          /**< in Hz */
+      m_afOverheatState[6];   /**< degrees Celsius? */
+  long m_nEncoderValues[6];   /**< raw values */
+  int  m_nButtonState;        /**< button mask */
+  bool m_bInkwellSwitch;
+};
+} // namespace VistaCHAI3DHapticDevicesMeasures
 
 #endif //_VISTACHAI3DHapticDevicesDRIVERCONFIG_H

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "SwitchShadowCallback.h"
 #include "ShadowDemo.h"
 
@@ -37,30 +36,29 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-SwitchShadowCallback::SwitchShadowCallback( ShadowDemo *pAppl, int iDiff  )
-:   m_pShadowDemo( pAppl )
-,   m_iDiff( iDiff )
-{
+SwitchShadowCallback::SwitchShadowCallback(ShadowDemo* pAppl, int iDiff)
+    : m_pShadowDemo(pAppl)
+    , m_iDiff(iDiff) {
 }
 
-SwitchShadowCallback::~SwitchShadowCallback(){}
+SwitchShadowCallback::~SwitchShadowCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool SwitchShadowCallback::Do()
-{
-	// parses the Parameters again
-        // use modulo to stay in legal scope    
-        int iNextMode = (m_pShadowDemo->GetActiveShadowMode() + m_iDiff) %
-                (VistaOpenSGShadow::VOSGSHADOW_LAST+1);
-        while (iNextMode < 0) iNextMode += VistaOpenSGShadow::VOSGSHADOW_LAST+1;
-        m_pShadowDemo->SetActiveShadowMode( VistaOpenSGShadow::eShadowMode( iNextMode ) );
-        std::cout << "ShadowMode is now " <<
-            ShadowDemo::GetShadowModeName( m_pShadowDemo->GetActiveShadowMode() )
-        << std::endl;
-	return true;
+bool SwitchShadowCallback::Do() {
+  // parses the Parameters again
+  // use modulo to stay in legal scope
+  int iNextMode =
+      (m_pShadowDemo->GetActiveShadowMode() + m_iDiff) % (VistaOpenSGShadow::VOSGSHADOW_LAST + 1);
+  while (iNextMode < 0)
+    iNextMode += VistaOpenSGShadow::VOSGSHADOW_LAST + 1;
+  m_pShadowDemo->SetActiveShadowMode(VistaOpenSGShadow::eShadowMode(iNextMode));
+  std::cout << "ShadowMode is now "
+            << ShadowDemo::GetShadowModeName(m_pShadowDemo->GetActiveShadowMode()) << std::endl;
+  return true;
 }
 
 /*============================================================================*/

@@ -21,64 +21,55 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDfnClusterNodeInfoNode.h"
 #include <VistaDataFlowNet/VdfnPort.h>
 
-#include <VistaKernel/Cluster/VistaClusterMode.h>
-#include <VistaBase/VistaExceptionBase.h>
 #include <VistaAspects/VistaPropertyAwareable.h>
+#include <VistaBase/VistaExceptionBase.h>
+#include <VistaKernel/Cluster/VistaClusterMode.h>
 
 #include <VistaDataFlowNet/VdfnUtil.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnClusterNodeInfoNode::VdfnClusterNodeInfoNode(VistaClusterMode *pClAux )
-: IVdfnNode()
-, m_pClusterMode(pClAux)
-, m_pClusterNodeName( new TVdfnPort<std::string> )
-, m_pClusterNodeType( new TVdfnPort<std::string> )
-, m_pClusterClock( new TVdfnPort<double> )
-{
-	RegisterOutPort( "node_name", m_pClusterNodeName );
-	RegisterOutPort( "cluster_mode", m_pClusterNodeType );
-	RegisterOutPort( "node_clock", m_pClusterClock );
+VdfnClusterNodeInfoNode::VdfnClusterNodeInfoNode(VistaClusterMode* pClAux)
+    : IVdfnNode()
+    , m_pClusterMode(pClAux)
+    , m_pClusterNodeName(new TVdfnPort<std::string>)
+    , m_pClusterNodeType(new TVdfnPort<std::string>)
+    , m_pClusterClock(new TVdfnPort<double>) {
+  RegisterOutPort("node_name", m_pClusterNodeName);
+  RegisterOutPort("cluster_mode", m_pClusterNodeType);
+  RegisterOutPort("node_clock", m_pClusterClock);
 
-	// we mark this mode as unconditional eval for the frameclock
-	SetEvaluationFlag(true);
+  // we mark this mode as unconditional eval for the frameclock
+  SetEvaluationFlag(true);
 }
 
-VdfnClusterNodeInfoNode::~VdfnClusterNodeInfoNode()
-{
+VdfnClusterNodeInfoNode::~VdfnClusterNodeInfoNode() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
+bool VdfnClusterNodeInfoNode::DoEvalNode() {
+  if (m_pClusterNodeName->GetValueConstRef().empty())
+    m_pClusterNodeName->SetValue(m_pClusterMode->GetNodeName(), GetUpdateTimeStamp());
 
-bool VdfnClusterNodeInfoNode::DoEvalNode()
-{
-	if( m_pClusterNodeName->GetValueConstRef().empty() )
-		m_pClusterNodeName->SetValue( m_pClusterMode->GetNodeName(), GetUpdateTimeStamp() );
+  if (m_pClusterNodeType->GetValueConstRef().empty())
+    m_pClusterNodeType->SetValue(m_pClusterMode->GetClusterModeName(), GetUpdateTimeStamp());
 
-	if( m_pClusterNodeType->GetValueConstRef().empty() )
-		m_pClusterNodeType->SetValue( m_pClusterMode->GetClusterModeName(), GetUpdateTimeStamp() );
+  m_pClusterClock->SetValue(m_pClusterMode->GetFrameClock(), GetUpdateTimeStamp());
 
-	m_pClusterClock->SetValue( m_pClusterMode->GetFrameClock(), GetUpdateTimeStamp() );
-
-	return true;
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

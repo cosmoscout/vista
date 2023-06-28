@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGMATERIALTOOLS_H
 #define _VISTAOPENSGMATERIALTOOLS_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -47,40 +45,30 @@ class IVistaNode;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VistaOpenSGMaterialTools
-{
-	/**
-	 * Sets the sort key on the geometry, oglcallback, or on all of these under
-	 * the specified node. The sortkey determines the rendering order
-	 * the default is 0, higher numbers cause the geometries to be rendered later
-	 * Note: the sortkey is set per geometry/OGLCallback, not per node, thus
-	 * it can potentially affect other nodes' drawing order
-	 */
-	VISTAKERNELOPENSGEXTAPI
-	bool SetSortKey( VistaGeometry* pGeom,
-									const int nSortKey );
-	VISTAKERNELOPENSGEXTAPI
-	bool SetSortKeyOnSubtree( IVistaNode* pNode,
-									const int nSortKey );
+namespace VistaOpenSGMaterialTools {
+/**
+ * Sets the sort key on the geometry, oglcallback, or on all of these under
+ * the specified node. The sortkey determines the rendering order
+ * the default is 0, higher numbers cause the geometries to be rendered later
+ * Note: the sortkey is set per geometry/OGLCallback, not per node, thus
+ * it can potentially affect other nodes' drawing order
+ */
+VISTAKERNELOPENSGEXTAPI
+bool SetSortKey(VistaGeometry* pGeom, const int nSortKey);
+VISTAKERNELOPENSGEXTAPI
+bool SetSortKeyOnSubtree(IVistaNode* pNode, const int nSortKey);
 
-	VISTAKERNELOPENSGEXTAPI
-	bool SetColorMask( VistaGeometry* pGeom,
-									const bool bDrawRed,
-									const bool bDrawGreen,
-									const bool bDrawBlue,
-									const bool bDrawAlpha );
-	VISTAKERNELOPENSGEXTAPI
-	bool SetColorMaskOnSubtree( IVistaNode* pNode,
-									const bool bDrawRed,
-									const bool bDrawGreen,
-									const bool bDrawBlue,
-									const bool bDrawAlpha );
+VISTAKERNELOPENSGEXTAPI
+bool SetColorMask(VistaGeometry* pGeom, const bool bDrawRed, const bool bDrawGreen,
+    const bool bDrawBlue, const bool bDrawAlpha);
+VISTAKERNELOPENSGEXTAPI
+bool SetColorMaskOnSubtree(IVistaNode* pNode, const bool bDrawRed, const bool bDrawGreen,
+    const bool bDrawBlue, const bool bDrawAlpha);
 
-}
+} // namespace VistaOpenSGMaterialTools
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAOPENSGMATERIALTOOLS_H
-

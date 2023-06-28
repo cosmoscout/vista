@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNTYPECONVERTNODECREATOR_H
 #define _VDFNTYPECONVERTNODECREATOR_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -47,51 +45,46 @@ class VdfnNodeFactory;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VdfnTypeConvertNodeCreators
-{
-	/**
-	 * management API, registers type convert node creators with the default combinations
-	 * This function is Called from VdfnNodeCreators::RegisterNodeCreators,
-	 * and has mainly been separated due to .obj file size issues
-	 */
-	VISTADFNAPI bool RegisterTypeConvertNodeCreators( VdfnNodeFactory* pFac );
-}
+namespace VdfnTypeConvertNodeCreators {
+/**
+ * management API, registers type convert node creators with the default combinations
+ * This function is Called from VdfnNodeCreators::RegisterNodeCreators,
+ * and has mainly been separated due to .obj file size issues
+ */
+VISTADFNAPI bool RegisterTypeConvertNodeCreators(VdfnNodeFactory* pFac);
+} // namespace VdfnTypeConvertNodeCreators
 
 /**
  * templated node constructor, constructs nodes of type TVdfnTypeConvertNode
  */
-template<class tFrom, class tTo>
-class VdfnTypeConvertNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	typedef typename TVdfnTypeConvertNode<tFrom, tTo>::CFAssign AssignF;
+template <class tFrom, class tTo>
+class VdfnTypeConvertNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  typedef typename TVdfnTypeConvertNode<tFrom, tTo>::CFAssign AssignF;
 
-	/**
-	 * @param fct the conversion function to use for all instances created by
-	          this creator.
-	 */
-	VdfnTypeConvertNodeCreate( AssignF fct = NULL )
-		: VdfnNodeFactory::IVdfnNodeCreator(),
-		  m_CFct( fct )
-	{
-		if( m_CFct == NULL )
-			m_CFct = &VistaConversion::ConvertType<tTo, tFrom>;
-	}
+  /**
+   * @param fct the conversion function to use for all instances created by
+            this creator.
+   */
+  VdfnTypeConvertNodeCreate(AssignF fct = NULL)
+      : VdfnNodeFactory::IVdfnNodeCreator()
+      , m_CFct(fct) {
+    if (m_CFct == NULL)
+      m_CFct = &VistaConversion::ConvertType<tTo, tFrom>;
+  }
 
-	/**
-	 * creates an TVdfnTypeConvertNode, unconditional, no argument.
-	 */
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const
-	{
-		return new TVdfnTypeConvertNode<tFrom, tTo>( m_CFct );
-	}
+  /**
+   * creates an TVdfnTypeConvertNode, unconditional, no argument.
+   */
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const {
+    return new TVdfnTypeConvertNode<tFrom, tTo>(m_CFct);
+  }
 
-private:
-	AssignF m_CFct;
+ private:
+  AssignF m_CFct;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNTYPECONVERTNODECREATOR_H
-

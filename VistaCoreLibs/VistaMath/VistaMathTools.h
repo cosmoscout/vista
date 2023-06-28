@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMATHTOOLS_H__
 #define _VISTAMATHTOOLS_H__
 
@@ -51,43 +50,40 @@
 /* ENUMERATIONS                                                               */
 /*============================================================================*/
 
-
 template <class Type>
-class VistaMathTools
-{
-public:
+class VistaMathTools {
+ public:
+  static inline Type SQR(const Type& a) {
+    return a * a;
+  };
+  // USE: <algorithm>::min/max
+  // static inline const Type MIN( const Type a, const Type b ) { return b < a ? (b) : (a); };
+  // static inline const Type MAX( const Type a, const Type b ) { return b > a ? (b) : (a); };
+  static inline Type SIGN(const Type& a, const Type& b) {
+    return b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a);
+  };
 
-	static inline Type SQR( const Type &a )
-		{ return a * a; };
-	// USE: <algorithm>::min/max
-	//static inline const Type MIN( const Type a, const Type b ) { return b < a ? (b) : (a); };
-	//static inline const Type MAX( const Type a, const Type b ) { return b > a ? (b) : (a); };
-	static inline Type SIGN( const Type &a, const Type &b )
-		{ return b >= 0 ? ( a >= 0 ? a : -a ) : ( a >= 0 ? -a : a ); };
+  // computes (a^2 + b^2)^(1/2) without destructive underflow or overflow
+  static inline Type Pythagoras(const Type& a, const Type& b);
 
-	// computes (a^2 + b^2)^(1/2) without destructive underflow or overflow
-	static inline Type Pythagoras( const Type &a, const Type &b );
-
-	static inline bool IsZero (const Type &val);
-	static inline bool IsZeroSetZero (Type & val);
+  static inline bool IsZero(const Type& val);
+  static inline bool IsZeroSetZero(Type& val);
 };
 
 /*============================================================================*/
 /*============================================================================*/
 
 template <class Type>
-inline
-Type VistaMathTools<Type>::Pythagoras( const Type &a, const Type &b )
-{
-	double absa, absb;
+inline Type VistaMathTools<Type>::Pythagoras(const Type& a, const Type& b) {
+  double absa, absb;
 
-	absa = std::abs( a );
-	absb = std::abs( b );
+  absa = std::abs(a);
+  absb = std::abs(b);
 
-	if (absa > absb)
-		return absa*sqrt(1.0+SQR(absb/absa));
-	else
-		return (absb == 0.0 ? 0.0 : absb*sqrt(1.0+SQR(absa/absb)));
+  if (absa > absb)
+    return absa * sqrt(1.0 + SQR(absb / absa));
+  else
+    return (absb == 0.0 ? 0.0 : absb * sqrt(1.0 + SQR(absa / absb)));
 }
 
 /*============================================================================*/
@@ -96,12 +92,10 @@ Type VistaMathTools<Type>::Pythagoras( const Type &a, const Type &b )
 /*                                                                            */
 /*============================================================================*/
 template <class Type>
-inline
-bool VistaMathTools<Type>::IsZero (const Type &val)
-{
-	if (std::abs(val) <= std::numeric_limits<Type>::epsilon())
-		return true;
-	return false;
+inline bool VistaMathTools<Type>::IsZero(const Type& val) {
+  if (std::abs(val) <= std::numeric_limits<Type>::epsilon())
+    return true;
+  return false;
 }
 
 /*============================================================================*/
@@ -110,32 +104,30 @@ bool VistaMathTools<Type>::IsZero (const Type &val)
 /*                                                                            */
 /*============================================================================*/
 template <>
-inline
-bool VistaMathTools< std::complex<double> >::IsZero (const std::complex<double> &val)
-{
-	int compCount = 0;
+inline bool VistaMathTools<std::complex<double>>::IsZero(const std::complex<double>& val) {
+  int compCount = 0;
 #if defined(_MSC_VER) && (_MSC_VER < 1400)
-	if( std::abs(val.real()) <= std::numeric_limits<double>::epsilon() )
+  if (std::abs(val.real()) <= std::numeric_limits<double>::epsilon())
 #else
-	if (std::abs(val.real()) < (std::numeric_limits<double>::min)() /
-								std::numeric_limits<double>::epsilon())
+  if (std::abs(val.real()) <
+      (std::numeric_limits<double>::min)() / std::numeric_limits<double>::epsilon())
 #endif
-	{
-		compCount++;
-	}
+  {
+    compCount++;
+  }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1400)
-	if( std::abs(val.real()) <= std::numeric_limits<double>::epsilon() )
+  if (std::abs(val.real()) <= std::numeric_limits<double>::epsilon())
 #else
-	if (std::abs(val.imag()) < (std::numeric_limits<double>::min)() /
-								std::numeric_limits<double>::epsilon())
+  if (std::abs(val.imag()) <
+      (std::numeric_limits<double>::min)() / std::numeric_limits<double>::epsilon())
 #endif
-	{
-		compCount++;
-	}
-	if (compCount == 2)
-		return true;
-	return false;
+  {
+    compCount++;
+  }
+  if (compCount == 2)
+    return true;
+  return false;
 }
 
 /*============================================================================*/
@@ -144,20 +136,17 @@ bool VistaMathTools< std::complex<double> >::IsZero (const std::complex<double> 
 /*                                                                            */
 /*============================================================================*/
 template <class Type>
-inline
-bool VistaMathTools<Type>::IsZeroSetZero (Type & val)
-{
+inline bool VistaMathTools<Type>::IsZeroSetZero(Type& val) {
 #if defined(_MSC_VER) && (_MSC_VER < 1400)
-	if (std::abs(val) <= std::numeric_limits<Type>::epsilon())
+  if (std::abs(val) <= std::numeric_limits<Type>::epsilon())
 #else
-	if (std::abs(val) < (std::numeric_limits<Type>::min)() /
-					std::numeric_limits<Type>::epsilon())
+  if (std::abs(val) < (std::numeric_limits<Type>::min)() / std::numeric_limits<Type>::epsilon())
 #endif
-	{
-		val = 0;
-		return true;
-	}
-	return false;
+  {
+    val = 0;
+    return true;
+  }
+  return false;
 }
 
 /*============================================================================*/
@@ -166,35 +155,33 @@ bool VistaMathTools<Type>::IsZeroSetZero (Type & val)
 /*                                                                            */
 /*============================================================================*/
 template <>
-inline
-bool VistaMathTools< std::complex<double> >::IsZeroSetZero (std::complex<double> & val)
-{
-	int compCount = 0;
+inline bool VistaMathTools<std::complex<double>>::IsZeroSetZero(std::complex<double>& val) {
+  int compCount = 0;
 
 #if defined(_MSC_VER) && (_MSC_VER < 1400)
-	if (std::abs(val.real()) <= std::numeric_limits<double>::epsilon())
+  if (std::abs(val.real()) <= std::numeric_limits<double>::epsilon())
 #else
-	if (std::abs(val.real()) < (std::numeric_limits<double>::min)() /
-						   std::numeric_limits<double>::epsilon())
+  if (std::abs(val.real()) <
+      (std::numeric_limits<double>::min)() / std::numeric_limits<double>::epsilon())
 #endif
-	{
-		val = std::complex<double>(0,val.imag());
-		compCount++;
-	}
+  {
+    val = std::complex<double>(0, val.imag());
+    compCount++;
+  }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1400)
-	if (std::abs(val.imag()) <= std::numeric_limits<double>::epsilon())
+  if (std::abs(val.imag()) <= std::numeric_limits<double>::epsilon())
 #else
-	if (std::abs(val.imag()) < (std::numeric_limits<double>::min)() /
-								std::numeric_limits<double>::epsilon())
+  if (std::abs(val.imag()) <
+      (std::numeric_limits<double>::min)() / std::numeric_limits<double>::epsilon())
 #endif
-	{
-		val = std::complex<double>(val.real(),0);
-		compCount++;
-	}
-	if (compCount == 2)
-		return true;
-	return false;
+  {
+    val = std::complex<double>(val.real(), 0);
+    compCount++;
+  }
+  if (compCount == 2)
+    return true;
+  return false;
 }
 
 /*============================================================================*/
@@ -207,4 +194,3 @@ bool VistaMathTools< std::complex<double> >::IsZeroSetZero (std::complex<double>
 /*============================================================================*/
 
 #endif // ifndef _VISTAMATHTOOLS_H__
-

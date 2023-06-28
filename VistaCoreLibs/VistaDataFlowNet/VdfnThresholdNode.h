@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNTHRESHOLDNODE
 #define _VDFNTHRESHOLDNODE
 
@@ -63,118 +62,104 @@
  *
  * @outport{out,T, value of the in-port if it is above the threshold}
  */
-template<class T>
-class VISTADFNAPI VdfnThresholdNode : public IVdfnNode
-{
-public:
-	enum
-	{
-		BTHM_BLOCK,
-		BTHM_OUTPUT_ZERO,
-		BTHM_OUTPUT_THRESHOLD,
-		BTHM_OUTPUT_LAST_VALID_VALUE,
-	};
-public:
-	VdfnThresholdNode( const T& oThresholdValue,
-						const bool bTestAbsoluteValue,
-						const bool bSubtractThreshold,
-						const int iMode )
-	: m_oThresholdValue( oThresholdValue )
-	, m_pIn(NULL)
-	, m_pThreshold(NULL)
-	, m_pOut( new TVdfnPort<T> )
-	, m_iMode( iMode )
-	, m_bTestAbsoluteValue( bTestAbsoluteValue )
-	, m_bSubtractThreshold( bSubtractThreshold )
-	{
-		RegisterInPortPrototype( "in", 
-			new TVdfnPortTypeCompare<TVdfnPort<T> > );
-		RegisterInPortPrototype( "threshold", 
-			new TVdfnPortTypeCompare<TVdfnPort<T> > );
+template <class T>
+class VISTADFNAPI VdfnThresholdNode : public IVdfnNode {
+ public:
+  enum {
+    BTHM_BLOCK,
+    BTHM_OUTPUT_ZERO,
+    BTHM_OUTPUT_THRESHOLD,
+    BTHM_OUTPUT_LAST_VALID_VALUE,
+  };
 
-		RegisterOutPort( "out", m_pOut );
-	}	
-	virtual ~VdfnThresholdNode()
-	{
-	}
+ public:
+  VdfnThresholdNode(const T& oThresholdValue, const bool bTestAbsoluteValue,
+      const bool bSubtractThreshold, const int iMode)
+      : m_oThresholdValue(oThresholdValue)
+      , m_pIn(NULL)
+      , m_pThreshold(NULL)
+      , m_pOut(new TVdfnPort<T>)
+      , m_iMode(iMode)
+      , m_bTestAbsoluteValue(bTestAbsoluteValue)
+      , m_bSubtractThreshold(bSubtractThreshold) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterInPortPrototype("threshold", new TVdfnPortTypeCompare<TVdfnPort<T>>);
 
-	bool GetIsValid() const
-	{
-		return ( m_pIn != NULL );
-	}
+    RegisterOutPort("out", m_pOut);
+  }
+  virtual ~VdfnThresholdNode() {
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pIn = dynamic_cast<TVdfnPort<T>*>( GetInPort( "in" ) );
-		m_pThreshold = dynamic_cast<TVdfnPort<T>*>( GetInPort( "threshold" ) );
-		return GetIsValid();
-	}
+  bool GetIsValid() const {
+    return (m_pIn != NULL);
+  }
 
-protected:
-	virtual bool DoEvalNode()
-	{
-		if( m_pThreshold != NULL )
-			m_oThresholdValue = m_pThreshold->GetValueConstRef();
+  bool PrepareEvaluationRun() {
+    m_pIn        = dynamic_cast<TVdfnPort<T>*>(GetInPort("in"));
+    m_pThreshold = dynamic_cast<TVdfnPort<T>*>(GetInPort("threshold"));
+    return GetIsValid();
+  }
 
-		const T& oValue = m_pIn->GetValueConstRef();
-		
-		if( oValue >= m_oThresholdValue )		
-		{
-			if( m_bSubtractThreshold )
-				m_pOut->SetValue( oValue, GetUpdateTimeStamp() - m_oThresholdValue );
-			else
-				m_pOut->SetValue( oValue, GetUpdateTimeStamp() );
-		}
-		// this second line may look a little strange, but is necessary for unsigned
-		// types: for them, y=-x is greater than zero, which may lead to wrong results.
-		// Thus, we verify that the initial value is actually negative
-		// Since negating an unsigned type triggers a warning, we disable it
+ protected:
+  virtual bool DoEvalNode() {
+    if (m_pThreshold != NULL)
+      m_oThresholdValue = m_pThreshold->GetValueConstRef();
+
+    const T& oValue = m_pIn->GetValueConstRef();
+
+    if (oValue >= m_oThresholdValue) {
+      if (m_bSubtractThreshold)
+        m_pOut->SetValue(oValue, GetUpdateTimeStamp() - m_oThresholdValue);
+      else
+        m_pOut->SetValue(oValue, GetUpdateTimeStamp());
+    }
+    // this second line may look a little strange, but is necessary for unsigned
+    // types: for them, y=-x is greater than zero, which may lead to wrong results.
+    // Thus, we verify that the initial value is actually negative
+    // Since negating an unsigned type triggers a warning, we disable it
 #ifdef WIN32
-#pragma warning( push )
-#pragma warning( disable: 4146 )
+#pragma warning(push)
+#pragma warning(disable : 4146)
 #endif
-		else if( m_bTestAbsoluteValue && -oValue >= m_oThresholdValue && oValue < T(0) )
-		{
-			if( m_bSubtractThreshold )
-				m_pOut->SetValue( oValue, GetUpdateTimeStamp() + m_oThresholdValue );
-			else
-				m_pOut->SetValue( oValue, GetUpdateTimeStamp() );	
-		}
+    else if (m_bTestAbsoluteValue && -oValue >= m_oThresholdValue && oValue < T(0)) {
+      if (m_bSubtractThreshold)
+        m_pOut->SetValue(oValue, GetUpdateTimeStamp() + m_oThresholdValue);
+      else
+        m_pOut->SetValue(oValue, GetUpdateTimeStamp());
+    }
 #ifdef WIN32
-#pragma warning( push )
+#pragma warning(push)
 #endif
-		else
-		{
-			switch( m_iMode )
-			{
-			case BTHM_BLOCK:
-				break;
-			case BTHM_OUTPUT_LAST_VALID_VALUE:
-				m_pOut->IncUpdateCounter();
-				break;
-			case BTHM_OUTPUT_THRESHOLD:
-				m_pOut->SetValue( m_oThresholdValue, GetUpdateTimeStamp() );
-				break;
-			case BTHM_OUTPUT_ZERO:
-				m_pOut->SetValue( T(0), GetUpdateTimeStamp() );
-				break;
-			default: 
-				return false;				
-			}
-		}
+    else {
+      switch (m_iMode) {
+      case BTHM_BLOCK:
+        break;
+      case BTHM_OUTPUT_LAST_VALID_VALUE:
+        m_pOut->IncUpdateCounter();
+        break;
+      case BTHM_OUTPUT_THRESHOLD:
+        m_pOut->SetValue(m_oThresholdValue, GetUpdateTimeStamp());
+        break;
+      case BTHM_OUTPUT_ZERO:
+        m_pOut->SetValue(T(0), GetUpdateTimeStamp());
+        break;
+      default:
+        return false;
+      }
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-private:
-	T					m_oThresholdValue;
-	T					m_bSubtractThreshold;
-	bool				m_bTestAbsoluteValue;
-	int					m_iMode;
+ private:
+  T    m_oThresholdValue;
+  T    m_bSubtractThreshold;
+  bool m_bTestAbsoluteValue;
+  int  m_iMode;
 
-	TVdfnPort<T>*		m_pIn;
-	TVdfnPort<T>*		m_pThreshold;
-	TVdfnPort<T>*		m_pOut;
+  TVdfnPort<T>* m_pIn;
+  TVdfnPort<T>* m_pThreshold;
+  TVdfnPort<T>* m_pOut;
 };
 
 /*============================================================================*/

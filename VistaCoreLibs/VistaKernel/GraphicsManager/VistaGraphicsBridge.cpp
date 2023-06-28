@@ -21,9 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaGraphicsBridge.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -33,25 +31,19 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaGraphicsBridge::IVistaGraphicsBridge()
-{
+IVistaGraphicsBridge::IVistaGraphicsBridge() {
 }
 
-IVistaGraphicsBridge::~IVistaGraphicsBridge()
-{
+IVistaGraphicsBridge::~IVistaGraphicsBridge() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaGeometry* IVistaGraphicsBridge::NewGeometry( IVistaGeometryData* pData )
-{
-	return new VistaGeometry( this, pData );
+VistaGeometry* IVistaGraphicsBridge::NewGeometry(IVistaGeometryData* pData) {
+  return new VistaGeometry(this, pData);
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

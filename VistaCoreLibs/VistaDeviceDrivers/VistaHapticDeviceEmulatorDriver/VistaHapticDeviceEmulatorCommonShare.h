@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPHANTOMSERVERDRIVERCONFIG_H
 #define _VISTAPHANTOMSERVERDRIVERCONFIG_H
 
@@ -29,22 +28,13 @@
  * the memory layout of a  measure
  */
 
-namespace VistaHapticDeviceEmulatorMeasures
-{
-	struct sHapticDeviceEmulatorMeasure
-	{
+namespace VistaHapticDeviceEmulatorMeasures {
+struct sHapticDeviceEmulatorMeasure {
 
-		float m_afPosition[3],
-			m_afRotMatrix[9],
-			m_afPosSCP[3],
-			m_afVelocity[3],
-			m_afForce[3];
-		int   m_nButtonState;
-		float m_nUpdateRate,
-			m_afOverheatState[6];
-	};
-}
-
-
+  float m_afPosition[3], m_afRotMatrix[9], m_afPosSCP[3], m_afVelocity[3], m_afForce[3];
+  int   m_nButtonState;
+  float m_nUpdateRate, m_afOverheatState[6];
+};
+} // namespace VistaHapticDeviceEmulatorMeasures
 
 #endif //_VISTAPHANTOMSERVERDRIVERCONFIG_H

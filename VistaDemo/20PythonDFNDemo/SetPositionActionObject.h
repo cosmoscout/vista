@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _SETPOSITIONACTIONOBJECT_H
 #define _SETPOSITIONACTIONOBJECT_H
 
@@ -51,31 +50,30 @@ class VistaTransformNode;
  * Getting data (like, in our case, a position) into our
  * own, developer-controlled source code, we need an appropriate interface.
  * It would be possible to create a new DfnNode whose NodeCreator passes it a
- * pointer to an instance of out code, and then calls the appropriate 
+ * pointer to an instance of out code, and then calls the appropriate
  * functions during DoEvalNode. However, this would require writing a node,
  * node creator, and your own class for each use-case. Therefore, the
  * ActionObject provides a generic solution: Using the Reflectionable interface,
  * one can specify what get and set functions the class owns, and these are then
  * used to automatically create an appropriate ActionNode with ports named
  * like the functors. Once an inport changes or an outport requests data,
- * the corresponding functors are called. 
+ * the corresponding functors are called.
  * Note that of course, it is still possible that multiple ActionNodes are
  * created, but they all reference the same ActionObject.
  */
-class SetPositionActionObject : public IVdfnActionObject
-{
-public:
-	SetPositionActionObject( VistaTransformNode* pTransformNode );
-	~SetPositionActionObject();
+class SetPositionActionObject : public IVdfnActionObject {
+ public:
+  SetPositionActionObject(VistaTransformNode* pTransformNode);
+  ~SetPositionActionObject();
 
-	bool SetPosition( const VistaVector3D& v3Color ); 
-	VistaVector3D GetPosition() const; 
+  bool          SetPosition(const VistaVector3D& v3Color);
+  VistaVector3D GetPosition() const;
 
-	//REFL_DECLARE declares functions to be inherited from IVIstaReflectionable
-	REFL_DECLARE;
+  // REFL_DECLARE declares functions to be inherited from IVIstaReflectionable
+  REFL_DECLARE;
 
-private:
-	VistaTransformNode*		m_pTransformNode;
+ private:
+  VistaTransformNode* m_pTransformNode;
 };
 
 /*============================================================================*/

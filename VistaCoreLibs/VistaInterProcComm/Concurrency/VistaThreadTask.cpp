@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaThreadTask.h"
 
 /*============================================================================*/
@@ -32,111 +31,88 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaThreadTask::VistaThreadTask()
-{
-	m_pTask = 0;
+VistaThreadTask::VistaThreadTask() {
+  m_pTask = 0;
 }
 
-VistaThreadTask::~VistaThreadTask()
-{
-	m_pTask = (IVistaThreadedTask*)0xDEADBEEF;
+VistaThreadTask::~VistaThreadTask() {
+  m_pTask = (IVistaThreadedTask*)0xDEADBEEF;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-void VistaThreadTask::ThreadBody()
-{
-	if(m_pTask)
-	{
-		m_pTask->ThreadWork();
-	}
+void VistaThreadTask::ThreadBody() {
+  if (m_pTask) {
+    m_pTask->ThreadWork();
+  }
 }
 
-bool VistaThreadTask::SetThreadedTask(IVistaThreadedTask *pTask)
-{
-	if(m_pTask && !m_pTask->GetIsDone())
-		return false;
+bool VistaThreadTask::SetThreadedTask(IVistaThreadedTask* pTask) {
+  if (m_pTask && !m_pTask->GetIsDone())
+    return false;
 
-	if(!m_pTask)
-	{
-		m_pTask = pTask;
-		return true;
-	}
+  if (!m_pTask) {
+    m_pTask = pTask;
+    return true;
+  }
 
-	return false; // task not done, yet
+  return false; // task not done, yet
 }
 
-IVistaThreadedTask *VistaThreadTask::GetThreadedTask() const
-{
-	return m_pTask;
+IVistaThreadedTask* VistaThreadTask::GetThreadedTask() const {
+  return m_pTask;
 }
 
-void VistaThreadTask::PostRun()
-{
-	VistaThread::PostRun();
-	if(m_pTask && m_pTask->GetIsProcessed())
-	{
-		m_pTask->PostWork();
-		m_pTask->StopWork(); // declare finished ;)
-	}
+void VistaThreadTask::PostRun() {
+  VistaThread::PostRun();
+  if (m_pTask && m_pTask->GetIsProcessed()) {
+    m_pTask->PostWork();
+    m_pTask->StopWork(); // declare finished ;)
+  }
 }
 
 // #############################################################################
 
-
-IVistaThreadedTask::IVistaThreadedTask()
-{
-	m_bIsDone = false;
-	m_bIsProcessed = false;
+IVistaThreadedTask::IVistaThreadedTask() {
+  m_bIsDone      = false;
+  m_bIsProcessed = false;
 }
 
-IVistaThreadedTask::~IVistaThreadedTask()
-{
+IVistaThreadedTask::~IVistaThreadedTask() {
 }
 
-bool IVistaThreadedTask::GetIsDone() const
-{
-	return m_bIsDone;
+bool IVistaThreadedTask::GetIsDone() const {
+  return m_bIsDone;
 }
 
-bool IVistaThreadedTask::GetIsProcessed() const
-{
-	return m_bIsProcessed;
+bool IVistaThreadedTask::GetIsProcessed() const {
+  return m_bIsProcessed;
 }
 
-
-void IVistaThreadedTask::PreWork()
-{
+void IVistaThreadedTask::PreWork() {
 }
 
-void IVistaThreadedTask::PostWork()
-{
+void IVistaThreadedTask::PostWork() {
 }
 
-
-void IVistaThreadedTask::StartWork()
-{
-	m_bIsDone = false;
-	m_bIsProcessed = true;
+void IVistaThreadedTask::StartWork() {
+  m_bIsDone      = false;
+  m_bIsProcessed = true;
 }
-void IVistaThreadedTask::StopWork()
-{
-	m_bIsDone = true;
-	m_bIsProcessed = false;
+void IVistaThreadedTask::StopWork() {
+  m_bIsDone      = true;
+  m_bIsProcessed = false;
 }
 
-void IVistaThreadedTask::ThreadWork()
-{
-	StartWork();
-	PreWork();
-	DefinedThreadWork();
-	PostWork();
-	StopWork();
+void IVistaThreadedTask::ThreadWork() {
+  StartWork();
+  PreWork();
+  DefinedThreadWork();
+  PostWork();
+  StopWork();
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

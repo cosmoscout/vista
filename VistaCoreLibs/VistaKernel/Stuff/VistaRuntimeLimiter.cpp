@@ -21,13 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaRuntimeLimiter.h"
 
-#include <VistaKernel/VistaSystem.h>
-#include <VistaKernel/EventManager/VistaSystemEvent.h>
 #include <VistaKernel/EventManager/VistaEventManager.h>
+#include <VistaKernel/EventManager/VistaSystemEvent.h>
 #include <VistaKernel/VistaFrameLoop.h>
+#include <VistaKernel/VistaSystem.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -37,57 +36,41 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-
-VistaRuntimeLimiter::VistaRuntimeLimiter( VistaSystem* pSystem )
-: m_pSystem( pSystem )
-, m_nFrameLimit( std::numeric_limits<unsigned int>::max() )
-, m_nTimeLimit( std::numeric_limits<VistaType::microtime>::max() )
-{
-	m_pSystem->GetEventManager()->AddEventHandler( this, VistaSystemEvent::GetTypeId(), VistaSystemEvent::VSE_PREAPPLICATIONLOOP );
+VistaRuntimeLimiter::VistaRuntimeLimiter(VistaSystem* pSystem)
+    : m_pSystem(pSystem)
+    , m_nFrameLimit(std::numeric_limits<unsigned int>::max())
+    , m_nTimeLimit(std::numeric_limits<VistaType::microtime>::max()) {
+  m_pSystem->GetEventManager()->AddEventHandler(
+      this, VistaSystemEvent::GetTypeId(), VistaSystemEvent::VSE_PREAPPLICATIONLOOP);
 }
 
-
-VistaRuntimeLimiter::~VistaRuntimeLimiter()
-{
+VistaRuntimeLimiter::~VistaRuntimeLimiter() {
 }
 
-
-unsigned int VistaRuntimeLimiter::GetFrameLimit() const
-{
-	return m_nFrameLimit;
+unsigned int VistaRuntimeLimiter::GetFrameLimit() const {
+  return m_nFrameLimit;
 }
 
-void VistaRuntimeLimiter::SetFrameLimit( const unsigned int& oValue )
-{
-	m_nFrameLimit = oValue;
+void VistaRuntimeLimiter::SetFrameLimit(const unsigned int& oValue) {
+  m_nFrameLimit = oValue;
 }
 
-VistaType::microtime VistaRuntimeLimiter::GetTimeLimit() const
-{
-	return m_nTimeLimit;
+VistaType::microtime VistaRuntimeLimiter::GetTimeLimit() const {
+  return m_nTimeLimit;
 }
 
-void VistaRuntimeLimiter::SetTimeLimit( const VistaType::microtime& oValue )
-{
-	m_nTimeLimit = oValue;
+void VistaRuntimeLimiter::SetTimeLimit(const VistaType::microtime& oValue) {
+  m_nTimeLimit = oValue;
 }
 
-void VistaRuntimeLimiter::HandleEvent( VistaEvent *pEvent )
-{
-	if( m_oTimer.GetLifeTime() > m_nTimeLimit )		
-	{
-		vstr::outi() << "[VistaRuntimeLimiter]: Shutting down Vista after "
-			<< vstr::formattime( m_oTimer.GetLifeTime(), 3 ) << "s runtime" << std::endl;
-		m_pSystem->Quit();
-	}
-	else if( (unsigned int) m_pSystem->GetFrameLoop()->GetFrameCount() > m_nFrameLimit )
-	{
-		vstr::outi() << "[VistaRuntimeLimiter]: Shutting down Vista after "
-			<<m_pSystem->GetFrameLoop()->GetFrameCount() << " frames" << std::endl;
-		m_pSystem->Quit();
-	}
+void VistaRuntimeLimiter::HandleEvent(VistaEvent* pEvent) {
+  if (m_oTimer.GetLifeTime() > m_nTimeLimit) {
+    vstr::outi() << "[VistaRuntimeLimiter]: Shutting down Vista after "
+                 << vstr::formattime(m_oTimer.GetLifeTime(), 3) << "s runtime" << std::endl;
+    m_pSystem->Quit();
+  } else if ((unsigned int)m_pSystem->GetFrameLoop()->GetFrameCount() > m_nFrameLimit) {
+    vstr::outi() << "[VistaRuntimeLimiter]: Shutting down Vista after "
+                 << m_pSystem->GetFrameLoop()->GetFrameCount() << " frames" << std::endl;
+    m_pSystem->Quit();
+  }
 }
-
-
-
-

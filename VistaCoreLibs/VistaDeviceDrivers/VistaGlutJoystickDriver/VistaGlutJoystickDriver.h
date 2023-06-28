@@ -21,32 +21,31 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGGLUTJOYSTICKDRIVER_H
 #define _VISTAOPENSGGLUTJOYSTICKDRIVER_H
 
 #if defined(WIN32)
-#pragma warning(disable: 4786)
+#pragma warning(disable : 4786)
 #endif
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTAGLUTJOYSTICKDRIVER_STATIC)
-	#ifdef VISTAGLUTJOYSTICKDRIVER_EXPORTS
-		#define VISTAGLUTJOYSTICKDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTAGLUTJOYSTICKDRIVERAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAGLUTJOYSTICKDRIVER_EXPORTS
+#define VISTAGLUTJOYSTICKDRIVERAPI __declspec(dllexport)
+#else
+#define VISTAGLUTJOYSTICKDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAGLUTJOYSTICKDRIVERAPI
+#define VISTAGLUTJOYSTICKDRIVERAPI
 #endif
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaKernel/VistaKernelConfig.h>
 #include <map>
 #include <vector>
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -60,63 +59,62 @@ class IVistaDriverCreationMethod;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAGLUTJOYSTICKDRIVERAPI VistaGlutJoystickDriver : public IVistaDeviceDriver
-{
-public:
-	struct _sJoyMeasure
-	{
-		double m_nVals[4];
-	};
+class VISTAGLUTJOYSTICKDRIVERAPI VistaGlutJoystickDriver : public IVistaDeviceDriver {
+ public:
+  struct _sJoyMeasure {
+    double m_nVals[4];
+  };
 
-	VistaGlutJoystickDriver( IVistaDriverCreationMethod *);
-	virtual ~VistaGlutJoystickDriver();
+  VistaGlutJoystickDriver(IVistaDriverCreationMethod*);
+  virtual ~VistaGlutJoystickDriver();
 
-	static void JoystickFunction(unsigned int, int, int, int );
-protected:
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+  static void JoystickFunction(unsigned int, int, int, int);
 
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
+ protected:
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-private:
-	friend class CVistaJoystickScalarTranscode;
-	class _sJoySample
-	{
-		public:
-			_sJoySample()
-			: m_nBtMask(0),
-			m_nAxis1(0),
-			m_nAxis2(1),
-			m_nAxis3(1) {}
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-		_sJoySample(unsigned int nBtMask,
-					int nAxis1, int nAxis2, int nAxis3)
-					: m_nBtMask(nBtMask),
-					  m_nAxis1(nAxis1),
-					  m_nAxis2(nAxis2),
-					  m_nAxis3(nAxis3) {}
+ private:
+  friend class CVistaJoystickScalarTranscode;
+  class _sJoySample {
+   public:
+    _sJoySample()
+        : m_nBtMask(0)
+        , m_nAxis1(0)
+        , m_nAxis2(1)
+        , m_nAxis3(1) {
+    }
 
-		unsigned int m_nBtMask;
-		int          m_nAxis1;
-		int          m_nAxis2;
-		int          m_nAxis3;
+    _sJoySample(unsigned int nBtMask, int nAxis1, int nAxis2, int nAxis3)
+        : m_nBtMask(nBtMask)
+        , m_nAxis1(nAxis1)
+        , m_nAxis2(nAxis2)
+        , m_nAxis3(nAxis3) {
+    }
 
-		bool operator==(const _sJoySample &oOther) const;
-		_sJoySample &operator=(const _sJoySample &oOther);
-	};
-	std::vector< _sJoySample > m_vecJoyVec;
+    unsigned int m_nBtMask;
+    int          m_nAxis1;
+    int          m_nAxis2;
+    int          m_nAxis3;
 
-	VistaDriverAbstractWindowAspect *m_pWindowAspect;
+    bool         operator==(const _sJoySample& oOther) const;
+    _sJoySample& operator=(const _sJoySample& oOther);
+  };
+  std::vector<_sJoySample> m_vecJoyVec;
+
+  VistaDriverAbstractWindowAspect* m_pWindowAspect;
 };
 
+class VISTAGLUTJOYSTICKDRIVERAPI VistaGlutJoystickDriverCreationMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  VistaGlutJoystickDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 
-class VISTAGLUTJOYSTICKDRIVERAPI VistaGlutJoystickDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaGlutJoystickDriverCreationMethod( IVistaTranscoderFactoryFactory *fac );
-	virtual IVistaDeviceDriver *CreateDriver();
-protected:
-private:
+ protected:
+ private:
 };
 
 /*============================================================================*/

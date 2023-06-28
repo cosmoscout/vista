@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAKERNELCONFIG_H
 #define _VISTAKERNELCONFIG_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAKERNEL_STATIC) 
-	#ifdef VISTAKERNEL_EXPORTS
-		#define VISTAKERNELAPI __declspec(dllexport)
-	#else
-		#define VISTAKERNELAPI __declspec(dllimport)
-	#endif
+#if defined(WIN32) && !defined(VISTAKERNEL_STATIC)
+#ifdef VISTAKERNEL_EXPORTS
+#define VISTAKERNELAPI __declspec(dllexport)
+#else
+#define VISTAKERNELAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAKERNELAPI
+#define VISTAKERNELAPI
 #endif
 
 #endif //_VISTAKERNELCONFIG_H

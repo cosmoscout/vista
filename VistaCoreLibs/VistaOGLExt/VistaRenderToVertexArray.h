@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VistaRenderToVertexArray_h
 #define _VistaRenderToVertexArray_h
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <GL/glew.h>
 #include "VistaOGLExtConfig.h"
+#include <GL/glew.h>
 #include <cstddef>
 
 /*============================================================================*/
@@ -37,94 +36,91 @@
 /*============================================================================*/
 class VistaBufferObject;
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
- * VistaRenderToVertexArray provides a basic abstraction for 
+ * VistaRenderToVertexArray provides a basic abstraction for
  * render-to-vertex-array functionality based on vertex buffer objects and
  * pixel buffer objects.
  */
-class VISTAOGLEXTAPI VistaRenderToVertexArray
-{
-public:
-	VistaRenderToVertexArray(int iVertexCount, int iComponents, GLenum eType);
-	~VistaRenderToVertexArray();
+class VISTAOGLEXTAPI VistaRenderToVertexArray {
+ public:
+  VistaRenderToVertexArray(int iVertexCount, int iComponents, GLenum eType);
+  ~VistaRenderToVertexArray();
 
-	/**
-	 * Set the vertex buffer and/or pixel buffer data.
-	 * NOTE: Any previously bound buffer object will be released.
-	 */
-	void SetData( void* pData );
+  /**
+   * Set the vertex buffer and/or pixel buffer data.
+   * NOTE: Any previously bound buffer object will be released.
+   */
+  void SetData(void* pData);
 
-	/**
-	 * Retrieve the data from the vertex buffer / pixel buffer object
-	 * and copy it to the given memory location.
-	 * NOTE: The given memory area is supposed to be large enough to 
-	 *       contain the whole data. The size of the data can be queried
-	 *       via GetSize().
-	 * NOTE: Any previously bound buffer object will be released.
-	 */
-	void GetData( void* pData );
+  /**
+   * Retrieve the data from the vertex buffer / pixel buffer object
+   * and copy it to the given memory location.
+   * NOTE: The given memory area is supposed to be large enough to
+   *       contain the whole data. The size of the data can be queried
+   *       via GetSize().
+   * NOTE: Any previously bound buffer object will be released.
+   */
+  void GetData(void* pData);
 
-	/**
-	 * Read the data from the given renderbuffer (i.e. part of the framebuffer
-	 * or part of a currently bound framebuffer object) into the vertex
-	 * array.
-	 * NOTE: Any previously bound buffer object will be released.
-	 */
-	void Read( GLenum eBuffer, int iWidth, int iHeight );
-	void Read( GLenum eBuffer, int iX, int iY, int iW, int iH, int iOffset );
+  /**
+   * Read the data from the given renderbuffer (i.e. part of the framebuffer
+   * or part of a currently bound framebuffer object) into the vertex
+   * array.
+   * NOTE: Any previously bound buffer object will be released.
+   */
+  void Read(GLenum eBuffer, int iWidth, int iHeight);
+  void Read(GLenum eBuffer, int iX, int iY, int iW, int iH, int iOffset);
 
-	/**
-	 * Bind the vertex buffer object for rendering from.
-	 */
-	void Bind();
+  /**
+   * Bind the vertex buffer object for rendering from.
+   */
+  void Bind();
 
-	/**
-	 * Disable any vertex buffer object, i.e. bind buffer object 0.
-	 */
-	void Release();
+  /**
+   * Disable any vertex buffer object, i.e. bind buffer object 0.
+   */
+  void Release();
 
-	/**
-	 * Retrieve this buffer's id.
-	 */
-	GLuint GetId() const;
+  /**
+   * Retrieve this buffer's id.
+   */
+  GLuint GetId() const;
 
-	/**
-	 * Retrieve the size of the buffer object.
-	 */
-	std::size_t GetSize() const;
+  /**
+   * Retrieve the size of the buffer object.
+   */
+  std::size_t GetSize() const;
 
-	/** 
-	 * Retrieve some internal data.
-	 */
-	int GetVertexCount() const;
-	int GetComponentCount() const;
-	GLenum GetType() const;
-	GLenum GetFormat() const;
-	GLenum GetInternalFormat() const;
-	int GetBytesPerComponent() const;
+  /**
+   * Retrieve some internal data.
+   */
+  int    GetVertexCount() const;
+  int    GetComponentCount() const;
+  GLenum GetType() const;
+  GLenum GetFormat() const;
+  GLenum GetInternalFormat() const;
+  int    GetBytesPerComponent() const;
 
-	/**
-	 * Check for support of all required extensions.
-	 */
-	bool IsSupported() const;
+  /**
+   * Check for support of all required extensions.
+   */
+  bool IsSupported() const;
 
-protected:
-	VistaBufferObject* m_pVertexArray;
-	int		m_iVertexCount;
-	int		m_iComponents;
-	GLenum	m_eType;
-	GLenum	m_eFormat;
-	GLenum	m_eInternalFormat;
-	int		m_iBytesPerComponent;
-	GLenum	m_eUsage;
+ protected:
+  VistaBufferObject* m_pVertexArray;
+  int                m_iVertexCount;
+  int                m_iComponents;
+  GLenum             m_eType;
+  GLenum             m_eFormat;
+  GLenum             m_eInternalFormat;
+  int                m_iBytesPerComponent;
+  GLenum             m_eUsage;
 };
 
 #endif // Include guard.
-
 
 /*============================================================================*/
 /* END OF FILE                                                                */

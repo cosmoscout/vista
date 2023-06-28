@@ -21,13 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef CVDFNPLANECONSTRAINTNODE_H_
 #define CVDFNPLANECONSTRAINTNODE_H_
 
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
 
 #include <VistaBase/VistaVectorMath.h>
 
@@ -37,43 +36,40 @@
 class IVistaDriverForceFeedbackAspect;
 class VistaPlaneConstraint;
 
-class VdfnPlaneConstraintNode: public IVdfnNode
-{
-public:
-	VdfnPlaneConstraintNode( IVistaDriverForceFeedbackAspect *pAsp );
-	virtual ~VdfnPlaneConstraintNode();
+class VdfnPlaneConstraintNode : public IVdfnNode {
+ public:
+  VdfnPlaneConstraintNode(IVistaDriverForceFeedbackAspect* pAsp);
+  virtual ~VdfnPlaneConstraintNode();
 
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool PrepareEvaluationRun();
-protected:
-	bool DoEvalNode();
-private:
-	IVistaDriverForceFeedbackAspect *m_pForceFeedback;
-	TVdfnPort<VistaVector3D> *m_pOrigin,
-	                          *m_pNormal,
-	                          *m_pInternalForce,
-                              *m_pOriginOut,
-                              *m_pNormalOut;
-    TVdfnPort<VistaTransformMatrix> *m_pToDriver;
-	TVdfnPort<float>          *m_pStiffness;
-	TVdfnPort<float>          *m_pDamping;
-	VistaPlaneConstraint     *m_pPlaneConstraint;
+  bool PrepareEvaluationRun();
+
+ protected:
+  bool DoEvalNode();
+
+ private:
+  IVistaDriverForceFeedbackAspect* m_pForceFeedback;
+  TVdfnPort<VistaVector3D>*m_pOrigin, *m_pNormal, *m_pInternalForce, *m_pOriginOut, *m_pNormalOut;
+  TVdfnPort<VistaTransformMatrix>* m_pToDriver;
+  TVdfnPort<float>*                m_pStiffness;
+  TVdfnPort<float>*                m_pDamping;
+  VistaPlaneConstraint*            m_pPlaneConstraint;
 };
 
 /*============================================================================*/
-/*								C R E A T O R								  */
+/*								C R E A T O R
+ */
 /*============================================================================*/
 
-class VdfnPlaneConstraintNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VdfnPlaneConstraintNodeCreate( VistaDriverMap *pMap );
+class VdfnPlaneConstraintNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VdfnPlaneConstraintNodeCreate(VistaDriverMap* pMap);
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-private:
-	VistaDriverMap *m_pMap;
+ private:
+  VistaDriverMap* m_pMap;
 };
 
 #endif /* CVDFNPLANECONSTRAINTNODE_H_ */

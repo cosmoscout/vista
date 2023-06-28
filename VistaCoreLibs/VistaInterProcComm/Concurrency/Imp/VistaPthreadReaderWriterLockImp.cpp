@@ -21,10 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 #if defined(VISTA_THREADING_POSIX) && defined(_USE_PTHREAD_RWLOCK)
-#include "VistaPthreadReaderWriterLockImp.h" 
+#include "VistaPthreadReaderWriterLockImp.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -33,39 +32,32 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaPthreadReaderWriterLockImp::VistaPthreadReaderWriterLockImp()
-{
-	pthread_rwlock_init(&m_rwLock, NULL);
+VistaPthreadReaderWriterLockImp::VistaPthreadReaderWriterLockImp() {
+  pthread_rwlock_init(&m_rwLock, NULL);
 }
 
-VistaPthreadReaderWriterLockImp::~VistaPthreadReaderWriterLockImp()
-{
-	pthread_rwlock_destroy(&m_rwLock);
+VistaPthreadReaderWriterLockImp::~VistaPthreadReaderWriterLockImp() {
+  pthread_rwlock_destroy(&m_rwLock);
 }
-	
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VistaPthreadReaderWriterLockImp::ReaderLock()
-{
-	return (pthread_rwlock_rdlock(&m_rwLock) == 0);
+bool VistaPthreadReaderWriterLockImp::ReaderLock() {
+  return (pthread_rwlock_rdlock(&m_rwLock) == 0);
 }
 
-bool VistaPthreadReaderWriterLockImp::WriterLock()
-{
-	return (pthread_rwlock_wrlock(&m_rwLock) == 0);
+bool VistaPthreadReaderWriterLockImp::WriterLock() {
+  return (pthread_rwlock_wrlock(&m_rwLock) == 0);
 }
 
-bool VistaPthreadReaderWriterLockImp::ReaderUnlock()
-{
-	return (pthread_rwlock_unlock(&m_rwLock) == 0);
+bool VistaPthreadReaderWriterLockImp::ReaderUnlock() {
+  return (pthread_rwlock_unlock(&m_rwLock) == 0);
 }
 
-bool VistaPthreadReaderWriterLockImp::WriterUnlock()
-{
-	return (pthread_rwlock_unlock(&m_rwLock) == 0);
+bool VistaPthreadReaderWriterLockImp::WriterUnlock() {
+  return (pthread_rwlock_unlock(&m_rwLock) == 0);
 }
 
 /*============================================================================*/
@@ -73,4 +65,3 @@ bool VistaPthreadReaderWriterLockImp::WriterUnlock()
 /*============================================================================*/
 
 #endif // VISTA_THREADING_POSIX && _USE_PTHREAD_RWLOCK
-

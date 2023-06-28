@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(_USE_HRRTC)
 
 #ifndef DLVISTAHRTIMERTC_H
@@ -34,51 +33,46 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaRTC.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaHRTimerRTC : public IDLVistaRTC
-{
-public:
-	DLVistaHRTimerRTC();
+class VISTAINTERPROCCOMMAPI DLVistaHRTimerRTC : public IDLVistaRTC {
+ public:
+  DLVistaHRTimerRTC();
 
-	virtual ~DLVistaHRTimerRTC();
+  virtual ~DLVistaHRTimerRTC();
 
-	virtual DLV_INT64 GetTickCount() const;
+  virtual DLV_INT64 GetTickCount() const;
 
-	virtual DLV_INT32 GetTimeStamp() const;
+  virtual DLV_INT32 GetTimeStamp() const;
 
-	virtual double GetTickToSecond( DLV_INT64 nTs ) const;
+  virtual double GetTickToSecond(DLV_INT64 nTs) const;
 
+  virtual double GetSystemTime() const;
 
-	virtual double GetSystemTime() const;
+  // virtual const char *GetPrintfFormatSpecifier();
 
-	//virtual const char *GetPrintfFormatSpecifier();
+ private:
+  /**
+   * We prohibit copying
+   */
+  DLVistaHRTimerRTC(DLVistaHRTimerRTC&);
 
-private:
-	/**
-	 * We prohibit copying
-	 */
-	DLVistaHRTimerRTC(DLVistaHRTimerRTC &);
-protected:
-	DLV_INT64 GetPentiumCounter() const;
+ protected:
+  DLV_INT64 GetPentiumCounter() const;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTAHRTIMERTC_H
+#endif // DLVISTAHRTIMERTC_H
 #endif // _USE_HRRTC
-

@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTALEAFNODE_H
 #define _VISTALEAFNODE_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include "VistaKernel/GraphicsManager/VistaNode.h"
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,20 +44,18 @@ class IVistaNodeData;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaLeafNode : public VistaNode
-{
-	friend class VistaSceneGraph;
-	friend class IVistaNodeBridge;
-public:
-	virtual ~VistaLeafNode();
-	void Debug( std::ostream& oOut, int nLevel = 0 ) const;
-protected:
-	VistaLeafNode();
-	VistaLeafNode(	VistaGroupNode*			pParent,
-					IVistaNodeBridge*			pBridge,
-					IVistaNodeData*				pData,
-					const std::string	&strName="");
+class VISTAKERNELAPI VistaLeafNode : public VistaNode {
+  friend class VistaSceneGraph;
+  friend class IVistaNodeBridge;
 
+ public:
+  virtual ~VistaLeafNode();
+  void Debug(std::ostream& oOut, int nLevel = 0) const;
+
+ protected:
+  VistaLeafNode();
+  VistaLeafNode(VistaGroupNode* pParent, IVistaNodeBridge* pBridge, IVistaNodeData* pData,
+      const std::string& strName = "");
 };
 
 /*============================================================================*/
@@ -66,4 +63,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTALEAFNODE_H
-

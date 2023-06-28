@@ -21,18 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGPARTICLEMANAGER_H
 #define _VISTAOPENSGPARTICLEMANAGER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernelOpenSGExt/VistaKernelOpenSGExtConfig.h>
-#include <VistaKernelOpenSGExt/VistaOpenSGParticles.h>
-#include <VistaKernel/EventManager/VistaEventHandler.h>
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaBase/VistaVectorMath.h>
+#include <VistaKernel/EventManager/VistaEventHandler.h>
+#include <VistaKernelOpenSGExt/VistaKernelOpenSGExtConfig.h>
+#include <VistaKernelOpenSGExt/VistaOpenSGParticles.h>
 
 #include <vector>
 
@@ -51,122 +50,112 @@ class VistaRandomNumberGenerator;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-//Please see 13ParticlesDemo for how to use the Particle Manager!
+// Please see 13ParticlesDemo for how to use the Particle Manager!
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGParticleManager : public VistaEventHandler
-{
-public:
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGParticleManager : public VistaEventHandler {
+ public:
+  class VISTAKERNELOPENSGEXTAPI IParticleChanger {
+   public:
+    struct SParticle {
+      float* m_a3fPosition;
+      float* m_a3fSecondPosition;
+      float* m_a3fVelocity;
+      float* m_a4fColor;
+      float* m_a3fSize;
+      float* m_pRemainingLifeTime;
+      int    m_iParticleID;
+    };
 
-	class VISTAKERNELOPENSGEXTAPI IParticleChanger
-	{
-	public:
+    virtual ~IParticleChanger();
+    IParticleChanger();
 
-		struct SParticle 
-		{
-			float*	m_a3fPosition;
-			float*	m_a3fSecondPosition;
-			float*	m_a3fVelocity;
-			float*	m_a4fColor;
-			float*	m_a3fSize;
-			float*	m_pRemainingLifeTime;
-			int		m_iParticleID;
-		};
+    /**
+     * Implement this function to define the behavior of the particles
+     * This can either be used to initialize a new particles, or to update
+     * an existing on. If dCurrentTime == 0, the particle is to be created,
+     * and thus, the values in SVistaParticle are not yet defined, but
+     * have to be set by the function. Otherwise, the particle exists
+     * already and only has to be updated, data in the particle struct
+     * is valid.
+     */
+    virtual void ChangeParticle(IParticleChanger::SParticle& oParticle,
+        VistaType::microtime dCurrentTime, VistaType::microtime dDeltaT) = 0;
 
-		virtual ~IParticleChanger();
-		IParticleChanger();
+    void SetRandomNumberGenerator(VistaRandomNumberGenerator* pRand);
 
-		/**
-		* Implement this function to define the behavior of the particles
-		* This can either be used to initialize a new particles, or to update
-		* an existing on. If dCurrentTime == 0, the particle is to be created,
-		* and thus, the values in SVistaParticle are not yet defined, but
-		* have to be set by the function. Otherwise, the particle exists
-		* already and only has to be updated, data in the particle struct
-		* is valid.
-		*/
-		virtual	void ChangeParticle( IParticleChanger::SParticle& oParticle,
-									VistaType::microtime dCurrentTime,
-									VistaType::microtime dDeltaT ) = 0;
+    void SetLifetime(float iSetLifetime);
 
-		void SetRandomNumberGenerator(VistaRandomNumberGenerator *pRand);
+    float GetLifetime();
 
-		void SetLifetime(float iSetLifetime);
+   protected:
+    float                       m_fLifetime;
+    VistaRandomNumberGenerator* m_pRand;
+  };
 
-		float GetLifetime();
+ public:
+  VistaOpenSGParticleManager(VistaSceneGraph* pSG, VistaGroupNode* pParent = NULL);
+  virtual ~VistaOpenSGParticleManager();
 
-	protected:
-		float m_fLifetime;
-		VistaRandomNumberGenerator *m_pRand;
-	};
+  void SetMaximumParticles(int iMaxParticles);
+  void SetParticlesPerSecond(float fParticlesPerSec);
+  void SetParticlesLifetime(float fLifetime);
 
-public:
+  void SetParticlesSpriteImage(const std::string& sFilename);
 
+  void SetParticlesViewMode(VistaOpenSGParticles::PARTICLESMODES eMode);
+  void SetParticlesViewMode(VistaOpenSGParticles::PARTICLESMODES eMode,
+      const std::string& sVertexShader, const std::string& sFragment);
+  bool ReloadParticles();
 
-	VistaOpenSGParticleManager( VistaSceneGraph *pSG, VistaGroupNode *pParent = NULL );
-	virtual ~VistaOpenSGParticleManager();
+  void SetChangeObject(IParticleChanger* pChangeObject);
+  void SetOriginObject(IParticleChanger* pOriginObject);
 
-	void SetMaximumParticles(int iMaxParticles);
-	void SetParticlesPerSecond(float fParticlesPerSec);
-	void SetParticlesLifetime( float fLifetime );
+  void StartParticleManager();
+  void StopParticleManager();
+  void ReloadParticleManager();
 
-	void SetParticlesSpriteImage(const std::string& sFilename);
+  void SetRandomGenerator(VistaRandomNumberGenerator* pRand);
 
-	void SetParticlesViewMode(VistaOpenSGParticles::PARTICLESMODES eMode);
-	void SetParticlesViewMode(VistaOpenSGParticles::PARTICLESMODES eMode,
-								const std::string& sVertexShader,
-								const std::string& sFragment);
-	bool ReloadParticles();
+  virtual void HandleEvent(VistaEvent* pEvent);
+  void         UpdateParticles(VistaType::microtime dCurrentTime, VistaType::microtime dDeltaT);
 
-	void SetChangeObject(IParticleChanger *pChangeObject);
-	void SetOriginObject(IParticleChanger *pOriginObject);
+  VistaOpenSGParticles* GetParticles() const;
 
-	void StartParticleManager();
-	void StopParticleManager();
-	void ReloadParticleManager();
+ private:
+  void PrepareParticleAtOrigin(int iParticleIndex);
+  void CalculateParticle(int iParticleIndex);
 
-	void SetRandomGenerator(VistaRandomNumberGenerator *pRand);
+  VistaType::microtime m_dLastTimeStamp;
+  VistaType::microtime m_dCurrentDeltaT;
+  VistaType::microtime m_dCurrentTimeStamp;
+  VistaType::microtime m_dLastParticleDeleted;
+  VistaType::microtime m_dLastParticleCreated;
+  VistaType::microtime m_dRemainingSeedTime;
+  bool                 m_bParticleManagerActive;
 
-	virtual void HandleEvent(VistaEvent *pEvent);
-	void UpdateParticles(VistaType::microtime dCurrentTime, VistaType::microtime dDeltaT);
+  int m_iNumberOfParticles;
+  int m_iMaxNumberOfParticles;
+  int m_iFirstParticle;
+  int m_iLastParticle;
 
-	VistaOpenSGParticles* GetParticles() const;
+  float m_fParticlesPerSecond;
+  int   m_iCurrentNumberOfParticles;
 
-private:
-	void PrepareParticleAtOrigin(int iParticleIndex);
-	void CalculateParticle(int iParticleIndex);
+  VistaOpenSGParticles* m_pParticles;
 
-	VistaType::microtime m_dLastTimeStamp;
-	VistaType::microtime m_dCurrentDeltaT;
-	VistaType::microtime m_dCurrentTimeStamp;
-	VistaType::microtime m_dLastParticleDeleted;
-	VistaType::microtime m_dLastParticleCreated;
-	VistaType::microtime m_dRemainingSeedTime;
-	bool m_bParticleManagerActive;
+  float*                     m_afParticlePos;
+  float*                     m_afParticleSecPos;
+  float*                     m_afParticleColor;
+  float*                     m_afParticleSize;
+  std::vector<VistaVector3D> m_vecVelocities;
+  std::vector<float>         m_vecLifeTime;
 
-	int m_iNumberOfParticles;
-	int m_iMaxNumberOfParticles;
-	int m_iFirstParticle;
-	int m_iLastParticle;
+  VistaRandomNumberGenerator* m_pRand;
 
+  IParticleChanger* m_pOriginObject;
+  IParticleChanger* m_pChangeObject;
 
-	float m_fParticlesPerSecond;
-	int m_iCurrentNumberOfParticles;
-	
-	VistaOpenSGParticles *m_pParticles;
-
-	float *m_afParticlePos;
-	float *m_afParticleSecPos;
-	float *m_afParticleColor;
-	float *m_afParticleSize;
-	std::vector<VistaVector3D> m_vecVelocities;
-	std::vector<float> m_vecLifeTime;
-
-	VistaRandomNumberGenerator *m_pRand;
-
-	IParticleChanger *m_pOriginObject;
-	IParticleChanger *m_pChangeObject;
-
-	IParticleChanger::SParticle m_oCalculationParticle;
+  IParticleChanger::SParticle m_oCalculationParticle;
 };
 
 /*============================================================================*/

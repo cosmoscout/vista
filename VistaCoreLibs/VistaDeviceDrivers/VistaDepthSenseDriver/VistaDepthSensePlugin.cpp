@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -31,63 +30,53 @@
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #if defined(WIN32) && !defined(VISTADEPTHSENSEPLUGIN_STATIC)
-	#ifdef VISTADEPTHSENSEPLUGIN_EXPORTS
-		#define VISTADEPTHSENSEPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTADEPTHSENSEPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTADEPTHSENSEPLUGIN_EXPORTS
+#define VISTADEPTHSENSEPLUGINAPI __declspec(dllexport)
+#else
+#define VISTADEPTHSENSEPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTADEPTHSENSEPLUGINAPI
+#define VISTADEPTHSENSEPLUGINAPI
 #endif
 
-
-namespace
-{
-	VistaDepthSenseDriverCreationMethod *g_SpFactory = NULL;
+namespace {
+VistaDepthSenseDriverCreationMethod* g_SpFactory = NULL;
 }
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTASPACENAVIGATORCONFIG_H
 
+extern "C" VISTADEPTHSENSEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (g_SpFactory == NULL)
+    g_SpFactory = new VistaDepthSenseDriverCreationMethod(fac);
 
-extern "C" VISTADEPTHSENSEPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( g_SpFactory == NULL )
-		g_SpFactory = new VistaDepthSenseDriverCreationMethod(fac);
-
-	IVistaReferenceCountable::refup(g_SpFactory);
-	return g_SpFactory;
+  IVistaReferenceCountable::refup(g_SpFactory);
+  return g_SpFactory;
 }
 
-extern "C" VISTADEPTHSENSEPLUGINAPI const char *GetDeviceClassName()
-{
-	return "DEPTHSENSE";
+extern "C" VISTADEPTHSENSEPLUGINAPI const char* GetDeviceClassName() {
+  return "DEPTHSENSE";
 }
 
-extern "C" VISTADEPTHSENSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( crm == g_SpFactory )
-		if(IVistaReferenceCountable::refdown(g_SpFactory))
-			g_SpFactory = NULL;
+extern "C" VISTADEPTHSENSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == g_SpFactory)
+    if (IVistaReferenceCountable::refdown(g_SpFactory))
+      g_SpFactory = NULL;
 }
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -100,8 +89,3 @@ extern "C" VISTADEPTHSENSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreati
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-
-
-
-

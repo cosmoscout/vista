@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERABSTRACTWINDOWASPECT_H
 #define _VISTADRIVERABSTRACTWINDOWASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 
 #include <list>
 #include <set>
@@ -46,7 +44,6 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
@@ -60,152 +57,149 @@
  * the name "WINDOW".
  */
 class VISTADEVICEDRIVERSAPI VistaDriverAbstractWindowAspect
-				   : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	class VISTADEVICEDRIVERSAPI IWindowHandle
-	{
-	public:
-		virtual ~IWindowHandle() {}
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  class VISTADEVICEDRIVERSAPI IWindowHandle {
+   public:
+    virtual ~IWindowHandle() {
+    }
 
+    virtual bool operator<(const IWindowHandle& other)  = 0;
+    virtual bool operator==(const IWindowHandle& other) = 0;
 
-		virtual bool operator< ( const IWindowHandle &other ) = 0;
-		virtual bool operator==( const IWindowHandle &other ) = 0;
+   protected:
+    IWindowHandle() {
+    }
+  };
 
-	protected:
-		IWindowHandle() {}
-	};
-
-
-	class VISTADEVICEDRIVERSAPI NativeWindowHandle : public IWindowHandle
-	{
-	public:
+  class VISTADEVICEDRIVERSAPI NativeWindowHandle : public IWindowHandle {
+   public:
 #if defined(WIN32)
-		typedef HWND OSHANDLE; /*<< wrap windows handles HWND */
-#else // this goes for all the others as void*
-		typedef void* OSHANDLE; /*<< wrap generic handles */
+    typedef HWND OSHANDLE; /*<< wrap windows handles HWND */
+#else                      // this goes for all the others as void*
+    typedef void* OSHANDLE; /*<< wrap generic handles */
 #endif
-		NativeWindowHandle() {};
+    NativeWindowHandle(){};
 
-		virtual OSHANDLE GetOSHandle() const = 0;
-		virtual int GetID() const = 0;
+    virtual OSHANDLE GetOSHandle() const = 0;
+    virtual int      GetID() const       = 0;
 
-		operator int() const { return GetID(); };
-		operator OSHANDLE() const { return GetOSHandle(); };
+    operator int() const {
+      return GetID();
+    };
+    operator OSHANDLE() const {
+      return GetOSHandle();
+    };
 
+    bool operator<(const IWindowHandle& oOther) {
+      const NativeWindowHandle* pOtherNative = dynamic_cast<const NativeWindowHandle*>(&oOther);
+      if (pOtherNative == NULL)
+        return false;
 
-		bool operator< ( const IWindowHandle& oOther ) 
-		{
-			const NativeWindowHandle* pOtherNative = dynamic_cast<const NativeWindowHandle *>( &oOther );
-			if( pOtherNative == NULL ) 
-				return false;
+      if (GetID() == pOtherNative->GetID())
+        return (GetOSHandle() < pOtherNative->GetOSHandle());
+      else
+        return (GetID() < pOtherNative->GetID());
+    }
+    bool operator==(const IWindowHandle& oOther) {
+      const NativeWindowHandle* pOtherNative = dynamic_cast<const NativeWindowHandle*>(&oOther);
+      if (pOtherNative == NULL)
+        return false;
 
-			if( GetID() == pOtherNative->GetID() )
-				return ( GetOSHandle() < pOtherNative->GetOSHandle() );
-			else
-				return ( GetID() < pOtherNative->GetID() );
-		}
-		bool operator== ( const IWindowHandle& oOther ) 
-		{
-			const NativeWindowHandle* pOtherNative = dynamic_cast<const NativeWindowHandle *>( &oOther );
-			if( pOtherNative == NULL ) 
-				return false;
+      return (GetID() == pOtherNative->GetID() && GetOSHandle() == pOtherNative->GetOSHandle());
+    }
+  };
 
-			return( GetID() == pOtherNative->GetID() && GetOSHandle() == pOtherNative->GetOSHandle() );
-		}
-	};
+  class VISTADEVICEDRIVERSAPI WindowLookup {
+   public:
+    WindowLookup();
+    ~WindowLookup();
 
-	class VISTADEVICEDRIVERSAPI WindowLookup
-	{
-	public:
-		WindowLookup();
-		~WindowLookup();
+    // IWindowHandle *GetWindowById( int id ) const;
+    // IWindowHandle *GetWindowByHandle( IWindowHandle::OSHANDLE handle ) const;
 
-		//IWindowHandle *GetWindowById( int id ) const;
-		//IWindowHandle *GetWindowByHandle( IWindowHandle::OSHANDLE handle ) const;
+    void RegisterWindow(IWindowHandle* window);
+    bool UnregisterWindow(IWindowHandle* window);
 
-		void RegisterWindow( IWindowHandle *window );
-		bool UnregisterWindow( IWindowHandle *window );
-	protected:
-		std::set<IWindowHandle*> m_windows;
-	};
+   protected:
+    std::set<IWindowHandle*> m_windows;
+  };
 
-	class VISTADEVICEDRIVERSAPI WindowLookupCollection
-	{
-	public:
-		WindowLookupCollection();
+  class VISTADEVICEDRIVERSAPI WindowLookupCollection {
+   public:
+    WindowLookupCollection();
 
-		const WindowLookup *GetWindowLookupBySystemTag( const std::string &tag ) const;
-		bool RegisterWindowLookup( const std::string &tag, WindowLookup * );
-		WindowLookup *UnregisterWindowLookup( const std::string &tag );
-	protected:
-		std::map<std::string, WindowLookup *> m_tagMap;
-	};
+    const WindowLookup* GetWindowLookupBySystemTag(const std::string& tag) const;
+    bool                RegisterWindowLookup(const std::string& tag, WindowLookup*);
+    WindowLookup*       UnregisterWindowLookup(const std::string& tag);
 
+   protected:
+    std::map<std::string, WindowLookup*> m_tagMap;
+  };
 
-	/**
-	 * Registers an aspect class with name "WINDOW" iff no such class was
-	 * registered before.
-	 */
-	VistaDriverAbstractWindowAspect();
-	virtual ~VistaDriverAbstractWindowAspect();
+  /**
+   * Registers an aspect class with name "WINDOW" iff no such class was
+   * registered before.
+   */
+  VistaDriverAbstractWindowAspect();
+  virtual ~VistaDriverAbstractWindowAspect();
 
-	/**
-	 * This method is called by the application / environment <b>every time</b>
-	 * a window is to be attached to this aspect. The IWindowHandle is assumed to
-	 * be valid as long as this aspect lives (it is copied to the handle list).
-	 * This API is non-virtual on purpose, it calls
-	 * IVistaDriverAbstractWindowTouchSequence::AttachSequence()
-	 * passing the IWindowHandle. So be sure to register this touch sequence by the driver
-	 * before using the AttachToWindow API. The construction allows to <b>give</b> window
-	 * implementations to drivers without the need for sub-classing (driver code does not
-	 * subclass the aspect, it specializes the TouchSequence!)
-	 * @param a non NULL IWindowHandle wrapper to read the platform specific window handle from
-	 * @return true if this call went through good, false else
-	 * @see IVistaDriverAbstractWindowTouchSequence()
-	 */
-	bool AttachToWindow( IWindowHandle * oWindow );
-	bool DetachFromWindow( IWindowHandle * oWindow );
+  /**
+   * This method is called by the application / environment <b>every time</b>
+   * a window is to be attached to this aspect. The IWindowHandle is assumed to
+   * be valid as long as this aspect lives (it is copied to the handle list).
+   * This API is non-virtual on purpose, it calls
+   * IVistaDriverAbstractWindowTouchSequence::AttachSequence()
+   * passing the IWindowHandle. So be sure to register this touch sequence by the driver
+   * before using the AttachToWindow API. The construction allows to <b>give</b> window
+   * implementations to drivers without the need for sub-classing (driver code does not
+   * subclass the aspect, it specializes the TouchSequence!)
+   * @param a non NULL IWindowHandle wrapper to read the platform specific window handle from
+   * @return true if this call went through good, false else
+   * @see IVistaDriverAbstractWindowTouchSequence()
+   */
+  bool AttachToWindow(IWindowHandle* oWindow);
+  bool DetachFromWindow(IWindowHandle* oWindow);
 
-	/**
-	 * return a list of window handles to which the aspect is attached to.
-	 */
-	std::list<IWindowHandle*> GetWindowList() const;
+  /**
+   * return a list of window handles to which the aspect is attached to.
+   */
+  std::list<IWindowHandle*> GetWindowList() const;
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-	class VISTADEVICEDRIVERSAPI IVistaDriverAbstractWindowTouchSequence
-	{
-	public :
-		virtual ~IVistaDriverAbstractWindowTouchSequence() {}
-		virtual bool AttachSequence( IWindowHandle * oWindow ) = 0;
-		virtual bool DetachSequence( IWindowHandle * oWindow ) = 0;
-		virtual std::list<IWindowHandle*> GetWindowList() const = 0;
-	};
+  class VISTADEVICEDRIVERSAPI IVistaDriverAbstractWindowTouchSequence {
+   public:
+    virtual ~IVistaDriverAbstractWindowTouchSequence() {
+    }
+    virtual bool                      AttachSequence(IWindowHandle* oWindow) = 0;
+    virtual bool                      DetachSequence(IWindowHandle* oWindow) = 0;
+    virtual std::list<IWindowHandle*> GetWindowList() const                  = 0;
+  };
 
-	/**
-	 * sets the callback to call every time AttachToWindow() is called by a toolkit shell.
-	 * The touch sequence is expected to live as long as this aspect lives. Passing NULL
-	 * erases the current setting.
-	 * @param pAtSeq the sequence to hold onto
-	 */
-	bool SetTouchSequence(IVistaDriverAbstractWindowTouchSequence *pAtSeq);
+  /**
+   * sets the callback to call every time AttachToWindow() is called by a toolkit shell.
+   * The touch sequence is expected to live as long as this aspect lives. Passing NULL
+   * erases the current setting.
+   * @param pAtSeq the sequence to hold onto
+   */
+  bool SetTouchSequence(IVistaDriverAbstractWindowTouchSequence* pAtSeq);
 
-	/**
-	 * returns the current touch sequence for this aspect. NULL iff none was set
-	 * by driver code.
-	 */
-	IVistaDriverAbstractWindowTouchSequence *GetTouchSequence() const;
+  /**
+   * returns the current touch sequence for this aspect. NULL iff none was set
+   * by driver code.
+   */
+  IVistaDriverAbstractWindowTouchSequence* GetTouchSequence() const;
 
-protected:
-private:
-	IVistaDriverAbstractWindowTouchSequence *m_pTouchSeq;
+ protected:
+ private:
+  IVistaDriverAbstractWindowTouchSequence* m_pTouchSeq;
 
-	static int m_nAspectId;
+  static int m_nAspectId;
 };
 
 /*============================================================================*/

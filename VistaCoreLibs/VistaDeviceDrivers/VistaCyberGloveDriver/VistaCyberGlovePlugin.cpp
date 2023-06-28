@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -46,55 +45,43 @@ using namespace std;
 #define VISTACYBERGLOVEPLUGINAPI
 #endif
 
-namespace
-{
-	CreateCyberGloveDriver *SsCreationMethod  = NULL;
+namespace {
+CreateCyberGloveDriver* SsCreationMethod = NULL;
 }
 
-
-extern "C" VISTACYBERGLOVEPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaCyberGloveDriver(crm);
+extern "C" VISTACYBERGLOVEPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaCyberGloveDriver(crm);
 }
 
-extern "C" VISTACYBERGLOVEPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SsCreationMethod == NULL )
-		SsCreationMethod = new CreateCyberGloveDriver(fac);
+extern "C" VISTACYBERGLOVEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SsCreationMethod == NULL)
+    SsCreationMethod = new CreateCyberGloveDriver(fac);
 
-	IVistaReferenceCountable::refup(SsCreationMethod);
-	return SsCreationMethod;
+  IVistaReferenceCountable::refup(SsCreationMethod);
+  return SsCreationMethod;
 }
 
-extern "C" VISTACYBERGLOVEPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SsCreationMethod == crm )
-	{
-		delete SsCreationMethod;
-		SsCreationMethod = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTACYBERGLOVEPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SsCreationMethod == crm) {
+    delete SsCreationMethod;
+    SsCreationMethod = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTACYBERGLOVEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SsCreationMethod != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SsCreationMethod))
-			SsCreationMethod = NULL;
-	}
+extern "C" VISTACYBERGLOVEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SsCreationMethod != NULL) {
+    if (IVistaReferenceCountable::refdown(SsCreationMethod))
+      SsCreationMethod = NULL;
+  }
 }
 
-
-extern "C" VISTACYBERGLOVEPLUGINAPI const char *GetDeviceClassName()
-{
-	return "VISTACYBERGLOVE";
+extern "C" VISTACYBERGLOVEPLUGINAPI const char* GetDeviceClassName() {
+  return "VISTACYBERGLOVE";
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-
-

@@ -21,22 +21,19 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERWORKSPACEASPECT_H
 #define _VISTADRIVERWORKSPACEASPECT_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 
-#include <string>
+#include <VistaMath/VistaBoundingBox.h>
 #include <list>
 #include <map>
-#include <VistaMath/VistaBoundingBox.h>
-
+#include <string>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -54,46 +51,46 @@
  * information to describe the bounding boxes. There might be differently shaped
  * workspaces, but then try to change this API.
  */
-class VISTADEVICEDRIVERSAPI VistaDriverWorkspaceAspect : public IVistaDeviceDriver::IVistaDeviceDriverAspect
-{
-public:
-	VistaDriverWorkspaceAspect();
-	virtual ~VistaDriverWorkspaceAspect();
+class VISTADEVICEDRIVERSAPI VistaDriverWorkspaceAspect
+    : public IVistaDeviceDriver::IVistaDeviceDriverAspect {
+ public:
+  VistaDriverWorkspaceAspect();
+  virtual ~VistaDriverWorkspaceAspect();
 
-	/**
-	 * retrieve a workspace by its key, as AABB
-	 * @see SetWorkspace()
-	 * @param strKey the key
-	 * @param bbOut the AABB to write to
-	 * @return false if the key did not fit to a registered workspace,
-	           in that case the bbOut is untouched
-	 */
-	bool GetWorkspace(const std::string &strKey, VistaBoundingBox &bbOut) const;
+  /**
+   * retrieve a workspace by its key, as AABB
+   * @see SetWorkspace()
+   * @param strKey the key
+   * @param bbOut the AABB to write to
+   * @return false if the key did not fit to a registered workspace,
+             in that case the bbOut is untouched
+   */
+  bool GetWorkspace(const std::string& strKey, VistaBoundingBox& bbOut) const;
 
-	/**
-	 * sets a workspace by a key. This is usually defined by the driver code.
-	 * @param strKey the key
-	 * @param bb the AABB to describe the workspace given by strKey
-	 * @see GetWorkspace()
-	 */
-	void SetWorkspace( const std::string &strKey, const VistaBoundingBox &bb );
+  /**
+   * sets a workspace by a key. This is usually defined by the driver code.
+   * @param strKey the key
+   * @param bb the AABB to describe the workspace given by strKey
+   * @see GetWorkspace()
+   */
+  void SetWorkspace(const std::string& strKey, const VistaBoundingBox& bb);
 
-	/**
-	 * retrieve a complete list of workspaces registered with this aspect
-	 * as a list of keys. select a key from the list and ask for its AABB.
-	 */
-	std::list<std::string> GetWorkspaceKeys() const;
+  /**
+   * retrieve a complete list of workspaces registered with this aspect
+   * as a list of keys. select a key from the list and ask for its AABB.
+   */
+  std::list<std::string> GetWorkspaceKeys() const;
 
-	// #########################################
-	// OVERWRITE IN SUBCLASSES
-	// #########################################
-	static int  GetAspectId();
-	static void SetAspectId(int);
+  // #########################################
+  // OVERWRITE IN SUBCLASSES
+  // #########################################
+  static int  GetAspectId();
+  static void SetAspectId(int);
 
-protected:
-private:
-	std::map<std::string, VistaBoundingBox> m_mpWorkspaces;
-	static int m_nAspectId;
+ protected:
+ private:
+  std::map<std::string, VistaBoundingBox> m_mpWorkspaces;
+  static int                              m_nAspectId;
 };
 
 /*============================================================================*/
@@ -101,5 +98,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADRIVERLOGGINGASPECT_H
-
-

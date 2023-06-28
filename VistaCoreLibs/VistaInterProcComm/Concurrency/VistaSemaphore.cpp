@@ -21,10 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaSemaphore.h"
-#include "VistaDefSemaphoreImp.h"
 #include "Imp/VistaSemaphoreImp.h"
+#include "VistaDefSemaphoreImp.h"
 
 #include <limits.h>
 
@@ -42,51 +41,42 @@
 
 /*============================================================================*/
 
-VistaSemaphore::VistaSemaphore ( unsigned int inStart, eSemType eType )
-{
-	IVistaSemaphoreImp::eSemType eTp = IVistaSemaphoreImp::SEM_TYPE_FASTEST;
-	switch(eType)
-	{
-	case VistaSemaphore::SEM_TYPE_COMPATIBLE:
-		eTp = IVistaSemaphoreImp::SEM_TYPE_COMPATIBLE;
-		break;
-	case VistaSemaphore::SEM_TYPE_FASTEST:
-		eTp = IVistaSemaphoreImp::SEM_TYPE_FASTEST;
-		break;
-	default:
-		break;
-	}
+VistaSemaphore::VistaSemaphore(unsigned int inStart, eSemType eType) {
+  IVistaSemaphoreImp::eSemType eTp = IVistaSemaphoreImp::SEM_TYPE_FASTEST;
+  switch (eType) {
+  case VistaSemaphore::SEM_TYPE_COMPATIBLE:
+    eTp = IVistaSemaphoreImp::SEM_TYPE_COMPATIBLE;
+    break;
+  case VistaSemaphore::SEM_TYPE_FASTEST:
+    eTp = IVistaSemaphoreImp::SEM_TYPE_FASTEST;
+    break;
+  default:
+    break;
+  }
 
-	m_pImp = IVistaSemaphoreImp::CreateSemaphoreImp( inStart, eTp );
-	if( m_pImp == NULL )
-	{
-		// this failed, create default
-		m_pImp = new VistaDefSemaphoreImp(inStart);
-	}
+  m_pImp = IVistaSemaphoreImp::CreateSemaphoreImp(inStart, eTp);
+  if (m_pImp == NULL) {
+    // this failed, create default
+    m_pImp = new VistaDefSemaphoreImp(inStart);
+  }
 }
 
-
-VistaSemaphore::~VistaSemaphore()
-{
-	delete m_pImp;
+VistaSemaphore::~VistaSemaphore() {
+  delete m_pImp;
 }
 
-void VistaSemaphore::Wait()
-{
-	m_pImp->Wait();
+void VistaSemaphore::Wait() {
+  m_pImp->Wait();
 }
 
-bool VistaSemaphore::TryWait ()
-{
-	return m_pImp->TryWait();
+bool VistaSemaphore::TryWait() {
+  return m_pImp->TryWait();
 }
 
-void VistaSemaphore::Post ()
-{
-	m_pImp->Post();
+void VistaSemaphore::Post() {
+  m_pImp->Post();
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

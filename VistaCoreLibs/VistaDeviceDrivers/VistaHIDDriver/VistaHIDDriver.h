@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAHIDDRIVER_H__
 #define _VISTAHIDDRIVER_H__
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriversConfig.h>
 #include <string>
 #include <vector>
 
-//CRM
+// CRM
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #ifdef WIN32
@@ -45,29 +44,29 @@
 
 // Shared library support
 #ifdef WIN32
-	#define VISTAHIDDRIVEREXPORT __declspec(dllexport)
-	#define VISTAHIDDRIVERIMPORT __declspec(dllimport)
+#define VISTAHIDDRIVEREXPORT __declspec(dllexport)
+#define VISTAHIDDRIVERIMPORT __declspec(dllimport)
 #else
-	#define VISTAHIDDRIVEREXPORT
-	#define VISTAHIDDRIVERIMPORT
+#define VISTAHIDDRIVEREXPORT
+#define VISTAHIDDRIVERIMPORT
 #endif
 
 // Define VISTAHIDDRIVERAPI for DLL builds
 #ifdef VISTAHIDDDRIVERDLL
-	#ifdef VISTAHIDDDRIVERDLL_EXPORT
-	#define VISTAHIDDDRIVERAPI VISTAHIDDDRIVEREXPORT
-	#else
-	#define VISTAHIDDDRIVERAPI VISTAHIDDDRIVERIMPORT
-	#endif
+#ifdef VISTAHIDDDRIVERDLL_EXPORT
+#define VISTAHIDDDRIVERAPI VISTAHIDDDRIVEREXPORT
 #else
-	#define VISTAHIDDDRIVERAPI VISTAHIDDRIVEREXPORT
+#define VISTAHIDDDRIVERAPI VISTAHIDDDRIVERIMPORT
+#endif
+#else
+#define VISTAHIDDDRIVERAPI VISTAHIDDRIVEREXPORT
 #endif
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 #ifdef LINUX
-struct input_event ;
+struct input_event;
 #endif
 #ifdef WIN32
 class VistaDriverThreadAspect;
@@ -89,91 +88,79 @@ struct _sHIDMeasure;
  * or on top of the HID layer under windows.
  * @todo add documentation for this driver, PLEAZE
  */
-class VISTAHIDDDRIVERAPI VistaHIDDriver : public IVistaDeviceDriver
-{
-public:
-	VistaHIDDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaHIDDriver();
+class VISTAHIDDDRIVERAPI VistaHIDDriver : public IVistaDeviceDriver {
+ public:
+  VistaHIDDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaHIDDriver();
 
+  static bool ScanAvailableHIDDevices(std::list<std::string>& liResult);
 
-	static bool ScanAvailableHIDDevices(std::list<std::string> &liResult);
+ protected:
+  bool DoConnect();
+  bool DoDisconnect();
 
-	
+  bool         DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool PhysicalEnable(bool bEnable);
 
-protected:
-	bool DoConnect();
-	bool DoDisconnect();
-
-	bool DoSensorUpdate(VistaType::microtime dTs);
-	virtual bool PhysicalEnable(bool bEnable);
-private:
-	bool InitDriver(int nVendor, int nDevId);
+ private:
+  bool InitDriver(int nVendor, int nDevId);
 
 #ifdef LINUX
-	VistaDriverConnectionAspect        *m_pConnection;
-	VistaHIDDriverForceFeedbackAspect  *m_pForce;
-	std::vector<input_event> m_vEvents ;
+  VistaDriverConnectionAspect*       m_pConnection;
+  VistaHIDDriverForceFeedbackAspect* m_pForce;
+  std::vector<input_event>           m_vEvents;
 #endif
 #ifdef WIN32
-	bool StartWinRead();
+  bool StartWinRead();
 
-	VistaDriverThreadAspect			*m_pThreadAspect;
+  VistaDriverThreadAspect* m_pThreadAspect;
 
-	HANDLE m_hDevice;
-	HANDLE m_hReadEvent;
-	BYTE m_readBuffer[512];
-	OVERLAPPED m_readOverlap;
+  HANDLE     m_hDevice;
+  HANDLE     m_hReadEvent;
+  BYTE       m_readBuffer[512];
+  OVERLAPPED m_readOverlap;
 #endif
 
-	VistaDriverSensorMappingAspect     *m_pSensorMappingAsp;
-	VistaDeviceIdentificationAspect    *m_pIdentAsp;
+  VistaDriverSensorMappingAspect*  m_pSensorMappingAsp;
+  VistaDeviceIdentificationAspect* m_pIdentAsp;
 
-	VistaHIDCommonShare::sHIDMeasure *m_pMeasure;
+  VistaHIDCommonShare::sHIDMeasure* m_pMeasure;
 };
 
-class VISTAHIDDDRIVERAPI VistaHIDDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
+class VISTAHIDDDRIVERAPI VistaHIDDriverCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaHIDDriverCreationMethod(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    // register sensor type 3DCONNEXION_SPACENAVIGATOR
+    RegisterSensorType("3DCONNEXION_SPACENAVIGATOR", sizeof(VistaHIDCommonShare::sHIDMeasure), 100,
+        metaFac->CreateFactoryForType("3DCONNEXION_SPACENAVIGATOR"));
 
-	VistaHIDDriverCreationMethod(IVistaTranscoderFactoryFactory *metaFac)
-		: IVistaDriverCreationMethod(metaFac)
-	{
-		// register sensor type 3DCONNEXION_SPACENAVIGATOR
-		RegisterSensorType("3DCONNEXION_SPACENAVIGATOR",
-			sizeof(VistaHIDCommonShare::sHIDMeasure),
-			100, metaFac->CreateFactoryForType("3DCONNEXION_SPACENAVIGATOR"));
+    // register sensor type 3DCONNEXION_SPACENAVIGATOR
+    RegisterSensorType("3DCONNEXION_SPACENAVIGATOR_CMD", sizeof(VistaHIDCommonShare::sHIDMeasure),
+        100, metaFac->CreateFactoryForType("3DCONNEXION_SPACENAVIGATOR_CMD"));
 
-		// register sensor type 3DCONNEXION_SPACENAVIGATOR
-		RegisterSensorType("3DCONNEXION_SPACENAVIGATOR_CMD",
-			sizeof(VistaHIDCommonShare::sHIDMeasure),
-			100, metaFac->CreateFactoryForType("3DCONNEXION_SPACENAVIGATOR_CMD"));
+    // register sensor type LOGITECH_RUMBLEPAD2
+    RegisterSensorType("LOGITECH_RUMBLEPAD2", sizeof(VistaHIDCommonShare::sHIDMeasure), 100,
+        metaFac->CreateFactoryForType("LOGITECH_RUMBLEPAD2"));
 
-		// register sensor type LOGITECH_RUMBLEPAD2
-		RegisterSensorType("LOGITECH_RUMBLEPAD2",
-			sizeof(VistaHIDCommonShare::sHIDMeasure),
-			100, metaFac->CreateFactoryForType("LOGITECH_RUMBLEPAD2"));
+    // register sensor type GRIFFIN_POWERMATE
+    RegisterSensorType("GRIFFIN_POWERMATE", sizeof(VistaHIDCommonShare::sHIDMeasure), 100,
+        metaFac->CreateFactoryForType("GRIFFIN_POWERMATE"));
 
-		// register sensor type GRIFFIN_POWERMATE
-		RegisterSensorType("GRIFFIN_POWERMATE",
-			sizeof(VistaHIDCommonShare::sHIDMeasure),
-			100, metaFac->CreateFactoryForType("GRIFFIN_POWERMATE"));
+    // register sensor type HID_RAW
+    RegisterSensorType("HID_RAW", sizeof(VistaHIDCommonShare::sHIDMeasure), 100,
+        metaFac->CreateFactoryForType("HID_RAW"));
+  }
 
-		// register sensor type HID_RAW
-		RegisterSensorType("HID_RAW",
-			sizeof(VistaHIDCommonShare::sHIDMeasure),
-			100, metaFac->CreateFactoryForType("HID_RAW"));
-	}
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaHIDDriver(this);
+  }
 
-	virtual IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaHIDDriver(this);
-	}
-protected:
-private:
+ protected:
+ private:
 };
 
 /* -------------------------------------------------------------------------- */
-
 
 /* -------------------------------------------------------------------------- */
 

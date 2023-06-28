@@ -1,5 +1,3 @@
-
-
 set( RelativeDir "./DisplayManager" )
 set( RelativeSourceGroup "Source Files\\DisplayManager" )
 set( SubDirs )
@@ -74,4 +72,3 @@ endforeach()
 foreach( SubDirFile ${SubDirFiles} )
 	include( ${SubDirFile} )
 endforeach()
-

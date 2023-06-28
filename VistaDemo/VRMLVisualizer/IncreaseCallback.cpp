@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "IncreaseCallback.h"
 #include "VrmlVisualizer.h"
 
@@ -35,30 +34,27 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IncreaseCallback::IncreaseCallback( VrmlVisualizer *pVrmlVisualizer )
-	:	m_pVrmlVisualizer( pVrmlVisualizer )
-{}
+IncreaseCallback::IncreaseCallback(VrmlVisualizer* pVrmlVisualizer)
+    : m_pVrmlVisualizer(pVrmlVisualizer) {
+}
 
-IncreaseCallback::~IncreaseCallback(){}
+IncreaseCallback::~IncreaseCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool IncreaseCallback::Do()
-{
-	// check if the animation is running
-	if( m_pVrmlVisualizer->GetPropertyList().GetValueOrDefault<bool>("animation") )
-	{
-		// make the animation faster
-		m_pVrmlVisualizer->IncreaseStepSpeed();
-	}
-	else
-	{
-		// activate the next step
-		m_pVrmlVisualizer->NextStep();
-	}
-	return true;
+bool IncreaseCallback::Do() {
+  // check if the animation is running
+  if (m_pVrmlVisualizer->GetPropertyList().GetValueOrDefault<bool>("animation")) {
+    // make the animation faster
+    m_pVrmlVisualizer->IncreaseStepSpeed();
+  } else {
+    // activate the next step
+    m_pVrmlVisualizer->NextStep();
+  }
+  return true;
 }
 
 /*============================================================================*/

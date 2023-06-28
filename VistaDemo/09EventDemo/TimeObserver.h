@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _TIMEOBSERVER_H
 #define _TIMEOBSERVER_H
 
@@ -29,7 +28,6 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaKernel/EventManager/VistaEventObserver.h>
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -39,33 +37,31 @@ class VistaEventManager;
 /**
  * TimeObserver - an example for an application-defined event
  */
-class TimeObserver : public VistaEventObserver
-{
-public:
-	/**
-	 * Creates a TimeObserver object
-	 * 
-	 * @AUTHOR  Marc Schirski  
-	 * @DATE    08.11.2002
-	 */    
-	TimeObserver(VistaEventManager *pEventManager, int iEventType);
+class TimeObserver : public VistaEventObserver {
+ public:
+  /**
+   * Creates a TimeObserver object
+   *
+   * @AUTHOR  Marc Schirski
+   * @DATE    08.11.2002
+   */
+  TimeObserver(VistaEventManager* pEventManager, int iEventType);
 
-	/**
-	 * Notify the observer of the given event.
-	 * 
-	 * @AUTHOR  Marc Schirski  
-	 * @DATE    08.11.2002
-	 *
-	 * @INPUT   VistaEvent * pEvent    (MUST NOT BE NULL!)
-	 * @RETURN  --
-	 */    
-	virtual void Notify(const VistaEvent *pEvent);
+  /**
+   * Notify the observer of the given event.
+   *
+   * @AUTHOR  Marc Schirski
+   * @DATE    08.11.2002
+   *
+   * @INPUT   VistaEvent * pEvent    (MUST NOT BE NULL!)
+   * @RETURN  --
+   */
+  virtual void Notify(const VistaEvent* pEvent);
 
-protected:
-	double m_dNextTime;
-	VistaEventManager *m_pEventManager;
-	int m_iEventType;
+ protected:
+  double             m_dNextTime;
+  VistaEventManager* m_pEventManager;
+  int                m_iEventType;
 };
-
 
 #endif // _TIMEOBSERVER_H

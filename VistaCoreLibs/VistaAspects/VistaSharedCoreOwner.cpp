@@ -30,121 +30,97 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-IVistaSharedCoreOwner::IVistaSharedCoreOwner( IVistaSharedCore* pCore,
-											const DataHandling eDataHandlingMode )
-: m_pCore( pCore )
-, m_eDataHandlingMode( eDataHandlingMode )
-{
-	m_pCore->IncReferenceCount();
+IVistaSharedCoreOwner::IVistaSharedCoreOwner(
+    IVistaSharedCore* pCore, const DataHandling eDataHandlingMode)
+    : m_pCore(pCore)
+    , m_eDataHandlingMode(eDataHandlingMode) {
+  m_pCore->IncReferenceCount();
 }
 
-IVistaSharedCoreOwner::IVistaSharedCoreOwner( const IVistaSharedCoreOwner& oCopy )
-: m_eDataHandlingMode( oCopy.m_eDataHandlingMode )
-{
-	switch( m_eDataHandlingMode )
-	{
-		case DH_ALWAYS_COPY:
-		{
-			m_pCore = oCopy.m_pCore->Clone();
-		}
-		case DH_ALWAYS_SHARE:
-		case DH_COPY_ON_WRITE:
-		{
-			m_pCore = oCopy.m_pCore;
-		}
-	}
-	m_pCore->IncReferenceCount();
+IVistaSharedCoreOwner::IVistaSharedCoreOwner(const IVistaSharedCoreOwner& oCopy)
+    : m_eDataHandlingMode(oCopy.m_eDataHandlingMode) {
+  switch (m_eDataHandlingMode) {
+  case DH_ALWAYS_COPY: {
+    m_pCore = oCopy.m_pCore->Clone();
+  }
+  case DH_ALWAYS_SHARE:
+  case DH_COPY_ON_WRITE: {
+    m_pCore = oCopy.m_pCore;
+  }
+  }
+  m_pCore->IncReferenceCount();
 }
 
-IVistaSharedCoreOwner::~IVistaSharedCoreOwner()
-{
-	m_pCore->DecReferenceCount();
+IVistaSharedCoreOwner::~IVistaSharedCoreOwner() {
+  m_pCore->DecReferenceCount();
 }
 
-const IVistaSharedCore* IVistaSharedCoreOwner::GetCore() const
-{
-	return m_pCore;
+const IVistaSharedCore* IVistaSharedCoreOwner::GetCore() const {
+  return m_pCore;
 }
 
-IVistaSharedCore* IVistaSharedCoreOwner::GetCoreForWriting()
-{
-	PrepareCoreForWriting();
-	return m_pCore;
+IVistaSharedCore* IVistaSharedCoreOwner::GetCoreForWriting() {
+  PrepareCoreForWriting();
+  return m_pCore;
 }
 
-void IVistaSharedCoreOwner::PrepareCoreForWriting()
-{
-	switch( m_eDataHandlingMode )
-	{
-		case DH_ALWAYS_COPY:
-		case DH_ALWAYS_SHARE:
-			break;
-		case DH_COPY_ON_WRITE:
-		{
-			MakeCoreUniquelyUsed();
-			break;
-		}
-	}
+void IVistaSharedCoreOwner::PrepareCoreForWriting() {
+  switch (m_eDataHandlingMode) {
+  case DH_ALWAYS_COPY:
+  case DH_ALWAYS_SHARE:
+    break;
+  case DH_COPY_ON_WRITE: {
+    MakeCoreUniquelyUsed();
+    break;
+  }
+  }
 }
 
-void IVistaSharedCoreOwner::MakeCoreUniquelyUsed()
-{
-	if( m_pCore->GetReferenceCount() > 1 )
-	{
-		IVistaSharedCore* pNewCore = m_pCore->Clone();
-		pNewCore->IncReferenceCount();
-		m_pCore->DecReferenceCount();
-		m_pCore = pNewCore;
-	}
+void IVistaSharedCoreOwner::MakeCoreUniquelyUsed() {
+  if (m_pCore->GetReferenceCount() > 1) {
+    IVistaSharedCore* pNewCore = m_pCore->Clone();
+    pNewCore->IncReferenceCount();
+    m_pCore->DecReferenceCount();
+    m_pCore = pNewCore;
+  }
 }
 
-IVistaSharedCoreOwner::DataHandling IVistaSharedCoreOwner::GetDataHandlingMode() const
-{
-	return m_eDataHandlingMode;
+IVistaSharedCoreOwner::DataHandling IVistaSharedCoreOwner::GetDataHandlingMode() const {
+  return m_eDataHandlingMode;
 }
 
-void IVistaSharedCoreOwner::SetDataHandlingMode( const DataHandling eMode )
-{
-	m_eDataHandlingMode = eMode;
-	switch( m_eDataHandlingMode )
-	{
-		case DH_ALWAYS_SHARE:
-		case DH_COPY_ON_WRITE:
-			break;
-		case DH_ALWAYS_COPY:
-		{
-			MakeCoreUniquelyUsed();
-			break;
-		}
-	}
+void IVistaSharedCoreOwner::SetDataHandlingMode(const DataHandling eMode) {
+  m_eDataHandlingMode = eMode;
+  switch (m_eDataHandlingMode) {
+  case DH_ALWAYS_SHARE:
+  case DH_COPY_ON_WRITE:
+    break;
+  case DH_ALWAYS_COPY: {
+    MakeCoreUniquelyUsed();
+    break;
+  }
+  }
 }
 
-IVistaSharedCoreOwner& IVistaSharedCoreOwner::operator= ( const IVistaSharedCoreOwner& oOther )
-{
-	m_eDataHandlingMode = oOther.m_eDataHandlingMode;
-	if( m_pCore != oOther.m_pCore )
-	{
-		m_pCore->DecReferenceCount();
-		switch( m_eDataHandlingMode )
-		{
-			case DH_ALWAYS_COPY:
-			{
-				m_pCore = oOther.m_pCore->Clone();
-			}
-			case DH_ALWAYS_SHARE:
-			case DH_COPY_ON_WRITE:
-			{
-				m_pCore = oOther.m_pCore;
-			}
-		}
-		m_pCore->IncReferenceCount();
-	}
+IVistaSharedCoreOwner& IVistaSharedCoreOwner::operator=(const IVistaSharedCoreOwner& oOther) {
+  m_eDataHandlingMode = oOther.m_eDataHandlingMode;
+  if (m_pCore != oOther.m_pCore) {
+    m_pCore->DecReferenceCount();
+    switch (m_eDataHandlingMode) {
+    case DH_ALWAYS_COPY: {
+      m_pCore = oOther.m_pCore->Clone();
+    }
+    case DH_ALWAYS_SHARE:
+    case DH_COPY_ON_WRITE: {
+      m_pCore = oOther.m_pCore;
+    }
+    }
+    m_pCore->IncReferenceCount();
+  }
 
-	return (*this);
+  return (*this);
 }
 
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
-
-

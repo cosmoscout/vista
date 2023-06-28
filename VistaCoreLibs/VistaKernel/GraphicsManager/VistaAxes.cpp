@@ -21,20 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaAxes.h"
 
 #include <iostream>
 
-#include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
 #include <VistaKernel/GraphicsManager/VistaGeometryFactory.h>
-#include <VistaKernel/GraphicsManager/VistaTransformNode.h>
 #include <VistaKernel/GraphicsManager/VistaGroupNode.h>
+#include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
+#include <VistaKernel/GraphicsManager/VistaTransformNode.h>
 
 #include <VistaBase/VistaStreamUtils.h>
 
 #include <cstdio>
-
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -45,85 +43,88 @@
 /*============================================================================*/
 
 // CONSTRUCTOR
-VistaAxes::VistaAxes( VistaSceneGraph * pVistaSceneGraph,
-					  VistaGroupNode *pParent,
-					  float fSizeX, float fSizeY, float fSizeZ)
-{
-	if( fSizeX < 0.01f ||
-		fSizeY < 0.01f ||
-		fSizeZ < 0.01f )
-	{
-		vstr::errp() << "[VistaAxes] Size to small!" << std::endl;
-		return;
-	}
+VistaAxes::VistaAxes(VistaSceneGraph* pVistaSceneGraph, VistaGroupNode* pParent, float fSizeX,
+    float fSizeY, float fSizeZ) {
+  if (fSizeX < 0.01f || fSizeY < 0.01f || fSizeZ < 0.01f) {
+    vstr::errp() << "[VistaAxes] Size to small!" << std::endl;
+    return;
+  }
 
-	VistaGeometryFactory geomFactory(pVistaSceneGraph);
+  VistaGeometryFactory geomFactory(pVistaSceneGraph);
 
-	// create axes
-	m_vecAxes.push_back(geomFactory.CreateCone(0.05f,0.05f,fSizeX-0.1f,32,32,32,VistaColor::RED,true,true,true));
-	m_vecAxes.push_back(geomFactory.CreateCone(0.05f,0.05f,fSizeY-0.1f,32,32,32,VistaColor::GREEN,true,true,true));
-	m_vecAxes.push_back(geomFactory.CreateCone(0.05f,0.05f,fSizeZ-0.1f,32,32,32,VistaColor::BLUE,true,true,true));
+  // create axes
+  m_vecAxes.push_back(geomFactory.CreateCone(
+      0.05f, 0.05f, fSizeX - 0.1f, 32, 32, 32, VistaColor::RED, true, true, true));
+  m_vecAxes.push_back(geomFactory.CreateCone(
+      0.05f, 0.05f, fSizeY - 0.1f, 32, 32, 32, VistaColor::GREEN, true, true, true));
+  m_vecAxes.push_back(geomFactory.CreateCone(
+      0.05f, 0.05f, fSizeZ - 0.1f, 32, 32, 32, VistaColor::BLUE, true, true, true));
 
-	// create tips
-	m_vecTips.push_back(geomFactory.CreateCone(0.07f,0,0.1f,32,32,32,VistaColor::GRAY,true,true,true));
-	m_vecTips.push_back(geomFactory.CreateCone(0.07f,0,0.1f,32,32,32,VistaColor::GRAY,true,true,true));
-	m_vecTips.push_back(geomFactory.CreateCone(0.07f,0,0.1f,32,32,32,VistaColor::GRAY,true,true,true));
+  // create tips
+  m_vecTips.push_back(
+      geomFactory.CreateCone(0.07f, 0, 0.1f, 32, 32, 32, VistaColor::GRAY, true, true, true));
+  m_vecTips.push_back(
+      geomFactory.CreateCone(0.07f, 0, 0.1f, 32, 32, 32, VistaColor::GRAY, true, true, true));
+  m_vecTips.push_back(
+      geomFactory.CreateCone(0.07f, 0, 0.1f, 32, 32, 32, VistaColor::GRAY, true, true, true));
 
-	// center sphere
-	m_pCenter = geomFactory.CreateSphere(0.1f,21,VistaColor::GRAY);
+  // center sphere
+  m_pCenter = geomFactory.CreateSphere(0.1f, 21, VistaColor::GRAY);
 
-	// put all together
-	m_pGroup = pVistaSceneGraph->NewGroupNode(pParent);
+  // put all together
+  m_pGroup = pVistaSceneGraph->NewGroupNode(pParent);
 
-	// X axis
-	VistaTransformNode *transX = pVistaSceneGraph->NewTransformNode(m_pGroup);
-	transX->SetRotation( VistaQuaternion( VistaAxisAndAngle( VistaVector3D(0,0,1), Vista::DegToRad(90) ) ) );
-	transX->SetTranslation( VistaVector3D( (fSizeX-0.1f) * 0.5f, 0, 0 ) );
-	pVistaSceneGraph->NewGeomNode(transX,m_vecAxes[0]);
-	// tip
-	VistaTransformNode *transXtip = pVistaSceneGraph->NewTransformNode(transX);
-	transXtip->SetRotation( VistaQuaternion( VistaAxisAndAngle( VistaVector3D(0,0,1), Vista::DegToRad(180) ) ) );
-	transXtip->SetTranslation( VistaVector3D( 0, -fSizeX*0.5f, 0 ) );
-	pVistaSceneGraph->NewGeomNode(transXtip,m_vecTips[0]);
+  // X axis
+  VistaTransformNode* transX = pVistaSceneGraph->NewTransformNode(m_pGroup);
+  transX->SetRotation(
+      VistaQuaternion(VistaAxisAndAngle(VistaVector3D(0, 0, 1), Vista::DegToRad(90))));
+  transX->SetTranslation(VistaVector3D((fSizeX - 0.1f) * 0.5f, 0, 0));
+  pVistaSceneGraph->NewGeomNode(transX, m_vecAxes[0]);
+  // tip
+  VistaTransformNode* transXtip = pVistaSceneGraph->NewTransformNode(transX);
+  transXtip->SetRotation(
+      VistaQuaternion(VistaAxisAndAngle(VistaVector3D(0, 0, 1), Vista::DegToRad(180))));
+  transXtip->SetTranslation(VistaVector3D(0, -fSizeX * 0.5f, 0));
+  pVistaSceneGraph->NewGeomNode(transXtip, m_vecTips[0]);
 
-	// Y axis
-	VistaTransformNode *transY = pVistaSceneGraph->NewTransformNode(m_pGroup);
-	transY->SetTranslation( VistaVector3D( 0, (fSizeY-0.1f) * 0.5f, 0 ) );
-	pVistaSceneGraph->NewGeomNode(transY,m_vecAxes[1]);
-	// tip
-	VistaTransformNode *transYtip = pVistaSceneGraph->NewTransformNode(transY);
-	transYtip->SetTranslation( VistaVector3D( 0, fSizeY*0.5f, 0 ) );
-	pVistaSceneGraph->NewGeomNode(transYtip,m_vecTips[1]);
+  // Y axis
+  VistaTransformNode* transY = pVistaSceneGraph->NewTransformNode(m_pGroup);
+  transY->SetTranslation(VistaVector3D(0, (fSizeY - 0.1f) * 0.5f, 0));
+  pVistaSceneGraph->NewGeomNode(transY, m_vecAxes[1]);
+  // tip
+  VistaTransformNode* transYtip = pVistaSceneGraph->NewTransformNode(transY);
+  transYtip->SetTranslation(VistaVector3D(0, fSizeY * 0.5f, 0));
+  pVistaSceneGraph->NewGeomNode(transYtip, m_vecTips[1]);
 
-	// Z axis
-	VistaTransformNode *transZ = pVistaSceneGraph->NewTransformNode(m_pGroup);
-	transZ->SetRotation( VistaQuaternion( VistaAxisAndAngle( VistaVector3D(1,0,0), Vista::DegToRad(90) ) ) );
-	transZ->SetTranslation( VistaVector3D( 0, 0, (fSizeZ-0.1f) * 0.5f ) );
-	pVistaSceneGraph->NewGeomNode(transZ,m_vecAxes[2]);
-	// tip
-	VistaTransformNode *transZtip = pVistaSceneGraph->NewTransformNode(transZ);
-	//transZtip->SetRotation( VistaQuaternion( VistaAxisAndAngle( VistaVector3D(0,0,1), Vista::DegToRad(180) ) ) );
-	transZtip->SetTranslation( VistaVector3D( 0, fSizeZ*0.5f, 0 ) );
-	pVistaSceneGraph->NewGeomNode(transZtip,m_vecTips[2]);
+  // Z axis
+  VistaTransformNode* transZ = pVistaSceneGraph->NewTransformNode(m_pGroup);
+  transZ->SetRotation(
+      VistaQuaternion(VistaAxisAndAngle(VistaVector3D(1, 0, 0), Vista::DegToRad(90))));
+  transZ->SetTranslation(VistaVector3D(0, 0, (fSizeZ - 0.1f) * 0.5f));
+  pVistaSceneGraph->NewGeomNode(transZ, m_vecAxes[2]);
+  // tip
+  VistaTransformNode* transZtip = pVistaSceneGraph->NewTransformNode(transZ);
+  // transZtip->SetRotation( VistaQuaternion( VistaAxisAndAngle( VistaVector3D(0,0,1),
+  // Vista::DegToRad(180) ) ) );
+  transZtip->SetTranslation(VistaVector3D(0, fSizeZ * 0.5f, 0));
+  pVistaSceneGraph->NewGeomNode(transZtip, m_vecTips[2]);
 
-	// center
-	pVistaSceneGraph->NewGeomNode(m_pGroup,m_pCenter);
+  // center
+  pVistaSceneGraph->NewGeomNode(m_pGroup, m_pCenter);
 
-	m_pGroup->SetName("VistaAxes");
-	//Scale(width, height, length);
+  m_pGroup->SetName("VistaAxes");
+  // Scale(width, height, length);
 }
 
 // DESTRUCTOR
-VistaAxes::~VistaAxes()
-{    
+VistaAxes::~VistaAxes() {
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-IVistaNode *VistaAxes::GetVistaNode()
-{
-	return m_pGroup;
+IVistaNode* VistaAxes::GetVistaNode() {
+  return m_pGroup;
 }
 
 #if 0

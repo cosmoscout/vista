@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCOUNTERNODE_H
 #define _VDFNCOUNTERNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -34,8 +32,8 @@
 #include "VdfnConfig.h"
 
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
 #include "VdfnUtil.h"
 
 /*============================================================================*/
@@ -62,59 +60,52 @@
  * ctor) and then successively adds the value from the port "delta" whenever it
  * changes. The accumulated value is passed on to the port "out". *
  */
-template<class T>
-class TVdfnCounterNode : public IVdfnNode
-{
-public:
-	TVdfnCounterNode( T oInitialValue )
-		: IVdfnNode(),
-		  m_pDelta(NULL),
-		  m_pReset(NULL),
-		  m_pOut( new TVdfnPort<T> ),
-		  m_oValue( oInitialValue ),
-		  m_iResetLastChange( false )
-	{
-		RegisterInPortPrototype( "delta", new TVdfnPortTypeCompare<TVdfnPort<T> >);
-		RegisterInPortPrototype( "reset_to_value", new TVdfnPortTypeCompare<TVdfnPort<T> >);
-		RegisterOutPort( "out", m_pOut );
-	}
+template <class T>
+class TVdfnCounterNode : public IVdfnNode {
+ public:
+  TVdfnCounterNode(T oInitialValue)
+      : IVdfnNode()
+      , m_pDelta(NULL)
+      , m_pReset(NULL)
+      , m_pOut(new TVdfnPort<T>)
+      , m_oValue(oInitialValue)
+      , m_iResetLastChange(false) {
+    RegisterInPortPrototype("delta", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterInPortPrototype("reset_to_value", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterOutPort("out", m_pOut);
+  }
 
+  bool PrepareEvaluationRun() {
+    m_pDelta = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>("delta", this);
+    m_pReset = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>("reset_to_value", this);
+    if (m_pReset)
+      m_iResetLastChange = m_pReset->GetUpdateCounter();
+    return GetIsValid();
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pDelta = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>( "delta", this );
-		m_pReset = VdfnUtil::GetInPortTyped<TVdfnPort<T>*>( "reset_to_value", this );
-		if( m_pReset )
-			m_iResetLastChange = m_pReset->GetUpdateCounter();
-		return GetIsValid();
-	}
+  bool GetIsValid() const {
+    return (m_pDelta != NULL);
+  }
 
-	bool GetIsValid() const
-	{
-		return ( m_pDelta != NULL );
-	}
+ protected:
+  bool DoEvalNode() {
+    // Check if a reset signal has arrived
+    if (m_pReset && m_pReset->GetUpdateCounter() > m_iResetLastChange) {
+      m_iResetLastChange = m_pReset->GetUpdateCounter();
+      m_oValue           = m_pReset->GetValue();
+    } else
+      m_oValue += m_pDelta->GetValue();
+    m_pOut->SetValue(m_oValue, GetUpdateTimeStamp());
+    return true;
+  }
 
-protected:
-	bool DoEvalNode()
-	{
-		//Check if a reset signal has arrived
-		if( m_pReset && m_pReset->GetUpdateCounter() > m_iResetLastChange )
-		{
-			m_iResetLastChange = m_pReset->GetUpdateCounter();
-			m_oValue = m_pReset->GetValue();
-		}
-		else
-			m_oValue += m_pDelta->GetValue();
-		m_pOut->SetValue( m_oValue, GetUpdateTimeStamp() );
-		return true;
-	}
-protected:
-	TVdfnPort<T>	*m_pDelta;
-	TVdfnPort<T>	*m_pReset;
-	TVdfnPort<T>	*m_pOut;
-	unsigned int	m_iResetLastChange;
+ protected:
+  TVdfnPort<T>* m_pDelta;
+  TVdfnPort<T>* m_pReset;
+  TVdfnPort<T>* m_pOut;
+  unsigned int  m_iResetLastChange;
 
-	T				m_oValue;
+  T m_oValue;
 };
 
 /*============================================================================*/
@@ -122,4 +113,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VDFNCOUNTERNODE_H
-

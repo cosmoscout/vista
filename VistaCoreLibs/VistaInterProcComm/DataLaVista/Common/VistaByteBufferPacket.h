@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTABYTEBUFFERPACKET_H
 #define DLVISTABYTEBUFFERPACKET_H
 
@@ -32,72 +31,71 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaDataPacket.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <string>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaByteBufferPacket : public IDLVistaDataPacket
-{
-private:
-	std::string *m_pSBuffer;
+class VISTAINTERPROCCOMMAPI DLVistaByteBufferPacket : public IDLVistaDataPacket {
+ private:
+  std::string* m_pSBuffer;
 
-public:
-	DLVistaByteBufferPacket(IDLVistaPipeComponent *);
+ public:
+  DLVistaByteBufferPacket(IDLVistaPipeComponent*);
 
-	virtual IDLVistaDataPacket* CreateInstance(IDLVistaPipeComponent* ) const;
+  virtual IDLVistaDataPacket* CreateInstance(IDLVistaPipeComponent*) const;
 
-	virtual ~DLVistaByteBufferPacket();
+  virtual ~DLVistaByteBufferPacket();
 
-	const char * GetCharBuffer() const;
-	std::string *GetStringBuffer() const;
-	unsigned int GetCharBufferLength() const;
+  const char*  GetCharBuffer() const;
+  std::string* GetStringBuffer() const;
+  unsigned int GetCharBufferLength() const;
 
-	void *GetByteBuffer() const;
+  void* GetByteBuffer() const;
 
-	void AppendToBuffer(const char * );
-	void AppendToBuffer(const std::string &);
+  void AppendToBuffer(const char*);
+  void AppendToBuffer(const std::string&);
 
-	int GetPacketType() const;
+  int GetPacketType() const;
 
-	int GetPacketSize() const { return (int)(*m_pSBuffer).size(); };
+  int GetPacketSize() const {
+    return (int)(*m_pSBuffer).size();
+  };
 
-	void SetDataSize(int);
-	int GetDataSize() const;
+  void SetDataSize(int);
+  int  GetDataSize() const;
 
-	void SetBuffer(const char *);
-	void SetBuffer(const std::string &);
+  void SetBuffer(const char*);
+  void SetBuffer(const std::string&);
 
+  IDLVistaDataPacket* Clone() const;
 
-	IDLVistaDataPacket * Clone() const;
+  /**
+   *	VISTA SERIALIZABLE MUST HAVES
+   */
+  /**
+   * Think of this as "SAVE"
+   */
+  int Serialize(IVistaSerializer&) const;
+  /**
+   * Think of this as "LOAD"
+   */
+  int DeSerialize(IVistaDeSerializer&);
 
-	/**
-	*	VISTA SERIALIZABLE MUST HAVES
-	*/
-	/**
-	 * Think of this as "SAVE"
-	 */
-	int Serialize(IVistaSerializer &) const;
-	/**
-	 * Think of this as "LOAD"
-	 */
-	int DeSerialize(IVistaDeSerializer &);
-
-	std::string GetSignature() const{
-		return std::string("DLVistaByteBufferPacket");
-	}
+  std::string GetSignature() const {
+    return std::string("DLVistaByteBufferPacket");
+  }
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //DLVISTABYTEBUFFERPACKET_H
+#endif // DLVISTABYTEBUFFERPACKET_H

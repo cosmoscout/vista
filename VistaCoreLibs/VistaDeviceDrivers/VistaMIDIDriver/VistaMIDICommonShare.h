@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMIDICOMMONSHARE_H__
 #define _VISTAMIDICOMMONSHARE_H__
 
@@ -44,16 +43,12 @@
 /**
  * the memory layout of a MIDI measure.
  */
-namespace VistaMIDIMeasures
-{
-	struct sMIDIMeasure
-	{
-		unsigned char status;
-		unsigned char data0;
-		unsigned char data1;
-	};
-}
-
-
+namespace VistaMIDIMeasures {
+struct sMIDIMeasure {
+  unsigned char status;
+  unsigned char data0;
+  unsigned char data1;
+};
+} // namespace VistaMIDIMeasures
 
 #endif //_VISTAMIDICOMMONSHARE_H__

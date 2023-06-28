@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTADTRACKSDKDRIVERCONFIG_H
 #define __VISTADTRACKSDKDRIVERCONFIG_H
 
@@ -30,9 +29,8 @@
 /*============================================================================*/
 
 #if defined(WIN32)
-#pragma warning (disable: 4786)
+#pragma warning(disable : 4786)
 #endif
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -42,35 +40,28 @@
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 // Single marker data (3DOF):
-namespace VistaDTrackSDKConfig
-{
-	typedef struct{
-		int id;               // id number (starting with 1)
-		float quality;        // quality (0 <= qu <= 1)
+namespace VistaDTrackSDKConfig {
+typedef struct {
+  int   id;      // id number (starting with 1)
+  float quality; // quality (0 <= qu <= 1)
 
-		float loc[3];         // location (in mm)
-	} VISTA_dtrack_marker_type;
+  float loc[3]; // location (in mm)
+} VISTA_dtrack_marker_type;
 
-	// Standard body data (6DOF):
-	//  - currently not tracked bodies are getting a quality of -1
+// Standard body data (6DOF):
+//  - currently not tracked bodies are getting a quality of -1
 
-	typedef struct{
-		int id;               // id number (starting with 0)
-		float quality;        // quality (0 <= qu <= 1, no tracking if -1)
+typedef struct {
+  int   id;      // id number (starting with 0)
+  float quality; // quality (0 <= qu <= 1, no tracking if -1)
 
-		float loc[3];         // location (in mm)
-		float rot[9];         // rotation matrix (column-wise)
-	} VISTA_dtrack_body_type;
-}
+  float loc[3]; // location (in mm)
+  float rot[9]; // rotation matrix (column-wise)
+} VISTA_dtrack_body_type;
+} // namespace VistaDTrackSDKConfig
 
 /*============================================================================*/
 /* END OF FILE                                                                */
 /*============================================================================*/
 #endif //__VISTADTRACKSDKDRIVERCONFIG_H
-
-
-
-
-

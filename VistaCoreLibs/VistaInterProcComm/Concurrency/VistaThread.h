@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREAD_H
 #define _VISTATHREAD_H
-
 
 /*============================================================================*/
 /* DEFINES                                                                   */
@@ -39,7 +37,6 @@
 
 #include <string>
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -50,109 +47,104 @@ class IVistaThreadImp;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI VistaThread : public VistaFork {
+ public:
+  VistaThread(IVistaThreadImp* pImp = NULL);
+  virtual ~VistaThread();
 
-class VISTAINTERPROCCOMMAPI VistaThread : public VistaFork
-{
-public:
-	VistaThread (IVistaThreadImp *pImp = NULL);
-	virtual  ~VistaThread ();
+  bool Run();
+  bool Suspend();
+  bool IsRunning() const;
+  bool Resume();
+  bool Join();
+  bool Abort();
 
+  void SetCancelAbility(const bool bOkToCancel);
+  bool CanBeCancelled() const;
 
-	bool Run();
-	bool Suspend();
-	bool IsRunning() const;
-	bool Resume();
-	bool Join();
-	bool Abort();
+  bool SetPriority(const VistaPriority& inPrio);
+  void GetPriority(VistaPriority&) const;
 
-	void SetCancelAbility(const bool bOkToCancel);
-	bool CanBeCancelled() const;
+  /**
+   * derive your own class from VistaThread and override this method
+   *
+   * ThreadBody is called when a VistaThread is Start()ed and when
+   * this method returns, the thread is finished.
+   */
+  virtual void ThreadBody() = 0;
 
-	bool SetPriority  ( const VistaPriority &inPrio );
-	void GetPriority  (VistaPriority &) const;
+  /**
+   * give the processor away temporarily
+   */
+  void YieldThread();
 
-	/**
-	 * derive your own class from VistaThread and override this method
-	 *
-	 * ThreadBody is called when a VistaThread is Start()ed and when
-	 * this method returns, the thread is finished.
-	 */
-	virtual void ThreadBody   () = 0;
+  /**
+   * Method that is to be performed BEFORE departed fork starts execution
+   */
+  virtual void PreRun();
 
-	/**
-	 * give the processor away temporarily
-	 */
-	void YieldThread   ();
+  /**
+   * Method that is to be performed AFTER forked work is done
+   */
+  virtual void PostRun();
 
-	/**
-	 * Method that is to be performed BEFORE departed fork starts execution
-	 */
-	virtual void PreRun();
+  bool Equals(const VistaThread& oOther) const;
+  bool operator==(const VistaThread& oOther);
 
-	/**
-	 * Method that is to be performed AFTER forked work is done
-	 */
-	virtual void PostRun();
+  virtual bool GetIsFinished() const;
+  /**
+   * returns the Id of the thread instance
+   */
+  long GetThreadIdentity() const;
+  /**
+   * returns the Id of the calling threat (not a specific VistaThread Instance)
+   * Note that this Id may vary from the Id format that an Instance's GetThreadIdentity()
+   * may return
+   * @todo: make sure GetCallingThreadIdentity and GetThreadIdentity return same Id type
+   */
+  static long GetCallingThreadIdentity();
 
-	bool Equals(const VistaThread &oOther) const;
-	bool operator==(const VistaThread &oOther);
+  /**
+   * sets/gets the priority of the calling thread (e.g. to alter the priority from the
+   * main thread or when not knowing your VistaThread instance)
+   */
+  static bool SetCallingThreadPriority(const VistaPriority& oPrio);
+  static bool GetCallingThreadPriority(VistaPriority& oPrio);
 
-	virtual bool GetIsFinished() const;
-	/**
-	 * returns the Id of the thread instance
-	 */
-	long GetThreadIdentity() const;
-	/**
-	 * returns the Id of the calling threat (not a specific VistaThread Instance)
-	 * Note that this Id may vary from the Id format that an Instance's GetThreadIdentity()
-	 * may return
-	 * @todo: make sure GetCallingThreadIdentity and GetThreadIdentity return same Id type
-	 */
-	static long GetCallingThreadIdentity();
+  /**
+   * Sets the affinity (i.e. stickiness) of the thread to a
+   * given CPU id. Note that it is implementation specific, when
+   * to call this. On windows(c), it is only working when calling
+   * this before a call to Run(). Using pthreads, this call can
+   * in theory be called at any point in the program.
+   * Note that the iProcessorNum means: CPU, not necessarily CORE!
+   * @return true when the affinity mask was set, false else
+   * @param iProcessorNum the number of the CPU (not CORE!) to
+            run this process on exclusively
+   */
+  bool                SetProcessorAffinity(int iProcessorNum);
+  virtual bool        SetThreadName(const std::string& sName);
+  virtual std::string GetThreadName() const;
 
-	/**
-	 * sets/gets the priority of the calling thread (e.g. to alter the priority from the
-	 * main thread or when not knowing your VistaThread instance)
-	 */
-	static bool SetCallingThreadPriority( const VistaPriority& oPrio );
-	static bool GetCallingThreadPriority( VistaPriority& oPrio );
+  /**
+   * returns the CPU on which the thread is running on at the
+   * time of call. This refers typically to the CPU the thread
+   * is running on NOT the core, the thread is scheduled to.
+   * @return -1 when something really weird happened (i.e., not implemented)
+   */
+  int GetCpu() const;
 
-	/**
-	 * Sets the affinity (i.e. stickiness) of the thread to a
-	 * given CPU id. Note that it is implementation specific, when
-	 * to call this. On windows(c), it is only working when calling
-	 * this before a call to Run(). Using pthreads, this call can
-	 * in theory be called at any point in the program.
-	 * Note that the iProcessorNum means: CPU, not necessarily CORE!
-	 * @return true when the affinity mask was set, false else
-	 * @param iProcessorNum the number of the CPU (not CORE!) to
-	          run this process on exclusively
-	 */
-	bool SetProcessorAffinity(int iProcessorNum);
-	virtual bool SetThreadName(const std::string &sName);
-	virtual std::string GetThreadName() const;
+ protected:
+  IVistaThreadImp* GetThreadImp() const;
 
-	/**
-	 * returns the CPU on which the thread is running on at the
-	 * time of call. This refers typically to the CPU the thread
-	 * is running on NOT the core, the thread is scheduled to.
-	 * @return -1 when something really weird happened (i.e., not implemented)
-	 */
-	int GetCpu() const;
+ private:
+  bool m_bIsRunning, m_bIsFinished;
 
-protected:
-	IVistaThreadImp *GetThreadImp() const;
-private:
-
-	bool m_bIsRunning, m_bIsFinished;
-
-	IVistaThreadImp *m_pImp;
+  IVistaThreadImp* m_pImp;
 };
-
 
 /*============================================================================*/
 /* INLINED IMPLEMENTATION                                                     */
 /*============================================================================*/
-
 
 #endif // _VISTATHREAD_H

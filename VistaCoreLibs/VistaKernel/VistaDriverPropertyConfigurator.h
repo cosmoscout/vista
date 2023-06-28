@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADRIVERPROPERTYCONFIGURATOR_H
 #define _VISTADRIVERPROPERTYCONFIGURATOR_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaAspects/VistaReflectionable.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,71 +42,60 @@ class IVistaDeviceDriver;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaDriverPropertyConfigurator
-{
-public:
-	VistaDriverPropertyConfigurator();
-	virtual ~VistaDriverPropertyConfigurator();
+class VISTAKERNELAPI VistaDriverPropertyConfigurator {
+ public:
+  VistaDriverPropertyConfigurator();
+  virtual ~VistaDriverPropertyConfigurator();
 
-	class VISTAKERNELAPI IConfigurator : public IVistaReflectionable
-	{
-	public:
-		virtual ~IConfigurator();
-		virtual bool Configure( IVistaDeviceDriver* pDriver,
-								const VistaPropertyList& oDriverSection,
-								const VistaPropertyList& oConfig );
+  class VISTAKERNELAPI IConfigurator : public IVistaReflectionable {
+   public:
+    virtual ~IConfigurator();
+    virtual bool Configure(IVistaDeviceDriver* pDriver, const VistaPropertyList& oDriverSection,
+        const VistaPropertyList& oConfig);
 
-		REFL_INLINEIMP( VistaDriverPropertyConfigurator::IConfigurator, IVistaReflectionable );
-	protected:
-		IConfigurator();
-		IVistaDeviceDriver *m_pDriver;
-	private:
-		static std::string SsReflectionType;
-	};
+    REFL_INLINEIMP(VistaDriverPropertyConfigurator::IConfigurator, IVistaReflectionable);
 
+   protected:
+    IConfigurator();
+    IVistaDeviceDriver* m_pDriver;
 
-	void RegisterConfigurator(const std::string &sTriggerKey,
-							  IConfigurator *pConf,
-							  const std::list<std::string> &liDepends = std::list<std::string>(),
-							  int nPrio = 0);
-	int GetPrioForTrigger(const std::string &sTrigger) const;
-	std::list<std::string> GetDependsForTrigger(const std::string &sTrigger) const;
+   private:
+    static std::string SsReflectionType;
+  };
 
-	IConfigurator *RetrieveConfigurator(const std::string &sTriggerKey) const;
+  void                   RegisterConfigurator(const std::string& sTriggerKey, IConfigurator* pConf,
+                        const std::list<std::string>& liDepends = std::list<std::string>(), int nPrio = 0);
+  int                    GetPrioForTrigger(const std::string& sTrigger) const;
+  std::list<std::string> GetDependsForTrigger(const std::string& sTrigger) const;
 
-private:
-	struct _sHlp
-	{
-		_sHlp()
-			: m_pConf(NULL),
-			  m_nPrio(0)
-		{}
+  IConfigurator* RetrieveConfigurator(const std::string& sTriggerKey) const;
 
-		_sHlp( IConfigurator *pConf,
-			   int nPrio,
-			   const std::list<std::string> &liDepends )
-			   : m_pConf(pConf),
-			     m_nPrio(nPrio),
-				 m_liDependsOn(liDepends)
-		{
-		}
+ private:
+  struct _sHlp {
+    _sHlp()
+        : m_pConf(NULL)
+        , m_nPrio(0) {
+    }
 
-		IConfigurator *m_pConf;
-		int m_nPrio;
-		std::list<std::string> m_liDependsOn;
-	};
-	//typedef std::pair<IConfigurator*, int> CONFIG;
-	typedef _sHlp CONFIG;
+    _sHlp(IConfigurator* pConf, int nPrio, const std::list<std::string>& liDepends)
+        : m_pConf(pConf)
+        , m_nPrio(nPrio)
+        , m_liDependsOn(liDepends) {
+    }
 
-	typedef std::map<std::string, CONFIG > CONFIGMAP;
-	CONFIGMAP m_mpConfigurators;
+    IConfigurator*         m_pConf;
+    int                    m_nPrio;
+    std::list<std::string> m_liDependsOn;
+  };
+  // typedef std::pair<IConfigurator*, int> CONFIG;
+  typedef _sHlp CONFIG;
+
+  typedef std::map<std::string, CONFIG> CONFIGMAP;
+  CONFIGMAP                             m_mpConfigurators;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTADRIVERPROPERTYCONFIGURATOR_H
-
-

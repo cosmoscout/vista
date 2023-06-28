@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef WORKSPACEACTIONOBJECT_H_
 #define WORKSPACEACTIONOBJECT_H_
 
@@ -33,44 +32,43 @@ class VistaGroupNode;
 class VistaSceneGraph;
 class IVistaTransformable;
 
-class WorkspaceActionObject : public IVdfnActionObject
-{
-public:
-	WorkspaceActionObject( VistaGroupNode *, IVistaTransformable *, VistaSceneGraph * );
-	virtual ~WorkspaceActionObject();
+class WorkspaceActionObject : public IVdfnActionObject {
+ public:
+  WorkspaceActionObject(VistaGroupNode*, IVistaTransformable*, VistaSceneGraph*);
+  virtual ~WorkspaceActionObject();
 
-	bool SetMinXPort( const float & );
-	bool SetMinYPort( const float & );
-	bool SetMinZPort( const float & );
+  bool SetMinXPort(const float&);
+  bool SetMinYPort(const float&);
+  bool SetMinZPort(const float&);
 
-	bool SetMaxXPort( const float & );
-	bool SetMaxYPort( const float & );
-	bool SetMaxZPort( const float & );
+  bool SetMaxXPort(const float&);
+  bool SetMaxYPort(const float&);
+  bool SetMaxZPort(const float&);
 
-	bool SetScalePort( const float & );
+  bool SetScalePort(const float&);
 
-	bool SetHandlePositionPort( const VistaVector3D & );
-	bool SetHandleOrientationPort( const VistaQuaternion & );
+  bool SetHandlePositionPort(const VistaVector3D&);
+  bool SetHandleOrientationPort(const VistaQuaternion&);
 
-	void updateBB();
-private:
+  void updateBB();
 
-	float minx;
-	float miny;
-	float minz;
+ private:
+  float minx;
+  float miny;
+  float minz;
 
-	float maxx;
-	float maxy;
-	float maxz;
+  float maxx;
+  float maxy;
+  float maxz;
 
-	float m_scale;
+  float m_scale;
 
-	VistaGroupNode 	*m_pParent;
-	VistaSceneGraph			*m_pVistaSceneGraph;
-	IVistaTransformable	*m_pHandle;
+  VistaGroupNode*      m_pParent;
+  VistaSceneGraph*     m_pVistaSceneGraph;
+  IVistaTransformable* m_pHandle;
 
-	// insert reflectionable code via macro here
-	REFL_DECLARE
+  // insert reflectionable code via macro here
+  REFL_DECLARE
 };
 
 #endif /* WORKSPACEACTIONOBJECT_H_ */

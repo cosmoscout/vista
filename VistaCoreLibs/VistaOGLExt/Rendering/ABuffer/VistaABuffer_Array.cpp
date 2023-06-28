@@ -21,16 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
-/* INCLUDES																	  */
+/* INCLUDES
+ */
 /*============================================================================*/
 #include "VistaABuffer_Array.h"
 
 #include <VistaBase/VistaStreamUtils.h>
 #include <VistaOGLExt/VistaGLSLShader.h>
-#include <VistaOGLExt/VistaShaderRegistry.h>
 #include <VistaOGLExt/VistaOGLUtils.h>
+#include <VistaOGLExt/VistaShaderRegistry.h>
 
 /*============================================================================*/
 /* DEFINES			                                                          */
@@ -39,8 +39,8 @@ using namespace std;
 /*============================================================================*/
 /* GLOBAL VARIABLES                                                           */
 /*============================================================================*/
-const std::string g_strShader_Array_Frag  = "VistaABuffer_Array_frag.glsl";
-const std::string g_strShader_Array_Aux   = "VistaABuffer_Array_aux.glsl";
+const std::string g_strShader_Array_Frag = "VistaABuffer_Array_frag.glsl";
+const std::string g_strShader_Array_Aux  = "VistaABuffer_Array_aux.glsl";
 
 /*============================================================================*/
 /* VistaABufferLinkedList    	                                              */
@@ -48,114 +48,109 @@ const std::string g_strShader_Array_Aux   = "VistaABuffer_Array_aux.glsl";
 /******************************************************************************/
 /* CON-/DESTRCUTOR	                                                          */
 /******************************************************************************/
-VistaABufferArray::VistaABufferArray( )
-	:	IVistaABuffer()
-	,	m_uiFragCountBuffer( 0 )
-	,	m_addrFragCountBuffer( 0 )
-{ }
+VistaABufferArray::VistaABufferArray()
+    : IVistaABuffer()
+    , m_uiFragCountBuffer(0)
+    , m_addrFragCountBuffer(0) {
+}
 
-VistaABufferArray::~VistaABufferArray()
-{
-	if( m_uiFragCountBuffer ) glDeleteBuffers( 1, &m_uiFragCountBuffer );
+VistaABufferArray::~VistaABufferArray() {
+  if (m_uiFragCountBuffer)
+    glDeleteBuffers(1, &m_uiFragCountBuffer);
 }
 
 /******************************************************************************/
 /* PUBLIC INTERFACE	                                                          */
 /******************************************************************************/
-VistaGLSLShader* VistaABufferArray::CreateShaderPrototype() const
-{
-	 VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
-	 std::string strShader;
-	 
-	 strShader = rShaderReg.RetrieveShader( g_strShader_Array_Aux );
+VistaGLSLShader* VistaABufferArray::CreateShaderPrototype() const {
+  VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
+  std::string          strShader;
 
-	 if( strShader.empty() ) return NULL;
+  strShader = rShaderReg.RetrieveShader(g_strShader_Array_Aux);
 
-	 VistaGLSLShader* pShader = new VistaGLSLShader();
+  if (strShader.empty())
+    return NULL;
 
-	 pShader->InitFragmentShaderFromString( strShader );
+  VistaGLSLShader* pShader = new VistaGLSLShader();
 
-	 return pShader;
- }
+  pShader->InitFragmentShaderFromString(strShader);
+
+  return pShader;
+}
 /******************************************************************************/
 /* PROTECTED INTERFACE	                                                      */
 /******************************************************************************/
-bool VistaABufferArray::InitShader()
-{
+bool VistaABufferArray::InitShader() {
 #ifdef _DEBUG
-	vstr::debugi() << "[VistaABufferArray] INIT SHADER" << endl;
-	vstr::IndentObject oIndent;
+  vstr::debugi() << "[VistaABufferArray] INIT SHADER" << endl;
+  vstr::IndentObject oIndent;
 #endif // _DEBUG
 
-	VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
+  VistaShaderRegistry& rShaderReg = VistaShaderRegistry::GetInstance();
 
-	std::string strShader;
+  std::string strShader;
 
-	strShader = rShaderReg.RetrieveShader( g_strShader_Array_Frag );
+  strShader = rShaderReg.RetrieveShader(g_strShader_Array_Frag);
 
-	if( strShader.empty() )
-	{
-		vstr::errp() << "[VistaABufferLinkedList] - required shader not found."  << endl;
-		vstr::IndentObject oIndent;
-		vstr::erri() << "Can't find " << g_strShader_Array_Frag	<< endl;
-		return false;
-	}
+  if (strShader.empty()) {
+    vstr::errp() << "[VistaABufferLinkedList] - required shader not found." << endl;
+    vstr::IndentObject oIndent;
+    vstr::erri() << "Can't find " << g_strShader_Array_Frag << endl;
+    return false;
+  }
 
-	m_pClearShader = new VistaGLSLShader();
+  m_pClearShader = new VistaGLSLShader();
 
-	m_pClearShader->InitFragmentShaderFromString( strShader );
+  m_pClearShader->InitFragmentShaderFromString(strShader);
 
-	return m_pClearShader->Link();
+  return m_pClearShader->Link();
 }
 
-bool VistaABufferArray::InitBuffer()
-{
-	if( !m_uiFragCountBuffer   ) glGenBuffers( 1, &m_uiFragCountBuffer   );
+bool VistaABufferArray::InitBuffer() {
+  if (!m_uiFragCountBuffer)
+    glGenBuffers(1, &m_uiFragCountBuffer);
 
-	IVistaABuffer::ResizeBuffer( m_uiFragCountBuffer, m_addrFragCountBuffer, 
-	                             sizeof(unsigned int)*m_uiWidth*m_uiHeight  );
+  IVistaABuffer::ResizeBuffer(
+      m_uiFragCountBuffer, m_addrFragCountBuffer, sizeof(unsigned int) * m_uiWidth * m_uiHeight);
 
-	UpdateUniforms();
+  UpdateUniforms();
 
-	return !VistaOGLUtils::CheckForOGLError( __FILE__, __LINE__ );
+  return !VistaOGLUtils::CheckForOGLError(__FILE__, __LINE__);
 }
 
-void VistaABufferArray::ResizePerPixelBuffer()
-{
-	IVistaABuffer::ResizeBuffer(
-		m_uiFragCountBuffer, m_addrFragCountBuffer, 
-		sizeof(unsigned int)*m_uiWidth*m_uiHeight );
+void VistaABufferArray::ResizePerPixelBuffer() {
+  IVistaABuffer::ResizeBuffer(
+      m_uiFragCountBuffer, m_addrFragCountBuffer, sizeof(unsigned int) * m_uiWidth * m_uiHeight);
 }
 /******************************************************************************/
-void VistaABufferArray::AssignUniforms( VistaGLSLShader* pShader )
-{
-	if( pShader==NULL ) return;
-	
-	unsigned int uiProgram = pShader->GetProgram();
+void VistaABufferArray::AssignUniforms(VistaGLSLShader* pShader) {
+  if (pShader == NULL)
+    return;
 
-	int aiULoc[4];
+  unsigned int uiProgram = pShader->GetProgram();
 
-	aiULoc[0] = pShader->GetUniformLocation( "g_nWidth"             );
-	aiULoc[1] = pShader->GetUniformLocation( "g_nHeight"            );
-	aiULoc[2] = pShader->GetUniformLocation( "g_nFragmentsPerPixel" );
-	aiULoc[3] = pShader->GetUniformLocation( "g_pFragCountBuffer"   );
+  int aiULoc[4];
 
-	if( aiULoc[0] != -1 )
-		glProgramUniform1uiEXT( uiProgram, aiULoc[0], m_uiWidth );
-	if( aiULoc[1] != -1 )
-		glProgramUniform1uiEXT( uiProgram, aiULoc[1], m_uiHeight );
-	if( aiULoc[2] != -1 )
-		glProgramUniform1uiEXT( uiProgram, aiULoc[2], m_uiFragmenstPerPixel );
+  aiULoc[0] = pShader->GetUniformLocation("g_nWidth");
+  aiULoc[1] = pShader->GetUniformLocation("g_nHeight");
+  aiULoc[2] = pShader->GetUniformLocation("g_nFragmentsPerPixel");
+  aiULoc[3] = pShader->GetUniformLocation("g_pFragCountBuffer");
 
-	if( aiULoc[3] != -1 )
-		glProgramUniformui64NV( uiProgram, aiULoc[3], m_addrFragCountBuffer );
+  if (aiULoc[0] != -1)
+    glProgramUniform1uiEXT(uiProgram, aiULoc[0], m_uiWidth);
+  if (aiULoc[1] != -1)
+    glProgramUniform1uiEXT(uiProgram, aiULoc[1], m_uiHeight);
+  if (aiULoc[2] != -1)
+    glProgramUniform1uiEXT(uiProgram, aiULoc[2], m_uiFragmenstPerPixel);
 
-	for( size_t n = 0; n <m_vecDataFileds.size(); ++n)
-	{
-		int iULoc = pShader->GetUniformLocation( m_vecDataFileds[n].m_strName );
-		if( iULoc != -1 )
-			glProgramUniformui64NV( uiProgram, iULoc, m_vecDataFileds[n].m_addrBuffer );
-	}
+  if (aiULoc[3] != -1)
+    glProgramUniformui64NV(uiProgram, aiULoc[3], m_addrFragCountBuffer);
+
+  for (size_t n = 0; n < m_vecDataFileds.size(); ++n) {
+    int iULoc = pShader->GetUniformLocation(m_vecDataFileds[n].m_strName);
+    if (iULoc != -1)
+      glProgramUniformui64NV(uiProgram, iULoc, m_vecDataFileds[n].m_addrBuffer);
+  }
 }
 
 /*============================================================================*/

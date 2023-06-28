@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /*                                                                            */
 /* This Demo will create a box and a sphere (textured), both located in       */
@@ -55,23 +54,22 @@ class VistaSystem;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class TextDemoAppl
-{
-public:
-	TextDemoAppl();
-	virtual ~TextDemoAppl();
+class TextDemoAppl {
+ public:
+  TextDemoAppl();
+  virtual ~TextDemoAppl();
 
-	bool Init( int argc, char* argv[] );
-	void Run();
+  bool Init(int argc, char* argv[]);
+  void Run();
 
-private:
-	VistaSystem*	m_pVistaSystem = nullptr;
+ private:
+  VistaSystem* m_pVistaSystem = nullptr;
 
-	VistaSimpleTextOverlay		*m_pSimpleTextOverlay = nullptr;
-	IVistaTextEntity 			*m_pTextEntity1 = nullptr;
-	IVistaTextEntity			*m_pTextEntity2 = nullptr;
-	IVistaTextEntity			*m_pTextEntity3 = nullptr;
-	Vista3DTextOverlay			*m_pOverlay3D = nullptr;
+  VistaSimpleTextOverlay* m_pSimpleTextOverlay = nullptr;
+  IVistaTextEntity*       m_pTextEntity1       = nullptr;
+  IVistaTextEntity*       m_pTextEntity2       = nullptr;
+  IVistaTextEntity*       m_pTextEntity3       = nullptr;
+  Vista3DTextOverlay*     m_pOverlay3D         = nullptr;
 };
 
 /*============================================================================*/
@@ -79,4 +77,3 @@ private:
 /*============================================================================*/
 
 #endif // _GEOMETRYDEMOAPPL_H
-

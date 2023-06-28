@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIOMULTIPLEXER_H
 #define _VISTAIOMULTIPLEXER_H
 
@@ -38,78 +37,49 @@
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 class VistaMutex;
 class VistaThreadCondition;
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaIOMultiplexer
-{
-public:
-	VistaIOMultiplexer();
-	virtual ~VistaIOMultiplexer();
+class VISTAINTERPROCCOMMAPI VistaIOMultiplexer {
+ public:
+  VistaIOMultiplexer();
+  virtual ~VistaIOMultiplexer();
 
-	// Demultiplex function, implement this
-	virtual int Demultiplex(unsigned int nTimeout = ~0 ) = 0;
+  // Demultiplex function, implement this
+  virtual int Demultiplex(unsigned int nTimeout = ~0) = 0;
 
-	enum eIODir
-	{
-		MP_IONONE=0,
-		MP_IOIN = 1,
-		MP_IOOUT = 2,
-		MP_IOERR = 4,
-		MP_IOALL = 7
-	};
+  enum eIODir { MP_IONONE = 0, MP_IOIN = 1, MP_IOOUT = 2, MP_IOERR = 4, MP_IOALL = 7 };
 
+  enum eIOState { MP_NONE = 0, MP_IDLE, MP_PLEXING, MP_DISPATCHING };
 
-	enum eIOState
-	{
-		MP_NONE=0,
-		MP_IDLE,
-		MP_PLEXING,
-		MP_DISPATCHING
-	};
+  eIOState     GetState() const;
+  int          GetNextTicket();
+  virtual void Shutdown();
+  void         WaitForShutdownComplete();
 
-	eIOState GetState() const;
-	int GetNextTicket();
-	virtual void Shutdown();
-	void WaitForShutdownComplete();
+  virtual bool RemMultiplexPointByTicket(int iTicket) = 0;
 
-	virtual bool RemMultiplexPointByTicket(int iTicket) = 0;
+ protected:
+  bool SetState(eIOState);
+  enum eIOCom { MPC_NONE = -1, MPC_ADDHANDLE = 0, MPC_REMHANDLE, MPC_SHUTDOWN, MPC_LAST };
 
-protected:
+  bool SetCommand(eIOCom);
 
+  eIOState m_eState;
+  eIOCom   m_eCom;
 
-	bool SetState(eIOState);
-	enum eIOCom
-	{
-		MPC_NONE=-1,
-		MPC_ADDHANDLE=0,
-		MPC_REMHANDLE,
-		MPC_SHUTDOWN,
-		MPC_LAST
-	};
+  VistaMutex *m_pStateMutex, *m_pShutdownMutex, *m_pTicketMutex;
 
-	bool SetCommand(eIOCom);
+  VistaThreadCondition* m_pShutdown;
 
-	eIOState m_eState;
-	eIOCom   m_eCom;
-
-
-	VistaMutex *m_pStateMutex, *m_pShutdownMutex,
-				*m_pTicketMutex;
-
-	VistaThreadCondition *m_pShutdown;
-
-	int m_iTicket;
+  int m_iTicket;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

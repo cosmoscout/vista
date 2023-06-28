@@ -21,9 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_SPROC) || defined(VISTA_THREADING_POSIX)
-
 
 #ifndef _VISTAPOSIXPROCESSIMP_H
 #define _VISTAPOSIXPROCESSIMP_H
@@ -31,7 +29,6 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-
 
 #include "VistaProcessImp.h"
 
@@ -50,29 +47,28 @@ class VistaPriority;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaPosixProcessImp : public IVistaProcessImp
-{
-public:
-	VistaPosixProcessImp();
-	virtual ~VistaPosixProcessImp();
+class VistaPosixProcessImp : public IVistaProcessImp {
+ public:
+  VistaPosixProcessImp();
+  virtual ~VistaPosixProcessImp();
 
-	virtual bool Run( const std::string & inCommand );
-	virtual bool Suspend();
-	virtual bool Resume();
-	virtual bool Join();
-	virtual bool Abort();
+  virtual bool Run(const std::string& inCommand);
+  virtual bool Suspend();
+  virtual bool Resume();
+  virtual bool Join();
+  virtual bool Abort();
 
-	virtual bool SetPriority ( const VistaPriority & );
-	virtual void GetPriority ( VistaPriority & ) const;
-	
-protected:
-	pid_t    unixPID;
-private:
-	void CleanupProcess();
+  virtual bool SetPriority(const VistaPriority&);
+  virtual void GetPriority(VistaPriority&) const;
+
+ protected:
+  pid_t unixPID;
+
+ private:
+  void CleanupProcess();
 };
 
 #endif // defined(VISTA_THREADING_SPROC) || defined(VISTA_THREADING_POSIX)
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

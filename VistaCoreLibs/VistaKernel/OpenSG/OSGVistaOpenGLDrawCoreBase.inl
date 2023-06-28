@@ -37,8 +37,8 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 #include <OpenSG/OSGConfig.h>
 #ifdef WIN32
@@ -47,51 +47,38 @@
 
 OSG_BEGIN_NAMESPACE
 
-
 //! access the type of the class
-inline
-OSG::FieldContainerType &VistaOpenGLDrawCoreBase::getClassType(void)
-{
-    return _type; 
-} 
+inline OSG::FieldContainerType& VistaOpenGLDrawCoreBase::getClassType(void) {
+  return _type;
+}
 
 //! access the numerical type of the class
-inline
-OSG::UInt32 VistaOpenGLDrawCoreBase::getClassTypeId(void) 
-{
-    return _type.getId(); 
-} 
+inline OSG::UInt32 VistaOpenGLDrawCoreBase::getClassTypeId(void) {
+  return _type.getId();
+}
 
 //! create a new instance of the class
-inline
-VistaOpenGLDrawCorePtr VistaOpenGLDrawCoreBase::create(void) 
-{
-    VistaOpenGLDrawCorePtr fc; 
+inline VistaOpenGLDrawCorePtr VistaOpenGLDrawCoreBase::create(void) {
+  VistaOpenGLDrawCorePtr fc;
 
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = VistaOpenGLDrawCorePtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+  if (getClassType().getPrototype() != OSG::NullFC) {
+    fc = VistaOpenGLDrawCorePtr::dcast(getClassType().getPrototype()->shallowCopy());
+  }
+
+  return fc;
 }
 
 //! create an empty new instance of the class, do not copy the prototype
-inline
-VistaOpenGLDrawCorePtr VistaOpenGLDrawCoreBase::createEmpty(void) 
-{ 
-    VistaOpenGLDrawCorePtr returnValue; 
-    
-    newPtr(returnValue); 
+inline VistaOpenGLDrawCorePtr VistaOpenGLDrawCoreBase::createEmpty(void) {
+  VistaOpenGLDrawCorePtr returnValue;
 
-    return returnValue; 
+  newPtr(returnValue);
+
+  return returnValue;
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
 OSG_END_NAMESPACE
 
 #define OSGVistaOpenGLDrawCoreBASE_INLINE_CVSID "@(#)$Id$"
-

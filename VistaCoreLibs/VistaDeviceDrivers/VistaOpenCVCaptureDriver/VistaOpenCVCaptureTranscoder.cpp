@@ -21,107 +21,93 @@
 /*                                                                            */
 /*============================================================================*/
 
-
+#include "VistaOpenCVCaptureDriver.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include "VistaOpenCVCaptureDriver.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS                                  */
 /*============================================================================*/
-namespace
-{
-	class VistaOpenCVCaptureVideoTranscoder : public IVistaMeasureTranscode
-	{
-		  REFL_INLINEIMP(VistaOpenCVCaptureVideoTranscoder, IVistaMeasureTranscode);
-	public:
-		  VistaOpenCVCaptureVideoTranscoder()
-		{
-			// inherited as protected member
-			m_nNumberOfScalars = 0;
-		}
+namespace {
+class VistaOpenCVCaptureVideoTranscoder : public IVistaMeasureTranscode {
+  REFL_INLINEIMP(VistaOpenCVCaptureVideoTranscoder, IVistaMeasureTranscode);
 
-		  static std::string GetTypeString() { return "VistaOpenCVCaptureVideoTranscoder"; }
-	};
+ public:
+  VistaOpenCVCaptureVideoTranscoder() {
+    // inherited as protected member
+    m_nNumberOfScalars = 0;
+  }
 
-	class VistaOpenCVCaptureTypeTranscoder : public IVistaMeasureTranscode
-	{
-		  REFL_INLINEIMP(VistaOpenCVCaptureTypeTranscoder, IVistaMeasureTranscode);
-	public:
-		  VistaOpenCVCaptureTypeTranscoder()
-		{
-			// inherited as protected member
-			m_nNumberOfScalars = 0;
-		}
+  static std::string GetTypeString() {
+    return "VistaOpenCVCaptureVideoTranscoder";
+  }
+};
 
-		  static std::string GetTypeString() { return "VistaOpenCVCaptureTypeTranscoder"; }
-	};
+class VistaOpenCVCaptureTypeTranscoder : public IVistaMeasureTranscode {
+  REFL_INLINEIMP(VistaOpenCVCaptureTypeTranscoder, IVistaMeasureTranscode);
 
+ public:
+  VistaOpenCVCaptureTypeTranscoder() {
+    // inherited as protected member
+    m_nNumberOfScalars = 0;
+  }
 
-	class VistaRawValueTranscode : public IVistaMeasureTranscode::TTranscodeValueGet<const void*>
-	{
-		public:
-		VistaRawValueTranscode()
-		: IVistaMeasureTranscode::TTranscodeValueGet<const void*>("RAWFIELD",
-				VistaOpenCVCaptureVideoTranscoder::GetTypeString(),
-										 "returns a pointer to the raw void* field (assume RGB8).")
-		{
-		}
+  static std::string GetTypeString() {
+    return "VistaOpenCVCaptureTypeTranscoder";
+  }
+};
 
-		virtual const void *GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			return &(*pMeasure).m_vecMeasures[0];
-		}
+class VistaRawValueTranscode : public IVistaMeasureTranscode::TTranscodeValueGet<const void*> {
+ public:
+  VistaRawValueTranscode()
+      : IVistaMeasureTranscode::TTranscodeValueGet<const void*>("RAWFIELD",
+            VistaOpenCVCaptureVideoTranscoder::GetTypeString(),
+            "returns a pointer to the raw void* field (assume RGB8).") {
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, const void *&nValue) const
-		{
-			nValue = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual const void* GetValue(const VistaSensorMeasure* pMeasure) const {
+    return &(*pMeasure).m_vecMeasures[0];
+  }
 
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, const void*& nValue) const {
+    nValue = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	static IVistaPropertyGetFunctor *SaGetter[] =
-	{
-		new VistaRawValueTranscode,
-		NULL
-	};
+static IVistaPropertyGetFunctor* SaGetter[] = {new VistaRawValueTranscode, NULL};
 
+// ###############################################################################################
+// FACTORYFACTORY
+// ###############################################################################################
 
-	// ###############################################################################################
-	// FACTORYFACTORY
-	// ###############################################################################################
+class VistaOpenCVCaptureDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory {
+ public:
+  virtual IVistaMeasureTranscoderFactory* CreateFactoryForType(const std::string& strTypeName) {
+    if (VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(strTypeName, "VIDEO")) {
+      return new TDefaultTranscoderFactory<VistaOpenCVCaptureVideoTranscoder>(
+          VistaOpenCVCaptureVideoTranscoder::GetTypeString());
+    } else if (VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(strTypeName, "TYPE")) {
+      return new TDefaultTranscoderFactory<VistaOpenCVCaptureTypeTranscoder>(
+          VistaOpenCVCaptureTypeTranscoder::GetTypeString());
+    } else
+      return NULL;
+  }
 
-	class VistaOpenCVCaptureDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory
-	{
-	public:
-		virtual IVistaMeasureTranscoderFactory *CreateFactoryForType( const std::string &strTypeName )
-		{
-			if( VistaAspectsComparisonStuff::StringCaseInsensitiveEquals( strTypeName, "VIDEO" ) )
-			{
-				return new TDefaultTranscoderFactory<VistaOpenCVCaptureVideoTranscoder>( VistaOpenCVCaptureVideoTranscoder::GetTypeString() );
-			}
-			else if( VistaAspectsComparisonStuff::StringCaseInsensitiveEquals( strTypeName, "TYPE" ) )
-			{
-				return new TDefaultTranscoderFactory<VistaOpenCVCaptureTypeTranscoder>( VistaOpenCVCaptureTypeTranscoder::GetTypeString() );
-			}
-			else
-				return NULL;
-		}
+  virtual void DestroyTranscoderFactory(IVistaMeasureTranscoderFactory* fac) {
+    delete fac;
+  }
 
-		virtual void DestroyTranscoderFactory( IVistaMeasureTranscoderFactory *fac )
-		{
-			delete fac;
-		}
-
-		static void OnUnload()
-		{
-			TDefaultTranscoderFactory<VistaOpenCVCaptureTypeTranscoder>  a( VistaOpenCVCaptureTypeTranscoder::GetTypeString() ); a.OnUnload();
-			TDefaultTranscoderFactory<VistaOpenCVCaptureVideoTranscoder>  b( VistaOpenCVCaptureVideoTranscoder::GetTypeString() ); b.OnUnload();
-		}
-
-	};
-}
+  static void OnUnload() {
+    TDefaultTranscoderFactory<VistaOpenCVCaptureTypeTranscoder> a(
+        VistaOpenCVCaptureTypeTranscoder::GetTypeString());
+    a.OnUnload();
+    TDefaultTranscoderFactory<VistaOpenCVCaptureVideoTranscoder> b(
+        VistaOpenCVCaptureVideoTranscoder::GetTypeString());
+    b.OnUnload();
+  }
+};
+} // namespace
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -136,9 +122,9 @@ namespace
 /*============================================================================*/
 
 #ifdef VISTAOPENCVCAPTURETRANSCODER_EXPORTS
-	DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaOpenCVCaptureDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(VistaOpenCVCaptureDriverTranscoderFactoryFactory)
 #else
-	DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaOpenCVCaptureDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(VistaOpenCVCaptureDriverTranscoderFactoryFactory)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;

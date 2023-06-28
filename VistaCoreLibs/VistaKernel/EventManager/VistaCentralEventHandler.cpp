@@ -21,14 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaKernel/EventManager/VistaCentralEventHandler.h>
 
 // avoid include file dependencies - we don't like excessive compile times, right?! (ms)
-#include <VistaKernel/EventManager/VistaEvent.h>
-#include <VistaKernel/EventManager/VistaSystemEvent.h>
 #include <VistaKernel/EventManager/VistaCommandEvent.h>
+#include <VistaKernel/EventManager/VistaEvent.h>
 #include <VistaKernel/EventManager/VistaEventManager.h>
+#include <VistaKernel/EventManager/VistaSystemEvent.h>
 
 #include <VistaBase/VistaStreamUtils.h>
 
@@ -49,48 +48,41 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaCentralEventHandler::VistaCentralEventHandler(VistaEventManager *pMgr)
-: m_pEvMgr(pMgr)
-{
-	m_pEvMgr->AddEventHandler(this, VistaEventManager::NVET_ALL, 
-								VistaEventManager::NVET_ALL, 
-								VistaEventManager::PRIO_MID);
+VistaCentralEventHandler::VistaCentralEventHandler(VistaEventManager* pMgr)
+    : m_pEvMgr(pMgr) {
+  m_pEvMgr->AddEventHandler(
+      this, VistaEventManager::NVET_ALL, VistaEventManager::NVET_ALL, VistaEventManager::PRIO_MID);
 }
 
-VistaCentralEventHandler::~VistaCentralEventHandler()
-{
-	m_pEvMgr->RemEventHandler(this, VistaEventManager::NVET_ALL,
-							  VistaEventManager::NVET_ALL);
+VistaCentralEventHandler::~VistaCentralEventHandler() {
+  m_pEvMgr->RemEventHandler(this, VistaEventManager::NVET_ALL, VistaEventManager::NVET_ALL);
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-void VistaCentralEventHandler::HandleEvent(VistaEvent *pEvent)
-{
-	GeneralEventHandler(pEvent);
+void VistaCentralEventHandler::HandleEvent(VistaEvent* pEvent) {
+  GeneralEventHandler(pEvent);
 
-	if (pEvent->IsHandled())
-		return;
+  if (pEvent->IsHandled())
+    return;
 
-	int nTypeID = pEvent->GetType();
-	if(nTypeID == VistaSystemEvent::GetTypeId())
-		DispatchSystemEvent(static_cast<VistaSystemEvent*>(pEvent));
-	else if(nTypeID == VistaCommandEvent::GetTypeId())
-		DispatchCommandEvent(static_cast<VistaCommandEvent*>(pEvent));
-	else
-		ExternalEventHandler(pEvent);
+  int nTypeID = pEvent->GetType();
+  if (nTypeID == VistaSystemEvent::GetTypeId())
+    DispatchSystemEvent(static_cast<VistaSystemEvent*>(pEvent));
+  else if (nTypeID == VistaCommandEvent::GetTypeId())
+    DispatchCommandEvent(static_cast<VistaCommandEvent*>(pEvent));
+  else
+    ExternalEventHandler(pEvent);
 }
-
 
 /*============================================================================*/
 /*                                                                            */
 /*  NAME      :   GeneralEventHandler                                         */
 /*                                                                            */
 /*============================================================================*/
-void VistaCentralEventHandler::GeneralEventHandler(VistaEvent *pEvent)
-{
+void VistaCentralEventHandler::GeneralEventHandler(VistaEvent* pEvent) {
 }
 
 //============================================================================
@@ -100,89 +92,79 @@ void VistaCentralEventHandler::GeneralEventHandler(VistaEvent *pEvent)
 // 1. SystemEventHandler
 // 2. Special Handlers (init, quit, exit, predraw, postdraw)
 //============================================================================
-void VistaCentralEventHandler::DispatchSystemEvent(VistaSystemEvent *pEvent)
-{
-	if (pEvent->GetId() == VistaSystemEvent::VSE_INVALID)
-		return;
+void VistaCentralEventHandler::DispatchSystemEvent(VistaSystemEvent* pEvent) {
+  if (pEvent->GetId() == VistaSystemEvent::VSE_INVALID)
+    return;
 
-	// call user-defined general system event handler
-	SystemEventHandler(pEvent);
+  // call user-defined general system event handler
+  SystemEventHandler(pEvent);
 
-	if (pEvent->IsHandled())
-		return;
+  if (pEvent->IsHandled())
+    return;
 
-	// if the event is not handled yet, call the specialized handlers
-	switch (pEvent->GetId())
-	{
-	case VistaSystemEvent::VSE_INIT:
-		InitVistaEvent(pEvent);
-		break;
-	case VistaSystemEvent::VSE_QUIT:
-		QuitVistaEvent(pEvent);
-		break;
-	case VistaSystemEvent::VSE_EXIT:
-		ExitVistaEvent(pEvent);
-		break;
-	case VistaSystemEvent::VSE_PREGRAPHICS:
-		PreDrawGraphicsEvent(pEvent);
-		break;
-	case VistaSystemEvent::VSE_POSTGRAPHICS:
-		PostDrawGraphicsEvent(pEvent);
-		break;
-	case VistaSystemEvent::VSE_POSTAPPLICATIONLOOP:
-		PostAppEventHandler(pEvent);
-		break;
-	case VistaSystemEvent::VSE_PREAPPLICATIONLOOP:
-		PreAppEventHandler(pEvent);
-		break;
-	default:
-		break;
-	}
+  // if the event is not handled yet, call the specialized handlers
+  switch (pEvent->GetId()) {
+  case VistaSystemEvent::VSE_INIT:
+    InitVistaEvent(pEvent);
+    break;
+  case VistaSystemEvent::VSE_QUIT:
+    QuitVistaEvent(pEvent);
+    break;
+  case VistaSystemEvent::VSE_EXIT:
+    ExitVistaEvent(pEvent);
+    break;
+  case VistaSystemEvent::VSE_PREGRAPHICS:
+    PreDrawGraphicsEvent(pEvent);
+    break;
+  case VistaSystemEvent::VSE_POSTGRAPHICS:
+    PostDrawGraphicsEvent(pEvent);
+    break;
+  case VistaSystemEvent::VSE_POSTAPPLICATIONLOOP:
+    PostAppEventHandler(pEvent);
+    break;
+  case VistaSystemEvent::VSE_PREAPPLICATIONLOOP:
+    PreAppEventHandler(pEvent);
+    break;
+  default:
+    break;
+  }
 }
 
-void VistaCentralEventHandler::SystemEventHandler(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::SystemEventHandler(VistaSystemEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::CommandEventHandler(VistaCommandEvent *pEvent)
-{
+void VistaCentralEventHandler::CommandEventHandler(VistaCommandEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::DispatchCommandEvent(VistaCommandEvent *pEvent)
-{
-	if (pEvent->GetId() >= VistaCommandEvent::VEIDC_LAST)
-		return;
+void VistaCentralEventHandler::DispatchCommandEvent(VistaCommandEvent* pEvent) {
+  if (pEvent->GetId() >= VistaCommandEvent::VEIDC_LAST)
+    return;
 
-	CommandEventHandler(pEvent);
+  CommandEventHandler(pEvent);
 }
 
-void VistaCentralEventHandler::InitVistaEvent(VistaSystemEvent *pEvent)
-{
-	vstr::warnp() << "[VistaCentralEventHandler] Application didn't define a system event handler for initialization!" << std::endl;
+void VistaCentralEventHandler::InitVistaEvent(VistaSystemEvent* pEvent) {
+  vstr::warnp() << "[VistaCentralEventHandler] Application didn't define a system event handler "
+                   "for initialization!"
+                << std::endl;
 }
 
-void VistaCentralEventHandler::QuitVistaEvent(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::QuitVistaEvent(VistaSystemEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::ExitVistaEvent(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::ExitVistaEvent(VistaSystemEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::PreDrawGraphicsEvent(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::PreDrawGraphicsEvent(VistaSystemEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::PostDrawGraphicsEvent(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::PostDrawGraphicsEvent(VistaSystemEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::PreAppEventHandler(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::PreAppEventHandler(VistaSystemEvent* pEvent) {
 }
 
-void VistaCentralEventHandler::PostAppEventHandler(VistaSystemEvent *pEvent)
-{
+void VistaCentralEventHandler::PostAppEventHandler(VistaSystemEvent* pEvent) {
 }
 
 //============================================================================
@@ -192,7 +174,7 @@ void VistaCentralEventHandler::PostAppEventHandler(VistaSystemEvent *pEvent)
 // 1. InputEventHandler
 // 2. Special Event Handler(s) (Keyboard)
 //============================================================================
-//void VistaCentralEventHandler::DispatchInputEvent(VistaInputEvent *pEvent)
+// void VistaCentralEventHandler::DispatchInputEvent(VistaInputEvent *pEvent)
 //{
 //	// make sure, we have a valid event
 //	if (pEvent->GetId() == VistaInputEvent::VIE_INVALID)
@@ -209,16 +191,13 @@ void VistaCentralEventHandler::PostAppEventHandler(VistaSystemEvent *pEvent)
 //	case VID_KEYBOARD:
 //
 //		if ( pEvent->GetId() == VistaInputEvent::VIE_BUTTON_PRESSED &&
-//			 !ProcessKeyPress(((VistaKeyboard*)(pEvent->GetInputDevice()))->GetCurrentKey() ) )
-//			return;
-//		break;
-//	default:
-//		return;
+//			 !ProcessKeyPress(((VistaKeyboard*)(pEvent->GetInputDevice()))->GetCurrentKey()
+//) ) 			return; 		break; 	default: 		return;
 //	}
 //	pEvent->SetHandled(true);
 //}
 
-//void VistaCentralEventHandler::InputEventHandler (VistaInputEvent *pEvent)
+// void VistaCentralEventHandler::InputEventHandler (VistaInputEvent *pEvent)
 //{
 ////#ifdef DEBUG
 //#ifdef EXCESSIVE_DEBUG
@@ -226,15 +205,12 @@ void VistaCentralEventHandler::PostAppEventHandler(VistaSystemEvent *pEvent)
 //#endif
 //}
 
-bool VistaCentralEventHandler::ProcessKeyPress(int keyCode)
-{
-	return false;
+bool VistaCentralEventHandler::ProcessKeyPress(int keyCode) {
+  return false;
 }
 
 //============================================================================
 // EXTERNAL Event Handling, i.e. user-defineable(??) callback
 //============================================================================
-void VistaCentralEventHandler::ExternalEventHandler(VistaEvent *pEvent)
-{
+void VistaCentralEventHandler::ExternalEventHandler(VistaEvent* pEvent) {
 }
-

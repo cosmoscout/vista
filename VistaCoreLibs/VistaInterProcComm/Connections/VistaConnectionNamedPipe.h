@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACONNECTIONNAMEDPIPE_H__
 #define _VISTACONNECTIONNAMEDPIPE_H__
 
@@ -29,42 +28,38 @@
 
 #include <string>
 
+class VISTAINTERPROCCOMMAPI VistaConnectionNamedPipe : public VistaConnection {
+ public:
+  VistaConnectionNamedPipe(const std::string& sName, const bool bIsServer);
+  ~VistaConnectionNamedPipe();
 
-class VISTAINTERPROCCOMMAPI VistaConnectionNamedPipe : public VistaConnection
-{
-public:
-	VistaConnectionNamedPipe( const std::string& sName, const bool bIsServer );
-	~VistaConnectionNamedPipe();
-		
-	virtual bool Open();
-	virtual void Close();
+  virtual bool Open();
+  virtual void Close();
 
-	std::string GetPipeName() const;
+  std::string GetPipeName() const;
 
-	virtual bool HasPendingData() const;
-	virtual unsigned long WaitForIncomingData( int nTimeout = 0 );
-	virtual unsigned long PendingDataSize() const;
-	
-protected:
-	virtual int Send( const void* pBuffer, const int nLength );
-	virtual int Receive( void* pBuffer, const int nLength, int iTimeout = 0 );
+  virtual bool          HasPendingData() const;
+  virtual unsigned long WaitForIncomingData(int nTimeout = 0);
+  virtual unsigned long PendingDataSize() const;
 
-private:
-	const std::string m_sPipeName;
-	const bool m_bIsServer;
+ protected:
+  virtual int Send(const void* pBuffer, const int nLength);
+  virtual int Receive(void* pBuffer, const int nLength, int iTimeout = 0);
+
+ private:
+  const std::string m_sPipeName;
+  const bool        m_bIsServer;
 
 #if !defined(WIN32)
-	int m_nReadFifo;
-	int m_nWriteFifo;
+  int m_nReadFifo;
+  int m_nWriteFifo;
 #else
-	HANDLE m_oPipe;
+  HANDLE m_oPipe;
 #endif
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif  //_VISTACONNECTIONPIPE_H__
+#endif //_VISTACONNECTIONPIPE_H__

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNABSOLUTENODE_H
 #define _VDFNABSOLUTENODE_H
 
@@ -29,11 +28,10 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
-#include "VdfnSerializer.h"
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
-
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -54,44 +52,39 @@
  * @inport{in,type T,mandatory,the value to invert using this node}
  * @outport{out,type T, the in^-1 (hopefully)}
  */
-template<class T>
-class TVdfnAbsoluteNode : public IVdfnNode
-{
-public:
-	TVdfnAbsoluteNode()
-	: IVdfnNode()
-	, m_pInPort( NULL )
-	, m_pOutPort( new TVdfnPort<T> )
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<T> >);
-		RegisterOutPort( "out", m_pOutPort );
-	}
+template <class T>
+class TVdfnAbsoluteNode : public IVdfnNode {
+ public:
+  TVdfnAbsoluteNode()
+      : IVdfnNode()
+      , m_pInPort(NULL)
+      , m_pOutPort(new TVdfnPort<T>) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterOutPort("out", m_pOutPort);
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pInPort = dynamic_cast<TVdfnPort<T>*>(GetInPort("in"));
-		return GetIsValid();
-	}
-protected:
-	virtual bool DoEvalNode()
-	{
-		T nValue = m_pInPort->GetValue();
-		if( nValue >= 0 )
-			m_pOutPort->SetValue( nValue, GetUpdateTimeStamp() );
-		else
-			m_pOutPort->SetValue( -nValue, GetUpdateTimeStamp() );
-		return true;
-	}
-	
-private:
-	TVdfnPort<T>* m_pInPort;
-	TVdfnPort<T>* m_pOutPort;
+  bool PrepareEvaluationRun() {
+    m_pInPort = dynamic_cast<TVdfnPort<T>*>(GetInPort("in"));
+    return GetIsValid();
+  }
+
+ protected:
+  virtual bool DoEvalNode() {
+    T nValue = m_pInPort->GetValue();
+    if (nValue >= 0)
+      m_pOutPort->SetValue(nValue, GetUpdateTimeStamp());
+    else
+      m_pOutPort->SetValue(-nValue, GetUpdateTimeStamp());
+    return true;
+  }
+
+ private:
+  TVdfnPort<T>* m_pInPort;
+  TVdfnPort<T>* m_pOutPort;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif // _VDFNABSOLUTENODE_H
-

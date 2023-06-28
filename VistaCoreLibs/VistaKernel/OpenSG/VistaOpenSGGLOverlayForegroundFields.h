@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA_OPENSG_GLOVERLAYFOREGROUND_FIELDS_H_
 #define _VISTA_OPENSG_GLOVERLAYFOREGROUND_FIELDS_H_
 
@@ -30,12 +29,12 @@
 #endif
 
 #if defined(WIN32)
-//diable warnings from OpenSG includes
+// diable warnings from OpenSG includes
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -57,20 +56,24 @@ class VistaOpenSGGLOverlayForeground;
 typedef FCPtr<ForegroundPtr, VistaOpenSGGLOverlayForeground> VistaOpenSGGLOverlayForegroundPtr;
 
 template <>
-struct FieldDataTraits<VistaOpenSGGLOverlayForegroundPtr> :
-	public FieldTraitsRecurseMapper<VistaOpenSGGLOverlayForegroundPtr, true>
-{
-	static DataType             _type;
+struct FieldDataTraits<VistaOpenSGGLOverlayForegroundPtr>
+    : public FieldTraitsRecurseMapper<VistaOpenSGGLOverlayForegroundPtr, true> {
+  static DataType _type;
 
-	enum                        { StringConvertable = 0x00 };
-	enum                        { bHasParent        = 0x01 };
+  enum { StringConvertable = 0x00 };
+  enum { bHasParent = 0x01 };
 
-	static DataType &getType (void) { return _type;        }
+  static DataType& getType(void) {
+    return _type;
+  }
 
-	static const char     *getSName(void) { return "SFGLOverlayForegroundPtr"; }
-	static const char     *getMName(void) { return "MFGLOverlayForegroundPtr"; }
+  static const char* getSName(void) {
+    return "SFGLOverlayForegroundPtr";
+  }
+  static const char* getMName(void) {
+    return "MFGLOverlayForegroundPtr";
+  }
 };
-
 
 typedef SField<VistaOpenSGGLOverlayForegroundPtr> SFVistaOpenSGGLOverlayForegroundPtr;
 typedef MField<VistaOpenSGGLOverlayForegroundPtr> MFVistaOpenSGGLOverlayForegroundPtr;

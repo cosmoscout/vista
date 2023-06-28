@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENGLPRIMITIVELIST_H
 #define _VISTAOPENGLPRIMITIVELIST_H
 
@@ -29,9 +28,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/GraphicsManager/VistaOpenGLDraw.h>
 #include <VistaKernel/GraphicsManager/VistaGeometry.h>
+#include <VistaKernel/GraphicsManager/VistaOpenGLDraw.h>
+#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaMath/VistaBoundingBox.h>
 
 /*============================================================================*/
@@ -49,102 +48,122 @@ class IVistaNode;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaOpenGLPrimitiveList
-{
-public:
-	class VISTAKERNELAPI COpenGLPrimitiveList : public IVistaOpenGLDraw
-	{
-	public:
-		COpenGLPrimitiveList();
-		virtual ~COpenGLPrimitiveList();
+class VISTAKERNELAPI VistaOpenGLPrimitiveList {
+ public:
+  class VISTAKERNELAPI COpenGLPrimitiveList : public IVistaOpenGLDraw {
+   public:
+    COpenGLPrimitiveList();
+    virtual ~COpenGLPrimitiveList();
 
-		// IVistaOpenGLDraw interface
-		virtual bool Do();
-		virtual bool GetBoundingBox(VistaBoundingBox &bb);
+    // IVistaOpenGLDraw interface
+    virtual bool Do();
+    virtual bool GetBoundingBox(VistaBoundingBox& bb);
 
-		void SetVertices(const std::vector<float> &vecPoints);
-		bool GetVertices(std::vector<float> &vecPoints) const;
+    void SetVertices(const std::vector<float>& vecPoints);
+    bool GetVertices(std::vector<float>& vecPoints) const;
 
-		bool GetIsUsingColorVector() const { return m_bIsUsingColorVector; }
-		void SetIsUsingColorVector(bool val) { m_bIsUsingColorVector = val; }
+    bool GetIsUsingColorVector() const {
+      return m_bIsUsingColorVector;
+    }
+    void SetIsUsingColorVector(bool val) {
+      m_bIsUsingColorVector = val;
+    }
 
-		std::vector<VistaColor>& GetVertexColors() {return m_vecColors;};
+    std::vector<VistaColor>& GetVertexColors() {
+      return m_vecColors;
+    };
 
-		unsigned int GetPrimitiveType() const;
-		void  SetPrimitiveType(unsigned int eMd);
+    unsigned int GetPrimitiveType() const;
+    void         SetPrimitiveType(unsigned int eMd);
 
-		VistaColor GetColor() const;
-		void           SetColor(const VistaColor &mat);
+    VistaColor GetColor() const;
+    void       SetColor(const VistaColor& mat);
 
-		bool GetUseLighting() const;
-		void SetUseLighting(bool val);
+    bool GetUseLighting() const;
+    void SetUseLighting(bool val);
 
-		float GetGlPrimitiveSize() const { return m_fGlPrimitiveSize; }
-		void SetGlPrimitiveSize(float val) { m_fGlPrimitiveSize = val; }
+    float GetGlPrimitiveSize() const {
+      return m_fGlPrimitiveSize;
+    }
+    void SetGlPrimitiveSize(float val) {
+      m_fGlPrimitiveSize = val;
+    }
 
-	protected:
-		bool UpdateDisplayList();
-		void CalculateNormal( float normal[3], unsigned int i, int param2, int param3 );
-	private:
-		int m_iDispId;
-		bool m_bDlistDirty;
+   protected:
+    bool UpdateDisplayList();
+    void CalculateNormal(float normal[3], unsigned int i, int param2, int param3);
 
-		bool m_bIsUsingColorVector;
-		std::vector<float> m_vecPoints;
-		std::vector<VistaColor> m_vecColors;
-		VistaBoundingBox   m_oBBox;
-		unsigned int m_eGLPrimitiveType;
-		VistaColor     m_oColor;
-		bool			m_bUseLighting;
-		float m_fGlPrimitiveSize;
-	};
-public:
+   private:
+    int  m_iDispId;
+    bool m_bDlistDirty;
 
-	enum ePrimitiveType
-	{
-		POINTS=0,
-		LINES,
-		LINE_LOOP,
-		LINE_STRIP,
-		TRIANGLES,
-		TRIANGLE_STRIP,
-		TRIANGLE_FAN,
-		QUADS,
-		QUAD_STRIP,
-		POLYGON
-	};
+    bool                    m_bIsUsingColorVector;
+    std::vector<float>      m_vecPoints;
+    std::vector<VistaColor> m_vecColors;
+    VistaBoundingBox        m_oBBox;
+    unsigned int            m_eGLPrimitiveType;
+    VistaColor              m_oColor;
+    bool                    m_bUseLighting;
+    float                   m_fGlPrimitiveSize;
+  };
 
-	VistaOpenGLPrimitiveList(VistaSceneGraph* pVistaSceneGraph, VistaGroupNode* pParent);
+ public:
+  enum ePrimitiveType {
+    POINTS = 0,
+    LINES,
+    LINE_LOOP,
+    LINE_STRIP,
+    TRIANGLES,
+    TRIANGLE_STRIP,
+    TRIANGLE_FAN,
+    QUADS,
+    QUAD_STRIP,
+    POLYGON
+  };
 
-	virtual ~VistaOpenGLPrimitiveList();
+  VistaOpenGLPrimitiveList(VistaSceneGraph* pVistaSceneGraph, VistaGroupNode* pParent);
 
-	IVistaNode* GetVistaNode() const;
+  virtual ~VistaOpenGLPrimitiveList();
 
-	void SetVertices(const std::vector<float> &vecPoints);
-	bool GetVertices(std::vector<float> &vecPoints) const;
+  IVistaNode* GetVistaNode() const;
 
-	bool GetIsUsingColorVector() const { return m_pDrawInterface->GetIsUsingColorVector (); }
-	void SetIsUsingColorVector(bool val) { m_pDrawInterface->SetIsUsingColorVector (val); }
+  void SetVertices(const std::vector<float>& vecPoints);
+  bool GetVertices(std::vector<float>& vecPoints) const;
 
-	std::vector<VistaColor>& GetVertexColors() {return m_pDrawInterface->GetVertexColors();};
+  bool GetIsUsingColorVector() const {
+    return m_pDrawInterface->GetIsUsingColorVector();
+  }
+  void SetIsUsingColorVector(bool val) {
+    m_pDrawInterface->SetIsUsingColorVector(val);
+  }
 
-	bool GetRemoveFromSGOnDelete() const;
-	void SetRemoveFromSGOnDelete(bool bRemove);
+  std::vector<VistaColor>& GetVertexColors() {
+    return m_pDrawInterface->GetVertexColors();
+  };
 
-	bool SetUseLighting(bool bUseLighting);
-	bool SetColor(const VistaColor &oMat) const;
-	bool SetColor (const VistaColor  & color);
-	bool SetPrimitiveType(const ePrimitiveType & primitiveType);
+  bool GetRemoveFromSGOnDelete() const;
+  void SetRemoveFromSGOnDelete(bool bRemove);
 
-	float GetGlPrimitiveSize() const { return m_pDrawInterface->GetGlPrimitiveSize (); }
-	void SetGlPrimitiveSize(float val) { m_pDrawInterface->SetGlPrimitiveSize (val); }
-protected:
-	VistaOpenGLNode		*m_pOglNode;
-	COpenGLPrimitiveList		*m_pDrawInterface;
-private:	
-	/** default is true */
-	bool					m_bRemoveFromSGOnDelete;
-	ePrimitiveType			m_ePrimitiveType;
+  bool SetUseLighting(bool bUseLighting);
+  bool SetColor(const VistaColor& oMat) const;
+  bool SetColor(const VistaColor& color);
+  bool SetPrimitiveType(const ePrimitiveType& primitiveType);
+
+  float GetGlPrimitiveSize() const {
+    return m_pDrawInterface->GetGlPrimitiveSize();
+  }
+  void SetGlPrimitiveSize(float val) {
+    m_pDrawInterface->SetGlPrimitiveSize(val);
+  }
+
+ protected:
+  VistaOpenGLNode*      m_pOglNode;
+  COpenGLPrimitiveList* m_pDrawInterface;
+
+ private:
+  /** default is true */
+  bool           m_bRemoveFromSGOnDelete;
+  ePrimitiveType m_ePrimitiveType;
 };
 
 /*============================================================================*/

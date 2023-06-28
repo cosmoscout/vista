@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMSG_H
 #define _VISTAMSG_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaBase/VistaBaseTypes.h>
 #include <VistaAspects/VistaSerializable.h>
+#include <VistaBase/VistaBaseTypes.h>
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <vector>
@@ -48,52 +47,49 @@
 /**
  * @todo rename to VistaMessage
  */
-class VISTAINTERPROCCOMMAPI VistaMsg : public IVistaSerializable
-{
-public:
-	typedef std::vector<VistaType::byte> MSG;
+class VISTAINTERPROCCOMMAPI VistaMsg : public IVistaSerializable {
+ public:
+  typedef std::vector<VistaType::byte> MSG;
 
-	VistaMsg();
-	VistaMsg(const VistaMsg &);
-	virtual ~VistaMsg();
+  VistaMsg();
+  VistaMsg(const VistaMsg&);
+  virtual ~VistaMsg();
 
-	MSG GetThisMsg() const;
-	void        SetThisMsg(const MSG &);
+  MSG  GetThisMsg() const;
+  void SetThisMsg(const MSG&);
 
-	MSG &GetThisMsgRef();
-	const MSG &GetThisMsgConstRef() const;
+  MSG&       GetThisMsgRef();
+  const MSG& GetThisMsgConstRef() const;
 
+  MSG  GetMsgAnswer() const;
+  void SetMsgAnswer(const MSG&);
 
-	MSG GetMsgAnswer() const;
-	void        SetMsgAnswer(const MSG &);
+  int  GetMsgType() const;
+  void SetMsgType(int iType);
 
-	int GetMsgType() const;
-	void SetMsgType(int iType);
+  bool GetMsgSuccess() const;
+  void SetMsgSuccess(bool bSuccess);
 
-	bool GetMsgSuccess() const;
-	void SetMsgSuccess(bool bSuccess);
+  int  GetMsgTicket() const;
+  void SetMsgTicket(int iTicket);
 
-	int GetMsgTicket() const;
-	void SetMsgTicket(int iTicket);
+  virtual int         Serialize(IVistaSerializer&) const;
+  virtual int         DeSerialize(IVistaDeSerializer&);
+  virtual std::string GetSignature() const;
 
-	virtual int Serialize(IVistaSerializer &) const;
-	virtual int DeSerialize(IVistaDeSerializer &);
-	virtual std::string GetSignature() const;
+  static int AssignMsgByString(const std::string& sString, MSG&);
+  static int AssignStringByMsg(const MSG& rMsg, std::string& sStorage);
 
-	static int AssignMsgByString(const std::string &sString, MSG &);
-	static int AssignStringByMsg(const MSG &rMsg, std::string &sStorage);
-
-protected:
-private:
-	MSG m_veMsg;
-	MSG m_veAnswer;
-	int         m_iType;
-	int         m_iTicket;
-	bool        m_bSuccess;
+ protected:
+ private:
+  MSG  m_veMsg;
+  MSG  m_veAnswer;
+  int  m_iType;
+  int  m_iTicket;
+  bool m_bSuccess;
 };
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAMSG_H
-

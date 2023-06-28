@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h> 
+#include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 #if defined(VISTA_THREADING_POSIX)
 #include "VistaPosixSemaphoreImp.h"
@@ -42,37 +41,32 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaPosixSemaphoreImp::VistaPosixSemaphoreImp(int nCount)
-{
+VistaPosixSemaphoreImp::VistaPosixSemaphoreImp(int nCount) {
 #if defined(DARWIN)
-	// since mac os x only supports pthreads named semaphores, we have to use
-	// those. since we don't want to synthesize unique names for each semaphore
-	// after the creation we call sem_unlink immediately.
-	// @todo: check for thread safety! (another thread might call sem_open before
-	// sem_unlink was called, thus the call to sem_open will fail...
-	if((m_pSemaphore = sem_open("/vista_fake_semaphore", O_CREAT, 0, nCount)) == SEM_FAILED)
-    {
-		perror("error: ");
-		VISTA_THROW("[VistaPosixSemaphore]: sem_open() failed", 0L);
-    }
-	else
-    {
-		sem_unlink("/vista_fake_semaphore");
-    }
+  // since mac os x only supports pthreads named semaphores, we have to use
+  // those. since we don't want to synthesize unique names for each semaphore
+  // after the creation we call sem_unlink immediately.
+  // @todo: check for thread safety! (another thread might call sem_open before
+  // sem_unlink was called, thus the call to sem_open will fail...
+  if ((m_pSemaphore = sem_open("/vista_fake_semaphore", O_CREAT, 0, nCount)) == SEM_FAILED) {
+    perror("error: ");
+    VISTA_THROW("[VistaPosixSemaphore]: sem_open() failed", 0L);
+  } else {
+    sem_unlink("/vista_fake_semaphore");
+  }
 #else
-	m_pSemaphore = new sem_t;
-	if(sem_init(m_pSemaphore, 0, nCount) == -1)
-		VISTA_THROW("[VistaPosixSemaphore]: sem_init() failed", 0L);
+  m_pSemaphore = new sem_t;
+  if (sem_init(m_pSemaphore, 0, nCount) == -1)
+    VISTA_THROW("[VistaPosixSemaphore]: sem_init() failed", 0L);
 #endif
 }
 
-VistaPosixSemaphoreImp::~VistaPosixSemaphoreImp()
-{
+VistaPosixSemaphoreImp::~VistaPosixSemaphoreImp() {
 #if defined(DARWIN)
-	sem_close(m_pSemaphore);
+  sem_close(m_pSemaphore);
 #else
-	sem_destroy(m_pSemaphore);
-	delete m_pSemaphore;
+  sem_destroy(m_pSemaphore);
+  delete m_pSemaphore;
 #endif
 }
 
@@ -80,53 +74,43 @@ VistaPosixSemaphoreImp::~VistaPosixSemaphoreImp()
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-void VistaPosixSemaphoreImp::Wait    ()
-{
-	int nRet = TEMP_FAILURE_RETRY( sem_wait(m_pSemaphore) );
-	if( nRet != 0 )
-	{
-		switch(nRet)
-		{
-			case EINTR:
-				VISTA_THROW("[VistaPosixSemaphore]: Wait() canceled by signal", 0L);
-			case EINVAL:
-				VISTA_THROW("[VistaPosixSemaphore]: NOT A VALID SEMAPHORE", 0L);
-			default:
-				break;
-		}
-	}
+void VistaPosixSemaphoreImp::Wait() {
+  int nRet = TEMP_FAILURE_RETRY(sem_wait(m_pSemaphore));
+  if (nRet != 0) {
+    switch (nRet) {
+    case EINTR:
+      VISTA_THROW("[VistaPosixSemaphore]: Wait() canceled by signal", 0L);
+    case EINVAL:
+      VISTA_THROW("[VistaPosixSemaphore]: NOT A VALID SEMAPHORE", 0L);
+    default:
+      break;
+    }
+  }
 }
 
-bool VistaPosixSemaphoreImp::TryWait ()
-{
-	int nRet = 0;
-	if( ( nRet = sem_trywait( m_pSemaphore) ) )
-	{
-		switch( nRet )
-		{
-		case EINTR:
-			VISTA_THROW("[VistaPosixSemaphore]: Wait() canceled by signal", 0L);
-		case EINVAL:
-			VISTA_THROW("[VistaPosixSemaphore]: NOT A VALID SEMAPHORE", 0L);
-		case EDEADLK:
-			VISTA_THROW("[VistaPosixSemaphore]: Deadlock detected.", 0L);
-		case EAGAIN:
-			VISTA_THROW("[VistaPosixSemaphore]: semaphore already locked.", 0L);
-		default:
-			break;
-		}
-	}
+bool VistaPosixSemaphoreImp::TryWait() {
+  int nRet = 0;
+  if ((nRet = sem_trywait(m_pSemaphore))) {
+    switch (nRet) {
+    case EINTR:
+      VISTA_THROW("[VistaPosixSemaphore]: Wait() canceled by signal", 0L);
+    case EINVAL:
+      VISTA_THROW("[VistaPosixSemaphore]: NOT A VALID SEMAPHORE", 0L);
+    case EDEADLK:
+      VISTA_THROW("[VistaPosixSemaphore]: Deadlock detected.", 0L);
+    case EAGAIN:
+      VISTA_THROW("[VistaPosixSemaphore]: semaphore already locked.", 0L);
+    default:
+      break;
+    }
+  }
 
-	return ( nRet == 0 );
+  return (nRet == 0);
 }
 
-
-void VistaPosixSemaphoreImp::Post    ()
-{
-	sem_post(m_pSemaphore);
+void VistaPosixSemaphoreImp::Post() {
+  sem_post(m_pSemaphore);
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
