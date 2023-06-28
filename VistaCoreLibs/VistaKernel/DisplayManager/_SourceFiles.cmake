@@ -13,8 +13,13 @@ if( VISTACORELIBS_BUILD_WINDOWIMP_GLUT )
 		list( APPEND SubDirs OpenVRGlutWindowImp )
 	endif()
 endif()
+
 if( VISTACORELIBS_BUILD_WINDOWIMP_OSG )
 	list( APPEND SubDirs OpenSceneGraphWindowImp )
+endif()
+
+if ( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
+	list( APPEND SubDirs SDL2WindowImp )
 endif()
 
 set( DirFiles	
