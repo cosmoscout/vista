@@ -32,8 +32,8 @@
 #include <winsock2.h> // sigh, we dont need it. but glew includes windows.h, which may not be included
                       // before winsocks, whcih may be included by oculus sdk, so...
 #endif
-#include <GL/gl.h>
 #include <GL/glew.h>
+#include <GL/gl.h>
 
 #include "VistaOpenSGDisplayBridge.h"
 
