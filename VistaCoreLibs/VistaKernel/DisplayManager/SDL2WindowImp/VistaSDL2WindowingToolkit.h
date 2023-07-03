@@ -17,162 +17,136 @@
 /*  You should have received a copy of the GNU Lesser General Public License  */
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
-/*                                Contributors                                */
-/*                                                                            */
-/*============================================================================*/
-
 
 #ifndef _VISTASDLWINDOWINGTOOLKIT_H
 #define _VISTASDLWINDOWINGTOOLKIT_H
 
-/*============================================================================*/
-/* INCLUDES                                                                   */
-/*============================================================================*/
+#include <SDL2/SDL_video.h>
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
 
-#include <string>
 #include <map>
-
-/*============================================================================*/
-/* MACROS AND DEFINES                                                         */
-/*============================================================================*/
-
-/*============================================================================*/
-/* FORWARD DECLARATIONS                                                       */
-/*============================================================================*/
+#include <string>
 
 class VistaDisplayManager;
 class VistaGLTexture;
 class VistaImage;
 struct SDL2WindowInfo;
 
-/*============================================================================*/
-/* CLASS DEFINITIONS                                                          */
-/*============================================================================*/
 /**
  * SDL2 implementation of IVistaWindowingToolkit. See IVistaWindowingToolkit.h
  * for documentation.
  */
-class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit
-{
-public:
-	VistaSDL2WindowingToolkit();
-	~VistaSDL2WindowingToolkit();
+class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
+ public:
+  VistaSDL2WindowingToolkit();
+  ~VistaSDL2WindowingToolkit();
 
-	virtual void Run();
-	virtual void Quit();
+  void Run() final;
+  void Quit() final;
 
-	virtual void DisplayWindow( const VistaWindow* pWindow );
-	virtual void DisplayAllWindows();
+  void DisplayWindow(const VistaWindow* window) final;
+  void DisplayAllWindows() final;
 
-	virtual bool RegisterWindow( VistaWindow* pWindow );
-	virtual bool UnregisterWindow( VistaWindow* pWindow );
+  bool RegisterWindow(VistaWindow* window) final;
+  bool UnregisterWindow(VistaWindow* window) final;
 
-	virtual bool InitWindow( VistaWindow* pWindow );	
+  bool InitWindow(VistaWindow* window) final;
 
-	virtual bool SetWindowUpdateCallback( IVistaExplicitCallbackInterface* pCallback );
+  bool SetWindowUpdateCallback(IVistaExplicitCallbackInterface* callback) final;
 
-	virtual bool GetWindowPosition( const VistaWindow* pWindow, int &iX, int& iY ) const;
-	virtual bool SetWindowPosition( VistaWindow* pWindow, const int iX , const int iY );
-	virtual bool GetWindowSize( const VistaWindow* pWindow, int& iWidth, int& iHeight ) const;
-	virtual bool SetWindowSize( VistaWindow* pWindow, const int iWidth, const int iHeight );
+  bool GetWindowPosition(const VistaWindow* window, int& x, int& y) const final;
+  bool SetWindowPosition(VistaWindow* window, int x, int y) final;
+  bool GetWindowSize(const VistaWindow* window, int& width, int& height) const final;
+  bool SetWindowSize(VistaWindow* window, int width, int height) final;
 
+  bool GetFullscreen(const VistaWindow* window) const final;
+  bool SetFullscreen(VistaWindow* window, const bool bSet) final;
 
-	virtual bool GetFullscreen( const VistaWindow* pWindow  ) const;
-	virtual bool SetFullscreen( VistaWindow* pWindow, const bool bSet );	
-	
-	virtual std::string GetWindowTitle( const VistaWindow* pWindow ) const;
-	virtual bool SetWindowTitle( VistaWindow* pWindow, const std::string& sTitle );
-	
-	virtual bool GetCursorIsEnabled( const VistaWindow* pWindow ) const;
-	virtual bool SetCursorIsEnabled( VistaWindow* pWindow, bool bSet );
+  std::string GetWindowTitle(const VistaWindow* window) const final;
+  bool        SetWindowTitle(VistaWindow* window, const std::string& title) final;
 
-	virtual bool GetUseStereo( const VistaWindow* pWindow ) const;
-	virtual bool SetUseStereo( VistaWindow* pWindow, const bool bSet );
+  bool GetCursorIsEnabled(const VistaWindow* window) const final;
+  bool SetCursorIsEnabled(VistaWindow* window, bool set) final;
 
-	virtual bool GetUseAccumBuffer( const VistaWindow* pWindow ) const;
-	virtual bool SetUseAccumBuffer( VistaWindow* pWindow, const bool bSet );
+  bool GetUseStereo(const VistaWindow* window) const final;
+  bool SetUseStereo(VistaWindow* window, bool set) final;
 
-	virtual bool GetUseStencilBuffer( const VistaWindow* pWindow ) const;
-	virtual bool SetUseStencilBuffer( VistaWindow* pWindow, const bool bSet );
+  bool GetUseAccumBuffer(const VistaWindow* window) const final;
+  bool SetUseAccumBuffer(VistaWindow* window, bool set) final;
 
-	virtual int GetMultiSamples( const VistaWindow* pWindow ) const;
-	virtual bool SetMultiSamples( const VistaWindow* pWindow, const int nNumSamples );
+  bool GetUseStencilBuffer(const VistaWindow* window) const final;
+  bool SetUseStencilBuffer(VistaWindow* window, bool set) final;
 
-	virtual bool GetDrawBorder( const VistaWindow* pWindow  ) const;
-	virtual bool SetDrawBorder( VistaWindow* pWindow, const bool bSet );
+  int  GetMultiSamples(const VistaWindow* window) const final;
+  bool SetMultiSamples(const VistaWindow* window, int numSamples) final;
 
-	virtual bool GetUseOffscreenBuffer( const VistaWindow* pWindow  ) const;
-	virtual bool SetUseOffscreenBuffer( VistaWindow* pWindow, const bool bSet );
-	
-	virtual bool GetContextVersion( int& nMajor, int& nMinor, const VistaWindow* pTarget ) const;
-	virtual bool SetContextVersion( int nMajor, int nMinor, VistaWindow* pTarget );
-	virtual bool GetIsDebugContext( const VistaWindow* pTarget ) const;
-	virtual bool SetIsDebugContext( const bool bIsDebug, VistaWindow* pTarget );
-	virtual bool GetIsForwardCompatible( const VistaWindow* pTarget ) const;
-	virtual bool SetIsForwardCompatible( const bool bIsForwardCompatible, VistaWindow* pTarget );
+  bool GetDrawBorder(const VistaWindow* window) const final;
+  bool SetDrawBorder(VistaWindow* window, bool set) final;
 
-	virtual int GetRGBImage( const VistaWindow* pWindow, VistaType::byte* pData, const int nBufferSize ) const;
-	virtual bool GetRGBImage( const VistaWindow* pWindow, std::vector< VistaType::byte >& vecData ) const;
-	virtual int GetDepthImage( const VistaWindow* pWindow, VistaType::byte* pData, const int nBufferSize ) const;
-	virtual bool GetDepthImage( const VistaWindow* pWindow, std::vector< VistaType::byte >& vecData ) const;
-	virtual VistaImage GetRGBImage( const VistaWindow* pWindow );
-	virtual VistaImage GetDepthImage( const VistaWindow* pWindow );
+  bool GetUseOffscreenBuffer(const VistaWindow* window) const final;
+  bool SetUseOffscreenBuffer(VistaWindow* window, bool set) final;
 
-	enum
-	{
-		VSYNC_STATE_UNAVAILABLE = -2,
-		VSYNC_STATE_UNKNOWN = -1,
-		VSYNC_DISABLED = 0,
-		VSYNC_ENABLED = 1
-	};
-	virtual bool GetVSyncCanBeModified( const VistaWindow* pWindow  );
-	virtual bool SetVSyncMode( VistaWindow* pWindow, const bool bEnabled );
-	virtual int GetVSyncMode( const VistaWindow* pWindow  );
+  bool GetContextVersion(int& major, int& minor, const VistaWindow* target) const final;
+  bool SetContextVersion(int major, int minor, VistaWindow* target) final;
+  bool GetIsDebugContext(const VistaWindow* target) const final;
+  bool SetIsDebugContext(const bool isDebug, VistaWindow* target) final;
+  bool GetIsForwardCompatible(const VistaWindow* target) const final;
+  bool SetIsForwardCompatible(const bool isForwardCompatible, VistaWindow* target) final;
 
-	virtual bool SetCursor( VistaWindow* pWindow, int iCursor );
-	virtual int GetCursor( const VistaWindow* pWindow );
-	
-	virtual IVistaTextEntity* CreateTextEntity();
+  int GetRGBImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const final;
+  bool GetRGBImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const final;
+  int  GetDepthImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const final;
+  bool GetDepthImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const final;
+  VistaImage GetRGBImage(const VistaWindow* window) final;
+  VistaImage GetDepthImage(const VistaWindow* window) final;
 
-	virtual int GetWindowId( const VistaWindow* pWindow  ) const;	
+  enum {
+    VSYNC_STATE_UNAVAILABLE = -2,
+    VSYNC_STATE_UNKNOWN     = -1,
+    VSYNC_DISABLED          = 0,
+    VSYNC_ENABLED           = 1,
+    ADAPTIVE_VSYNC_ENABLED  = 2
+  };
+  bool GetVSyncCanBeModified(const VistaWindow* window) final;
+  bool SetVSyncMode(VistaWindow* window, bool enabled) final;
+  int  GetVSyncMode(const VistaWindow* window) final;
 
-	virtual void BindWindow( VistaWindow* pWindow );
-	virtual void UnbindWindow( VistaWindow* pWindow );
+  bool SetCursor(VistaWindow* window, int cursor);
+  int  GetCursor(const VistaWindow* pWindow);
 
-protected:
-	bool PushWindow( const VistaWindow* pWindow ) const;
-	bool PushWindow( const SDL2WindowInfo* pInfo ) const;
-	void PopWindow() const;
-	bool CheckVSyncAvailability();
+  IVistaTextEntity* CreateTextEntity() final;
 
-	SDL2WindowInfo* GetWindowInfo( const VistaWindow* pWindow  ) const;
+  int GetWindowId(const VistaWindow* window) const final;
+  void BindWindow(VistaWindow* window) final;
+  void UnbindWindow(VistaWindow* window) final;
 
-	bool InitAsNormalWindow( VistaWindow* pWindow );
-	bool InitAsFbo( VistaWindow* pWindow );
-	bool InitAsMultisampleFbo( VistaWindow* pWindow );
+ protected:
+  bool CheckVSyncAvailability();
 
-	bool CreateDummyWindow( VistaWindow* pWindow );
-	void DestroyDummyWindow();
+  SDL2WindowInfo* GetWindowInfo(const VistaWindow* window) const;
 
-private:
-	typedef std::map<const VistaWindow*, SDL2WindowInfo*>	WindowInfoMap;
-	WindowInfoMap						m_mapWindowInfo;
-	bool								m_bQuitLoop;
-	IVistaExplicitCallbackInterface*	m_pUpdateCallback;
-	mutable int							m_iTmpWindowID;
-	int									m_iGlobalVSyncAvailability;
+  bool InitAsNormalWindow(VistaWindow* window);
+  bool InitAsFbo(VistaWindow* window);
+  bool InitAsMultisampleFbo(VistaWindow* window);
 
-	bool								m_bHasFullWindow;
-	int									m_nFullWindowId;
-	int									m_nDummyWindowId;
+  bool CreateDummyWindow(VistaWindow* window);
+  void DestroyDummyWindow();
 
-	int									m_iCursor;
+ private:
+  typedef std::map<const VistaWindow*, SDL2WindowInfo*> WindowInfoMap;
+  WindowInfoMap                                         m_windowInfo;
+  bool                                                  m_quitLoop;
+  IVistaExplicitCallbackInterface*                      m_updateCallback;
+  mutable SDL_Window*                                   m_tmpWindowID;
+  int                                                   m_globalVSyncAvailability;
+
+  bool        m_hasFullWindow;
+  SDL_Window* m_fullWindowId;
+  SDL_Window* m_dummyWindowId;
+  int         m_windowIdCounter;
+  int m_cursor;
 };
 
-/*============================================================================*/
-/* LOCAL VARS AND FUNCS                                                       */
-/*============================================================================*/
 #endif

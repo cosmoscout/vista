@@ -17,77 +17,54 @@
 /*  You should have received a copy of the GNU Lesser General Public License  */
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
-/*                                Contributors                                */
-/*                                                                            */
-/*============================================================================*/
-
 
 #ifndef _VISTASDL2TEXTENTITY_H
 #define _VISTASDL2TEXTENTITY_H
 
-/*============================================================================*/
-/* INCLUDES                                                                   */
-/*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/DisplayManager/VistaTextEntity.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
-/*============================================================================*/
-/* MACROS AND DEFINES                                                         */
-/*============================================================================*/
+#include <SDL2/SDL_ttf.h>
 
-/*============================================================================*/
-/* FORWARD DECLARATIONS                                                       */
-/*============================================================================*/
-
-struct TTF_Font;
-struct SDL_Renderer;
-
-/*============================================================================*/
-/* CLASS DEFINITIONS                                                          */
-/*============================================================================*/
 /**
  * SDL2 implementation of IVistaTextEntity. See VistaTextEntity.h for
  * documentation. Default value is Helvetice 18.
  */
-class VISTAKERNELAPI VistaSDL2TextEntity : public IVistaTextEntity
-{
-public:
-	explicit VistaSDL2TextEntity(SDL_Renderer *renderer);
-	virtual ~VistaSDL2TextEntity();
+class VISTAKERNELAPI VistaSDL2TextEntity : public IVistaTextEntity {
+ public:
+  explicit VistaSDL2TextEntity();
+  virtual ~VistaSDL2TextEntity();
 
-	/**
-	 * \param fontfamily
-	 * \param fontsize
-	 */
-	void SetFont( const std::string& sFamily, int iFontSize );
-	/**
-	 * This method returns the *real* fontsize. This must not be the same
-	 * as given in SetFont, because of the bestfit algorithm.
-	 * \return fontsize
-	 */
-	int GetFontSize() const;
-	/**
-	 * This method returns the *real* fontfmaily. This must not be the same
-	 * as given in SetFont, because of the bestfit algorithm.
-	 * \return fontfamily
-	 */
-	std::string GetFontFamily() const;
+  /**
+   * \param fontfamily
+   * \param fontsize
+   */
+  void SetFont(const std::string& family, int fontSize);
 
-	void DrawCharacters();
+  /**
+   * This method returns the *real* fontsize. This must not be the same
+   * as given in SetFont, because of the bestfit algorithm.
+   * \return fontsize
+   */
+  int GetFontSize() const;
 
-	/**
-	 * Gives the native SDL2 font pointer.
-	 */
-	TTF_Font* GetFontType();
+  /**
+   * This method returns the *real* fontfmaily. This must not be the same
+   * as given in SetFont, because of the bestfit algorithm.
+   * \return fontfamily
+   */
+  std::string GetFontFamily() const;
 
-private:
-	TTF_Font* m_pFontType;
-	SDL_Renderer* m_pRenderer;
-	int m_iPointSize;
+  void DrawCharacters();
+
+  /**
+   * Gives the native SDL2 font pointer.
+   */
+  TTF_Font* GetFontType();
+
+ private:
+  TTF_Font*     m_fontType;
+  int           m_pointSize;
 };
-
-/*============================================================================*/
-/* LOCAL VARS AND FUNCS                                                       */
-/*============================================================================*/
 
 #endif //_VISTASDL2TEXTENTITY_H

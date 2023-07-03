@@ -17,25 +17,22 @@
 /*  You should have received a copy of the GNU Lesser General Public License  */
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
-/*                                Contributors                                */
-/*                                                                            */
-/*============================================================================*/
-
-
-/*============================================================================*/
-/* INCLUDES                                                                   */
-/*============================================================================*/
 
 #include <GL/glew.h>
 
-#include "VistaSDL2WindowingToolkit.h"
 #include "VistaSDL2TextEntity.h"
+#include "VistaSDL2WindowingToolkit.h"
 
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_video.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
-#include <VistaKernel/VistaSystem.h>
 #include <VistaKernel/GraphicsManager/VistaGLTexture.h>
 #include <VistaKernel/GraphicsManager/VistaImage.h>
+#include <VistaKernel/VistaSystem.h>
 
 #include <VistaBase/VistaExceptionBase.h>
 
@@ -46,1622 +43,1242 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <string>
 #include <cassert>
-
-// @TODO: switch to glew for VSync 
-#ifdef WIN32
-#include <windows.h>
-#include <GL/gl.h>
-typedef bool (APIENTRY* PFNWGLSWAPINTERVALEXT) (int);
-typedef int (APIENTRY* PFNWGLGETSWAPINTERVALEXT) (void);
-PFNWGLSWAPINTERVALEXT		SetSwapIntervalFunction = NULL;
-PFNWGLGETSWAPINTERVALEXT    GetSwapIntervalFunction = NULL;
-#elif defined LINUX
-#include <GL/gl.h>
-#include <GL/glx.h>
-
-typedef int (* PFNGLXSWAPINTERVALSGIPROC) (int interval);
-typedef int (* PFNGLXGETSWAPINTERVALSGIPROC) ();
-PFNGLXSWAPINTERVALSGIPROC SetSwapIntervalFunction = NULL;
-PFNGLXGETSWAPINTERVALSGIPROC GetSwapIntervalFunction = NULL;
-#elif defined(DARWIN)
-#include <OpenGL/OpenGL.h>
-typedef int (* PFNGLXSWAPINTERVALSGIPROC) (int interval);
-typedef int (* PFNGLXGETSWAPINTERVALSGIPROC) ();
-PFNGLXSWAPINTERVALSGIPROC SetSwapIntervalFunction = NULL;
-PFNGLXGETSWAPINTERVALSGIPROC GetSwapIntervalFunction = NULL;
-#endif
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <sys/types.h>
 
 #ifdef DEBUG
-#define DEBUG_CHECK_GL( sPrefix ) \
-	{ \
-		GLenum nError = glGetError(); \
-		while( nError != GL_NONE ) \
-		{ \
-			vstr::warnp() << "[SDLWindoingTK]: Cought gl error after " << sPrefix << ": " << gluErrorString( nError ) << std::endl; \
-			nError = glGetError(); \
-		} \
-	}
+#define DEBUG_CHECK_GL(sPrefix)                                                                    \
+  {                                                                                                \
+    GLenum nError = glGetError();                                                                  \
+    while (nError != GL_NONE) {                                                                    \
+      vstr::warnp() << "[SDL2WindowingTK]: Cought gl error after " << sPrefix << ": "              \
+                    << gluErrorString(nError) << std::endl;                                        \
+      nError = glGetError();                                                                       \
+    }                                                                                              \
+  }
 #else
-#define DEBUG_CHECK_GL( sPrefix )
+#define DEBUG_CHECK_GL(sPrefix)
 #endif
 
-
-
-/*============================================================================*/
-/* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
-/*============================================================================*/
 
 // Maintain maps of all windows in order to be able to match incoming
 // sdl callbacks to the correct callback. Since all windows usually use the
 // same callback, this is only important if multiple displaysystems/VistaSystems
 // are around
 
-struct SDL2WindowInfo
-{
-	SDL2WindowInfo( VistaWindow* pWindow )
-	: m_pWindow( pWindow )
-	, m_pUpdateCallback( nullptr )
-	, m_iCurrentSizeX( 0 )
-	, m_iCurrentSizeY( 0 )
-	, m_iCurrentPosX( 0 )
-	, m_iCurrentPosY( 0 )
-	, m_iPreFullscreenSizeX( 0 )
-	, m_iPreFullscreenSizeY( 0 )
-	, m_iPreFullscreenPosX( 0 )
-	, m_iPreFullscreenPosY( 0 )
-	, m_bFullscreenActive( false )
-	, m_bUseStereo( false )
-	, m_bUseAccumBuffer( false )
-	, m_bUseStencilBuffer( false )
-	, m_bDrawBorder( true )
-	, m_iWindowID( -1 )
-	, m_sWindowTitle( "ViSTA" )
-	, m_iVSyncMode( VistaSDL2WindowingToolkit::VSYNC_STATE_UNKNOWN )
-	, m_bCursorEnabled( true )
-	, m_iCursor( -1 )
-	, m_bIsOffscreenBuffer( false )
-	, m_nFboId( 0 )
-	, m_nFboDepthId( 0 )
-	, m_nFboColorId( 0 )
-	, m_nFboStencilId( 0 )
-	, m_nBlitFboId( 0 )
-	, m_nBlitFboColorId( 0 )
-	, m_nBlitFboDepthId( 0 )
-	, m_iContextMajor( 1 )
-	, m_iContextMinor( 0 )
-	, m_bIsDebugContext( false )
-	, m_bIsForwardCompatible( false )
-	, m_nNumMultiSamples( 0 )
-	, m_bIsInitialized( false )
-	{
-	}
+struct SDL2WindowInfo {
+  SDL2WindowInfo(VistaWindow* window)
+      : window(window)
+      , updateCallback(nullptr)
+      , currentSizeX(0)
+      , currentSizeY(0)
+      , currentPosX(SDL_WINDOWPOS_CENTERED)
+      , currentPosY(SDL_WINDOWPOS_CENTERED)
+      , preFullscreenSizeX(0)
+      , preFullscreenSizeY(0)
+      , preFullscreenPosX(0)
+      , preFullscreenPosY(0)
+      , fullscreenActive(false)
+      , useStereo(false)
+      , useAccumBuffer(false)
+      , useStencilBuffer(false)
+      , drawBorder(true)
+      , sdlWindow(nullptr)
+      , windowId(-1)
+      , windowTitle("ViSTA")
+      , vSyncMode(VistaSDL2WindowingToolkit::VSYNC_STATE_UNKNOWN)
+      , cursorEnabled(true)
+      , cursor(-1)
+      , isOffscreenBuffer(false)
+      , fboId(0)
+      , fboDepthId(0)
+      , fboColorId(0)
+      , fboStencilId(0)
+      , blitFboId(0)
+      , blitFboColorId(0)
+      , blitFboDepthId(0)
+      , contextMajor(1)
+      , contextMinor(0)
+      , isDebugContext(false)
+      , isForwardCompatible(false)
+      , numMultiSamples(0)
+      , isInitialized(false) {
+  }
 
-	~SDL2WindowInfo()
-	{
-	}
+  ~SDL2WindowInfo() = default;
 
-	bool				m_bIsInitialized;
-	VistaWindow*		m_pWindow;
-	IVistaExplicitCallbackInterface*
-						m_pUpdateCallback;
-	int					m_iCurrentSizeX;
-	int					m_iCurrentSizeY;
-	int					m_iCurrentPosX;
-	int					m_iCurrentPosY;
-	int					m_iPreFullscreenSizeX;
-	int					m_iPreFullscreenSizeY;
-	int					m_iPreFullscreenPosX;
-	int					m_iPreFullscreenPosY;
-	bool				m_bFullscreenActive;
-	bool				m_bUseStereo;
-	bool				m_bUseAccumBuffer;
-	bool				m_bUseStencilBuffer;
-	int					m_nNumMultiSamples;
-	bool				m_bDrawBorder;
-	int					m_iWindowID;
-	std::string			m_sWindowTitle;
-	int					m_iVSyncMode;
-	int					m_iContextMajor;
-	int					m_iContextMinor;
-	bool				m_bIsDebugContext;
-	bool				m_bIsForwardCompatible;
-	bool				m_bCursorEnabled;
-	int					m_iCursor;
-	// for Offscreen Buffer
-	bool				m_bIsOffscreenBuffer;
-	GLuint				m_nFboId;
-	GLuint				m_nFboColorId;
-	GLuint				m_nFboDepthId;
-	GLuint				m_nFboStencilId;
-	GLuint				m_nBlitFboId;
-	GLuint				m_nBlitFboColorId;
-	GLuint				m_nBlitFboDepthId;
+  bool                             isInitialized;
+  VistaWindow*                     window;
+  IVistaExplicitCallbackInterface* updateCallback;
+  int                              currentSizeX;
+  int                              currentSizeY;
+  int                              currentPosX;
+  int                              currentPosY;
+  int                              preFullscreenSizeX;
+  int                              preFullscreenSizeY;
+  int                              preFullscreenPosX;
+  int                              preFullscreenPosY;
+  bool                             fullscreenActive;
+  bool                             useStereo;
+  bool                             useAccumBuffer;
+  bool                             useStencilBuffer;
+  int                              numMultiSamples;
+  bool                             drawBorder;
+  SDL_Window*                      sdlWindow;
+  int                              windowId;
+  std::string                      windowTitle;
+  int                              vSyncMode;
+  int                              contextMajor;
+  int                              contextMinor;
+  bool                             isDebugContext;
+  bool                             isForwardCompatible;
+  bool                             cursorEnabled;
+  int                              cursor;
+  // for Offscreen Buffer
+  bool   isOffscreenBuffer;
+  GLuint fboId;
+  GLuint fboColorId;
+  GLuint fboDepthId;
+  GLuint fboStencilId;
+  GLuint blitFboId;
+  GLuint blitFboColorId;
+  GLuint blitFboDepthId;
 };
 
-namespace
-{
-	std::map<int, SDL2WindowInfo*> S_mapWindowInfo;
+/*
+namespace {
+std::map<SDL_Window*, SDL2WindowInfo*> windowInfo;
 
-	void DisplayUpdate()
-	{
-		std::map<int, SDL2WindowInfo*>::const_iterator itWindowInfo =
-												S_mapWindowInfo.find( 0 );
-		assert( itWindowInfo != S_mapWindowInfo.end() );
+void DisplayUpdate() {
+  auto firstWindow = windowInfo.find(0);
+  assert(itWindowInfo != windowInfo.end());
 
-		(*itWindowInfo).second->m_pUpdateCallback->Do();
-	}
-
-	void DisplayReshape( int iWidth, int iHeight )
-	{
-		std::map<int, SDL2WindowInfo*>::const_iterator itWindowInfo =
-												S_mapWindowInfo.find( 0 );
-		assert( itWindowInfo != S_mapWindowInfo.end() );
-		SDL2WindowInfo* pInfo = itWindowInfo->second;
-		if( pInfo->m_iCurrentSizeX != iWidth || pInfo->m_iCurrentSizeY != iHeight )
-		{
-			pInfo->m_iCurrentSizeX = iWidth;
-			pInfo->m_iCurrentSizeY = iHeight;
-			(*itWindowInfo).second->m_pWindow->GetProperties()->Notify(
-								VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE );
-		}	
-	}
-
-	void CloseFunction()
-	{
-		if( GetVistaSystem() )
-		{
-			vstr::warni() << "SDL2Window closed - Quitting Vista" << std::endl;
-			GetVistaSystem()->Quit();
-		}
-	}
+  firstWindow->second->updateCallback->Do();
 }
 
-/*============================================================================*/
-/* CONSTRUCTORS / DESTRUCTOR                                                  */
-/*============================================================================*/
+void DisplayReshape(int width, int height) {
+  auto firstWindow = windowInfo.find(0);
+  assert(itWindowInfo != windowInfo.end());
+  SDL2WindowInfo* info = firstWindow->second;
+  if (info->currentSizeX != width || info->currentSizeY != height) {
+    info->currentSizeX = width;
+    info->currentSizeY = height;
+    firstWindow->second->window->GetProperties()
+        ->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
+  }
+}
+
+void CloseFunction() {
+  if (GetVistaSystem()) {
+    vstr::warni() << "SDL2Window closed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+}
+} // namespace
+*/
 
 VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
-: m_bQuitLoop( false )
-, m_pUpdateCallback( NULL )
-, m_iTmpWindowID( -1 )
-, m_iGlobalVSyncAvailability( ~0 )
-, m_bHasFullWindow( false )
-, m_nFullWindowId( -1 )
-, m_nDummyWindowId( -1 )
-{
-	if( SDL_Init( SDL_INIT_VIDEO ) != 0 || TTF_Init() != 0 ) {
-		vstr::warni() << "SDL2 init failed - Quitting Vista" << std::endl;
-		GetVistaSystem()->Quit();
-	}
+    : m_quitLoop(false)
+    , m_updateCallback(nullptr)
+    , m_tmpWindowID(nullptr)
+    , m_globalVSyncAvailability(~0)
+    , m_hasFullWindow(false)
+    , m_fullWindowId(nullptr)
+    , m_dummyWindowId(nullptr)
+    , m_windowIdCounter(0) {
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0 || TTF_Init() != 0) {
+    vstr::warni() << "SDL2 init failed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
 }
 
-VistaSDL2WindowingToolkit::~VistaSDL2WindowingToolkit()
-{
+VistaSDL2WindowingToolkit::~VistaSDL2WindowingToolkit() {
 }
 
-/*============================================================================*/
-/* FACTORY METHODS                                                            */
-/*============================================================================*/
-
-IVistaTextEntity* VistaSDL2WindowingToolkit::CreateTextEntity()
-{
-	return new VistaSDL2TextEntity(); //TODO
+IVistaTextEntity* VistaSDL2WindowingToolkit::CreateTextEntity() {
+  return new VistaSDL2TextEntity();
 }
 
-/*============================================================================*/
-/* IMPLEMENTATION                                                             */
-/*============================================================================*/
-void VistaSDL2WindowingToolkit::Run()
-{
-	while( !m_bQuitLoop )
-	{
-		if( m_bHasFullWindow )
-			glutMainLoopEvent();
-		else
-			m_pUpdateCallback->Do();
-	}
+void VistaSDL2WindowingToolkit::Run() {
+  while (!m_quitLoop) {
+    if (m_hasFullWindow)
+      ;// glutMainLoopEvent();
+    else
+      m_updateCallback->Do();
+  }
 }
 
-void VistaSDL2WindowingToolkit::Quit()
-{
-	m_bQuitLoop = true;
+void VistaSDL2WindowingToolkit::Quit() {
+  m_quitLoop = true;
 }
 
-void VistaSDL2WindowingToolkit::DisplayWindow( const VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )		
-	{
-		vstr::warnp() << "[GlutWindowing]: Trying to render invalid window" << std::endl;
-		return;
-	}
-	
-	if( pInfo->m_bIsOffscreenBuffer == false )
-	{
-		glutSwapBuffers();
-		glutPostRedisplay();
-	}
-	else if( pInfo->m_nNumMultiSamples > 1 )
-	{
-		// read from multisample fbo
-		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, pInfo->m_nFboId );
-		// to normal fbo
-		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, pInfo->m_nBlitFboId );
-		// blit!
-		glBlitFramebuffer( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY,
-						   GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+void VistaSDL2WindowingToolkit::DisplayWindow(const VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  if (info->isOffscreenBuffer == false) {
+    SDL_GL_SwapWindow(info->sdlWindow);
+    // glutPostRedisplay();
+  } else if (info->numMultiSamples > 1) {
+    glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, info->fboId);
+    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, info->blitFboId);
+    glBlitFramebuffer(0, 0, info->currentSizeX, info->currentSizeY, 0, 0, info->currentSizeX, info->currentSizeY, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, pInfo->m_nFboId );
-		
-		DEBUG_CHECK_GL( "Multisample-FBO-blit" );
-	}
-	
-	PopWindow();
-}
-void VistaGlutWindowingToolkit::DisplayAllWindows()
-{
-	if( m_mapWindowInfo.empty() )
-		return;
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->fboId);
 
-	int iActiveID = glutGetWindow();
-	for( WindowInfoMap::const_iterator 
-			itWindowID = m_mapWindowInfo.begin(); 
-			itWindowID != m_mapWindowInfo.end();
-			++itWindowID )
-	{		
-		DisplayWindow( (*itWindowID).first );
-	}
-	glutSetWindow( iActiveID );	
+    DEBUG_CHECK_GL("Multisample-FBO-blit");
+  }
 }
 
-bool VistaGlutWindowingToolkit::RegisterWindow( VistaWindow* pWindow )
-{
-	WindowInfoMap::const_iterator itExists = m_mapWindowInfo.find( pWindow );
-	if( itExists != m_mapWindowInfo.end() )
-		return false;
-	GlutWindowInfo* pInfo = new GlutWindowInfo( pWindow );	
-	m_mapWindowInfo[pWindow] = pInfo;
-	return true;
-}
-bool VistaGlutWindowingToolkit::UnregisterWindow( VistaWindow* pWindow )
-{
-	WindowInfoMap::iterator itExists = m_mapWindowInfo.find( pWindow );
-	if( itExists == m_mapWindowInfo.end() )
-		return false;
-	int iID = (*itExists).second->m_iWindowID;
-	if( iID != -1 )
-	{
-		PushWindow( (*itExists).second );
-		// unset the close function
-		glutCloseFunc( NULL );
-		PopWindow();
-	}
-	else if( (*itExists).second->m_bIsOffscreenBuffer )
-	{
-		glDeleteFramebuffers( 1, &(*itExists).second->m_nFboId );
-		glDeleteRenderbuffers( 1, &(*itExists).second->m_nFboDepthId );
-		glDeleteRenderbuffers( 1, &(*itExists).second->m_nFboColorId );
-		if( (*itExists).second->m_nFboStencilId != 0 )
-			glDeleteRenderbuffers( 1, &(*itExists).second->m_nFboStencilId );
-		if( (*itExists).second->m_nNumMultiSamples > 1 )
-		{
-			glDeleteFramebuffers( 1, &(*itExists).second->m_nBlitFboId );
-			glDeleteRenderbuffers( 1, &(*itExists).second->m_nBlitFboDepthId );
-			glDeleteRenderbuffers( 1, &(*itExists).second->m_nBlitFboColorId );
-		}
-		DEBUG_CHECK_GL( "Post-OffscreenBuffer-Win-delete" );
-	}
-	delete (*itExists).second;
-	m_mapWindowInfo.erase( itExists );
-	return true;
+void VistaSDL2WindowingToolkit::DisplayAllWindows() {
+  if (m_windowInfo.empty()) {
+    return;
+  }
+
+  for (auto const& window : m_windowInfo) {
+    DisplayWindow(window.first);
+  }
 }
 
-bool VistaGlutWindowingToolkit::InitWindow( VistaWindow* pWindow )
-{
-	WindowInfoMap::iterator itExists = m_mapWindowInfo.find( pWindow );
-	if( itExists == m_mapWindowInfo.end() )
-	{
-		vstr::errp() << "[GlutWindowingTollkit]: "
-				<< "Trying to initialize Window that was not registered before"
-				<< std::endl;
-		return false;
-	}
-	GlutWindowInfo* pInfo = (*itExists).second;
+bool VistaSDL2WindowingToolkit::RegisterWindow(VistaWindow* window) {
+  auto itExists = m_windowInfo.find(window);
+  if (itExists != m_windowInfo.end()) {
+    return false;
+  }
+  
+  m_windowInfo[window] = new SDL2WindowInfo(window);
+  return true;
+}
+bool VistaSDL2WindowingToolkit::UnregisterWindow(VistaWindow* window) {
+  auto itExists = m_windowInfo.find(window);
+  if (itExists == m_windowInfo.end()) {
+    return false;
+  }
 
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::errp() << "[GlutWindowingTollkit]: "
-				<< "Trying to initialize Window [" << pWindow->GetNameForNameable()
-				<< "] which was already initialized" << std::endl;
-		return false;
-	}
+  const SDL2WindowInfo* info = itExists->second;
+  SDL_Window* sdlWindow = info->sdlWindow;
+  if (info->isOffscreenBuffer) {
+    glDeleteFramebuffers(1, &info->fboId);
+    glDeleteRenderbuffers(1, &info->fboDepthId);
+    glDeleteRenderbuffers(1, &info->fboColorId);
+    
+    if (info->fboStencilId != 0) {
+      glDeleteRenderbuffers(1, &info->fboStencilId);
+    }
 
-	if( pInfo->m_bIsOffscreenBuffer == false )
-	{
-		if( InitAsNormalWindow( pWindow ) == false )
-			return false;
-		DestroyDummyWindow();
-	}
-	else // is RenderToTexture
-	{
-		if( InitAsFbo( pWindow ) == false )
-			return false;
-	}
+    if (info->numMultiSamples > 1) {
+      glDeleteFramebuffers(1, &info->blitFboId);
+      glDeleteRenderbuffers(1, &info->blitFboDepthId);
+      glDeleteRenderbuffers(1, &info->blitFboColorId);
+    }
 
-	
-	pInfo->m_bIsInitialized = true;
-	return true;
+    DEBUG_CHECK_GL("Post-OffscreenBuffer-Win-delete");
+  }
+
+  delete info;
+  m_windowInfo.erase(itExists);
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::InitAsNormalWindow( VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::InitWindow(VistaWindow* window) {
+  auto itExists = m_windowInfo.find(window);
+  if (itExists == m_windowInfo.end()) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "Trying to initialize Window that was not registered before" << std::endl;
+    return false;
+  }
+  SDL2WindowInfo* info = itExists->second;
 
-	int iDisplayMode = GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE;
-	if( pInfo->m_bUseStereo )
-		iDisplayMode = iDisplayMode | GLUT_STEREO;
-	if( pInfo->m_bUseAccumBuffer )
-		iDisplayMode = iDisplayMode | GLUT_ACCUM;
-	if( pInfo->m_bUseStencilBuffer )
-		iDisplayMode = iDisplayMode | GLUT_STENCIL;
+  if (info->isInitialized) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "Trying to initialize Window [" << window->GetNameForNameable()
+                 << "] which was already initialized" << std::endl;
+    return false;
+  }
 
-	if( pInfo->m_bDrawBorder == false )
-	{
-#if HAS_FREEGLUT_28
-		iDisplayMode = iDisplayMode | GLUT_BORDERLESS;
-#else
-		vstr::warnp() << "[GlutWindowingTollkit]: "
-			<< "Borderless windows only available with freeglut 2.8+" << std::endl;
-#endif
-	}
+  if (!info->isOffscreenBuffer) {
+    if (!InitAsNormalWindow(window)) {
+      return false;
+    }
+    DestroyDummyWindow();
+  } else { // is RenderToTexture
+    if (!InitAsFbo(window)) {
+      return false;
+    }
+  }
 
-	if( pInfo->m_iContextMajor != 1 || pInfo->m_iContextMinor != 0 )
-	{
-#if !HAS_FREEGLUT_28
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-			<< "Context Version only available with freeglut" << std::endl;
-#else
-		glutInitContextVersion(pInfo->m_iContextMajor, pInfo->m_iContextMinor);
-		glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
-#endif
-	}
+  info->isInitialized = true;
+  return true;
+}
 
-	if( pInfo->m_nNumMultiSamples > 1 )
-	{
-#ifdef USE_NATIVE_GLUT
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-			<< "Multisample window requested - only available for freeglut" << std::endl;	
-#else
-		iDisplayMode = iDisplayMode | GLUT_MULTISAMPLE;
-		glutSetOption( GLUT_MULTISAMPLE, pInfo->m_nNumMultiSamples );
-#endif
-	}
+bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsDebugContext || pInfo->m_bIsForwardCompatible )
-	{
-		int iContextFlags = 0;
-#if !HAS_FREEGLUT_28
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-			<< "Context Flags (DebugContext, ForwardCompatible) only available with freeglut 2.8+" << std::endl;
-#else
-		if( pInfo->m_bIsDebugContext )
-		{
-			iContextFlags |= GLUT_DEBUG;
-		}
-		if( pInfo->m_bIsForwardCompatible )
-		{
-			iContextFlags |= GLUT_FORWARD_COMPATIBLE;
-		}
+  if (info->useStereo) {
+    SDL_GL_SetAttribute(SDL_GL_STEREO, 1);
+  }
 
-		glutInitContextFlags( iContextFlags );
-#endif
-	}
+  if (info->useAccumBuffer) {
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
+  }
 
-	glutInitDisplayMode( iDisplayMode );
-	if( pInfo->m_iCurrentPosX != -1 && pInfo->m_iCurrentPosY != -1 )
-	{
-		glutInitWindowPosition( pInfo->m_iCurrentPosX, pInfo->m_iCurrentPosY );
-	}
-	if( pInfo->m_iCurrentSizeX != -1 && pInfo->m_iCurrentSizeY != -1 )
-	{
-		glutInitWindowSize(  pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	}
+  if (info->useStencilBuffer) {
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
+  }
 
-	pInfo->m_iWindowID = glutCreateWindow( pInfo->m_sWindowTitle.c_str() );
-	glewInit();
+  if (info->contextMajor != 1 || info->contextMinor != 0) {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, info->contextMajor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, info->contextMinor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+  }
 
-#ifdef WIN32
-	if( m_bHasFullWindow )
-	{
-		glutSetWindow( m_nFullWindowId );
-		HGLRC pFirstContext = wglGetCurrentContext();
-		glutSetWindow( pInfo->m_iWindowID );
-		HGLRC pOwnContext = wglGetCurrentContext();
-		wglShareLists( pFirstContext, pOwnContext );
-	}
-#endif
+  if (info->numMultiSamples > 1) {
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, info->numMultiSamples);
+  }
 
-	m_mapWindowInfo[pWindow] = pInfo;
-	S_mapWindowInfo[pInfo->m_iWindowID] = pInfo;
+  if (info->isDebugContext || info->isForwardCompatible) {
+    uint32_t contextFlags{};
+    if (info->isDebugContext) {
+      contextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
+    }
+    
+    if (info->isForwardCompatible) {
+      contextFlags |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
+    }
 
-	glutSetWindow( pInfo->m_iWindowID );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
+  }
 
-	if( m_pUpdateCallback )
-	{
-		pInfo->m_pUpdateCallback = m_pUpdateCallback;
-		glutDisplayFunc( &DisplayUpdate );
-		glutIdleFunc( &DisplayUpdate );
-	}
-	glutReshapeFunc( &DisplayReshape );
+  
+  uint32_t flags = SDL_WINDOW_OPENGL;
+  if (!info->drawBorder) {
+    flags |= SDL_WINDOW_BORDERLESS;
+  }
 
-	if( pInfo->m_bFullscreenActive )
-	{
-		// store size/position to restore it when turning off game mode
-		pInfo->m_iPreFullscreenPosX = glutGet( GLUT_WINDOW_X );
-		pInfo->m_iPreFullscreenPosY = glutGet( GLUT_WINDOW_Y );
-		pInfo->m_iPreFullscreenSizeX = glutGet( GLUT_WINDOW_WIDTH );
-		pInfo->m_iPreFullscreenSizeY = glutGet( GLUT_WINDOW_HEIGHT );
-		glutFullScreen();
-	}
+  uint32_t windowOptions = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+  if (info->fullscreenActive) {
+    windowOptions |= SDL_WINDOW_FULLSCREEN;
+  }
 
-	// retrieve actual size/position
-	pInfo->m_iCurrentPosX = glutGet( GLUT_WINDOW_X );
-	pInfo->m_iCurrentPosY = glutGet( GLUT_WINDOW_Y );
-	pInfo->m_iCurrentSizeX = glutGet( GLUT_WINDOW_WIDTH );
-	pInfo->m_iCurrentSizeY = glutGet( GLUT_WINDOW_HEIGHT );
+  info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX, info->currentPosY, info->currentSizeX, info->currentSizeY, windowOptions);
+  info->windowId = m_windowIdCounter++;
+  glewInit();
 
-	pInfo->m_bIsInitialized = true; // we already set the flag here, because otherwise
-									// SetVSyncMode doesn't actually set the mode
-	if( pInfo->m_iVSyncMode == VSYNC_ENABLED )
-		SetVSyncMode( pWindow, true );
-	else if( pInfo->m_iVSyncMode == VSYNC_DISABLED )
-		SetVSyncMode( pWindow, false );
+  m_windowInfo[window] = info;
 
-	if( m_bHasFullWindow == false )
-	{
-		m_bHasFullWindow = true;
-		m_nFullWindowId = pInfo->m_iWindowID;
-	}
-		
+  if (m_updateCallback) {
+    info->updateCallback = m_updateCallback;
+    //glutDisplayFunc(&DisplayUpdate);
+    //glutIdleFunc(&DisplayUpdate);
+  }
+  //glutReshapeFunc(&DisplayReshape);
+
+  if (info->fullscreenActive) {
+    info->preFullscreenPosX  = info->currentPosX;
+    info->preFullscreenPosY  = info->currentPosY;
+    info->preFullscreenSizeX = info->currentSizeX;
+    info->preFullscreenSizeY = info->currentSizeY;
+  }
+
+  SDL_GetWindowPosition(info->sdlWindow, &info->currentPosX, &info->currentPosY);
+  SDL_GetWindowSizeInPixels(info->sdlWindow, &info->currentSizeX, &info->currentSizeY);
+
+  info->isInitialized = true; // we already set the flag here, because otherwise
+                              // SetVSyncMode doesn't actually set the mode
+
+  if (info->vSyncMode == VSYNC_ENABLED) {
+    SetVSyncMode(window, true);
+  } else if (info->vSyncMode == VSYNC_DISABLED) {
+    SetVSyncMode(window, false);
+  }
+
+  if (!m_hasFullWindow) {
+    m_hasFullWindow = true;
+    m_fullWindowId  = info->sdlWindow;
+  }
+
+/*
 #ifndef USE_NATIVE_GLUT
-	// set the close function to catch window close attempts
-	glutCloseFunc( CloseFunction );
-	glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION );
+  // set the close function to catch window close attempts
+  glutCloseFunc(CloseFunction);
+  glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 #endif // USE_NATIVE_GLUT
 
-	glutPostRedisplay();
-
-	return true;
+  glutPostRedisplay();
+*/
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::InitAsFbo( VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::InitAsFbo(VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( m_bHasFullWindow == false && m_nDummyWindowId == -1 )
-	{
-		vstr::warnp() << "Using offscreen window without valid real window - creating dummy win for context" << std::endl;
-		CreateDummyWindow( pWindow );
-	}		
+  if (!m_hasFullWindow && m_dummyWindowId == nullptr) {
+    vstr::warnp()
+        << "Using offscreen window without valid real window - creating dummy win for context"
+        << std::endl;
+    CreateDummyWindow(window);
+  }
 
-	if( pInfo->m_bUseAccumBuffer )
-	{
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-				<< "Window [" << pWindow->GetNameForNameable() << "] is offscreen buffer, but requests accum "
-				<< "buffer - combination invalid, accum buffer will be unavailable" << std::endl;
-		pInfo->m_bUseAccumBuffer = false;
-	}
-	if( pInfo->m_bUseStereo )
-	{
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-				<< "Window [" << pWindow->GetNameForNameable() << "] is offscreen buffer, but requests stereo mode "
-				<< "buffer - combination invalid, stereo will be unavailable" << std::endl;
-		pInfo->m_bUseStereo = false;
-	}
+  if (info->useAccumBuffer) {
+    vstr::warnp() << "[SDL2WindowingToolkit]: "
+                  << "Window [" << window->GetNameForNameable()
+                  << "] is offscreen buffer, but requests accum "
+                  << "buffer - combination invalid, accum buffer will be unavailable" << std::endl;
+    info->useAccumBuffer = false;
+  }
+  if (info->useStereo) {
+    vstr::warnp() << "[SDL2WindowingToolkit]: "
+                  << "Window [" << window->GetNameForNameable()
+                  << "] is offscreen buffer, but requests stereo mode "
+                  << "buffer - combination invalid, stereo will be unavailable" << std::endl;
+    info->useStereo = false;
+  }
 
-	if( glewGetExtension("GL_EXT_framebuffer_object") == GL_FALSE )
-	{
-		vstr::errp() << "[GlutWindowingTollkit]: "
-			<< "Trying to initialize Window [" << pWindow->GetNameForNameable()
-			<< "] as offscreen buffer failed - framebuffer objects not supported" << std::endl;
-		return false;
-	}
-	assert( __glewGenFramebuffersEXT != NULL );
+  if (glewGetExtension("GL_EXT_framebuffer_object") == GL_FALSE) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "Trying to initialize Window [" << window->GetNameForNameable()
+                 << "] as offscreen buffer failed - framebuffer objects not supported" << std::endl;
+    return false;
+  }
+  assert(__glewGenFramebuffersEXT != NULL);
 
-	// GL_MAX_FRAMEBUFFER_WIDTH seem to not be available in all glew versions
+  // GL_MAX_FRAMEBUFFER_WIDTH seem to not be available in all glew versions
 #ifdef GL_MAX_FRAMEBUFFER_WIDTH
-	GLint nMaxWidth, nMaxHeight;
-	glGetIntegerv( GL_MAX_FRAMEBUFFER_WIDTH, &nMaxWidth );
-	glGetIntegerv( GL_MAX_FRAMEBUFFER_HEIGHT, &nMaxHeight );
-	if( pInfo->m_iCurrentSizeX > nMaxWidth
-		|| pInfo->m_iCurrentSizeY > nMaxHeight )
-	{
-		vstr::errp() << "[GLuWindow]: cannot create render-to-texture window - size exceeds allowed max ["
-						<< nMaxWidth << "x" << nMaxHeight << "]" << std::endl;
-		return false;
-	}
+  GLint maxWidth;
+  GLint maxHeight;
+  glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &maxWidth);
+  glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &maxHeight);
+  if (info->currentSizeX > maxWidth || info->currentSizeY > maxHeight) {
+    vstr::errp()
+        << "[GLuWindow]: cannot create render-to-texture window - size exceeds allowed max ["
+        << maxWidth << "x" << maxHeight << "]" << std::endl;
+    return false;
+  }
 #endif
-	if( pInfo->m_nNumMultiSamples > 1  )
-	{
-		return InitAsMultisampleFbo( pWindow );
-	}
+  if (info->numMultiSamples > 1) {
+    return InitAsMultisampleFbo(window);
+  }
 
-	// create Fbo
-	glGenFramebuffers( 1, &pInfo->m_nFboId );
-	glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nFboId );
+  // create Fbo
+  glGenFramebuffers(1, &info->fboId);
+  glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
 
-	glGenRenderbuffers( 1, &pInfo->m_nFboColorId );
-	glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboColorId );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_RGB, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pInfo->m_nFboColorId ); 
-	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  glGenRenderbuffers(1, &info->fboColorId);
+  glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->fboColorId);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	glGenRenderbuffers( 1, &pInfo->m_nFboDepthId );
-	glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboDepthId );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pInfo->m_nFboDepthId ); 
-	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  glGenRenderbuffers(1, &info->fboDepthId);
+  glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->fboDepthId);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	if( pInfo->m_bUseStencilBuffer )
-	{
-		glGenRenderbuffers( 1, &pInfo->m_nFboStencilId );
-		glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboStencilId );
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_STENCIL_INDEX, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, pInfo->m_nFboStencilId ); 
-		glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-	}
-		
-	GLenum nStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-	if( nStatus != GL_FRAMEBUFFER_COMPLETE )
-		VISTA_THROW( "Failed to set up frame buffer window", -1 );
+  if (info->useStencilBuffer) {
+    glGenRenderbuffers(1, &info->fboStencilId);
+    glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, info->fboStencilId);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  }
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-	
-	DEBUG_CHECK_GL( "Post-OffscreenBuffer-Win-Swap" );
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE) {
+    VISTA_THROW("Failed to set up frame buffer window", -1);
+  }
 
-	return true;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  DEBUG_CHECK_GL("Post-OffscreenBuffer-Win-Swap");
+
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::InitAsMultisampleFbo( VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::InitAsMultisampleFbo(VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( glewGetExtension("GL_EXT_framebuffer_multisample") == GL_FALSE )
-	{
-		vstr::errp() << "[GlutWindowingTollkit]: "
-			<< "Trying to initialize Window [" << pWindow->GetNameForNameable()
-			<< "] as multisample offscreen buffer failed - multisample framebuffer objects not supported" << std::endl;
-		return false;
-	}
-	assert( __glewRenderbufferStorageMultisampleEXT != NULL );
+  if (glewGetExtension("GL_EXT_framebuffer_multisample") == GL_FALSE) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "Trying to initialize Window [" << window->GetNameForNameable()
+                 << "] as multisample offscreen buffer failed - multisample framebuffer objects "
+                    "not supported"
+                 << std::endl;
+    return false;
+  }
+  assert(__glewRenderbufferStorageMultisampleEXT != NULL);
 
-	// create Fbo
-	glGenFramebuffers( 1, &pInfo->m_nFboId );
-	glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nFboId );
+  // create Fbo
+  glGenFramebuffers(1, &info->fboId);
+  glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
 
-	glGenRenderbuffers( 1, &pInfo->m_nFboColorId );
-	glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboColorId );
-	glRenderbufferStorageMultisample( GL_RENDERBUFFER, pInfo->m_nNumMultiSamples, GL_RGB, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pInfo->m_nFboColorId ); 
-	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  glGenRenderbuffers(1, &info->fboColorId);
+  glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_RGB, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->fboColorId);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	glGenRenderbuffers( 1, &pInfo->m_nFboDepthId );
-	glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboDepthId );
-	glRenderbufferStorageMultisample( GL_RENDERBUFFER, pInfo->m_nNumMultiSamples, GL_DEPTH_COMPONENT24, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pInfo->m_nFboDepthId ); 
-	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  glGenRenderbuffers(1, &info->fboDepthId);
+  glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->fboDepthId);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	if( pInfo->m_bUseStencilBuffer )
-	{
-		glGenRenderbuffers( 1, &pInfo->m_nFboStencilId );
-		glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboStencilId );
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, pInfo->m_nNumMultiSamples, GL_STENCIL_INDEX, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, pInfo->m_nFboStencilId ); 
-		glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-	}
-		
-	GLenum nStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-	if( nStatus != GL_FRAMEBUFFER_COMPLETE )
-		VISTA_THROW( "Failed to set up frame buffer window", -1 );
+  if (info->useStencilBuffer) {
+    glGenRenderbuffers(1, &info->fboStencilId);
+    glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, info->fboStencilId);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  }
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0);
-	
-	DEBUG_CHECK_GL( "Post-OffscreenBuffer-Win-Swap" );
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE) {
+    VISTA_THROW("Failed to set up frame buffer window", -1);
+  }
 
-	// multisample framebuffer is complete, but we still need one to blit the multisample-image to
-	glGenFramebuffers( 1, &pInfo->m_nBlitFboId );
-	glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nBlitFboId );
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glGenRenderbuffers( 1, &pInfo->m_nBlitFboColorId );
-	glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nBlitFboColorId );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_RGB, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pInfo->m_nBlitFboColorId ); 
-	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  DEBUG_CHECK_GL("Post-OffscreenBuffer-Win-Swap");
 
-	glGenRenderbuffers( 1, &pInfo->m_nBlitFboDepthId );
-	glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nBlitFboDepthId );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pInfo->m_nBlitFboDepthId ); 
-	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  // multisample framebuffer is complete, but we still need one to blit the multisample-image to
+  glGenFramebuffers(1, &info->blitFboId);
+  glBindFramebuffer(GL_FRAMEBUFFER, info->blitFboId);
 
-	nStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-	if( nStatus != GL_FRAMEBUFFER_COMPLETE )
-		VISTA_THROW( "Failed to set up frame buffer window", -1 );
+  glGenRenderbuffers(1, &info->blitFboColorId);
+  glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboColorId);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->blitFboColorId);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0);
+  glGenRenderbuffers(1, &info->blitFboDepthId);
+  glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboDepthId);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->blitFboDepthId);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	return true;
+  status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE) {
+    VISTA_THROW("Failed to set up frame buffer window", -1);
+  }
+  
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::SetWindowUpdateCallback( 
-									IVistaExplicitCallbackInterface* pCallback )
-{
-	m_pUpdateCallback = pCallback;
+bool VistaSDL2WindowingToolkit::SetWindowUpdateCallback(IVistaExplicitCallbackInterface* callback) {
+  m_updateCallback = callback;
 
-	int iActiveID = glutGetWindow();
-	for( WindowInfoMap::const_iterator itWindow = m_mapWindowInfo.begin();
-			itWindow != m_mapWindowInfo.end(); ++itWindow )
-	{
-		(*itWindow).second->m_pUpdateCallback = pCallback;
-		int iID = (*itWindow).second->m_iWindowID;
-		if( iID != -1 )
-		{
-			glutSetWindow( iID );
-			glutDisplayFunc( &DisplayUpdate );
-			glutIdleFunc( &DisplayUpdate );
-		}
-		
-	}
-	if( m_mapWindowInfo.empty() == false )
-		glutPostRedisplay();
-	glutSetWindow( iActiveID );
-	return true;
-}
-bool VistaGlutWindowingToolkit::GetWindowPosition( const VistaWindow* pWindow,
-												  int &iX, int& iY ) const
-{
-	if( PushWindow( pWindow ) )
-	{
-		iX = glutGet( GLUT_WINDOW_X );
-		iY = glutGet( GLUT_WINDOW_Y );	
-		PopWindow();
-	}
-	else
-	{
-		GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-		iX = pInfo->m_iCurrentPosX;
-		iY = pInfo->m_iCurrentPosY;
-	}
-	return true;
+  for (auto const& window : m_windowInfo) {
+    window.second->updateCallback = callback;
+    SDL_Window* sdlWindow = window.second->sdlWindow;
+    if (sdlWindow != nullptr) {
+      SDL_GL_SwapWindow(sdlWindow);
+    }
+  }
+  
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::SetWindowPosition( VistaWindow* pWindow,
-												  const int iX, const int iY )
-{	
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::GetWindowPosition(const VistaWindow* window, int& x, int& y) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  
+  x = info->currentPosX;
+  y = info->currentPosY;
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
-
-	if( PushWindow( pInfo ) )
-	{
-		if( pInfo->m_bFullscreenActive )
-		{
-			pInfo->m_iPreFullscreenPosX = iX;
-			pInfo->m_iPreFullscreenPosY = iY;
-		}
-		else
-		{
-			glutPositionWindow( iX, iY );			
-			pInfo->m_iCurrentPosX = iX;
-			pInfo->m_iCurrentPosY = iY;		
-		}
-		PopWindow();
-	}
-	else
-	{
-		pInfo->m_iCurrentPosX = iX;
-		pInfo->m_iCurrentPosY = iY;		
-	}
-	return true;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetWindowSize( const VistaWindow* pWindow,
-											  int& iWidth, int& iHeight ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	iWidth = pInfo->m_iCurrentSizeX;
-	iHeight = pInfo->m_iCurrentSizeY;
-	return true;
+bool VistaSDL2WindowingToolkit::SetWindowPosition(VistaWindow* window, int x, int y) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
+
+  if (info->fullscreenActive) {
+    info->preFullscreenPosX = x;
+    info->preFullscreenPosY = y;
+  } else {
+    SDL_SetWindowPosition(info->sdlWindow, x, y);
+    info->currentSizeX = x;
+    info->currentSizeY = y;
+  }
+
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::SetWindowSize( VistaWindow* pWindow,
-											  int iWidth, int iHeight )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::GetWindowSize(const VistaWindow* window, int& width, int& height) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer && pInfo->m_nFboId > 0 )
-	{
-		DEBUG_CHECK_GL( "Pre-OffscreenBuffer-Win-Resize" );
+  width  = info->currentSizeX;
+  height = info->currentSizeY;
 
-		pInfo->m_iCurrentSizeX = iWidth;
-		pInfo->m_iCurrentSizeY = iHeight;			
+  return true;
+}
 
-		if( pInfo->m_nNumMultiSamples <= 1 )
-		{
-			glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboColorId );
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_RGB, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+bool VistaSDL2WindowingToolkit::SetWindowSize(VistaWindow* window, int width, int height) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-			glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboDepthId );
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  if (info->isOffscreenBuffer && info->fboId > 0) {
+    DEBUG_CHECK_GL("Pre-OffscreenBuffer-Win-Resize");
 
-			if( pInfo->m_bUseStencilBuffer )
-			{
-				glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboStencilId );
-				glRenderbufferStorage( GL_RENDERBUFFER, GL_STENCIL_INDEX, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-				glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-			}
+    info->currentSizeX = width;
+    info->currentSizeY = height;
+
+    if (info->numMultiSamples <= 1) {
+      glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, info->currentSizeX, info->currentSizeY);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+      glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+      if (info->useStencilBuffer) {
+        glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+      }
 #ifdef DEBUG
-			glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nFboId );
-			GLenum nStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-			if( nStatus != GL_FRAMEBUFFER_COMPLETE )
-				VISTA_THROW( "Failed to set up frame buffer window", -1 );
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+      glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
+      GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      if (status != GL_FRAMEBUFFER_COMPLETE) {
+        VISTA_THROW("Failed to set up frame buffer window", -1);
+      }
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
-		}
-		else
-		{
-			glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboColorId );
-			glRenderbufferStorageMultisample( GL_RENDERBUFFER, pInfo->m_nNumMultiSamples, GL_RGB, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+    } else {
+      glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_RGB, info->currentSizeX, info->currentSizeY);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-			glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboDepthId );
-			glRenderbufferStorageMultisample( GL_RENDERBUFFER, pInfo->m_nNumMultiSamples, GL_DEPTH_COMPONENT24, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+      glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-			if( pInfo->m_bUseStencilBuffer )
-			{
-				glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nFboStencilId );
-				glRenderbufferStorageMultisample( GL_RENDERBUFFER, pInfo->m_nNumMultiSamples, GL_STENCIL_INDEX, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-				glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-			}
+      if (info->useStencilBuffer) {
+        glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+      }
 #ifdef DEBUG
-			glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nFboId );
-			GLenum nStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-			if( nStatus != GL_FRAMEBUFFER_COMPLETE )
-				VISTA_THROW( "Failed to set up frame buffer window", -1 );
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+      glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
+      GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      if (status != GL_FRAMEBUFFER_COMPLETE) {
+        VISTA_THROW("Failed to set up frame buffer window", -1);
+      }
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 
-			glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nBlitFboColorId );
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_RGB, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+      glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboColorId);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, info->currentSizeX, info->currentSizeY);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-			glBindRenderbuffer( GL_RENDERBUFFER, pInfo->m_nBlitFboDepthId );
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-
+      glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboDepthId);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
 #ifdef DEBUG
-			glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nBlitFboId );
-			nStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-			if( nStatus != GL_FRAMEBUFFER_COMPLETE )
-				VISTA_THROW( "Failed to set up frame buffer window", -1 );
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+      glBindFramebuffer(GL_FRAMEBUFFER, info->blitFboId);
+      status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      if (status != GL_FRAMEBUFFER_COMPLETE) {
+        VISTA_THROW("Failed to set up frame buffer window", -1);
+      }
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
-		}
-		
-		
-		DEBUG_CHECK_GL( "Post-OffscreenBuffer-Win-Resize" );
-		return true;
-	}
-	if( PushWindow( pInfo ) )
-	{
-		if( pInfo->m_bFullscreenActive )
-		{
-			pInfo->m_iPreFullscreenSizeX = iWidth;
-			pInfo->m_iPreFullscreenSizeY = iHeight;
-		}
-		else
-		{
-			glutReshapeWindow( iWidth, iHeight );
-			pInfo->m_iCurrentSizeX = iWidth;
-			pInfo->m_iCurrentSizeY = iHeight;
-		}
-		PopWindow();
-	}
-	else
-	{
-		pInfo->m_iCurrentSizeX = iWidth;
-		pInfo->m_iCurrentSizeY = iHeight;		
-	}
-	return true;
+    }
+
+    DEBUG_CHECK_GL("Post-OffscreenBuffer-Win-Resize");
+    return true;
+  }
+
+  if (info->fullscreenActive) {
+    info->preFullscreenSizeX = width;
+    info->preFullscreenSizeY = height;
+  } else {
+    SDL_SetWindowSize(info->sdlWindow, width, height);
+    info->currentSizeX = width;
+    info->currentSizeY = height;
+  }
+
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetFullscreen( const VistaWindow* pWindow  ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	return pInfo->m_bFullscreenActive;
+bool VistaSDL2WindowingToolkit::GetFullscreen(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  return info->fullscreenActive;
 }
 
-bool VistaGlutWindowingToolkit::SetFullscreen( VistaWindow* pWindow,
-												   const bool bEnabled )
-{	
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, const bool enabled) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
-	
-	if( pInfo->m_bFullscreenActive == bEnabled )
-		return true;
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	if( pInfo->m_bIsInitialized == false )
-	{
-		// before initialization - store for later
-		pInfo->m_bFullscreenActive = true;
-		return true;
-	}
+  if (info->fullscreenActive == enabled) {
+    return true;
+  }
 
-	if( bEnabled )
-	{
-		PushWindow( pInfo );
-		pInfo->m_iPreFullscreenSizeX = glutGet( GLUT_WINDOW_WIDTH );
-		pInfo->m_iPreFullscreenSizeY = glutGet( GLUT_WINDOW_HEIGHT );
-		pInfo->m_iPreFullscreenPosX = glutGet( GLUT_WINDOW_X );
-		pInfo->m_iPreFullscreenPosY = glutGet( GLUT_WINDOW_Y );
-		
-		glutFullScreen();
-		PopWindow();
-		pInfo->m_bFullscreenActive = true;
-	}
-	else
-	{		
-		PushWindow( pInfo );
-		glutPositionWindow( pInfo->m_iPreFullscreenPosX, pInfo->m_iPreFullscreenPosY );
-		glutReshapeWindow( pInfo->m_iPreFullscreenSizeX, pInfo->m_iPreFullscreenSizeY );
-		PopWindow();
-		pInfo->m_bFullscreenActive = false;	
-	}
-	return true;
+  if (!info->isInitialized) {
+    // before initialization - store for later
+    info->fullscreenActive = true;
+    return true;
+  }
+
+  if (enabled) {
+    SDL_GetWindowPosition(info->sdlWindow, &info->preFullscreenPosX, &info->preFullscreenPosY);
+    SDL_GetWindowSizeInPixels(info->sdlWindow, &info->preFullscreenSizeX, &info->preFullscreenSizeY);
+
+    SDL_SetWindowFullscreen(info->sdlWindow, SDL_WINDOW_FULLSCREEN);
+    info->fullscreenActive = true;
+  } else {
+    SDL_SetWindowFullscreen(info->sdlWindow, 0);
+    info->fullscreenActive = false;
+
+    SDL_SetWindowPosition(info->sdlWindow, info->preFullscreenPosX, info->preFullscreenPosY);
+    SDL_SetWindowSize(info->sdlWindow, info->preFullscreenSizeX, info->preFullscreenSizeY);
+  }
+
+  return true;
 }
-bool VistaGlutWindowingToolkit::SetWindowTitle( VistaWindow* pWindow, 
-											   const std::string& sTitle )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	pInfo->m_sWindowTitle = sTitle;
+bool VistaSDL2WindowingToolkit::SetWindowTitle(VistaWindow* window, const std::string& title) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  info->windowTitle = title;
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	if( PushWindow( pInfo ) )
-	{
-		glutSetWindowTitle( sTitle.c_str() );
-		PopWindow();
-	}
-	return true;
+  SDL_SetWindowTitle(info->sdlWindow, title.c_str());
+
+  return true;
 }
 
-std::string VistaGlutWindowingToolkit::GetWindowTitle( const VistaWindow* pWindow ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	return pInfo->m_sWindowTitle;
+std::string VistaSDL2WindowingToolkit::GetWindowTitle(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  return info->windowTitle;
 }
 
-bool VistaGlutWindowingToolkit::SetCursorIsEnabled( VistaWindow* pWindow, bool bSet )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetCursorIsEnabled(VistaWindow* window, bool set) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	pInfo->m_bCursorEnabled = bSet;
-	if( PushWindow( pWindow ) )
-	{
-		if( bSet )
-			glutSetCursor( pInfo->m_iCursor );
-		else
-			glutSetCursor( GLUT_CURSOR_NONE );
-		PopWindow();
-	}
-	return true;
+  info->cursorEnabled = set;
+  if (set) {
+    auto cursor = SDL_CreateSystemCursor((SDL_SystemCursor) info->cursor);
+    SDL_SetCursor(cursor);
+    SDL_ShowCursor(SDL_ENABLE);
+  } else {
+    SDL_ShowCursor(SDL_DISABLE);
+  }
+
+  return true;
 }
-bool VistaGlutWindowingToolkit::GetCursorIsEnabled( const VistaWindow* pWindow  ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::GetCursorIsEnabled(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
-	
-	return pInfo->m_bCursorEnabled;
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
+
+  return info->cursorEnabled;
 }
 
-bool VistaGlutWindowingToolkit::GetUseStereo( const VistaWindow* pWindow  ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::GetUseStereo(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	return pInfo->m_bUseStereo;
+  return info->useStereo;
 }
-bool VistaGlutWindowingToolkit::SetUseStereo( VistaWindow* pWindow, const bool bSet )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetUseStereo(VistaWindow* window, bool set) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change stereo mode on window ["
-				<< pWindow->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change stereo mode on window ["
+                  << window->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
 
-	pInfo->m_bUseStereo = bSet;
-	return true;
+  info->useStereo = set;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetUseAccumBuffer( const VistaWindow* pWindow  ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::GetUseAccumBuffer(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	return pInfo->m_bUseAccumBuffer;
+  return info->useAccumBuffer;
 }
-bool VistaGlutWindowingToolkit::SetUseAccumBuffer( VistaWindow* pWindow, const bool bSet )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetUseAccumBuffer(VistaWindow* window, bool set) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change accum buffer mode on window ["
-				<< pWindow->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change accum buffer mode on window ["
+                  << window->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
 
-	pInfo->m_bUseAccumBuffer = bSet;
-	return true;
+  info->useAccumBuffer = set;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetUseStencilBuffer( const VistaWindow* pWindow  ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
-	
-	return pInfo->m_bUseStencilBuffer;
+bool VistaSDL2WindowingToolkit::GetUseStencilBuffer(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
+
+  return info->useStencilBuffer;
 }
-bool VistaGlutWindowingToolkit::SetUseStencilBuffer( VistaWindow* pWindow, const bool bSet )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetUseStencilBuffer(VistaWindow* window, bool set) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change stencil buffer mode on window ["
-				<< pWindow->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change stencil buffer mode on window ["
+                  << window->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
 
-	pInfo->m_bUseStencilBuffer = bSet;
-	return true;
+  info->useStencilBuffer = set;
+  return true;
 }
 
-int VistaGlutWindowingToolkit::GetMultiSamples( const VistaWindow* pWindow ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );	
-	
-	return pInfo->m_nNumMultiSamples;
+int VistaSDL2WindowingToolkit::GetMultiSamples(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+
+  return info->numMultiSamples;
 }
 
-bool VistaGlutWindowingToolkit::SetMultiSamples(  const VistaWindow* pWindow, const int nNumSamples )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	
-	// @TODO: allow enabling/disabling?
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change multisampling on window ["
-				<< pWindow->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
+bool VistaSDL2WindowingToolkit::SetMultiSamples(const VistaWindow* window, int numSamples) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	pInfo->m_nNumMultiSamples = nNumSamples;
-	return true;
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change multisampling on window ["
+                  << window->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
+
+
+  info->numMultiSamples = numSamples;
+  return true;
 }
 
+bool VistaSDL2WindowingToolkit::GetUseOffscreenBuffer(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-bool VistaGlutWindowingToolkit::GetUseOffscreenBuffer( const VistaWindow* pWindow ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-
-	return pInfo->m_bIsOffscreenBuffer;
+  return info->isOffscreenBuffer;
 }
 
-
-bool VistaGlutWindowingToolkit::GetDrawBorder( const VistaWindow* pWindow ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	return pInfo->m_bDrawBorder;
+bool VistaSDL2WindowingToolkit::GetDrawBorder(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  return info->drawBorder;
 }
 
-bool VistaGlutWindowingToolkit::SetDrawBorder( VistaWindow* pWindow, const bool bSet )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetDrawBorder(VistaWindow* window, bool set) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change borderless prop on window ["
-				<< pWindow->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change borderless prop on window ["
+                  << window->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
 
-	pInfo->m_bDrawBorder = bSet;
-	return true;
+  SDL_SetWindowBordered(info->sdlWindow, set ? SDL_TRUE : SDL_FALSE);
+  info->drawBorder = set;
+  return true;
 }
 
+bool VistaSDL2WindowingToolkit::SetUseOffscreenBuffer(VistaWindow* window, bool set) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-bool VistaGlutWindowingToolkit::SetUseOffscreenBuffer( VistaWindow* pWindow, const bool bSet )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change render-to-texture mode on window ["
+                  << window->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
 
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change render-to-texture mode on window ["
-				<< pWindow->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
-
-	pInfo->m_bIsOffscreenBuffer = bSet;
-	return true;
+  info->isOffscreenBuffer = set;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetRGBImage( const VistaWindow* pWindow, std::vector< VistaType::byte >& vecData ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )
-		return false;
-
-	int nNumPixels = pInfo->m_iCurrentSizeX * pInfo->m_iCurrentSizeY;
-	int nDataSize = nNumPixels * 3;
-	vecData.resize( nDataSize );
-	int nRet = GetRGBImage( pWindow, &vecData[0], nDataSize );
-	return( nRet == nDataSize );
+bool VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  int numPixels = info->currentSizeX * info->currentSizeY;
+  int dataSize  = numPixels * 3;
+  vecData.resize(dataSize);
+  int ret = GetRGBImage(window, vecData.data(), dataSize);
+  return (ret == dataSize);
 }
 
-int VistaGlutWindowingToolkit::GetRGBImage( const VistaWindow* pWindow, VistaType::byte* pData, const int nBufferSize ) const
-{	
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )
-		return 0;
+int VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	DEBUG_CHECK_GL( "Pre-GetRGBImage" );
+  DEBUG_CHECK_GL("Pre-GetRGBImage");
 
-	int nNumPixels = pInfo->m_iCurrentSizeX * pInfo->m_iCurrentSizeY;
-	int nDataSize = nNumPixels * 3;
-	if( nBufferSize < nDataSize )
-		return 0;
+  int numPixels = info->currentSizeX * info->currentSizeY;
+  int dataSize  = numPixels * 3;
+  if (bufferSize < dataSize) {
+    return 0;
+  }
 
-	if( pInfo->m_bIsOffscreenBuffer == false )
-	{
-		glReadBuffer( GL_FRONT );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_RGB, GL_UNSIGNED_BYTE, pData );
-	}
-	else if( pInfo->m_nNumMultiSamples > 1 )
-	{
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, pInfo->m_nBlitFboId );
-		glReadBuffer( GL_COLOR_ATTACHMENT0 );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_RGB, GL_UNSIGNED_BYTE, pData );
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, pInfo->m_nFboId );
-	}
-	else
-	{
-		glReadBuffer( GL_COLOR_ATTACHMENT0 );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_RGB, GL_UNSIGNED_BYTE, pData );
-	}
+  if (!info->isOffscreenBuffer) {
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
+  } else if (info->numMultiSamples > 1) {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->blitFboId);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->fboId);
+  } else {
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
+  }
 
-	PopWindow();
-
-	DEBUG_CHECK_GL( "Post-GetRGBImage" );
-	return nDataSize;
+  DEBUG_CHECK_GL("Post-GetRGBImage");
+  return dataSize;
 }
 
-bool VistaGlutWindowingToolkit::GetDepthImage( const VistaWindow* pWindow, std::vector< VistaType::byte >& vecData ) const
-{
+bool VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )
-		return false;
-
-	int nNumPixels = pInfo->m_iCurrentSizeX * pInfo->m_iCurrentSizeY;
-	int nDataSize = nNumPixels * sizeof(float);
-	vecData.resize( nDataSize );
-	int nRet = GetDepthImage( pWindow, &vecData[0], nDataSize );
-	return( nRet == nDataSize );	
+  int numPixels = info->currentSizeX * info->currentSizeY;
+  int dataSize  = numPixels * sizeof(float);
+  vecData.resize(dataSize);
+  int ret = GetDepthImage(window, vecData.data(), dataSize);
+  return (ret == dataSize);
 }
 
-int VistaGlutWindowingToolkit::GetDepthImage( const VistaWindow* pWindow, VistaType::byte* pData, const int nBufferSize ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )
-		return 0;
+int VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, VistaType::byte* data, const int bufferSize) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	int nNumPixels = pInfo->m_iCurrentSizeX * pInfo->m_iCurrentSizeY;
-	int nDataSize = nNumPixels * sizeof(float);
-	if( nBufferSize < nDataSize )
-		return 0;
-	DEBUG_CHECK_GL( "Pre-GetDepthImage" );
+  int numPixels = info->currentSizeX * info->currentSizeY;
+  int dataSize  = numPixels * sizeof(float);
+  if (bufferSize < dataSize) {
+    return 0;
+  }
+  
+  DEBUG_CHECK_GL("Pre-GetDepthImage");
 
-	if( pInfo->m_bIsOffscreenBuffer == false )
-	{
-		glReadBuffer( GL_FRONT );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, pData );		
-	}
-	else if( pInfo->m_nNumMultiSamples > 1 )
-	{
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, pInfo->m_nBlitFboId );
-		glReadBuffer( GL_DEPTH_COMPONENT );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_RGB, GL_UNSIGNED_BYTE, pData );
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, pInfo->m_nFboId );
-	}
-	else
-	{
-		glReadBuffer( GL_DEPTH_COMPONENT );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, pData );
-	}
+  if (!info->isOffscreenBuffer) {
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, data);
+  } else if (info->numMultiSamples > 1) {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->blitFboId);
+    glReadBuffer(GL_DEPTH_COMPONENT);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->fboId);
+  } else {
+    glReadBuffer(GL_DEPTH_COMPONENT);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, data);
+  }
 
-	PopWindow();
+  DEBUG_CHECK_GL("Post-GetDepthImage");
 
-	DEBUG_CHECK_GL( "Post-GetDepthImage" );
-
-	return nDataSize;
+  return dataSize;
 }
 
+VistaImage VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-VistaImage VistaGlutWindowingToolkit::GetRGBImage( const VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )
-		return VistaImage();
+  DEBUG_CHECK_GL("Pre-GetRGBImage");
 
-	DEBUG_CHECK_GL( "Pre-GetRGBImage" );
+  VistaImage result;
 
-	VistaImage oResult;
+  if (!info->isOffscreenBuffer) {
+    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE);
 
-	if( pInfo->m_bIsOffscreenBuffer == false )
-	{
-		oResult.Set2DData( pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE );
+    glReadBuffer(GL_BACK);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, result.GetDataWrite());
+  } else {
+    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE);
 
-		glReadBuffer( GL_BACK );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_RGB, GL_UNSIGNED_BYTE, oResult.GetDataWrite() );
-	}
-	else
-	{		
-		oResult.Set2DData( pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE );
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, result.GetDataWrite());
+  }
 
-		glReadBuffer( GL_COLOR_ATTACHMENT0 );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_RGB, GL_UNSIGNED_BYTE, oResult.GetDataWrite() );
-	}
-
-	PopWindow();
-
-	DEBUG_CHECK_GL( "Post-GetRGBImage" );
-	return oResult;
+  DEBUG_CHECK_GL("Post-GetRGBImage");
+  return result;
 }
 
-VistaImage VistaGlutWindowingToolkit::GetDepthImage( const VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	if( PushWindow( pInfo ) == false )
-		return VistaImage();
+VistaImage VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	VistaImage oResult;
+  VistaImage result;
 
-	DEBUG_CHECK_GL( "Pre-GetDepthImage" );
+  DEBUG_CHECK_GL("Pre-GetDepthImage");
 
-	if( pInfo->m_bIsOffscreenBuffer == false )
-	{
-		oResult.Set2DData( pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, NULL, GL_LUMINANCE, GL_FLOAT );
-		
-		glReadBuffer( GL_BACK );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, oResult.GetDataWrite() );		
-	}
-	else
-	{
-		oResult.Set2DData( pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, NULL, GL_LUMINANCE, GL_FLOAT );
-		
-		glReadBuffer( GL_FRONT );
-		glReadPixels( 0, 0, pInfo->m_iCurrentSizeX, pInfo->m_iCurrentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, oResult.GetDataWrite() );
-	}
+  if (!info->isOffscreenBuffer) {
+    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_LUMINANCE, GL_FLOAT);
 
-	PopWindow();
+    glReadBuffer(GL_BACK);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, result.GetDataWrite());
+  } else {
+    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_LUMINANCE, GL_FLOAT);
 
-	DEBUG_CHECK_GL( "Post-GetDepthImage" );
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, result.GetDataWrite());
+  }
 
-	return oResult;
-}
-int VistaGlutWindowingToolkit::GetWindowId( const VistaWindow* pWindow  ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+  DEBUG_CHECK_GL("Post-GetDepthImage");
 
-	if( pInfo->m_bIsOffscreenBuffer )
-		return -1;
-	return pInfo->m_iWindowID;	
-}
-void VistaGlutWindowingToolkit::BindWindow( VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	PushWindow( pInfo );
-	if( pInfo->m_nNumMultiSamples == 1 )
-		glDisable( GL_MULTISAMPLE );
-	else
-		glEnable( GL_MULTISAMPLE );
-}
-void VistaGlutWindowingToolkit::UnbindWindow( VistaWindow* pWindow )
-{
-	PopWindow();
+  return result;
 }
 
-bool VistaGlutWindowingToolkit::PushWindow( const VistaWindow* pWindow ) const
-{
-	WindowInfoMap::const_iterator itWindowInfo = m_mapWindowInfo.find( pWindow );
-	assert( itWindowInfo != m_mapWindowInfo.end() );
-	return PushWindow( (*itWindowInfo).second );	
+int VistaSDL2WindowingToolkit::GetWindowId(const VistaWindow* window) const {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+
+  if (info->isOffscreenBuffer) {
+    return -1;
+  }
+  
+  return info->windowId;
 }
 
-bool VistaGlutWindowingToolkit::PushWindow( const GlutWindowInfo* pInfo ) const
-{
-	if( pInfo->m_bIsInitialized == false )
-	{
-		// okay, not initialized yet
-		return false;
-	} 
+void VistaSDL2WindowingToolkit::BindWindow(VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		glBindFramebuffer( GL_FRAMEBUFFER, pInfo->m_nFboId );
-		m_iTmpWindowID = -1;
-		return true;
-	}
-	else
-	{
-		int iID = pInfo->m_iWindowID;
-		assert( iID != -1 );
-		if( m_iTmpWindowID == -1 )
-			m_iTmpWindowID = iID;
-		glutSetWindow( iID );
-	}
-	return true;
+  if (info->numMultiSamples == 1) {
+    glDisable(GL_MULTISAMPLE);
+  } else {
+    glEnable(GL_MULTISAMPLE);
+  }
+}
+void VistaSDL2WindowingToolkit::UnbindWindow(VistaWindow* window) {
 }
 
-void VistaGlutWindowingToolkit::PopWindow() const
-{
-	if( m_iTmpWindowID != -1 )
-	{
-		glutSetWindow( m_iTmpWindowID );
-		m_iTmpWindowID = -1;
-	}
-	else
-	{
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-	}
+bool VistaSDL2WindowingToolkit::GetVSyncCanBeModified(const VistaWindow* window) {
+  return CheckVSyncAvailability();
 }
 
-bool VistaGlutWindowingToolkit::GetVSyncCanBeModified( const VistaWindow* pWindow  )
-{
-	return CheckVSyncAvailability();
+int VistaSDL2WindowingToolkit::GetVSyncMode(const VistaWindow* window) {
+  if (CheckVSyncAvailability() == VSYNC_DISABLED) {
+    return VSYNC_STATE_UNAVAILABLE;
+  }
+
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  if (info->vSyncMode == VSYNC_STATE_UNKNOWN) {
+    int interval = SDL_GL_GetSwapInterval();
+    if (interval == 0) {
+      m_globalVSyncAvailability = VSYNC_DISABLED;
+    } else if (interval == 1) {
+      m_globalVSyncAvailability = VSYNC_ENABLED;
+    } else if (interval == -1) {
+      m_globalVSyncAvailability = ADAPTIVE_VSYNC_ENABLED;
+    }
+  }
+  return m_globalVSyncAvailability;
 }
 
-int VistaGlutWindowingToolkit::GetVSyncMode( const VistaWindow* pWindow  )
-{
-	if( CheckVSyncAvailability() == VSYNC_DISABLED )
-		return VSYNC_STATE_UNAVAILABLE;
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::SetCursor(VistaWindow* window, int cursor) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
-	if( GetSwapIntervalFunction && pInfo->m_iVSyncMode == VSYNC_STATE_UNKNOWN )
-	{
-		if( PushWindow( pWindow ) )
-		{			
-			int iInterval = GetSwapIntervalFunction();
-			if( iInterval == 0 )
-				m_iGlobalVSyncAvailability = VSYNC_DISABLED;
-			else if( iInterval >= 1 )
-				m_iGlobalVSyncAvailability = VSYNC_ENABLED;
+  if (info->isOffscreenBuffer) {
+    return false;
+  }
 
-			PopWindow();
-		}
-	}
-	return m_iGlobalVSyncAvailability;
+  info->cursor = cursor;
+  if (info->cursorEnabled) {
+    SDL_SetCursor(SDL_CreateSystemCursor((SDL_SystemCursor) cursor));
+  }
+  
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::SetCursor( VistaWindow* pWindow, int iCursor )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-
-	if( pInfo->m_bIsOffscreenBuffer )
-	{
-		return false;
-	}
-
-
-	pInfo->m_iCursor = iCursor;
-	if( PushWindow( pWindow ) )
-	{
-		if( pInfo->m_bCursorEnabled )
-			glutSetCursor( iCursor );
-		PopWindow();
-	}
-	return true;
+int VistaSDL2WindowingToolkit::GetCursor(const VistaWindow* window) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+  return info->cursor;
 }
 
-int VistaGlutWindowingToolkit::GetCursor( const VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	return pInfo->m_iCursor;
+bool VistaSDL2WindowingToolkit::SetVSyncMode(VistaWindow* window, bool enabled) {
+  SDL2WindowInfo* info = GetWindowInfo(window);
+
+  if (info->isInitialized == false) {
+    // pre-init, just store the value
+    if (enabled) {
+      info->vSyncMode = VSYNC_ENABLED;
+    } else {
+      info->vSyncMode = VSYNC_DISABLED;
+    }
+
+    return true;
+  }
+
+  int interval = enabled ? 1 : 0;
+
+  if (SDL_GL_SetSwapInterval(interval) == 0) {
+    m_globalVSyncAvailability = interval;
+  } else {
+    vstr::errp() << "VistaSDL2WindowingToolkit::SetVSyncEnabled -"
+                 << "Setting VSync failed - does driver config enforce on/off?" << std::endl;
+    m_globalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
+  }
+
+  return (m_globalVSyncAvailability != VSYNC_STATE_UNAVAILABLE);
 }
 
-bool VistaGlutWindowingToolkit::SetVSyncMode( VistaWindow* pWindow, const bool bEnabled )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
+bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
+  if (m_globalVSyncAvailability != ~0)
+    return (m_globalVSyncAvailability != VSYNC_STATE_UNAVAILABLE);
 
-	if( pInfo->m_bIsInitialized == false )
-	{
-		// pre-init, just store the value
-		if( bEnabled )
-			pInfo->m_iVSyncMode = VSYNC_ENABLED;
-		else
-			pInfo->m_iVSyncMode = VSYNC_DISABLED;
-		return true;
-	}
-
-	if( PushWindow( pWindow ) == false )
-		return false;
-
-	if( CheckVSyncAvailability() == false )
-		return false;		
-
-	int iInterval = bEnabled ? 1 : 0;	
-#ifdef WIN32
-	if( SetSwapIntervalFunction( iInterval ) )
-	{
-		if( GetSwapIntervalFunction )
-		{
-			int iGetValue = GetSwapIntervalFunction();
-			if( iGetValue == iInterval )
-				m_iGlobalVSyncAvailability = iInterval;
-			else
-			{
-				vstr::errp() << "VistaGlutWindowingToolkit::SetVSyncEnabled -"
-						<< "Setting VSync failed - does driver config enforce on/off?"
-						<< std::endl;
-				m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
-			}
-		}
-		else
-			m_iGlobalVSyncAvailability = iInterval;
-	}
-	else
-	{
-		vstr::errp() << "VistaGlutWindowingToolkit::SetVSyncEnabled -"
-				<< "Setting VSync failed" << std::endl;
-		m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
-	}
-#elif defined LINUX
-	if( SetSwapIntervalFunction( iInterval ) == 0 )
-	{
-		m_iGlobalVSyncAvailability = iInterval;
-	}
-	else
-	{
-		vstr::errp() << "VistaGlutWindowingToolkit::SetVSyncEnabled -"
-			<< "Setting VSync failed - does driver config enforce on/off?"
-			<< std::endl;
-		m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
-	}
-#endif
-
-	PopWindow();
-	return ( m_iGlobalVSyncAvailability != VSYNC_STATE_UNAVAILABLE );
-}
-
-bool VistaGlutWindowingToolkit::CheckVSyncAvailability()
-{
-	if( m_iGlobalVSyncAvailability != ~0 )
-		return ( m_iGlobalVSyncAvailability != VSYNC_STATE_UNAVAILABLE );
-
+  void* SetSwapIntervalFunction = nullptr;
+  void* GetSwapIntervalFunction = nullptr;
 
 #ifdef WIN32
-	m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
-	SetSwapIntervalFunction = (PFNWGLSWAPINTERVALEXT)glutGetProcAddress( "wglSwapIntervalEXT" );
-	if( SetSwapIntervalFunction )
-	{
-		m_iGlobalVSyncAvailability = VSYNC_STATE_UNKNOWN;
 
-		GetSwapIntervalFunction = (PFNWGLGETSWAPINTERVALEXT)glutGetProcAddress("wglGetSwapIntervalEXT");
-	}
+  m_globalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
+  SetSwapIntervalFunction    = SDL_GL_GetProcAddress("wglSwapIntervalEXT");
+  if (SetSwapIntervalFunction) {
+    m_globalVSyncAvailability = VSYNC_STATE_UNKNOWN;
+    GetSwapIntervalFunction = SDL_GL_GetProcAddress("wglGetSwapIntervalEXT");
+  }
+
 #elif defined LINUX
-	SetSwapIntervalFunction = (PFNGLXSWAPINTERVALSGIPROC)glutGetProcAddress( "glXSwapIntervalSGI" );
-	if( SetSwapIntervalFunction )
-	{
-		m_iGlobalVSyncAvailability = VSYNC_STATE_UNKNOWN;
-	}
-	else
-	{
-		m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
-	}
+
+  SetSwapIntervalFunction = SDL_GL_GetProcAddress("glXSwapIntervalSGI");
+  if (SetSwapIntervalFunction) {
+    m_globalVSyncAvailability = VSYNC_STATE_UNKNOWN;
+  } else {
+    m_globalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
+  }
 
 #else
-	m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
+  m_iGlobalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
 #endif
 
-	return ( m_iGlobalVSyncAvailability != VSYNC_STATE_UNAVAILABLE );
-
-#endif
+  return (m_globalVSyncAvailability != VSYNC_STATE_UNAVAILABLE);
 }
 
-GlutWindowInfo* VistaGlutWindowingToolkit::GetWindowInfo( const VistaWindow* pWindow  ) const
-{
-	WindowInfoMap::const_iterator itWindow = m_mapWindowInfo.find( pWindow );
-	if( itWindow == m_mapWindowInfo.end() )
-		return NULL;
-	return (*itWindow).second;
+SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(const VistaWindow* window) const {
+  WindowInfoMap::const_iterator itWindow = m_windowInfo.find(window);
+  if (itWindow == m_windowInfo.end()) {
+    return nullptr;
+  }
+
+  return itWindow->second;
 }
 
-bool VistaGlutWindowingToolkit::GetContextVersion( int& nMajor, int& nMinor, const VistaWindow* pTarget ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pTarget );
-	nMajor = pInfo->m_iContextMajor;
-	nMinor = pInfo->m_iContextMinor;
-	return true;
+bool VistaSDL2WindowingToolkit::GetContextVersion(int& major, int& minor, const VistaWindow* target) const {
+  SDL2WindowInfo* info = GetWindowInfo(target);
+  major                = info->contextMajor;
+  minor                = info->contextMinor;
+
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::SetContextVersion( int nMajor, int nMinor, VistaWindow* pTarget )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pTarget );
-	
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change context version on window ["
-				<< pTarget->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
-	
-	pInfo->m_iContextMajor = nMajor;
-	pInfo->m_iContextMinor = nMinor;
-	return true;
+bool VistaSDL2WindowingToolkit::SetContextVersion(int major, int minor, VistaWindow* target) {
+  SDL2WindowInfo* info = GetWindowInfo(target);
+
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change context version on window ["
+                  << target->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
+
+  info->contextMajor = major;
+  info->contextMinor = minor;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetIsDebugContext( const VistaWindow* pTarget ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pTarget );
-	return pInfo->m_bIsDebugContext;
+bool VistaSDL2WindowingToolkit::GetIsDebugContext(const VistaWindow* target) const {
+  SDL2WindowInfo* info = GetWindowInfo(target);
+  return info->isDebugContext;
 }
 
-bool VistaGlutWindowingToolkit::SetIsDebugContext( const bool bIsDebug, VistaWindow* pTarget )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pTarget );
-	
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change debug context flag on window ["
-				<< pTarget->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
-	
-	pInfo->m_bIsDebugContext = bIsDebug;
-	return true;
+bool VistaSDL2WindowingToolkit::SetIsDebugContext(bool isDebug, VistaWindow* target) {
+  SDL2WindowInfo* info = GetWindowInfo(target);
+
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change debug context flag on window ["
+                  << target->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
+
+  info->isDebugContext = isDebug;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::GetIsForwardCompatible( const VistaWindow* pTarget ) const
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pTarget );
-	return pInfo->m_bIsForwardCompatible;
+bool VistaSDL2WindowingToolkit::GetIsForwardCompatible(const VistaWindow* target) const {
+  SDL2WindowInfo* info = GetWindowInfo(target);
+  return info->isForwardCompatible;
 }
 
-bool VistaGlutWindowingToolkit::SetIsForwardCompatible( const bool bIsForwardCompatible, VistaWindow* pTarget )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pTarget );
-	
-	if( pInfo->m_bIsInitialized )
-	{
-		vstr::warnp() << "[GlutWindow]: Trying to change forward compatible flag on window ["
-				<< pTarget->GetNameForNameable() << "] - this can only be done before initialization"
-				<< std::endl;
-		return false;
-	}
-	
-	pInfo->m_bIsForwardCompatible = bIsForwardCompatible;
-	return true;
+bool VistaSDL2WindowingToolkit::SetIsForwardCompatible(bool isForwardCompatible, VistaWindow* target) {
+  SDL2WindowInfo* info = GetWindowInfo(target);
+
+  if (info->isInitialized) {
+    vstr::warnp() << "[SDL2Window]: Trying to change forward compatible flag on window ["
+                  << target->GetNameForNameable()
+                  << "] - this can only be done before initialization" << std::endl;
+    return false;
+  }
+
+  info->isForwardCompatible = isForwardCompatible;
+  return true;
 }
 
-bool VistaGlutWindowingToolkit::CreateDummyWindow( VistaWindow* pWindow )
-{
-	GlutWindowInfo* pInfo = GetWindowInfo( pWindow );
-	int iDisplayMode = GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE;
+bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
+  SDL2WindowInfo* info        = GetWindowInfo(window);
 
-	if( pInfo->m_iContextMajor != 1 || pInfo->m_iContextMinor != 0 )
-	{
-#if !HAS_FREEGLUT_28
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-			<< "Context Version only available with freeglut 2.8+" << std::endl;
-#else
-		glutInitContextVersion(pInfo->m_iContextMajor, pInfo->m_iContextMinor);
-		glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
-#endif
-	}
+  if (info->contextMajor != 1 || info->contextMinor != 0) {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, info->contextMajor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, info->contextMinor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+  }
 
-	if( pInfo->m_bIsDebugContext || pInfo->m_bIsForwardCompatible )
-	{
-		int iContextFlags = 0;
-#if !HAS_FREEGLUT_28
-		vstr::warnp() << "[GlutWindowingToolkit]: "
-			<< "Context Flags (DebugContext, ForwardCompatible) only available with freeglut 2.8+" << std::endl;
-#else
-		if( pInfo->m_bIsDebugContext )
-		{
-			iContextFlags |= GLUT_DEBUG;
-		}
-		if( pInfo->m_bIsForwardCompatible )
-		{
-			iContextFlags |= GLUT_FORWARD_COMPATIBLE;
-		}
+  if (info->isDebugContext || info->isForwardCompatible) {
+    uint32_t contextFlags{};
+    if (info->isDebugContext) {
+      contextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
+    }
+    
+    if (info->isForwardCompatible) {
+      contextFlags |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
+    }
 
-		glutInitContextFlags( iContextFlags );
-#endif
-	}
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
+  }
 
+  m_dummyWindowId = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+  glewInit();
 
-	glutInitDisplayMode( iDisplayMode );
-	m_nDummyWindowId = glutCreateWindow( "dummy" );	
-	glewInit();
-	glutSetWindow( m_nDummyWindowId );
-	glutHideWindow();
-
-	return true;
+  return true;
 }
 
-void VistaGlutWindowingToolkit::DestroyDummyWindow()
-{
-	if( m_nDummyWindowId )
-		glutDestroyWindow( m_nDummyWindowId );
-	m_nDummyWindowId = -1;
+void VistaSDL2WindowingToolkit::DestroyDummyWindow() {
+  if (m_dummyWindowId) {
+    SDL_DestroyWindow(m_dummyWindowId);
+  }
+  m_dummyWindowId = nullptr;
 }
-
-

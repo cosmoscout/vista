@@ -38,7 +38,8 @@ if( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
 	vista_use_package( SDL2 REQUIRED )
 	vista_use_package( SDL2_ttf REQUIRED )
 	add_definitions( -DVISTA_WITH_SDL2 )
-	install( FILES "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/" "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.LESSER" "README" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/VistaCoreLibs" )
+
+	install(DIRECTORY "DisplayManager/SDL2WindowImp/fonts" DESTINATION "fonts")
 endif()
 
 vista_find_package( ZMQ COMPONENTS PGM QUIET )
@@ -72,6 +73,8 @@ endif()
 add_definitions( -DVISTA_SYS_OPENSG -DVISTAKERNEL_USE_PROFILING )
 
 include( "./_SourceFiles.cmake" )
+
+message(STATUS "${VISTA_USE_PACKAGE_LIBRARIES}")
 
 add_library( VistaKernel ${ProjectSources} )
 target_link_libraries( VistaKernel

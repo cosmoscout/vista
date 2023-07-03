@@ -17,99 +17,83 @@
 /*  You should have received a copy of the GNU Lesser General Public License  */
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
-/*                                Contributors                                */
-/*                                                                            */
-/*============================================================================*/
 
 #include <GL/glew.h>
 
 #include "VistaSDL2TextEntity.h"
 
+#include <SDL2/SDL_render.h>
 #include <VistaAspects/VistaAspectsUtils.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-/*============================================================================*/
-/* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
-/*============================================================================*/
+const char* SANS_FONT_FILE  = "fonts/OpenSans-Regular.ttf";
+const char* SERIF_FONT_FILE = "fonts/SourceSerifPro-Regular.ttf";
+const char* MONO_FONT_FILE  = "fonts/SometypeMono-Regular.ttf";
 
-const char* SANS_FONT_FILE = "OpenSans-Regular.ttf";
-const char* SERIF_FONT_FILE = "SourceSerifPro-Regular.ttf";
-const char* MONO_FONT_FILE = "SometypeMono-Regular.ttf";
-
-/*============================================================================*/
-/* CONSTRUCTORS / DESTRUCTOR                                                  */
-/*============================================================================*/
-VistaSDL2TextEntity::VistaSDL2TextEntity(SDL_Renderer *renderer)
-{
-	m_nXPos = 0;
-	m_nYPos = 0;
-	m_nZPos = 0;
-	m_bEnabled = true;
-	m_oColor = VistaColor::BRICK_RED;
-	m_sText = "";
-	m_iPointSize = 18;
-	m_pFontType = TTF_OpenFont(SANS_FONT_FILE, m_iPointSize);
-	m_pRenderer = renderer;
+VistaSDL2TextEntity::VistaSDL2TextEntity() {
+  m_nXPos     = 0;
+  m_nYPos     = 0;
+  m_nZPos     = 0;
+  m_bEnabled  = true;
+  m_oColor    = VistaColor::BRICK_RED;
+  m_sText     = "";
+  m_pointSize = 18;
+  m_fontType  = TTF_OpenFont(SANS_FONT_FILE, m_pointSize);
 }
 
-VistaSDL2TextEntity::~VistaSDL2TextEntity()
-{
-	TTF_CloseFont(m_pFontType);
-}
-/*============================================================================*/
-/* IMPLEMENTATION                                                             */
-/*============================================================================*/
-void VistaSDL2TextEntity::SetFont( const std::string& sFamily , int iSize )
-{
-	TTF_CloseFont(m_pFontType);
-
-	m_iPointSize = iSize;
-
-	if( VistaAspectsComparisonStuff::StringEquals( sFamily, "MONOSPACE", false ) ) {
-		m_pFontType = TTF_OpenFont(MONO_FONT_FILE, iSize);
-	} else if( VistaAspectsComparisonStuff::StringEquals( sFamily, "SERIF", false)  ) {
-		m_pFontType = TTF_OpenFont(SERIF_FONT_FILE, iSize);
-	} else {
-		m_pFontType = TTF_OpenFont(SANS_FONT_FILE, iSize);
-	}
+VistaSDL2TextEntity::~VistaSDL2TextEntity() {
+  TTF_CloseFont(m_fontType);
 }
 
-int VistaSDL2TextEntity::GetFontSize() const
-{
-	return m_iPointSize;
+void VistaSDL2TextEntity::SetFont(const std::string& sFamily, int iSize) {
+  TTF_CloseFont(m_fontType);
+
+  m_pointSize = iSize;
+
+  if (VistaAspectsComparisonStuff::StringEquals(sFamily, "MONOSPACE", false)) {
+    m_fontType = TTF_OpenFont(MONO_FONT_FILE, iSize);
+  } else if (VistaAspectsComparisonStuff::StringEquals(sFamily, "SERIF", false)) {
+    m_fontType = TTF_OpenFont(SERIF_FONT_FILE, iSize);
+  } else {
+    m_fontType = TTF_OpenFont(SANS_FONT_FILE, iSize);
+  }
 }
 
-std::string VistaSDL2TextEntity::GetFontFamily() const
-{
-	return TTF_FontFaceFamilyName(m_pFontType);
+int VistaSDL2TextEntity::GetFontSize() const {
+  return m_pointSize;
 }
 
-TTF_Font* VistaSDL2TextEntity::GetFontType()
-{
-	return m_pFontType;
+std::string VistaSDL2TextEntity::GetFontFamily() const {
+  return TTF_FontFaceFamilyName(m_fontType);
 }
 
-void VistaSDL2TextEntity::DrawCharacters()
-{
-	SDL_Color color = {m_oColor.GetRed() * 255, m_oColor.GetGreen() * 255, m_oColor.GetBlue() * 255};
-	SDL_Surface* surface = TTF_RenderText_Solid(m_pFontType, m_sText.c_str(), color);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_pRenderer, surface);
+TTF_Font* VistaSDL2TextEntity::GetFontType() {
+  return m_fontType;
+}
 
-	int w;
-	int h;
-	TTF_SizeUTF8(m_pFontType, m_sText.c_str(), &w, &h);
-	SDL_Rect bb = {0, 0, w, h};
+void VistaSDL2TextEntity::DrawCharacters() {
+  SDL_Color color = {
+    static_cast<Uint8>(m_oColor.GetRed() * 255),
+    static_cast<Uint8>(m_oColor.GetGreen() * 255),
+    static_cast<Uint8>(m_oColor.GetBlue() * 255),
+  };
+  SDL_Surface* surface = TTF_RenderText_Solid(m_fontType, m_sText.c_str(), color);
+  SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface);
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-	SDL_RenderCopy(m_pRenderer, texture, nullptr, &bb);
+  int w;
+  int h;
+  TTF_SizeUTF8(m_fontType, m_sText.c_str(), &w, &h);
+  SDL_Rect bb = {0, 0, w, h};
 
-	SDL_FreeSurface(surface);
-	SDL_DestroyTexture(texture);
+  SDL_RenderCopy(renderer, texture, nullptr, &bb);
+
+  SDL_FreeSurface(surface);
+  SDL_DestroyTexture(texture);
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-
