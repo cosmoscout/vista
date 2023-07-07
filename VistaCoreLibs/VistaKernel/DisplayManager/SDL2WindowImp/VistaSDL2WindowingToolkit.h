@@ -22,6 +22,7 @@
 #define _VISTASDLWINDOWINGTOOLKIT_H
 
 #include <SDL2/SDL_video.h>
+#include <SDL_events.h>
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
@@ -33,6 +34,8 @@ class VistaDisplayManager;
 class VistaGLTexture;
 class VistaImage;
 struct SDL2WindowInfo;
+struct SDL_WindowEvent;
+struct SDL_DisplayEvent;
 
 /**
  * SDL2 implementation of IVistaWindowingToolkit. See IVistaWindowingToolkit.h
@@ -135,6 +138,9 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void DestroyDummyWindow();
 
  private:
+  void HandleWindowEvents(SDL2WindowInfo* window, const SDL_WindowEvent* windowEvent) const;
+  void HandleDisplayEvent(SDL2WindowInfo* window, const SDL_DisplayEvent* event) const;
+
   typedef std::map<const VistaWindow*, SDL2WindowInfo*> WindowInfoMap;
   WindowInfoMap                                         m_windowInfo;
   bool                                                  m_quitLoop;

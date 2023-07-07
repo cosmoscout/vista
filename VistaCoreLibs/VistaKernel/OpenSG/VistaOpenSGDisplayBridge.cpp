@@ -2422,11 +2422,9 @@ IVistaWindowingToolkit* VistaOpenSGDisplayBridge::CreateWindowingToolkit(const s
 
 VistaWindow* VistaOpenSGDisplayBridge::CreateVistaWindow(
     VistaDisplay* pDisplay, const VistaPropertyList& oProps) {
-  vstr::outi() << "new WindowData" << std::endl;
   // create new data container
   WindowData* pData = new WindowData;
 
-  vstr::outi() << "NewWindow" << std::endl;
   VistaWindow* pVistaWindow = NewWindow(pDisplay, pData);
   if (!pVistaWindow) {
     vstr::errp() << "[VistaOpenSGDisplayBridge]: - unable to create window" << std::endl;
@@ -2434,18 +2432,13 @@ VistaWindow* VistaOpenSGDisplayBridge::CreateVistaWindow(
     return NULL;
   }
 
-  vstr::outi() << "RegisterWindow" << std::endl;
   m_pWindowingToolkit->RegisterWindow(pVistaWindow);
 
-  vstr::outi() << "SetPropertiesByList" << std::endl;
   pVistaWindow->GetProperties()->SetPropertiesByList(oProps);
 
-  vstr::outi() << "PassiveWindow::create" << std::endl;
   pData->m_ptrWindow = osg::PassiveWindow::create();
-  vstr::outi() << "setWindow" << std::endl;
   m_pRenderAction->setWindow(pData->m_ptrWindow.get().getCPtr());
 
-  vstr::outi() << "InitWindow" << std::endl;
   // finally create the window
   if (m_pWindowingToolkit->InitWindow(pVistaWindow) == false) {
     vstr::errp() << "[VistaOpenSGDisplayBridge]: - unable to initialize window" << std::endl;
@@ -2453,21 +2446,16 @@ VistaWindow* VistaOpenSGDisplayBridge::CreateVistaWindow(
     return NULL;
   }
 
-  vstr::outi() << "init" << pData->m_ptrWindow.getCPtr() << std::endl;
-  // pData->m_ptrWindow->init();
+  pData->m_ptrWindow->init();
 
-  vstr::outi() << "SetCursorIsEnabled" << std::endl;
   // set mouse cursor visibility
   // to default on start.
   m_pWindowingToolkit->SetCursorIsEnabled(pVistaWindow, GetShowCursor());
 
-  vstr::outi() << "GetWindowSize" << std::endl;
   int nWidth, nHeight;
   m_pWindowingToolkit->GetWindowSize(pVistaWindow, nWidth, nHeight);
-  vstr::outi() << "setSize" << std::endl;
   pData->m_ptrWindow->setSize(nWidth, nHeight);
 
-  vstr::outi() << "ObserveWindow" << std::endl;
   pData->ObserveWindow(pVistaWindow, this);
 
   return pVistaWindow;

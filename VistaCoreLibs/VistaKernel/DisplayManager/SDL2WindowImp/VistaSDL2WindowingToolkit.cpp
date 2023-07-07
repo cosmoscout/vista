@@ -148,38 +148,6 @@ struct SDL2WindowInfo {
   GLuint blitFboDepthId;
 };
 
-/*
-namespace {
-std::map<SDL_Window*, SDL2WindowInfo*> windowInfo;
-
-void DisplayUpdate() {
-  auto firstWindow = windowInfo.find(0);
-  assert(itWindowInfo != windowInfo.end());
-
-  firstWindow->second->updateCallback->Do();
-}
-
-void DisplayReshape(int width, int height) {
-  auto firstWindow = windowInfo.find(0);
-  assert(itWindowInfo != windowInfo.end());
-  SDL2WindowInfo* info = firstWindow->second;
-  if (info->currentSizeX != width || info->currentSizeY != height) {
-    info->currentSizeX = width;
-    info->currentSizeY = height;
-    firstWindow->second->window->GetProperties()
-        ->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
-  }
-}
-
-void CloseFunction() {
-  if (GetVistaSystem()) {
-    vstr::warni() << "SDL2Window closed - Quitting Vista" << std::endl;
-    GetVistaSystem()->Quit();
-  }
-}
-} // namespace
-*/
-
 VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     : m_quitLoop(false)
     , m_updateCallback(nullptr)
@@ -202,12 +170,106 @@ IVistaTextEntity* VistaSDL2WindowingToolkit::CreateTextEntity() {
   return new VistaSDL2TextEntity();
 }
 
+void VistaSDL2WindowingToolkit::HandleWindowEvents(SDL2WindowInfo* window, const SDL_WindowEvent* event) const {
+  switch (event->event) {
+    case SDL_WINDOWEVENT_SHOWN:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_HIDDEN:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_EXPOSED:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_MOVED:
+      window->currentPosX = event->data1;
+      window->currentPosY = event->data2;
+      window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_POSITION_CHANGE);
+      break;
+    case SDL_WINDOWEVENT_RESIZED:
+      window->currentSizeX = event->data1;
+      window->currentSizeY = event->data2;
+      window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
+      break;
+    case SDL_WINDOWEVENT_SIZE_CHANGED:
+      window->currentSizeX = event->data1;
+      window->currentSizeY = event->data2;
+      window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
+      break;
+    case SDL_WINDOWEVENT_MINIMIZED:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_MAXIMIZED:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_RESTORED:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_ENTER:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_LEAVE:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_FOCUS_GAINED:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_FOCUS_LOST:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_CLOSE:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_TAKE_FOCUS:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_HIT_TEST:
+      // ignored
+      break;
+    default:
+      vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event->windowID << " got unknown event " << event->event << std::endl;
+      break;
+  }
+}
+
+void VistaSDL2WindowingToolkit::HandleDisplayEvent(SDL2WindowInfo* window, const SDL_DisplayEvent* event) const {
+  switch (event->event) {
+    case SDL_DISPLAYEVENT_CONNECTED:
+      // ignored
+      break;
+    case SDL_DISPLAYEVENT_DISCONNECTED:
+      // ignored
+      break;
+    case SDL_DISPLAYEVENT_ORIENTATION:
+      // ignored
+      break;
+  }
+}
+
 void VistaSDL2WindowingToolkit::Run() {
   while (!m_quitLoop) {
-    if (m_hasFullWindow)
-      ;// glutMainLoopEvent();
-    else
+    if (m_hasFullWindow) {
+      for (auto const& window : m_windowInfo) {
+        window.second->updateCallback->Do();
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+          switch(e.type) {
+            case SDL_QUIT:
+              m_quitLoop = true;
+              break;
+            case SDL_WINDOWEVENT:
+              HandleWindowEvents(window.second, &e.window);
+              break;
+            case SDL_DISPLAYEVENT:
+              HandleDisplayEvent(window.second, &e.display);
+              break;
+          }
+        }
+      }
+    } else {
       m_updateCallback->Do();
+    }
   }
 }
 
@@ -217,9 +279,8 @@ void VistaSDL2WindowingToolkit::Quit() {
 
 void VistaSDL2WindowingToolkit::DisplayWindow(const VistaWindow* window) {
   SDL2WindowInfo* info = GetWindowInfo(window);
-  if (info->isOffscreenBuffer == false) {
+  if (!info->isOffscreenBuffer) {
     SDL_GL_SwapWindow(info->sdlWindow);
-    // glutPostRedisplay();
   } else if (info->numMultiSamples > 1) {
     glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, info->fboId);
     glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, info->blitFboId);
@@ -366,16 +427,19 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
 
   info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX, info->currentPosY, info->currentSizeX, info->currentSizeY, windowOptions);
   info->windowId = m_windowIdCounter++;
+
+  if (!SDL_GL_CreateContext(info->sdlWindow)) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "OpenGL context could not be created!" << std::endl;
+    GetVistaSystem()->Quit();
+  }
   glewInit();
 
   m_windowInfo[window] = info;
 
   if (m_updateCallback) {
     info->updateCallback = m_updateCallback;
-    //glutDisplayFunc(&DisplayUpdate);
-    //glutIdleFunc(&DisplayUpdate);
   }
-  //glutReshapeFunc(&DisplayReshape);
 
   if (info->fullscreenActive) {
     info->preFullscreenPosX  = info->currentPosX;
@@ -401,15 +465,6 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     m_fullWindowId  = info->sdlWindow;
   }
 
-/*
-#ifndef USE_NATIVE_GLUT
-  // set the close function to catch window close attempts
-  glutCloseFunc(CloseFunction);
-  glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-#endif // USE_NATIVE_GLUT
-
-  glutPostRedisplay();
-*/
   return true;
 }
 

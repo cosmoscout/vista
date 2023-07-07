@@ -20,13 +20,18 @@
 
 #include <GL/glew.h>
 
+#include "VistaBase/VistaStreamUtils.h"
 #include "VistaSDL2TextEntity.h"
 
 #include <SDL2/SDL_render.h>
+#include <SDL_pixels.h>
+#include <SDL_surface.h>
 #include <VistaAspects/VistaAspectsUtils.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <array>
+#include <cstdint>
 
 const char* SANS_FONT_FILE  = "fonts/OpenSans-Regular.ttf";
 const char* SERIF_FONT_FILE = "fonts/SourceSerifPro-Regular.ttf";
@@ -59,6 +64,10 @@ void VistaSDL2TextEntity::SetFont(const std::string& sFamily, int iSize) {
   } else {
     m_fontType = TTF_OpenFont(SANS_FONT_FILE, iSize);
   }
+
+  if (m_fontType == nullptr) {
+    vstr::errp() << "[VistaSDL2TextEntity] Could not open font: " << sFamily << std::endl;
+  }
 }
 
 int VistaSDL2TextEntity::GetFontSize() const {
@@ -79,21 +88,29 @@ void VistaSDL2TextEntity::DrawCharacters() {
     static_cast<Uint8>(m_oColor.GetGreen() * 255),
     static_cast<Uint8>(m_oColor.GetBlue() * 255),
   };
-  SDL_Surface* surface = TTF_RenderText_Solid(m_fontType, m_sText.c_str(), color);
-  SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface);
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+  SDL_Surface* surface = TTF_RenderUTF8_Blended(m_fontType, m_sText.c_str(), color);
 
-  int w;
-  int h;
-  TTF_SizeUTF8(m_fontType, m_sText.c_str(), &w, &h);
-  SDL_Rect bb = {0, 0, w, h};
+  glPushAttrib(GL_BLEND);
+  glPushAttrib(GL_BLEND_EQUATION);
+  glPushAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+  
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  SDL_RenderCopy(renderer, texture, nullptr, &bb);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH,  surface->pitch / 4);
+
+  std::array<float, 4> rasterPos;
+  glGetFloatv(GL_CURRENT_RASTER_POSITION, rasterPos.data());
+  float x = rasterPos.at(0);
+  float y = rasterPos.at(1);
+
+  glWindowPos2f(x, y + surface->h);
+  glPixelZoom( 1, -1 );
+  glDrawPixels(surface->w, surface->h, GL_BGRA, GL_UNSIGNED_BYTE, surface->pixels);
+
+  glPopAttrib();
+  glPopAttrib();
+  glPopAttrib();
 
   SDL_FreeSurface(surface);
-  SDL_DestroyTexture(texture);
 }
-
-/*============================================================================*/
-/* LOCAL VARS AND FUNCS                                                       */
-/*============================================================================*/

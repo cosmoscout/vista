@@ -52,15 +52,11 @@ vista_find_package( GLEW QUIET )
 if ( VISTACORELIBS_USE_SDL2_WINDOWIMP )
 	vista_find_package( SDL2 QUIET )
 	vista_find_package( SDL2_ttf QUIET )
+endif()
 
-	if( NOT SDL2_FOUND )
-		message(STATUS "SDL2 not found!")
-	endif()
-	
-	if( NOT SDL2_TTF_FOUND )
-		message(STATUS "SDL2_ttf not found!")
-	endif()
-else()
+set( VISTACORELIBS_USE_GLUT_WINDOWIMP ON CACHE BOOL "Determines if the GLUT-based WindowToolit Implementation will be prefered" )
+
+if ( VISTACORELIBS_USE_GLUT_WINDOWIMP )
 	vista_find_package( GLUT QUIET )
 endif()
 
