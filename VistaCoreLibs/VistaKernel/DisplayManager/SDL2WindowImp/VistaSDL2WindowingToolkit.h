@@ -27,6 +27,7 @@
 
 #include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
 
+#include <deque>
 #include <map>
 #include <string>
 
@@ -117,7 +118,7 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   int  GetVSyncMode(const VistaWindow* window) final;
 
   bool SetCursor(VistaWindow* window, int cursor);
-  int  GetCursor(const VistaWindow* pWindow);
+  int  GetCursor(const VistaWindow* window);
 
   IVistaTextEntity* CreateTextEntity() final;
 
@@ -148,10 +149,14 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   mutable SDL_Window*                                   m_tmpWindowID;
   int                                                   m_globalVSyncAvailability;
 
-  bool        m_hasFullWindow;
-  SDL_Window* m_fullWindowId;
-  SDL_Window* m_dummyWindowId;
-  int         m_windowIdCounter;
+  std::deque<SDL_Event*> m_joystickEvents;
+  std::deque<SDL_Event*> m_controllerEvents;
+  std::deque<SDL_Event*> m_touchEvents;
+
+  bool          m_hasFullWindow;
+  SDL_Window*   m_fullWindowId;
+  SDL_Window*   m_dummyWindowId;
+  SDL_GLContext m_dummyContextId;
   int m_cursor;
 };
 

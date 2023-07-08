@@ -88,6 +88,7 @@ struct SDL2WindowInfo {
       , drawBorder(true)
       , sdlWindow(nullptr)
       , windowId(-1)
+      , glContext(nullptr)
       , windowTitle("ViSTA")
       , vSyncMode(VistaSDL2WindowingToolkit::VSYNC_STATE_UNKNOWN)
       , cursorEnabled(true)
@@ -128,7 +129,8 @@ struct SDL2WindowInfo {
   int                              numMultiSamples;
   bool                             drawBorder;
   SDL_Window*                      sdlWindow;
-  int                              windowId;
+  unsigned int                     windowId;
+  SDL_GLContext                    glContext;
   std::string                      windowTitle;
   int                              vSyncMode;
   int                              contextMajor;
@@ -155,15 +157,31 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     , m_globalVSyncAvailability(~0)
     , m_hasFullWindow(false)
     , m_fullWindowId(nullptr)
-    , m_dummyWindowId(nullptr)
-    , m_windowIdCounter(0) {
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0 || TTF_Init() != 0) {
-    vstr::warni() << "SDL2 init failed - Quitting Vista" << std::endl;
+    , m_dummyWindowId(nullptr) {
+  if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0) {
+    vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
+    vstr::warni() << "SDL2 init of the events system failed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
+    vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
+    vstr::warni() << "SDL2 init of the video system failed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
+  if (TTF_Init() != 0) {
+    vstr::warni() << "TTF Error: " << TTF_GetError() << std::endl;
+    vstr::warni() << "SDL2 init of the TTF library failed - Quitting Vista" << std::endl;
     GetVistaSystem()->Quit();
   }
 }
 
 VistaSDL2WindowingToolkit::~VistaSDL2WindowingToolkit() {
+  TTF_Quit();
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
+  SDL_QuitSubSystem(SDL_INIT_EVENTS);
+  SDL_Quit();
 }
 
 IVistaTextEntity* VistaSDL2WindowingToolkit::CreateTextEntity() {
@@ -282,11 +300,11 @@ void VistaSDL2WindowingToolkit::DisplayWindow(const VistaWindow* window) {
   if (!info->isOffscreenBuffer) {
     SDL_GL_SwapWindow(info->sdlWindow);
   } else if (info->numMultiSamples > 1) {
-    glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, info->fboId);
-    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, info->blitFboId);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, info->fboId);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, info->blitFboId);
     glBlitFramebuffer(0, 0, info->currentSizeX, info->currentSizeY, 0, 0, info->currentSizeX, info->currentSizeY, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->fboId);
+    glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
 
     DEBUG_CHECK_GL("Multisample-FBO-blit");
   }
@@ -335,6 +353,14 @@ bool VistaSDL2WindowingToolkit::UnregisterWindow(VistaWindow* window) {
     }
 
     DEBUG_CHECK_GL("Post-OffscreenBuffer-Win-delete");
+  }
+
+  if (info->glContext) {
+    SDL_GL_DeleteContext(info->glContext);
+  }
+
+  if (info->sdlWindow) {
+    SDL_DestroyWindow(info->sdlWindow);
   }
 
   delete info;
@@ -426,9 +452,10 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
   }
 
   info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX, info->currentPosY, info->currentSizeX, info->currentSizeY, windowOptions);
-  info->windowId = m_windowIdCounter++;
-
-  if (!SDL_GL_CreateContext(info->sdlWindow)) {
+  info->windowId = SDL_GetWindowID(info->sdlWindow);
+  info->glContext = SDL_GL_CreateContext(info->sdlWindow);
+  
+  if (!info->glContext) {
     vstr::errp() << "[SDL2WindowingToolkit]: "
                  << "OpenGL context could not be created!" << std::endl;
     GetVistaSystem()->Quit();
@@ -493,14 +520,6 @@ bool VistaSDL2WindowingToolkit::InitAsFbo(VistaWindow* window) {
     info->useStereo = false;
   }
 
-  if (glewGetExtension("GL_EXT_framebuffer_object") == GL_FALSE) {
-    vstr::errp() << "[SDL2WindowingToolkit]: "
-                 << "Trying to initialize Window [" << window->GetNameForNameable()
-                 << "] as offscreen buffer failed - framebuffer objects not supported" << std::endl;
-    return false;
-  }
-  assert(__glewGenFramebuffersEXT != NULL);
-
   // GL_MAX_FRAMEBUFFER_WIDTH seem to not be available in all glew versions
 #ifdef GL_MAX_FRAMEBUFFER_WIDTH
   GLint maxWidth;
@@ -556,16 +575,6 @@ bool VistaSDL2WindowingToolkit::InitAsFbo(VistaWindow* window) {
 
 bool VistaSDL2WindowingToolkit::InitAsMultisampleFbo(VistaWindow* window) {
   SDL2WindowInfo* info = GetWindowInfo(window);
-
-  if (glewGetExtension("GL_EXT_framebuffer_multisample") == GL_FALSE) {
-    vstr::errp() << "[SDL2WindowingToolkit]: "
-                 << "Trying to initialize Window [" << window->GetNameForNameable()
-                 << "] as multisample offscreen buffer failed - multisample framebuffer objects "
-                    "not supported"
-                 << std::endl;
-    return false;
-  }
-  assert(__glewRenderbufferStorageMultisampleEXT != NULL);
 
   // create Fbo
   glGenFramebuffers(1, &info->fboId);
@@ -769,7 +778,7 @@ bool VistaSDL2WindowingToolkit::GetFullscreen(const VistaWindow* window) const {
   return info->fullscreenActive;
 }
 
-bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, const bool enabled) {
+bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, bool enabled) {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
@@ -1010,10 +1019,10 @@ int VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window, VistaType:
     glReadBuffer(GL_FRONT);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
   } else if (info->numMultiSamples > 1) {
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->blitFboId);
+    glBindFramebuffer(GL_FRAMEBUFFER, info->blitFboId);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->fboId);
+    glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
   } else {
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -1048,10 +1057,10 @@ int VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, VistaTyp
     glReadBuffer(GL_FRONT);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, data);
   } else if (info->numMultiSamples > 1) {
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->blitFboId);
+    glBindFramebuffer(GL_FRAMEBUFFER, info->blitFboId);
     glReadBuffer(GL_DEPTH_COMPONENT);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, info->fboId);
+    glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
   } else {
     glReadBuffer(GL_DEPTH_COMPONENT);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, data);
@@ -1128,6 +1137,7 @@ void VistaSDL2WindowingToolkit::BindWindow(VistaWindow* window) {
     glEnable(GL_MULTISAMPLE);
   }
 }
+
 void VistaSDL2WindowingToolkit::UnbindWindow(VistaWindow* window) {
 }
 
@@ -1202,9 +1212,10 @@ bool VistaSDL2WindowingToolkit::SetVSyncMode(VistaWindow* window, bool enabled) 
 }
 
 bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
-  if (m_globalVSyncAvailability != ~0)
+  if (m_globalVSyncAvailability != ~0) {
     return (m_globalVSyncAvailability != VSYNC_STATE_UNAVAILABLE);
-
+  }
+  
   void* SetSwapIntervalFunction = nullptr;
   void* GetSwapIntervalFunction = nullptr;
 
@@ -1234,7 +1245,7 @@ bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
 }
 
 SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(const VistaWindow* window) const {
-  WindowInfoMap::const_iterator itWindow = m_windowInfo.find(window);
+  auto itWindow = m_windowInfo.find(window);
   if (itWindow == m_windowInfo.end()) {
     return nullptr;
   }
@@ -1244,9 +1255,9 @@ SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(const VistaWindow* wind
 
 bool VistaSDL2WindowingToolkit::GetContextVersion(int& major, int& minor, const VistaWindow* target) const {
   SDL2WindowInfo* info = GetWindowInfo(target);
-  major                = info->contextMajor;
-  minor                = info->contextMinor;
 
+  major = info->contextMajor;
+  minor = info->contextMinor;
   return true;
 }
 
@@ -1326,6 +1337,7 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
   }
 
   m_dummyWindowId = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+  m_dummyContextId = SDL_GL_CreateContext(m_dummyWindowId);
   glewInit();
 
   return true;
@@ -1335,5 +1347,11 @@ void VistaSDL2WindowingToolkit::DestroyDummyWindow() {
   if (m_dummyWindowId) {
     SDL_DestroyWindow(m_dummyWindowId);
   }
-  m_dummyWindowId = nullptr;
+
+  if (m_dummyContextId) {
+    SDL_GL_DeleteContext(m_dummyContextId);
+  }
+
+  m_dummyWindowId  = nullptr;
+  m_dummyContextId = nullptr;
 }
