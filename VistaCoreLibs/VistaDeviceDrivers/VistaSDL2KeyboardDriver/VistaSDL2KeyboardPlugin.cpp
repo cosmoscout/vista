@@ -17,9 +17,6 @@
 /*  You should have received a copy of the GNU Lesser General Public License  */
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
-/*                                Contributors                                */
-/*                                                                            */
-/*============================================================================*/
 
 #include "VistaSDL2KeyboardDriver.h"
 
@@ -52,7 +49,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
   return TRUE;
 }
 
-#endif //__VISTAVISTASDL2KEYBOARDDRIVERCONFIG_H
+#endif
 
 extern "C" VISTASDL2KEYBOARDPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
     IVistaTranscoderFactoryFactory* fac) {

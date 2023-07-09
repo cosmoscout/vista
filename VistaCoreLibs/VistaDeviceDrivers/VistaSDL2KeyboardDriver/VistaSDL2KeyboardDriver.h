@@ -21,10 +21,12 @@
 #ifndef _VISTASDL2KEYBOARDDRIVER_H
 #define _VISTASDL2KEYBOARDDRIVER_H
 
+#include "VistaDeviceDrivers/VistaOSGKeyboardDriver/VistaOSGKeyboardDriver.h"
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <map>
 #include <vector>
+#include <SDL2/SDL_scancode.h>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2KEYBOARDDRIVER_STATIC)
@@ -37,54 +39,24 @@
 #define VISTASDL2KEYBOARDDRIVERAPI
 #endif
 
-class VistaDriverAbstractWindowAspect;
-
 class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriver : public IVistaKeyboardDriver {
  public:
   VistaSDL2KeyboardDriver(IVistaDriverCreationMethod*);
   virtual ~VistaSDL2KeyboardDriver();
 
-  static void KeyDownFunction(unsigned char, int, int);
-  static void KeyUpFunction(unsigned char, int, int);
-  static void SpecialKeyDownFunction(int, int, int);
-  static void SpecialKeyUpFunction(int, int, int);
-
  protected:
-  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  bool DoSensorUpdate(VistaType::microtime dTs) final;
 
-  virtual bool DoConnect();
-  virtual bool DoDisconnect();
+  bool DoConnect() final;
+  bool DoDisconnect() final;
 
  private:
-  static void SetKeyValue(VistaSDL2KeyboardDriver*, unsigned char ucKey, bool bIsUp, int nModifier);
-  static void SetSpecialKeyValue(
-      VistaSDL2KeyboardDriver* pKeyboard, int nKeyValue, bool bIsUp, int nModifier);
+  int SDLKeyToVistaKey(int key);
 
-  struct _sKeyHlp {
-    _sKeyHlp()
-        : m_nKey(-1)
-        , m_nModifier(-1)
-        , m_bUpKey(false) {
-    }
-
-    _sKeyHlp(int nKey, int nModifier, bool bUp)
-        : m_nKey(nKey)
-        , m_nModifier(nModifier)
-        , m_bUpKey(bUp) {
-    }
-
-    int  m_nKey, m_nModifier;
-    bool m_bUpKey;
-  };
-
-  void Receive(const _sKeyHlp&);
-
-  std::vector<_sKeyHlp> m_vecKeyVec;
-  bool                  m_bLastFrameValue;
-  bool                  m_bConnected;
-
-  VistaDriverAbstractWindowAspect* m_pWindowAspect;
-  VistaMutex                       m_update_vec_lock;
+  std::vector<Uint8> m_currentKeyboardState;
+  std::vector<Uint8> m_lastKeyboardState;
+  bool               m_lastFrameValue;
+  bool               m_connected;
 };
 
 class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriverCreationMethod
@@ -94,4 +66,4 @@ class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriverCreationMethod
   virtual IVistaDeviceDriver* CreateDriver();
 };
 
-#endif //_VISTAOPENSGSDL2KEYBOARDDRIVER_H
+#endif // _VISTASDL2KEYBOARDDRIVER_H

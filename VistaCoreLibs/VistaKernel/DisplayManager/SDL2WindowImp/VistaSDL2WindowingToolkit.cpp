@@ -157,7 +157,8 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     , m_globalVSyncAvailability(~0)
     , m_hasFullWindow(false)
     , m_fullWindowId(nullptr)
-    , m_dummyWindowId(nullptr) {
+    , m_dummyWindowId(nullptr)
+    , m_dummyContextId(nullptr) {
   if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0) {
     vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
     vstr::warni() << "SDL2 init of the events system failed - Quitting Vista" << std::endl;
@@ -244,8 +245,14 @@ void VistaSDL2WindowingToolkit::HandleWindowEvents(SDL2WindowInfo* window, const
     case SDL_WINDOWEVENT_HIT_TEST:
       // ignored
       break;
+    case SDL_WINDOWEVENT_ICCPROF_CHANGED:
+      // ignored
+      break;
+    case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+      // ignored
+      break;
     default:
-      vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event->windowID << " got unknown event " << event->event << std::endl;
+      vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event->windowID << " got unknown event " << std::to_string(event->event) << std::endl;
       break;
   }
 }
@@ -452,15 +459,28 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
   }
 
   info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX, info->currentPosY, info->currentSizeX, info->currentSizeY, windowOptions);
+  if (!info->sdlWindow) {
+    vstr::errp() << "[SDL2WindowingToolkit]: Could not create window!" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
   info->windowId = SDL_GetWindowID(info->sdlWindow);
+
   info->glContext = SDL_GL_CreateContext(info->sdlWindow);
-  
   if (!info->glContext) {
     vstr::errp() << "[SDL2WindowingToolkit]: "
                  << "OpenGL context could not be created!" << std::endl;
     GetVistaSystem()->Quit();
   }
-  glewInit();
+  
+  GLenum glewStatus = glewInit();
+  if (glewStatus != GLEW_OK) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "GLEW initialization failed!\n"
+                 << "GLEW Error: " << glewGetErrorString(glewStatus)
+                 << std::endl;
+    GetVistaSystem()->Quit();
+  }
 
   m_windowInfo[window] = info;
 
@@ -1337,8 +1357,25 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
   }
 
   m_dummyWindowId = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+  if (!m_dummyWindowId) {
+    vstr::errp() << "[SDL2WindowingToolkit]: Could not create dummy window!" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
   m_dummyContextId = SDL_GL_CreateContext(m_dummyWindowId);
-  glewInit();
+  if (!m_dummyContextId) {
+    vstr::errp() << "[SDL2WindowingToolkit]: Could not create dummy context!" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
+  GLenum glewStatus = glewInit();
+  if (glewStatus != GLEW_OK) {
+    vstr::errp() << "[SDL2WindowingToolkit]: "
+                 << "GLEW initialization failed!\n"
+                 << "GLEW Error: " << glewGetErrorString(glewStatus)
+                 << std::endl;
+    GetVistaSystem()->Quit();
+  }
 
   return true;
 }
