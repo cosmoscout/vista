@@ -18,51 +18,54 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
-#ifndef _VISTASDL2KEYBOARDDRIVER_H
-#define _VISTASDL2KEYBOARDDRIVER_H
+#include "VistaSDL2MouseDriver.h"
 
-#include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
-#include <SDL2/SDL_scancode.h>
-
-// Windows DLL build
-#if defined(WIN32) && !defined(VISTASDL2KEYBOARDDRIVER_STATIC)
-#ifdef VISTASDL2KEYBOARDDRIVER_EXPORTS
-#define VISTASDL2KEYBOARDDRIVERAPI __declspec(dllexport)
+#if defined(WIN32) && !defined(VISTASDL2MOUSEPLUGIN_STATIC)
+#ifdef VISTASDL2MOUSEPLUGIN_EXPORTS
+#define VISTASDL2MOUSEPLUGINAPI __declspec(dllexport)
 #else
-#define VISTASDL2KEYBOARDDRIVERAPI __declspec(dllimport)
+#define VISTASDL2MOUSEPLUGINAPI __declspec(dllimport)
 #endif
 #else // no Windows or static build
-#define VISTASDL2KEYBOARDDRIVERAPI
+#define VISTASDL2MOUSEPLUGINAPI
 #endif
 
-class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriver : public IVistaKeyboardDriver {
- public:
-  VistaSDL2KeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2KeyboardDriver();
+namespace {
+VistaSDL2MouseDriverCreationMethod* SpFactory = nullptr;
+}
 
- protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
+#if defined(WIN32)
 
-  bool DoConnect() final;
-  bool DoDisconnect() final;
+#include <windows.h>
 
- private:
-  int SDLKeyToVistaKey(int key);
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
+}
 
-  std::vector<Uint8> m_currentKeyboardState;
-  std::vector<Uint8> m_lastKeyboardState;
-  bool               m_lastFrameValue;
-  bool               m_connected;
-};
+#endif
 
-class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriverCreationMethod
-    : public IVistaDriverCreationMethod {
- public:
-  VistaSDL2KeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
-};
+extern "C" VISTASDL2MOUSEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaSDL2MouseDriverCreationMethod(fac);
 
-#endif // _VISTASDL2KEYBOARDDRIVER_H
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
+}
+
+extern "C" VISTASDL2MOUSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == SpFactory)
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = nullptr;
+}
+
+extern "C" VISTASDL2MOUSEPLUGINAPI const char* GetDeviceClassName() {
+  return "SDL2MOUSE";
+}

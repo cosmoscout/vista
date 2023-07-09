@@ -18,51 +18,11 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
-#ifndef _VISTASDL2KEYBOARDDRIVER_H
-#define _VISTASDL2KEYBOARDDRIVER_H
+#include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
+#include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
-#include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
-#include <SDL2/SDL_scancode.h>
-
-// Windows DLL build
-#if defined(WIN32) && !defined(VISTASDL2KEYBOARDDRIVER_STATIC)
-#ifdef VISTASDL2KEYBOARDDRIVER_EXPORTS
-#define VISTASDL2KEYBOARDDRIVERAPI __declspec(dllexport)
+#ifdef VISTASDL2MOUSETRANSCODER_EXPORTS
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaMouseDriverTranscodeFactory>)
 #else
-#define VISTASDL2KEYBOARDDRIVERAPI __declspec(dllimport)
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaMouseDriverTranscodeFactory>)
 #endif
-#else // no Windows or static build
-#define VISTASDL2KEYBOARDDRIVERAPI
-#endif
-
-class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriver : public IVistaKeyboardDriver {
- public:
-  VistaSDL2KeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2KeyboardDriver();
-
- protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
-
-  bool DoConnect() final;
-  bool DoDisconnect() final;
-
- private:
-  int SDLKeyToVistaKey(int key);
-
-  std::vector<Uint8> m_currentKeyboardState;
-  std::vector<Uint8> m_lastKeyboardState;
-  bool               m_lastFrameValue;
-  bool               m_connected;
-};
-
-class VISTASDL2KEYBOARDDRIVERAPI VistaSDL2KeyboardDriverCreationMethod
-    : public IVistaDriverCreationMethod {
- public:
-  VistaSDL2KeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
-};
-
-#endif // _VISTASDL2KEYBOARDDRIVER_H
