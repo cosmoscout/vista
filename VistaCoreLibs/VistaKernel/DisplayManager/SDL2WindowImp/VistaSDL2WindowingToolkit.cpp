@@ -28,6 +28,8 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_video.h>
+#include <SDL_gamecontroller.h>
+#include <SDL_keyboard.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
 #include <VistaKernel/GraphicsManager/VistaGLTexture.h>
@@ -189,8 +191,10 @@ IVistaTextEntity* VistaSDL2WindowingToolkit::CreateTextEntity() {
   return new VistaSDL2TextEntity();
 }
 
-void VistaSDL2WindowingToolkit::HandleWindowEvents(SDL2WindowInfo* window, const SDL_WindowEvent* event) const {
-  switch (event->event) {
+void VistaSDL2WindowingToolkit::HandleWindowEvents(const SDL_WindowEvent& event) const {
+  SDL2WindowInfo* window = GetWindowFromId(event.windowID);
+
+  switch (event.event) {
     case SDL_WINDOWEVENT_SHOWN:
       // ignored
       break;
@@ -201,18 +205,18 @@ void VistaSDL2WindowingToolkit::HandleWindowEvents(SDL2WindowInfo* window, const
       // ignored
       break;
     case SDL_WINDOWEVENT_MOVED:
-      window->currentPosX = event->data1;
-      window->currentPosY = event->data2;
+      window->currentPosX = event.data1;
+      window->currentPosY = event.data2;
       window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_POSITION_CHANGE);
       break;
     case SDL_WINDOWEVENT_RESIZED:
-      window->currentSizeX = event->data1;
-      window->currentSizeY = event->data2;
+      window->currentSizeX = event.data1;
+      window->currentSizeY = event.data2;
       window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
       break;
     case SDL_WINDOWEVENT_SIZE_CHANGED:
-      window->currentSizeX = event->data1;
-      window->currentSizeY = event->data2;
+      window->currentSizeX = event.data1;
+      window->currentSizeY = event.data2;
       window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
       break;
     case SDL_WINDOWEVENT_MINIMIZED:
@@ -252,13 +256,13 @@ void VistaSDL2WindowingToolkit::HandleWindowEvents(SDL2WindowInfo* window, const
       // ignored
       break;
     default:
-      vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event->windowID << " got unknown event " << std::to_string(event->event) << std::endl;
+      vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event.windowID << " got unknown event " << std::to_string(event.event) << std::endl;
       break;
   }
 }
 
-void VistaSDL2WindowingToolkit::HandleDisplayEvent(SDL2WindowInfo* window, const SDL_DisplayEvent* event) const {
-  switch (event->event) {
+void VistaSDL2WindowingToolkit::HandleDisplayEvent(const SDL_DisplayEvent& event) const {
+  switch (event.event) {
     case SDL_DISPLAYEVENT_CONNECTED:
       // ignored
       break;
@@ -271,31 +275,71 @@ void VistaSDL2WindowingToolkit::HandleDisplayEvent(SDL2WindowInfo* window, const
   }
 }
 
+void VistaSDL2WindowingToolkit::HandleEvents() {
+  for (auto& eventType : m_lastFrameEvents) {
+    eventType.second.clear();
+  }
+
+  SDL_Event e;
+  while (SDL_PollEvent(&e)) {
+    SDL_EventType eventType = static_cast<SDL_EventType>(e.type);
+
+    m_lastFrameEvents[eventType].emplace_back(e);
+
+    m_unprocessedEvents[eventType].push_back(e);
+    while (m_unprocessedEvents[eventType].size() > 100) {
+      m_unprocessedEvents[eventType].pop_front();
+    }
+
+    switch(eventType) {
+      // Quit
+      case SDL_QUIT:
+        m_quitLoop = true;
+        break;
+
+      // Display
+      case SDL_DISPLAYEVENT:
+        HandleDisplayEvent(e.display);
+        break;
+        
+      // Window
+      case SDL_WINDOWEVENT:
+        HandleWindowEvents(e.window);
+        break;
+
+      case SDL_CONTROLLERDEVICEADDED:
+        vstr::outi() << "Added controller: " << e.cdevice.which << std::endl;
+        break;
+
+      case SDL_CONTROLLERBUTTONDOWN:
+        vstr::outi() << "Pressed Controller Button: " << SDL_GameControllerGetStringForButton(SDL_GameControllerButton(e.cbutton.button)) << std::endl;
+        break;
+
+      default:
+        break;
+    }
+  }
+}
+
 void VistaSDL2WindowingToolkit::Run() {
   while (!m_quitLoop) {
     if (m_hasFullWindow) {
+      HandleEvents();
       for (auto const& window : m_windowInfo) {
         window.second->updateCallback->Do();
-
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-          switch(e.type) {
-            case SDL_QUIT:
-              m_quitLoop = true;
-              break;
-            case SDL_WINDOWEVENT:
-              HandleWindowEvents(window.second, &e.window);
-              break;
-            case SDL_DISPLAYEVENT:
-              HandleDisplayEvent(window.second, &e.display);
-              break;
-          }
-        }
       }
     } else {
       m_updateCallback->Do();
     }
   }
+}
+
+const std::vector<SDL_Event>& VistaSDL2WindowingToolkit::GetLastFrameEvents(SDL_EventType eventType) {
+  return m_lastFrameEvents[eventType];
+}
+
+std::deque<SDL_Event>& VistaSDL2WindowingToolkit::GetUnprocessedEvents(SDL_EventType eventType) {
+  return m_unprocessedEvents[eventType];
 }
 
 void VistaSDL2WindowingToolkit::Quit() {
@@ -1146,6 +1190,16 @@ int VistaSDL2WindowingToolkit::GetWindowId(const VistaWindow* window) const {
   }
   
   return info->windowId;
+}
+
+SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowFromId(Uint32 windowID) const {
+  for (auto const& window : m_windowInfo) {
+    if (window.second->windowId == windowID) {
+      return window.second;
+    }
+  }
+
+  return nullptr;
 }
 
 void VistaSDL2WindowingToolkit::BindWindow(VistaWindow* window) {

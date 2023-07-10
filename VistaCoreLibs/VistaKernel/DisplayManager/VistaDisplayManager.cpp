@@ -150,7 +150,7 @@ bool VistaDisplayManager::CreateDisplaySystems(
     std::string        sWtaType;
     if (oSection.GetValue("WINDOWINGTOOLKIT", sWtaType) == false) {
       vstr::outi() << "No WindowingToolkitAbstraction specified, defaulting to [GLUT]" << std::endl;
-      sWtaType = "SDL2";
+      sWtaType = "GLUT";
     } else {
       vstr::outi() << "WindowingToolkitAbstraction specified as [" << sWtaType << "]" << std::endl;
     }

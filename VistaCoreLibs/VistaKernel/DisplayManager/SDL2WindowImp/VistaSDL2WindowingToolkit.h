@@ -35,8 +35,6 @@ class VistaDisplayManager;
 class VistaGLTexture;
 class VistaImage;
 struct SDL2WindowInfo;
-struct SDL_WindowEvent;
-struct SDL_DisplayEvent;
 
 /**
  * SDL2 implementation of IVistaWindowingToolkit. See IVistaWindowingToolkit.h
@@ -126,6 +124,9 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void BindWindow(VistaWindow* window) final;
   void UnbindWindow(VistaWindow* window) final;
 
+  const std::vector<SDL_Event>& GetLastFrameEvents(SDL_EventType eventType);
+  std::deque<SDL_Event>& GetUnprocessedEvents(SDL_EventType eventType);
+
  protected:
   bool CheckVSyncAvailability();
 
@@ -139,8 +140,13 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void DestroyDummyWindow();
 
  private:
-  void HandleWindowEvents(SDL2WindowInfo* window, const SDL_WindowEvent* windowEvent) const;
-  void HandleDisplayEvent(SDL2WindowInfo* window, const SDL_DisplayEvent* event) const;
+  SDL2WindowInfo* GetWindowFromId(Uint32 windowID) const;
+
+  void HandleEvents();
+
+  void HandleWindowEvents(const SDL_WindowEvent& windowEvent) const;
+  void HandleDisplayEvent(const SDL_DisplayEvent& event) const;
+
 
   typedef std::map<const VistaWindow*, SDL2WindowInfo*> WindowInfoMap;
   WindowInfoMap                                         m_windowInfo;
@@ -148,10 +154,9 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   IVistaExplicitCallbackInterface*                      m_updateCallback;
   mutable SDL_Window*                                   m_tmpWindowID;
   int                                                   m_globalVSyncAvailability;
-
-  std::deque<SDL_Event*> m_joystickEvents;
-  std::deque<SDL_Event*> m_controllerEvents;
-  std::deque<SDL_Event*> m_touchEvents;
+  
+  std::map<SDL_EventType, std::vector<SDL_Event>> m_lastFrameEvents;
+  std::map<SDL_EventType, std::deque<SDL_Event>>  m_unprocessedEvents;
 
   bool          m_hasFullWindow;
   SDL_Window*   m_fullWindowId;

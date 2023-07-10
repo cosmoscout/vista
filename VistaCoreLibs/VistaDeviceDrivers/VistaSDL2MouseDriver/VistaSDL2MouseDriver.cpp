@@ -20,9 +20,11 @@
 
 #include "VistaSDL2MouseDriver.h"
 #include "VistaBase/VistaStreamUtils.h"
+#include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
 #include "VistaKernel/VistaSystem.h"
 #include <SDL.h>
 #include <SDL2/SDL_mouse.h>
+#include <SDL_events.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
@@ -31,6 +33,7 @@
 #include <cstring>
 #include <map>
 #include <array>
+#include <memory>
 
 VistaSDL2MouseDriverCreationMethod::VistaSDL2MouseDriverCreationMethod(
     IVistaTranscoderFactoryFactory* fac)
@@ -46,8 +49,15 @@ IVistaDeviceDriver* VistaSDL2MouseDriverCreationMethod::CreateDriver() {
 VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     : IVistaMouseDriver(crm)
     , m_mouseSensor(new VistaDeviceSensor)
+    , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
     , m_lastFrameValue(false)
     , m_connected(false) {
+
+  if (!m_sdl2Toolkit) {
+    vstr::errp() << "[VistaSDL2MouseDriver] Can't initialize without SDL2 windowing toolkit!" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
   Uint8 mouseState = SDL_GetMouseState(nullptr, nullptr);
   m_currentMouseState = mouseState;
   m_lastMouseState = mouseState;
@@ -65,6 +75,8 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
+  auto wheelEvents = m_sdl2Toolkit->GetLastFrameEvents(SDL_MOUSEWHEEL);
+
   int x;
   int y;
   m_currentMouseState = SDL_GetMouseState(&x, &y);
@@ -77,6 +89,9 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
   UpdateMouseButton(0, IVistaMouseDriver::BT_LEFT, lmb);
   UpdateMouseButton(0, IVistaMouseDriver::BT_MIDDLE, mmb);
   UpdateMouseButton(0, IVistaMouseDriver::BT_RIGHT, rmb);
+  for (const auto& event : wheelEvents) {
+    UpdateMouseButton(0, IVistaMouseDriver::BT_WHEEL_DIR, event.wheel.y);
+  }
   UpdateMousePosition(0, x, y);
   MeasureStop(0);
 

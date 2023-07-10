@@ -22,6 +22,7 @@
 #define _VISTASDL2MOUSEDRIVER_H
 
 #include "VistaDeviceDriversBase/VistaDeviceSensor.h"
+#include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
 #include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <map>
@@ -52,6 +53,7 @@ class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
 
  private:
   VistaDeviceSensor* m_mouseSensor;
+  VistaSDL2WindowingToolkit* m_sdl2Toolkit;
 
   Uint8 m_currentMouseState;
   Uint8 m_lastMouseState;
