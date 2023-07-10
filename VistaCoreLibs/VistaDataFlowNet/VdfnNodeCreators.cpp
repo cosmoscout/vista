@@ -909,8 +909,8 @@ VISTADFNAPI bool VdfnNodeCreators::RegisterNodeCreators( VdfnNodeFactory* pFac, 
 
 	pFac->SetNodeCreator( "Counter[int]", new TVdfnCounterNodeCreate<int> );
 	pFac->SetNodeCreator( "Counter[unsigned int]", new TVdfnCounterNodeCreate<int> );
-	pFac->SetNodeCreator( "Counter[float]", new TVdfnCounterNodeCreate<int> );
-	pFac->SetNodeCreator( "Counter[double]", new TVdfnCounterNodeCreate<int> );
+	pFac->SetNodeCreator( "Counter[float]", new TVdfnCounterNodeCreate<float> );
+	pFac->SetNodeCreator( "Counter[double]", new TVdfnCounterNodeCreate<double> );
 	pFac->SetNodeCreator( "ModuloCounter[int]", new TVdfnModuloCounterNodeCreate<int> );
 	pFac->SetNodeCreator( "ModuloCounter[unsigned int]", new TVdfnModuloCounterNodeCreate<unsigned int> );
 	pFac->SetNodeCreator( "ModuloCounter[float]", new TVdfnModuloCounterNodeCreate<float> );
