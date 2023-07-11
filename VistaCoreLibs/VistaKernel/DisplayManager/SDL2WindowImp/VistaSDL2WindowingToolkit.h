@@ -30,6 +30,7 @@
 #include <deque>
 #include <map>
 #include <string>
+#include <functional>
 
 class VistaDisplayManager;
 class VistaGLTexture;
@@ -124,8 +125,9 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void BindWindow(VistaWindow* window) final;
   void UnbindWindow(VistaWindow* window) final;
 
-  const std::vector<SDL_Event>& GetLastFrameEvents(SDL_EventType eventType);
-  std::deque<SDL_Event>& GetUnprocessedEvents(SDL_EventType eventType);
+  using SDLEventCallback = std::function<void(SDL_Event)>;
+  size_t registerEventCallback(SDL_EventType eventType, SDLEventCallback callback);
+  void unregisterEventCallback(SDL_EventType eventType, size_t callbackId);
 
  protected:
   bool CheckVSyncAvailability();
@@ -147,16 +149,15 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void HandleWindowEvents(const SDL_WindowEvent& windowEvent) const;
   void HandleDisplayEvent(const SDL_DisplayEvent& event) const;
 
+  size_t m_callbackCounter;
+  std::map<SDL_EventType, std::map<size_t, SDLEventCallback>> m_eventCallbacks;
 
-  typedef std::map<const VistaWindow*, SDL2WindowInfo*> WindowInfoMap;
+  using WindowInfoMap = std::map<const VistaWindow*, SDL2WindowInfo*>;
   WindowInfoMap                                         m_windowInfo;
   bool                                                  m_quitLoop;
   IVistaExplicitCallbackInterface*                      m_updateCallback;
   mutable SDL_Window*                                   m_tmpWindowID;
   int                                                   m_globalVSyncAvailability;
-  
-  std::map<SDL_EventType, std::vector<SDL_Event>> m_lastFrameEvents;
-  std::map<SDL_EventType, std::deque<SDL_Event>>  m_unprocessedEvents;
 
   bool          m_hasFullWindow;
   SDL_Window*   m_fullWindowId;

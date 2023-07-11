@@ -155,6 +155,7 @@ struct SDL2WindowInfo {
 VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     : m_quitLoop(false)
     , m_updateCallback(nullptr)
+    , m_callbackCounter(0)
     , m_tmpWindowID(nullptr)
     , m_globalVSyncAvailability(~0)
     , m_hasFullWindow(false)
@@ -276,19 +277,12 @@ void VistaSDL2WindowingToolkit::HandleDisplayEvent(const SDL_DisplayEvent& event
 }
 
 void VistaSDL2WindowingToolkit::HandleEvents() {
-  for (auto& eventType : m_lastFrameEvents) {
-    eventType.second.clear();
-  }
-
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     SDL_EventType eventType = static_cast<SDL_EventType>(e.type);
 
-    m_lastFrameEvents[eventType].emplace_back(e);
-
-    m_unprocessedEvents[eventType].push_back(e);
-    while (m_unprocessedEvents[eventType].size() > 100) {
-      m_unprocessedEvents[eventType].pop_front();
+    for (const auto& callback : m_eventCallbacks[eventType]) {
+      callback.second(e);
     }
 
     switch(eventType) {
@@ -334,12 +328,14 @@ void VistaSDL2WindowingToolkit::Run() {
   }
 }
 
-const std::vector<SDL_Event>& VistaSDL2WindowingToolkit::GetLastFrameEvents(SDL_EventType eventType) {
-  return m_lastFrameEvents[eventType];
+size_t VistaSDL2WindowingToolkit::registerEventCallback(SDL_EventType eventType, SDLEventCallback callback) {
+  size_t id = m_callbackCounter++;
+  m_eventCallbacks[eventType].emplace(id, callback);
+  return m_callbackCounter;
 }
 
-std::deque<SDL_Event>& VistaSDL2WindowingToolkit::GetUnprocessedEvents(SDL_EventType eventType) {
-  return m_unprocessedEvents[eventType];
+void VistaSDL2WindowingToolkit::unregisterEventCallback(SDL_EventType eventType, size_t callbackId) {
+  m_eventCallbacks[eventType].erase(callbackId);
 }
 
 void VistaSDL2WindowingToolkit::Quit() {

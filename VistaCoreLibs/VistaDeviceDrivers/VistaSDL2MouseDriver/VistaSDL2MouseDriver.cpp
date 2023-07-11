@@ -50,7 +50,12 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     : IVistaMouseDriver(crm)
     , m_mouseSensor(new VistaDeviceSensor)
     , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
-    , m_lastFrameValue(false)
+    , m_x(0)
+    , m_y(0)
+    , m_lmb(0)
+    , m_mmb(0)
+    , m_rmb(0)
+    , m_wheel(0)
     , m_connected(false) {
 
   if (!m_sdl2Toolkit) {
@@ -58,15 +63,33 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     GetVistaSystem()->Quit();
   }
 
-  Uint8 mouseState = SDL_GetMouseState(nullptr, nullptr);
-  m_currentMouseState = mouseState;
-  m_lastMouseState = mouseState;
+  m_motionEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEMOTION, [this] (SDL_Event event) {
+    m_motionEvents.push_back(event.motion);
+  });
+  
+  m_buttonDownEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEBUTTONDOWN, [this] (SDL_Event event) {
+    m_buttonEvents.push_back(event.button);
+  });
+  
+  m_buttonUpEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEBUTTONUP, [this] (SDL_Event event) {
+    m_buttonEvents.push_back(event.button);
+  });
+  
+  m_wheelEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEWHEEL, [this] (SDL_Event event) {
+    m_wheelEvents.push_back(event.wheel);
+  });
 
   AddDeviceSensor(m_mouseSensor, 0);
 }
 
 VistaSDL2MouseDriver::~VistaSDL2MouseDriver() {
   RemDeviceSensor(m_mouseSensor);
+
+  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEMOTION, m_motionEventListener);
+  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);
+  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEBUTTONUP, m_buttonUpEventListener);
+  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEWHEEL, m_wheelEventListener);
+  
   delete m_mouseSensor;
 }
 
@@ -75,27 +98,49 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
-  auto wheelEvents = m_sdl2Toolkit->GetLastFrameEvents(SDL_MOUSEWHEEL);
+  // Just get the latest position and discard all others.
+  if (!m_motionEvents.empty()) {
+    SDL_MouseMotionEvent e = m_motionEvents.back();
+    m_x = e.x;
+    m_y = e.y;
+    m_motionEvents.clear();
+  }
 
-  int x;
-  int y;
-  m_currentMouseState = SDL_GetMouseState(&x, &y);
+  while (!m_buttonEvents.empty()) {
+    SDL_MouseButtonEvent e = m_buttonEvents.front();
+    
+    switch (e.button) {
+      case SDL_BUTTON_LEFT:
+        m_lmb = e.state;
+        break;
+      case SDL_BUTTON_MIDDLE:
+        m_mmb = e.state;
+        break;
+      case SDL_BUTTON_RIGHT:
+        m_rmb = e.state;
+        break;
+    }
 
-  double lmb = m_currentMouseState & SDL_BUTTON_LMASK ? 1.0 : 0.0;
-  double mmb = m_currentMouseState & SDL_BUTTON_MMASK ? 1.0 : 0.0;
-  double rmb = m_currentMouseState & SDL_BUTTON_RMASK ? 1.0 : 0.0;
+    m_buttonEvents.pop_front();
+  }
+
+  // Just get the latest wheel event and discard all others.
+  if (!m_wheelEvents.empty()) {
+    SDL_MouseWheelEvent e = m_wheelEvents.back();
+    m_wheel = e.preciseY;
+    m_wheelEvents.clear();
+  } else {
+    m_wheel = 0;
+  }
+
 
   MeasureStart(0, dTs);
-  UpdateMouseButton(0, IVistaMouseDriver::BT_LEFT, lmb);
-  UpdateMouseButton(0, IVistaMouseDriver::BT_MIDDLE, mmb);
-  UpdateMouseButton(0, IVistaMouseDriver::BT_RIGHT, rmb);
-  for (const auto& event : wheelEvents) {
-    UpdateMouseButton(0, IVistaMouseDriver::BT_WHEEL_DIR, event.wheel.y);
-  }
-  UpdateMousePosition(0, x, y);
+  UpdateMousePosition(0, m_x, m_y);
+  UpdateMouseButton(0, IVistaMouseDriver::BT_LEFT, m_lmb);
+  UpdateMouseButton(0, IVistaMouseDriver::BT_MIDDLE, m_mmb);
+  UpdateMouseButton(0, IVistaMouseDriver::BT_RIGHT, m_rmb);
+  UpdateMouseButton(0, IVistaMouseDriver::BT_WHEEL_DIR, m_wheel);
   MeasureStop(0);
-
-  m_lastMouseState = m_currentMouseState;
 
   return true;
 };

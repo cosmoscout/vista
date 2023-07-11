@@ -23,6 +23,8 @@
 
 #include "VistaDeviceDriversBase/VistaDeviceSensor.h"
 #include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
+#include <SDL_events.h>
+#include <SDL_stdinc.h>
 #include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <map>
@@ -55,9 +57,24 @@ class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
   VistaDeviceSensor* m_mouseSensor;
   VistaSDL2WindowingToolkit* m_sdl2Toolkit;
 
-  Uint8 m_currentMouseState;
-  Uint8 m_lastMouseState;
-  bool  m_lastFrameValue;
+  int m_x;
+  int m_y;
+
+  Uint8 m_lmb;
+  Uint8 m_mmb;
+  Uint8 m_rmb;
+
+  double m_wheel;
+
+  std::deque<SDL_MouseMotionEvent> m_motionEvents;
+  std::deque<SDL_MouseButtonEvent> m_buttonEvents;
+  std::deque<SDL_MouseWheelEvent> m_wheelEvents;
+
+  size_t m_motionEventListener;
+  size_t m_buttonDownEventListener;
+  size_t m_buttonUpEventListener;
+  size_t m_wheelEventListener;
+
   bool  m_connected;
 };
 
