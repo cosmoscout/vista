@@ -62,6 +62,7 @@ else( NOT SDL2_FOUND )
 		VistaInterProcComm
 		VistaDeviceDriversBase
 		VistaMath
+		VistaKernel
 		${VISTA_USE_PACKAGE_LIBRARIES}
 	)
 	vista_configure_lib( VistaSDL2MouseDriver )
