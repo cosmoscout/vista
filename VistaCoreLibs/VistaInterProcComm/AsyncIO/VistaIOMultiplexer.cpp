@@ -21,9 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaIOMultiplexer.h"
-
 
 #include <VistaInterProcComm/Concurrency/VistaThreadCondition.h>
 #include <VistaInterProcComm/Concurrency/VistaThreadPool.h>
@@ -39,79 +37,63 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaIOMultiplexer::VistaIOMultiplexer()
-{
-	m_pStateMutex = new VistaMutex;
+VistaIOMultiplexer::VistaIOMultiplexer() {
+  m_pStateMutex = new VistaMutex;
 
-	m_pShutdownMutex = new VistaMutex;
-	m_pTicketMutex = new VistaMutex;
+  m_pShutdownMutex = new VistaMutex;
+  m_pTicketMutex   = new VistaMutex;
 
+  m_pShutdown = new VistaThreadCondition;
+  m_eState    = MP_NONE;
+  m_eCom      = MPC_NONE;
 
-	m_pShutdown = new VistaThreadCondition;
-	m_eState = MP_NONE;
-	m_eCom   = MPC_NONE;
-
-	m_iTicket = 1;
-
+  m_iTicket = 1;
 }
 
+VistaIOMultiplexer::~VistaIOMultiplexer() {
 
-VistaIOMultiplexer::~VistaIOMultiplexer()
-{
+  delete m_pTicketMutex;
 
-	delete m_pTicketMutex;
-
-	delete m_pStateMutex;
-	delete m_pShutdownMutex;
-	delete m_pShutdown;
-
+  delete m_pStateMutex;
+  delete m_pShutdownMutex;
+  delete m_pShutdown;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int VistaIOMultiplexer::GetNextTicket()
-{
-	VistaMutexLock l(*m_pTicketMutex);
-	return ++m_iTicket;
+int VistaIOMultiplexer::GetNextTicket() {
+  VistaMutexLock l(*m_pTicketMutex);
+  return ++m_iTicket;
 }
 
-
-void VistaIOMultiplexer::Shutdown()
-{
-	SetCommand(MPC_SHUTDOWN);
+void VistaIOMultiplexer::Shutdown() {
+  SetCommand(MPC_SHUTDOWN);
 }
 
-VistaIOMultiplexer:: eIOState VistaIOMultiplexer::GetState() const
-{
-	VistaMutexLock l(*m_pStateMutex);
-	return m_eState;
+VistaIOMultiplexer::eIOState VistaIOMultiplexer::GetState() const {
+  VistaMutexLock l(*m_pStateMutex);
+  return m_eState;
 }
 
-bool VistaIOMultiplexer::SetCommand(eIOCom cmd)
-{
-	m_eCom = cmd;
-	return true;
+bool VistaIOMultiplexer::SetCommand(eIOCom cmd) {
+  m_eCom = cmd;
+  return true;
 }
 
-bool VistaIOMultiplexer::SetState(eIOState eState)
-{
-	VistaMutexLock l(*m_pStateMutex);
-	m_eState = eState;
+bool VistaIOMultiplexer::SetState(eIOState eState) {
+  VistaMutexLock l(*m_pStateMutex);
+  m_eState = eState;
 
-	return true;
+  return true;
 }
 
-void VistaIOMultiplexer::WaitForShutdownComplete()
-{
-	VistaMutexLock l(*m_pShutdownMutex);
-	(*m_pShutdown).WaitForCondition(*m_pShutdownMutex);
+void VistaIOMultiplexer::WaitForShutdownComplete() {
+  VistaMutexLock l(*m_pShutdownMutex);
+  (*m_pShutdown).WaitForCondition(*m_pShutdownMutex);
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

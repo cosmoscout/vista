@@ -21,14 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGNORMALMAPMATERIAL_H__
 #define _VISTAOPENSGNORMALMAPMATERIAL_H__
 
-#include <string>
+#include "VistaBase/VistaColor.h"
 #include "VistaKernelOpenSGExtConfig.h"
 #include <VistaKernel/EventManager/VistaEventObserver.h>
-#include "VistaBase/VistaColor.h"
+#include <string>
 class VistaGeometry;
 class VistaLightNode;
 class VistaEventManager;
@@ -37,77 +36,72 @@ class VistaEventManager;
  *     - differ light and material colors? (necessary?)
  *     - support for multiple lights? (necessary?)
  */
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGNormalMapMaterial
-	: public VistaEventObserver
-{
-public:
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGNormalMapMaterial : public VistaEventObserver {
+ public:
+  /**
+   * pEvtMgr: is needed for the light-position updates
+   * (not needed if you do light updates explicitly)
+   */
+  VistaOpenSGNormalMapMaterial(VistaEventManager* pEvtMgr);
+  virtual ~VistaOpenSGNormalMapMaterial();
 
-	/**
-	 * pEvtMgr: is needed for the light-position updates
-	 * (not needed if you do light updates explicitly)
-	 */
-	VistaOpenSGNormalMapMaterial( VistaEventManager *pEvtMgr );
-	virtual ~VistaOpenSGNormalMapMaterial();
+  /**
+   * pFileName: the image to use as normal map.
+   * convertFrombumpMap: if true, the image is converted to greyscale (if not already)
+   * and treated as bump map -> a normal map is generated from this by calculating the gradients
+   * default: a perlin noise texture is used as bumpmap
+   */
+  bool SetNormalMap(const char* pFileName, bool convertFromBumMap = false) const;
 
-	/**
-	 * pFileName: the image to use as normal map.
-	 * convertFrombumpMap: if true, the image is converted to greyscale (if not already)
-	 * and treated as bump map -> a normal map is generated from this by calculating the gradients
-	 * default: a perlin noise texture is used as bumpmap
-	 */
-	bool SetNormalMap(const char *pFileName, bool convertFromBumMap = false) const;
+  /**
+   * if you give NULL here for the filename or never call the method
+   * no base-texture is used
+   */
+  bool SetBaseMap(const char* pFileName) const;
 
-	/**
-	 * if you give NULL here for the filename or never call the method
-	 * no base-texture is used
-	 */
-	bool SetBaseMap  (const char *pFileName) const;
+  void SetAmbientColor(const float& r, const float& g, const float& b, const float& a = 1.0f) const;
+  void SetDiffuseColor(const float& r, const float& g, const float& b, const float& a = 1.0f) const;
+  void SetSpecularColor(
+      const float& r, const float& g, const float& b, const float& a = 1.0f) const;
+  void SetSpecularPower(const float& ex) const;
 
-	void SetAmbientColor (const float &r, const float &g, const float &b,
-						  const float &a = 1.0f) const;
-	void SetDiffuseColor (const float &r, const float &g, const float &b,
-						  const float &a = 1.0f) const;
-	void SetSpecularColor(const float &r, const float &g, const float &b,
-						  const float &a = 1.0f) const;
-	void SetSpecularPower(const float &ex) const;
+  /**
+   * explicitly set the light position (in eye space!!!).
+   */
+  void SetLightPosition(const float& x, const float& y, const float& z) const;
 
-	/**
-	 * explicitly set the light position (in eye space!!!).
-	 */
-	void SetLightPosition(const float &x, const float &y, const float &z) const;
+  /**
+   * get and update the light positon from the given VistaLight object
+   */
+  void SetVistaLight(VistaLightNode* pObj);
 
-	/**
-	 * get and update the light positon from the given VistaLight object
-	 */
-	void SetVistaLight   (VistaLightNode *pObj);
+  bool GetBaseMapEntry(const float nTexCoordX, const float nTexCoordY, VistaColor& oResult);
+  bool GetNormalMapEntry(const float nTexCoordX, const float nTexCoordY, VistaColor& oResult);
 
-	bool GetBaseMapEntry( const float nTexCoordX, const float nTexCoordY, VistaColor& oResult );
-	bool GetNormalMapEntry( const float nTexCoordX, const float nTexCoordY, VistaColor& oResult );
+  /**
+   * enabling the generatingTangents converts the geometry to single-indexed!
+   */
+  void ApplyToGeometry(VistaGeometry* pGeo, bool generateTangents = true);
 
-	/**
-	 * enabling the generatingTangents converts the geometry to single-indexed!
-	 */
-	void ApplyToGeometry(VistaGeometry *pGeo, bool generateTangents = true);
+  //// DEBUG
+  // void OverrideShaders(const char *vpFile, const char *fpFile) const;
 
-	//// DEBUG
-	//void OverrideShaders(const char *vpFile, const char *fpFile) const;
+  /**
+   * lightposition update callback
+   */
+  virtual void Notify(const VistaEvent* pEvent);
 
-	/**
-	 * lightposition update callback
-	 */
-	virtual void Notify(const VistaEvent *pEvent);
+ protected:
+  class NativeData;
 
-protected:
-	class NativeData;
+ private:
+  VistaEventManager* m_pEvMgr;
+  NativeData*        m_pData;
+  VistaLightNode*    m_pTrackedLight;
 
-private:
-	VistaEventManager *m_pEvMgr;
-	NativeData *m_pData;
-	VistaLightNode *m_pTrackedLight;
-
-	static std::string _vs_normalmap;
-	static std::string _fs_normalmap;
-	static std::string _fs_texturednormalmap;
+  static std::string _vs_normalmap;
+  static std::string _fs_normalmap;
+  static std::string _fs_texturednormalmap;
 };
 
 #endif

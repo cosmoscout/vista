@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDataTunnel.h"
-#include <VistaInterProcComm/DataLaVista/Base/VistaDataPacket.h>
-#include <VistaInterProcComm/DataLaVista/Base/VistaPipeComponent.h>
-#include <VistaInterProcComm/DataLaVista/Base/VistaDataProducer.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaDataConsumer.h>
+#include <VistaInterProcComm/DataLaVista/Base/VistaDataPacket.h>
+#include <VistaInterProcComm/DataLaVista/Base/VistaDataProducer.h>
+#include <VistaInterProcComm/DataLaVista/Base/VistaPipeComponent.h>
 #include <cassert>
 
 using namespace std;
@@ -39,95 +38,79 @@ using namespace std;
 /*============================================================================*/
 
 IVistaDataTunnel::IVistaDataTunnel()
-	:	m_pUpstreamInput(0),
-		m_pUpstreamOutput(0),
-		m_pDownstreamInput(0),
-		m_pDownstreamOutput(0)
-{
+    : m_pUpstreamInput(0)
+    , m_pUpstreamOutput(0)
+    , m_pDownstreamInput(0)
+    , m_pDownstreamOutput(0) {
 }
 
-IVistaDataTunnel::IVistaDataTunnel(const IVistaDataTunnel &obj)
-	:	m_pUpstreamInput(obj.m_pUpstreamInput),
-		m_pUpstreamOutput(obj.m_pUpstreamOutput),
-		m_pDownstreamInput(obj.m_pDownstreamInput),
-		m_pDownstreamOutput(obj.m_pDownstreamOutput)
-{
+IVistaDataTunnel::IVistaDataTunnel(const IVistaDataTunnel& obj)
+    : m_pUpstreamInput(obj.m_pUpstreamInput)
+    , m_pUpstreamOutput(obj.m_pUpstreamOutput)
+    , m_pDownstreamInput(obj.m_pDownstreamInput)
+    , m_pDownstreamOutput(obj.m_pDownstreamOutput) {
 }
 
-IVistaDataTunnel::~IVistaDataTunnel(){
+IVistaDataTunnel::~IVistaDataTunnel() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool IVistaDataTunnel::IsComplete() const
-{
-	return (m_pUpstreamInput && m_pDownstreamInput && m_pUpstreamOutput && m_pDownstreamOutput);
+bool IVistaDataTunnel::IsComplete() const {
+  return (m_pUpstreamInput && m_pDownstreamInput && m_pUpstreamOutput && m_pDownstreamOutput);
 }
 
-IDLVistaPipeComponent* IVistaDataTunnel::GetUpstreamInput() const
-{
-	return m_pUpstreamInput;
+IDLVistaPipeComponent* IVistaDataTunnel::GetUpstreamInput() const {
+  return m_pUpstreamInput;
 }
-IDLVistaPipeComponent* IVistaDataTunnel::GetUpstreamOutput() const
-{
-	return m_pUpstreamOutput;
+IDLVistaPipeComponent* IVistaDataTunnel::GetUpstreamOutput() const {
+  return m_pUpstreamOutput;
 }
-IDLVistaPipeComponent* IVistaDataTunnel::GetDownstreamInput() const
-{
-	return m_pDownstreamInput;
+IDLVistaPipeComponent* IVistaDataTunnel::GetDownstreamInput() const {
+  return m_pDownstreamInput;
 }
-IDLVistaPipeComponent* IVistaDataTunnel::GetDownstreamOutput() const
-{
-	return m_pDownstreamOutput;
+IDLVistaPipeComponent* IVistaDataTunnel::GetDownstreamOutput() const {
+  return m_pDownstreamOutput;
 }
 
-void IVistaDataTunnel::SetUpstreamInput(IDLVistaPipeComponent* pNewProd)
-{
-	//assert(pNewProd && "[IVistaDataTunnel::SetUpstreamInput] ERROR: Upstream producer == NULL");
-	m_pUpstreamInput = pNewProd;
+void IVistaDataTunnel::SetUpstreamInput(IDLVistaPipeComponent* pNewProd) {
+  // assert(pNewProd && "[IVistaDataTunnel::SetUpstreamInput] ERROR: Upstream producer == NULL");
+  m_pUpstreamInput = pNewProd;
 }
 
-void IVistaDataTunnel::SetUpstreamOutput(IDLVistaPipeComponent* pNewCon)
-{
-	//assert(pNewCon && "[IVistaDataTunnel::SetUpstreamOutput] ERROR: Upstream consumer == NULL");
-	m_pUpstreamOutput = pNewCon;
+void IVistaDataTunnel::SetUpstreamOutput(IDLVistaPipeComponent* pNewCon) {
+  // assert(pNewCon && "[IVistaDataTunnel::SetUpstreamOutput] ERROR: Upstream consumer == NULL");
+  m_pUpstreamOutput = pNewCon;
 }
 
-void IVistaDataTunnel::SetDownstreamInput(IDLVistaPipeComponent* pNewProd)
-{
-	//assert(pNewProd && "[IVistaDataTunnel::SetUpstreamInput] ERROR: Producer == NULL");
-	m_pDownstreamInput = pNewProd;
+void IVistaDataTunnel::SetDownstreamInput(IDLVistaPipeComponent* pNewProd) {
+  // assert(pNewProd && "[IVistaDataTunnel::SetUpstreamInput] ERROR: Producer == NULL");
+  m_pDownstreamInput = pNewProd;
 }
 
-void IVistaDataTunnel::SetDownstreamOutput(IDLVistaPipeComponent* pNewCon)
-{
-	//assert(pNewCon && "[IVistaDataTunnel::SetUpstreamInput] ERROR: Producer == NULL");
-	m_pDownstreamOutput = pNewCon;
+void IVistaDataTunnel::SetDownstreamOutput(IDLVistaPipeComponent* pNewCon) {
+  // assert(pNewCon && "[IVistaDataTunnel::SetUpstreamInput] ERROR: Producer == NULL");
+  m_pDownstreamOutput = pNewCon;
 }
 
-void IVistaDataTunnel::StartTunneling()
-{
-   return;
+void IVistaDataTunnel::StartTunneling() {
+  return;
 }
 
-void IVistaDataTunnel::StopTunnelingGently(bool bJoin)
-{
-	return;
+void IVistaDataTunnel::StopTunnelingGently(bool bJoin) {
+  return;
 }
 
-void IVistaDataTunnel::HaltTunneling()
-{
-	return;
+void IVistaDataTunnel::HaltTunneling() {
+  return;
 }
 
-void IVistaDataTunnel::IndicateTunnelingEnd()
-{
-	return;
+void IVistaDataTunnel::IndicateTunnelingEnd() {
+  return;
 }
 
-void IVistaDataTunnel::SignalPendingRequest()
-{
-	return;
+void IVistaDataTunnel::SignalPendingRequest() {
+  return;
 }

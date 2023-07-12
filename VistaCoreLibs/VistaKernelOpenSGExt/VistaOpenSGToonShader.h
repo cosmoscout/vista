@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGTOONSHADER_H_
 #define _VISTAOPENSGTOONSHADER_H_
 
@@ -45,26 +44,25 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGToonShader : public VistaOpenSGPerMaterialShader
-{
-public:
-	VistaOpenSGToonShader();
-	VistaOpenSGToonShader( const std::string& sVertexShaderFile,
-							const std::string& sFragmentShaderFile );
-	~VistaOpenSGToonShader();
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGToonShader : public VistaOpenSGPerMaterialShader {
+ public:
+  VistaOpenSGToonShader();
+  VistaOpenSGToonShader(
+      const std::string& sVertexShaderFile, const std::string& sFragmentShaderFile);
+  ~VistaOpenSGToonShader();
 
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pGeometry );
-	virtual bool ApplyToOSGMaterial( osg::ChunkMaterialPtr& pMaterial,
-				const std::vector<CShaderUniformParam>& vecUniformParams );
+  virtual bool ApplyToOSGMaterial(osg::ChunkMaterialPtr& pGeometry);
+  virtual bool ApplyToOSGMaterial(
+      osg::ChunkMaterialPtr& pMaterial, const std::vector<CShaderUniformParam>& vecUniformParams);
 
-	bool SetNumberOfIntensityBins( const int iBins );
-	int GetNumberOfIntensityBins() const;
+  bool SetNumberOfIntensityBins(const int iBins);
+  int  GetNumberOfIntensityBins() const;
 
-private:
-	static const std::string s_sVertexShader;
-	static const std::string s_sFragmentShader;
+ private:
+  static const std::string s_sVertexShader;
+  static const std::string s_sFragmentShader;
 
-	int				m_iNumBins;
+  int m_iNumBins;
 };
 
 /*============================================================================*/

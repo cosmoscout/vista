@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 ///////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2002,
 // Industrial Light & Magic,
 // a division of Lucas Digital Ltd. LLC
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
@@ -41,8 +40,8 @@
 // distribution.
 // *       Neither the name of Industrial Light & Magic nor the names of
 // its contributors may be used to endorse or promote products derived
-// from this software without specific prior written permission. 
-// 
+// from this software without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -71,8 +70,8 @@
 //
 //---------------------------------------------------------------------------
 
-#include <assert.h>
 #include "VistaHalf.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -80,252 +79,212 @@ using namespace std;
 // Lookup tables for half-to-float and float-to-half conversion
 //-------------------------------------------------------------
 const VistaHalf::uif VistaHalf::_toFloat[1 << 16] =
-	#include "toFloat.h"
-const unsigned short VistaHalf::_eLut[1 << 9] =
-	#include "eLut.h"
+#include "toFloat.h"
+    const unsigned short VistaHalf::_eLut[1 << 9] =
+#include "eLut.h"
 
-//-----------------------------------------------
-// Overflow handler for float-to-half conversion;
-// generates a hardware floating-point overflow,
-// which may be trapped by the operating system.
-//-----------------------------------------------
+        //-----------------------------------------------
+        // Overflow handler for float-to-half conversion;
+        // generates a hardware floating-point overflow,
+        // which may be trapped by the operating system.
+        //-----------------------------------------------
 
-float
-VistaHalf::overflow ()
-{
-	volatile float f = 1e10;
+    float VistaHalf::overflow() {
+  volatile float f = 1e10;
 
-	for (int i = 0; i < 10; i++)	
-	f *= f;				// this will overflow before
-					// the for�loop terminates
-	return f;
+  for (int i = 0; i < 10; i++)
+    f *= f; // this will overflow before
+            // the for�loop terminates
+  return f;
 }
-
 
 //-----------------------------------------------------
 // Float-to-half conversion -- general case, including
 // zeroes, denormalized numbers and exponent overflows.
 //-----------------------------------------------------
 
-short
-VistaHalf::convert (int i)
-{
-	//
-	// Our floating point number, f, is represented by the bit
-	// pattern in integer i.  Disassemble that bit pattern into
-	// the sign, s, the exponent, e, and the significand, m.
-	// Shift s into the position where it will go in in the
-	// resulting half number.
-	// Adjust e, accounting for the different exponent bias
-	// of float and half (127 versus 15).
-	//
+short VistaHalf::convert(int i) {
+  //
+  // Our floating point number, f, is represented by the bit
+  // pattern in integer i.  Disassemble that bit pattern into
+  // the sign, s, the exponent, e, and the significand, m.
+  // Shift s into the position where it will go in in the
+  // resulting half number.
+  // Adjust e, accounting for the different exponent bias
+  // of float and half (127 versus 15).
+  //
 
-	int s =  (i >> 16) & 0x00008000;
-	int e = ((i >> 23) & 0x000000ff) - (127 - 15);
-	int m =   i        & 0x007fffff;
+  int s = (i >> 16) & 0x00008000;
+  int e = ((i >> 23) & 0x000000ff) - (127 - 15);
+  int m = i & 0x007fffff;
 
-	//
-	// Now reassemble s, e and m into a half:
-	//
+  //
+  // Now reassemble s, e and m into a half:
+  //
 
-	if (e <= 0)
-	{
-	if (e < -10)
-	{
-		//
-		// E is less than -10.  The absolute value of f is
-		// less than HALF_MIN (f may be a small normalized
-		// float, a denormalized float or a zero).
-		//
-		// We convert f to a half zero.
-		//
+  if (e <= 0) {
+    if (e < -10) {
+      //
+      // E is less than -10.  The absolute value of f is
+      // less than HALF_MIN (f may be a small normalized
+      // float, a denormalized float or a zero).
+      //
+      // We convert f to a half zero.
+      //
 
-		return 0;
-	}
+      return 0;
+    }
 
-	//
-	// E is between -10 and 0.  F is a normalized float,
-	// whose magnitude is less than HALF_NRM_MIN.
-	//
-	// We convert f to a denormalized half.
-	// 
+    //
+    // E is between -10 and 0.  F is a normalized float,
+    // whose magnitude is less than HALF_NRM_MIN.
+    //
+    // We convert f to a denormalized half.
+    //
 
-	m = (m | 0x00800000) >> (1 - e);
+    m = (m | 0x00800000) >> (1 - e);
 
-	//
-	// Round to nearest, round "0.5" up.
-	//
-	// Rounding may cause the significand to overflow and make
-	// our number normalized.  Because of the way a half's bits
-	// are laid out, we don't have to treat this case separately;
-	// the code below will handle it correctly.
-	// 
+    //
+    // Round to nearest, round "0.5" up.
+    //
+    // Rounding may cause the significand to overflow and make
+    // our number normalized.  Because of the way a half's bits
+    // are laid out, we don't have to treat this case separately;
+    // the code below will handle it correctly.
+    //
 
-	if (m &  0x00001000)
-		m += 0x00002000;
+    if (m & 0x00001000)
+      m += 0x00002000;
 
-	//
-	// Assemble the half from s, e (zero) and m.
-	//
+    //
+    // Assemble the half from s, e (zero) and m.
+    //
 
-	return s | (m >> 13);
-	}
-	else if (e == 0xff - (127 - 15))
-	{
-	if (m == 0)
-	{
-		//
-		// F is an infinity; convert f to a half
-		// infinity with the same sign as f.
-		//
+    return s | (m >> 13);
+  } else if (e == 0xff - (127 - 15)) {
+    if (m == 0) {
+      //
+      // F is an infinity; convert f to a half
+      // infinity with the same sign as f.
+      //
 
-		return s | 0x7c00;
-	}
-	else
-	{
-		//
-		// F is a NAN; we produce a half NAN that preserves
-		// the sign bit and the 10 leftmost bits of the
-		// significand of f, with one exception: If the 10
-		// leftmost bits are all zero, the NAN would turn 
-		// into an infinity, so we have to set at least one
-		// bit in the significand.
-		//
+      return s | 0x7c00;
+    } else {
+      //
+      // F is a NAN; we produce a half NAN that preserves
+      // the sign bit and the 10 leftmost bits of the
+      // significand of f, with one exception: If the 10
+      // leftmost bits are all zero, the NAN would turn
+      // into an infinity, so we have to set at least one
+      // bit in the significand.
+      //
 
-		m >>= 13;
-		return s | 0x7c00 | m | (m == 0);
-	}
-	}
-	else
-	{
-	//
-	// E is greater than zero.  F is a normalized float.
-	// We try to convert f to a normalized half.
-	//
+      m >>= 13;
+      return s | 0x7c00 | m | (m == 0);
+    }
+  } else {
+    //
+    // E is greater than zero.  F is a normalized float.
+    // We try to convert f to a normalized half.
+    //
 
-	//
-	// Round to nearest, round "0.5" up
-	//
+    //
+    // Round to nearest, round "0.5" up
+    //
 
-	if (m &  0x00001000)
-	{
-		m += 0x00002000;
+    if (m & 0x00001000) {
+      m += 0x00002000;
 
-		if (m & 0x00800000)
-		{
-		m =  0;		// overflow in significand,
-		e += 1;		// adjust exponent
-		}
-	}
+      if (m & 0x00800000) {
+        m = 0;  // overflow in significand,
+        e += 1; // adjust exponent
+      }
+    }
 
-	//
-	// Handle exponent overflow
-	//
+    //
+    // Handle exponent overflow
+    //
 
-	if (e > 30)
-	{
-		overflow ();	// Cause a hardware floating point overflow;
-		return s | 0x7c00;	// if this returns, the half becomes an
-	}   			// infinity with the same sign as f.
+    if (e > 30) {
+      overflow();        // Cause a hardware floating point overflow;
+      return s | 0x7c00; // if this returns, the half becomes an
+    }                    // infinity with the same sign as f.
 
-	//
-	// Assemble the half from s, e and m.
-	//
+    //
+    // Assemble the half from s, e and m.
+    //
 
-	return s | (e << 10) | (m >> 13);
-	}
+    return s | (e << 10) | (m >> 13);
+  }
 }
-
 
 //---------------------
 // Stream I/O operators
 //---------------------
 
-ostream &
-operator << (ostream &os, VistaHalf h)
-{
-	os << float (h);
-	return os;
+ostream& operator<<(ostream& os, VistaHalf h) {
+  os << float(h);
+  return os;
 }
 
-
-istream &
-operator >> (istream &is, VistaHalf &h)
-{
-	float f;
-	is >> f;
-	h = VistaHalf (f);
-	return is;
+istream& operator>>(istream& is, VistaHalf& h) {
+  float f;
+  is >> f;
+  h = VistaHalf(f);
+  return is;
 }
-
 
 //---------------------------------------
 // Functions to print the bit-layout of
 // floats and halfs, mostly for debugging
 //---------------------------------------
 
-void
-printBits (ostream &os, VistaHalf h)
-{
-	unsigned short b = h.bits();
+void printBits(ostream& os, VistaHalf h) {
+  unsigned short b = h.bits();
 
-	for (int i = 15; i >= 0; i--)
-	{
-	os << (((b >> i) & 1)? '1': '0');
+  for (int i = 15; i >= 0; i--) {
+    os << (((b >> i) & 1) ? '1' : '0');
 
-	if (i == 15 || i == 10)
-		os << ' ';
-	}
+    if (i == 15 || i == 10)
+      os << ' ';
+  }
 }
 
+void printBits(ostream& os, float f) {
+  VistaHalf::uif x;
+  x.f = f;
 
-void
-printBits (ostream &os, float f)
-{
-	VistaHalf::uif x;
-	x.f = f;
+  for (int i = 31; i >= 0; i--) {
+    os << (((x.i >> i) & 1) ? '1' : '0');
 
-	for (int i = 31; i >= 0; i--)
-	{
-	os << (((x.i >> i) & 1)? '1': '0');
-
-	if (i == 31 || i == 23)
-		os << ' ';
-	}
+    if (i == 31 || i == 23)
+      os << ' ';
+  }
 }
 
+void printBits(char c[19], VistaHalf h) {
+  unsigned short b = h.bits();
 
-void
-printBits (char c[19], VistaHalf h)
-{
-	unsigned short b = h.bits();
+  for (int i = 15, j = 0; i >= 0; i--, j++) {
+    c[j] = (((b >> i) & 1) ? '1' : '0');
 
-	for (int i = 15, j = 0; i >= 0; i--, j++)
-	{
-	c[j] = (((b >> i) & 1)? '1': '0');
+    if (i == 15 || i == 10)
+      c[++j] = ' ';
+  }
 
-	if (i == 15 || i == 10)
-		c[++j] = ' ';
-	}
-	
-	c[18] = 0;
+  c[18] = 0;
 }
 
+void printBits(char c[35], float f) {
+  VistaHalf::uif x;
+  x.f = f;
 
-void
-printBits (char c[35], float f)
-{
-	VistaHalf::uif x;
-	x.f = f;
+  for (int i = 31, j = 0; i >= 0; i--, j++) {
+    c[j] = (((x.i >> i) & 1) ? '1' : '0');
 
-	for (int i = 31, j = 0; i >= 0; i--, j++)
-	{
-	c[j] = (((x.i >> i) & 1)? '1': '0');
+    if (i == 31 || i == 23)
+      c[++j] = ' ';
+  }
 
-	if (i == 31 || i == 23)
-		c[++j] = ' ';
-	}
-
-	c[34] = 0;
+  c[34] = 0;
 }
-

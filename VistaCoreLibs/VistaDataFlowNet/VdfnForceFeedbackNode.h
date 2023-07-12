@@ -21,19 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNFORCEFEEDBACKNODE_H
 #define _VDFNFORCEFEEDBACKNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
-#include "VdfnSerializer.h"
 #include "VdfnNode.h"
-#include "VdfnPort.h"
 #include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -72,42 +70,41 @@ class IVistaDriverForceFeedbackAspect;
  *
  * @todo check with the force feedback API, velocity was introduced.
  */
-class VISTADFNAPI VdfnForceFeedbackNode : public IVdfnNode
-{
-public:
-	VdfnForceFeedbackNode( IVistaDriverForceFeedbackAspect *pAspect );
+class VISTADFNAPI VdfnForceFeedbackNode : public IVdfnNode {
+ public:
+  VdfnForceFeedbackNode(IVistaDriverForceFeedbackAspect* pAspect);
 
-	/**
-	 *  enables forces upon activation
-	 */
-	virtual void OnActivation( double dTs );
+  /**
+   *  enables forces upon activation
+   */
+  virtual void OnActivation(double dTs);
 
-	/**
-	 * disables forces opon deactivation
-	 */
-	virtual void OnDeactivation( double dTs );
+  /**
+   * disables forces opon deactivation
+   */
+  virtual void OnDeactivation(double dTs);
 
-	/**
-	 * this node need a force-feedback aspect to work on
-	 * @return true when the force-feedback aspect was set during construction
-	 */
-	bool GetIsValid() const;
+  /**
+   * this node need a force-feedback aspect to work on
+   * @return true when the force-feedback aspect was set during construction
+   */
+  bool GetIsValid() const;
 
-	/**
-	 * @return GetIsValid()
-	 */
-	bool PrepareEvaluationRun();
-protected:
+  /**
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun();
 
-	bool DoEvalNode();
-private:
-	IVistaDriverForceFeedbackAspect *m_pAspect;
+ protected:
+  bool DoEvalNode();
 
-	TVdfnPort<VistaVector3D>   *m_pForceVec;
-	TVdfnPort<VistaVector3D> *m_pTorque;
-	TVdfnPort<bool>             *m_pEnabled;
+ private:
+  IVistaDriverForceFeedbackAspect* m_pAspect;
+
+  TVdfnPort<VistaVector3D>* m_pForceVec;
+  TVdfnPort<VistaVector3D>* m_pTorque;
+  TVdfnPort<bool>*          m_pEnabled;
 };
-
 
 /**
  * force feedback construction node, needs a driver map to operate.
@@ -116,13 +113,13 @@ private:
  * exists and this driver exports a IVistaDriverForceFeedbackAspect,
  * than the node will be created.
  */
-class VISTADFNAPI VdfnForceFeedbackNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VdfnForceFeedbackNodeCreate( VistaDriverMap *pMap );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-private:
-	VistaDriverMap *m_pMap;
+class VISTADFNAPI VdfnForceFeedbackNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VdfnForceFeedbackNodeCreate(VistaDriverMap* pMap);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaDriverMap* m_pMap;
 };
 
 /*============================================================================*/
@@ -130,4 +127,3 @@ private:
 /*============================================================================*/
 
 #endif //_VDFNFORCEFEEDBACKNODE_H
-

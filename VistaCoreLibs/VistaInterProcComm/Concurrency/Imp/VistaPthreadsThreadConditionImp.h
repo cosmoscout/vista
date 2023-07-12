@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPTHREADSTHREADCONDITIONIMP_H
 #define _VISTAPTHREADSTHREADCONDITIONIMP_H
 
@@ -46,21 +45,20 @@ class IVistaMutexImp;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VistaPthreadsThreadConditionImp : public IVistaThreadConditionImp
-{
-private:
-protected:
-	pthread_cond_t m_Condition;
-public:
-	VistaPthreadsThreadConditionImp();
-	virtual ~VistaPthreadsThreadConditionImp();
+class VistaPthreadsThreadConditionImp : public IVistaThreadConditionImp {
+ private:
+ protected:
+  pthread_cond_t m_Condition;
 
-	virtual int SignalCondition();
-	virtual int BroadcastCondition();
-	virtual int WaitForCondition(IVistaMutexImp *);
-	virtual int WaitForConditionWithTimeout(IVistaMutexImp *, int iMsecs);
+ public:
+  VistaPthreadsThreadConditionImp();
+  virtual ~VistaPthreadsThreadConditionImp();
+
+  virtual int SignalCondition();
+  virtual int BroadcastCondition();
+  virtual int WaitForCondition(IVistaMutexImp*);
+  virtual int WaitForConditionWithTimeout(IVistaMutexImp*, int iMsecs);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -68,7 +66,4 @@ public:
 
 #endif //_VISTATHREADCONDITIONIMP_H
 
-
 #endif // VISTA_THREADING_POSIX
-
-

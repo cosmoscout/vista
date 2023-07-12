@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASHALLOWDRIVER_H
 #define _VISTASHALLOWDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -53,24 +51,28 @@
  * will always return true, as there is nothing to do for the shallow driver.
  * It is merely a proxy for aspects and a container for sensors.
  */
-class VISTADEVICEDRIVERSAPI VistaShallowDriver : public IVistaDeviceDriver
-{
-public:
-	VistaShallowDriver(IVistaDriverCreationMethod *crm);
-	~VistaShallowDriver();
+class VISTADEVICEDRIVERSAPI VistaShallowDriver : public IVistaDeviceDriver {
+ public:
+  VistaShallowDriver(IVistaDriverCreationMethod* crm);
+  ~VistaShallowDriver();
 
-	/**
-	 * @return NULL this method should not be used for the shallow driver
-			   as it is a special purpose implementation for a driver that
-			   does only do management tasks
-	 */
-	static IVistaDriverCreationMethod *GetDriverFactoryMethod();
+  /**
+   * @return NULL this method should not be used for the shallow driver
+                     as it is a special purpose implementation for a driver that
+                     does only do management tasks
+   */
+  static IVistaDriverCreationMethod* GetDriverFactoryMethod();
 
-protected:
-	bool DoSensorUpdate(VistaType::microtime dTs);
-	bool DoConnect() { return true; }
-	bool DoDisconnect() { return true; }
-private:
+ protected:
+  bool DoSensorUpdate(VistaType::microtime dTs);
+  bool DoConnect() {
+    return true;
+  }
+  bool DoDisconnect() {
+    return true;
+  }
+
+ private:
 };
 
 /*============================================================================*/
@@ -78,4 +80,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTASHALLOWDRIVER_H
-

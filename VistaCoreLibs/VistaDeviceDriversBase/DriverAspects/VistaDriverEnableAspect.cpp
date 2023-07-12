@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDriverEnableAspect.h" 
+#include "VistaDriverEnableAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
 
 #include <cassert>
@@ -31,42 +30,35 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int VistaDriverEnableAspect::m_nAspectId  = -1;
+int VistaDriverEnableAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaDriverEnableAspect::VistaDriverEnableAspect()
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(false)
-{
-	if(VistaDriverEnableAspect::GetAspectId() == -1) // unregistered
-		VistaDriverEnableAspect::SetAspectId( 
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("ENABLE"));
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(false) {
+  if (VistaDriverEnableAspect::GetAspectId() == -1) // unregistered
+    VistaDriverEnableAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("ENABLE"));
 
-	SetId(VistaDriverEnableAspect::GetAspectId());
+  SetId(VistaDriverEnableAspect::GetAspectId());
 }
 
-VistaDriverEnableAspect::~VistaDriverEnableAspect()
-{
+VistaDriverEnableAspect::~VistaDriverEnableAspect() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-int  VistaDriverEnableAspect::GetAspectId()
-{
-	return VistaDriverEnableAspect::m_nAspectId;
+int VistaDriverEnableAspect::GetAspectId() {
+  return VistaDriverEnableAspect::m_nAspectId;
 }
 
-void VistaDriverEnableAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
+void VistaDriverEnableAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

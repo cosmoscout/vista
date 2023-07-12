@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACLUSTERMASTER_H
 #define _VISTACLUSTERMASTER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/Cluster/VistaClusterMode.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
-#include <string>
-#include <list>
 #include <iostream>
+#include <list>
+#include <string>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -44,81 +43,75 @@
 
 class VistaEventManager;
 class VistaWeightedAverageTimer;
-//class VistaMasterNetworkSync;
+// class VistaMasterNetworkSync;
 class VistaPropertyList;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaClusterMaster : public VistaClusterMode
-{
-public:
-	VistaClusterMaster( VistaEventManager* pEventManager,
-			            const std::string& sMasterName );
-	~VistaClusterMaster();
+class VISTAKERNELAPI VistaClusterMaster : public VistaClusterMode {
+ public:
+  VistaClusterMaster(VistaEventManager* pEventManager, const std::string& sMasterName);
+  ~VistaClusterMaster();
 
-	virtual bool Init( const std::string& sClusterSection,
-						const VistaPropertyList& oConfig );
-	virtual bool PostInit();
+  virtual bool Init(const std::string& sClusterSection, const VistaPropertyList& oConfig);
+  virtual bool PostInit();
 
-	virtual int GetClusterMode() const;
-	virtual std::string GetClusterModeName() const;
-	
-	virtual int GetNodeType() const;
-	virtual std::string GetNodeTypeName() const;
-	virtual std::string GetNodeName() const;
-	virtual std::string GetConfigSectionName() const;
-	virtual int GetNodeID() const;
-	virtual bool GetNodeInfo( const int iNodeID, NodeInfo& oInfo ) const;
+  virtual int         GetClusterMode() const;
+  virtual std::string GetClusterModeName() const;
 
-	virtual bool GetIsLeader() const;
-	virtual bool GetIsFollower() const;	
+  virtual int         GetNodeType() const;
+  virtual std::string GetNodeTypeName() const;
+  virtual std::string GetNodeName() const;
+  virtual std::string GetConfigSectionName() const;
+  virtual int         GetNodeID() const;
+  virtual bool        GetNodeInfo(const int iNodeID, NodeInfo& oInfo) const;
 
-	virtual int GetNumberOfNodes() const;	
-	virtual std::string GetNodeName( const int iNodeID ) const;
+  virtual bool GetIsLeader() const;
+  virtual bool GetIsFollower() const;
 
-	virtual bool StartFrame();
-	virtual bool ProcessFrame();
-	virtual bool EndFrame();
+  virtual int         GetNumberOfNodes() const;
+  virtual std::string GetNodeName(const int iNodeID) const;
 
-	virtual void SwapSync();
-	
-	virtual bool CreateConnections( std::vector<VistaConnectionIP*>& vecConnections );
-	virtual bool CreateNamedConnections( std::vector<std::pair<VistaConnectionIP*, std::string> >&
-															vecConnections );
+  virtual bool StartFrame();
+  virtual bool ProcessFrame();
+  virtual bool EndFrame();
 
-	virtual IVistaDataTunnel* CreateDataTunnel( IDLVistaDataPacket* pPacketProto );
-	virtual IVistaClusterDataSync* CreateDataSync();
-	virtual IVistaClusterDataSync* GetDefaultDataSync();
-	virtual IVistaClusterBarrier* CreateBarrier();
-	virtual IVistaClusterBarrier* GetDefaultBarrier();
-	virtual IVistaClusterDataCollect* CreateDataCollect();
+  virtual void SwapSync();
 
-	virtual void Debug( std::ostream& oStream ) const;
+  virtual bool CreateConnections(std::vector<VistaConnectionIP*>& vecConnections);
+  virtual bool CreateNamedConnections(
+      std::vector<std::pair<VistaConnectionIP*, std::string>>& vecConnections);
 
-private:
-	bool AddSlave( const std::string& sName,
-					const std::string &sIP, int iPort,
-					bool bDoSwap, bool bDoSync );
-	void WaitForSlaveInit();
+  virtual IVistaDataTunnel*         CreateDataTunnel(IDLVistaDataPacket* pPacketProto);
+  virtual IVistaClusterDataSync*    CreateDataSync();
+  virtual IVistaClusterDataSync*    GetDefaultDataSync();
+  virtual IVistaClusterBarrier*     CreateBarrier();
+  virtual IVistaClusterBarrier*     GetDefaultBarrier();
+  virtual IVistaClusterDataCollect* CreateDataCollect();
 
+  virtual void Debug(std::ostream& oStream) const;
 
-private:
-	VistaEventManager*		m_pEventManager;
-	std::string				m_sMasterName; 
-	std::string				m_sMasterSectionName;
+ private:
+  bool AddSlave(
+      const std::string& sName, const std::string& sIP, int iPort, bool bDoSwap, bool bDoSync);
+  void WaitForSlaveInit();
 
-	VistaWeightedAverageTimer *m_pAvgBc;
+ private:
+  VistaEventManager* m_pEventManager;
+  std::string        m_sMasterName;
+  std::string        m_sMasterSectionName;
 
-	// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	// internal API
-	// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	class EventObserver;
-	EventObserver*			m_pEventObserver;
+  VistaWeightedAverageTimer* m_pAvgBc;
 
-	IVistaClusterDataSync*		m_pDefaultDataSync;
-	IVistaClusterBarrier*	m_pDefaultBarrier;
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // internal API
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  class EventObserver;
+  EventObserver* m_pEventObserver;
 
+  IVistaClusterDataSync* m_pDefaultDataSync;
+  IVistaClusterBarrier*  m_pDefaultBarrier;
 };
 
 /*============================================================================*/
@@ -126,4 +119,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTACLUSTERMASTER_H
-

@@ -28,27 +28,27 @@ using namespace std;
 #include <winsock2.h>
 
 typedef int socklen_t;
-#elif defined (LINUX) || defined(DARWIN)
-	#include <unistd.h>
-	#include <netdb.h>
-	#include <sys/socket.h>
-	#include <sys/ioctl.h>
-	#include <arpa/inet.h>
-    #include <cerrno>
-#elif defined (SUNOS) || defined (IRIX)
-	#include <unistd.h>
-	#include <netdb.h>
-	#include <sys/filio.h>
-	#include <arpa/inet.h>
+#elif defined(LINUX) || defined(DARWIN)
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <cerrno>
+#elif defined(SUNOS) || defined(IRIX)
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/filio.h>
+#include <arpa/inet.h>
 
-#elif defined (HPUX)
-	#include <unistd.h>          // ioctl(), FIONREAD
-	#include <netdb.h>           // getprotoent() libc-Version!,gethostbyname()
-	#include <sys/socket.h>      // socket(),gethostbyname(),connect()
-	#include <arpa/inet.h>
+#elif defined(HPUX)
+#include <unistd.h>     // ioctl(), FIONREAD
+#include <netdb.h>      // getprotoent() libc-Version!,gethostbyname()
+#include <sys/socket.h> // socket(),gethostbyname(),connect()
+#include <arpa/inet.h>
 
 #else
-	#error You have to define the target platform in order to compile ViSTA
+#error You have to define the target platform in order to compile ViSTA
 
 #endif
 
@@ -62,83 +62,73 @@ typedef int socklen_t;
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaUDPSocket::VistaUDPSocket()
-: IVistaSocket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)
-{
+    : IVistaSocket(PF_INET, SOCK_DGRAM, IPPROTO_UDP) {
 }
 
-VistaUDPSocket::~VistaUDPSocket()
-{
+VistaUDPSocket::~VistaUDPSocket() {
 }
 
- 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-int VistaUDPSocket::SendDatagramRaw(const void *pvBuffer, const int iLength, const VistaSocketAddress &peer, int flags)
-{
+int VistaUDPSocket::SendDatagramRaw(
+    const void* pvBuffer, const int iLength, const VistaSocketAddress& peer, int flags) {
 #ifdef WIN32
-	int iRet = sendto ( SOCKET(GetSocketID()), (const char *) pvBuffer, iLength, flags, (sockaddr *)peer.GetINAddress(), peer.GetINAddressLength());
+  int iRet = sendto(SOCKET(GetSocketID()), (const char*)pvBuffer, iLength, flags,
+      (sockaddr*)peer.GetINAddress(), peer.GetINAddressLength());
 #else
-	int iRet = TEMP_FAILURE_RETRY( sendto ( SOCKET(GetSocketID()), (const char *) pvBuffer, iLength, flags, (sockaddr *)peer.GetINAddress(), peer.GetINAddressLength()) );	
+  int iRet = TEMP_FAILURE_RETRY(sendto(SOCKET(GetSocketID()), (const char*)pvBuffer, iLength, flags,
+      (sockaddr*)peer.GetINAddress(), peer.GetINAddressLength()));
 #endif
-	if(iRet<0)
-	{
-		PrintErrorMessage("VistaUDPSocket::SendDatagram()");
-	}
+  if (iRet < 0) {
+    PrintErrorMessage("VistaUDPSocket::SendDatagram()");
+  }
 
-	return iRet;
+  return iRet;
 }
 
-int VistaUDPSocket::ReceiveDatagramRaw(void *pvBuffer, const int iLength, const VistaSocketAddress &fromAddress, int iTimeout, int flags)
-{
-	if(!GetIsBoundToAddress())
-		return -1; // you have to be bound to an adress in order to receive anything
+int VistaUDPSocket::ReceiveDatagramRaw(void* pvBuffer, const int iLength,
+    const VistaSocketAddress& fromAddress, int iTimeout, int flags) {
+  if (!GetIsBoundToAddress())
+    return -1; // you have to be bound to an adress in order to receive anything
 
+  int iReadLength = iLength;
+  if (iTimeout != 0) {
+    int iReady = WaitForIncomingData(iTimeout);
+    if (iReady == 0)
+      return 0;
 
-	int iReadLength = iLength;
-	if(iTimeout != 0)
-	{
-		int iReady = WaitForIncomingData(iTimeout);
-		if(iReady == 0)
-			return 0;
-
-		if(iReady < iLength)
-			iReadLength = iReady; // adjust, without buffer size-violence ;)
-
-	}
-	int iAddrLength = fromAddress.GetINAddressLength();
+    if (iReady < iLength)
+      iReadLength = iReady; // adjust, without buffer size-violence ;)
+  }
+  int iAddrLength = fromAddress.GetINAddressLength();
 #if defined(HPUX)
-	int iRet = recvfrom(GetSocketID(), (char*)pvBuffer, iReadLength, flags, (sockaddr *)fromAddress.GetINAddress(),&iAddrLength);
+  int iRet = recvfrom(GetSocketID(), (char*)pvBuffer, iReadLength, flags,
+      (sockaddr*)fromAddress.GetINAddress(), &iAddrLength);
 #elif defined WIN32
-	int iRet = recvfrom(SOCKET(GetSocketID()), (char*)pvBuffer, iReadLength, flags, (sockaddr *)fromAddress.GetINAddress(),(socklen_t*)&iAddrLength);
+  int iRet = recvfrom(SOCKET(GetSocketID()), (char*)pvBuffer, iReadLength, flags,
+      (sockaddr*)fromAddress.GetINAddress(), (socklen_t*)&iAddrLength);
 #else
-	int iRet = TEMP_FAILURE_RETRY( recvfrom(SOCKET(GetSocketID()), (char*)pvBuffer, iReadLength, flags, (sockaddr *)fromAddress.GetINAddress(),(socklen_t*)&iAddrLength) );
+  int iRet = TEMP_FAILURE_RETRY(recvfrom(SOCKET(GetSocketID()), (char*)pvBuffer, iReadLength, flags,
+      (sockaddr*)fromAddress.GetINAddress(), (socklen_t*)&iAddrLength));
 #endif
 
-	if(iRet == -1)
-	{
-		PrintErrorMessage("VistaUDPSocket::ReceiveDatagram()");
-		return 0;
-	}
-	return iRet;
+  if (iRet == -1) {
+    PrintErrorMessage("VistaUDPSocket::ReceiveDatagram()");
+    return 0;
+  }
+  return iRet;
 }
 
-
-string VistaUDPSocket::GetSocketTypeString() const
-{
-	return "UDP";
+string VistaUDPSocket::GetSocketTypeString() const {
+  return "UDP";
 }
 
-void VistaUDPSocket::SetIsBuffering(bool bBuffering)
-{
-	// we ignore this.
+void VistaUDPSocket::SetIsBuffering(bool bBuffering) {
+  // we ignore this.
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

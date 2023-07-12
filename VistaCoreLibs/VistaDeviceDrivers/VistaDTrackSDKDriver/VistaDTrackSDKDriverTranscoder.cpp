@@ -21,265 +21,222 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
+#include "VistaDTrackSDKDriverConfig.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include "VistaDTrackSDKDriverConfig.h"
 
-namespace
-{
-	class VistaDTrackSDKMarkerTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaDTrackSDKMarkerTranscode()
-		{
-			m_nNumberOfScalars = 0;
-		}
+namespace {
+class VistaDTrackSDKMarkerTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaDTrackSDKMarkerTranscode() {
+    m_nNumberOfScalars = 0;
+  }
 
-		static std::string GetTypeString() { return "VistaDTrackSDKMarkerTranscode"; }
-		REFL_INLINEIMP(VistaDTrackSDKMarkerTranscode, IVistaMeasureTranscode);
-	};
+  static std::string GetTypeString() {
+    return "VistaDTrackSDKMarkerTranscode";
+  }
+  REFL_INLINEIMP(VistaDTrackSDKMarkerTranscode, IVistaMeasureTranscode);
+};
 
-	class VistaDTrackSDKBodyTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaDTrackSDKBodyTranscode()
-		{
-			m_nNumberOfScalars = 0;
-		}
+class VistaDTrackSDKBodyTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaDTrackSDKBodyTranscode() {
+    m_nNumberOfScalars = 0;
+  }
 
-		static std::string GetTypeString() { return "VistaDTrackSDKBodyTranscode"; }
-		REFL_INLINEIMP(VistaDTrackSDKBodyTranscode, IVistaMeasureTranscode);
-	};
+  static std::string GetTypeString() {
+    return "VistaDTrackSDKBodyTranscode";
+  }
+  REFL_INLINEIMP(VistaDTrackSDKBodyTranscode, IVistaMeasureTranscode);
+};
 
+class VistaDTrackSDKQualityTranscode : public IVistaMeasureTranscode::DoubleGet {
+ public:
+  VistaDTrackSDKQualityTranscode(
+      const std::string& strTranscoderClassName, const std::string& strDescription)
+      : IVistaMeasureTranscode::DoubleGet("QUALITY", strTranscoderClassName, strDescription) {
+  }
 
-	class VistaDTrackSDKQualityTranscode : public IVistaMeasureTranscode::DoubleGet
-	{
-	public:
-		VistaDTrackSDKQualityTranscode(const std::string &strTranscoderClassName,
-			const std::string &strDescription )
-			: IVistaMeasureTranscode::DoubleGet("QUALITY", strTranscoderClassName, strDescription )
-		{
+  double GetValue(const VistaSensorMeasure* pMeasure) const {
+    // for quality, all measures have the same layout
+    VistaDTrackSDKConfig::VISTA_dtrack_marker_type* m =
+        (VistaDTrackSDKConfig::VISTA_dtrack_marker_type*)&(*pMeasure).m_vecMeasures[0];
+    return double(m->quality);
+  }
 
-		}
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, double& q) const {
+    q = GetValue(pMeasure);
+    return true;
+  }
+};
 
-		double GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			// for quality, all measures have the same layout
-			VistaDTrackSDKConfig::VISTA_dtrack_marker_type *m = (VistaDTrackSDKConfig::VISTA_dtrack_marker_type*)&(*pMeasure).m_vecMeasures[0];
-			return double(m->quality);
-		}
+class VistaDTrackSDKIdTranscode : public IVistaMeasureTranscode::UIntGet {
+ public:
+  VistaDTrackSDKIdTranscode(
+      const std::string& strTranscoderClassName, const std::string& strDescription)
+      : IVistaMeasureTranscode::UIntGet("ID", strTranscoderClassName, strDescription) {
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, double &q) const
-		{
-			q = GetValue(pMeasure);
-			return true;
-		}
-	};
+  unsigned int GetValue(const VistaSensorMeasure* pMeasure) const {
+    // for quality, all measures have the same layout
+    VistaDTrackSDKConfig::VISTA_dtrack_marker_type* m =
+        (VistaDTrackSDKConfig::VISTA_dtrack_marker_type*)&(*pMeasure).m_vecMeasures[0];
+    return (unsigned int)m->id;
+  }
 
-	class VistaDTrackSDKIdTranscode : public IVistaMeasureTranscode::UIntGet
-	{
-	public:
-		VistaDTrackSDKIdTranscode(const std::string &strTranscoderClassName,
-			const std::string &strDescription )
-			: IVistaMeasureTranscode::UIntGet("ID", strTranscoderClassName, strDescription )
-		{
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, unsigned int& id) const {
+    id = GetValue(pMeasure);
+    return true;
+  }
+};
 
-		}
+class VistaDTrackSDKPosTranscode : public IVistaMeasureTranscode::V3Get {
+ public:
+  VistaDTrackSDKPosTranscode(
+      const std::string& strTranscodeClassName, const std::string& strDescription)
+      : IVistaMeasureTranscode::V3Get("POSITION", strTranscodeClassName, strDescription) {
+  }
 
-		unsigned int GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			// for quality, all measures have the same layout
-			VistaDTrackSDKConfig::VISTA_dtrack_marker_type *m = (VistaDTrackSDKConfig::VISTA_dtrack_marker_type*)&(*pMeasure).m_vecMeasures[0];
-			return (unsigned int)m->id;
-		}
+  virtual VistaVector3D GetValue(const VistaSensorMeasure* pMeasure) const {
+    // maker and body structs have the same layout
+    VistaDTrackSDKConfig::VISTA_dtrack_marker_type* m =
+        (VistaDTrackSDKConfig::VISTA_dtrack_marker_type*)&(*pMeasure).m_vecMeasures[0];
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, unsigned int &id) const
-		{
-			id = GetValue(pMeasure);
-			return true;
-		}
-	};
+    return VistaVector3D(float(m->loc[0]), float(m->loc[1]), float(m->loc[2]));
+  }
 
-	class VistaDTrackSDKPosTranscode : public IVistaMeasureTranscode::V3Get
-	{
-	public:
-		VistaDTrackSDKPosTranscode(const std::string &strTranscodeClassName,
-			const std::string &strDescription )
-			: IVistaMeasureTranscode::V3Get("POSITION",
-			strTranscodeClassName, strDescription) {}
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaVector3D& v3Pos) const {
+    v3Pos = GetValue(pMeasure);
+    return true;
+  }
+};
 
-		virtual VistaVector3D    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			// maker and body structs have the same layout
-			VistaDTrackSDKConfig::VISTA_dtrack_marker_type *m = (VistaDTrackSDKConfig::VISTA_dtrack_marker_type*)&(*pMeasure).m_vecMeasures[0];
+class VistaDTrackSDKBodyOrientationTranscode : public IVistaMeasureTranscode::QuatGet {
+ public:
+  VistaDTrackSDKBodyOrientationTranscode()
+      : IVistaMeasureTranscode::QuatGet("ORIENTATION", VistaDTrackSDKBodyTranscode::GetTypeString(),
+            "DTrack SDK 3D orientation (right-handed)") {
+  }
 
-			return VistaVector3D(
-				float( m->loc[0]),
-				float( m->loc[1]),
-				float( m->loc[2]));
-		}
+  virtual VistaQuaternion GetValue(const VistaSensorMeasure* pMeasure) const {
+    VistaDTrackSDKConfig::VISTA_dtrack_body_type* m =
+        (VistaDTrackSDKConfig::VISTA_dtrack_body_type*)&(*pMeasure).m_vecMeasures[0];
+    VistaTransformMatrix mt(float(m->rot[0]), float(m->rot[3]), float(m->rot[6]), 0,
+        float(m->rot[1]), float(m->rot[4]), float(m->rot[7]), 0, float(m->rot[2]), float(m->rot[5]),
+        float(m->rot[8]), 0, 0, 0, 0, 1);
+    VistaQuaternion      q(mt);
+    q.Normalize();
+    return q;
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaVector3D &v3Pos) const
-		{
-			v3Pos = GetValue(pMeasure);
-			return true;
-		}
-	};
+  virtual bool GetValue(const VistaSensorMeasure* pMeasure, VistaQuaternion& qRot) const {
+    qRot = GetValue(pMeasure);
+    return true;
+  }
+};
 
-	class VistaDTrackSDKBodyOrientationTranscode : public IVistaMeasureTranscode::QuatGet
-	{
-	public:
-		VistaDTrackSDKBodyOrientationTranscode()
-			: IVistaMeasureTranscode::QuatGet("ORIENTATION",
-			VistaDTrackSDKBodyTranscode::GetTypeString(),
-			"DTrack SDK 3D orientation (right-handed)") {}
+IVistaPropertyGetFunctor* SapGetter[] = {
+    new VistaDTrackSDKPosTranscode(
+        VistaDTrackSDKMarkerTranscode::GetTypeString(), "dtrack SDK MARKER 3D position values"),
+    new VistaDTrackSDKPosTranscode(
+        VistaDTrackSDKBodyTranscode::GetTypeString(), "dtrack SDK BODY 3D position values"),
+    new VistaDTrackSDKBodyOrientationTranscode,
+    new VistaDTrackSDKIdTranscode(
+        VistaDTrackSDKMarkerTranscode::GetTypeString(), "dtrack SDK MARKER 3D id"),
+    new VistaDTrackSDKIdTranscode(
+        VistaDTrackSDKBodyTranscode::GetTypeString(), "dtrack SDK BODY 3D id"),
+    new VistaDTrackSDKQualityTranscode(
+        VistaDTrackSDKBodyTranscode::GetTypeString(), "dtrack SDK BODY quality"),
+    new VistaDTrackSDKQualityTranscode(
+        VistaDTrackSDKMarkerTranscode::GetTypeString(), "dtrack SDK MARKER quality"),
+    NULL};
 
-		virtual VistaQuaternion    GetValue(const VistaSensorMeasure *pMeasure)    const
-		{
-			VistaDTrackSDKConfig::VISTA_dtrack_body_type *m = (VistaDTrackSDKConfig::VISTA_dtrack_body_type*)&(*pMeasure).m_vecMeasures[0];
-			VistaTransformMatrix mt (float(m->rot[0]), float(m->rot[3]), float(m->rot[6]), 0,
-				float(m->rot[1]), float(m->rot[4]), float(m->rot[7]), 0,
-				float(m->rot[2]), float(m->rot[5]), float(m->rot[8]), 0,
-				0    , 0    , 0    , 1);
-			VistaQuaternion q(mt);
-			q.Normalize();
-			return q;
-		}
+class VistaDTrackSDKMarkerTranscodeFactory : public IVistaMeasureTranscoderFactory {
+ public:
+  virtual IVistaMeasureTranscode* CreateTranscoder() {
+    return new VistaDTrackSDKMarkerTranscode;
+  }
+};
 
-		virtual bool GetValue(const VistaSensorMeasure *pMeasure, VistaQuaternion &qRot) const
-		{
-			qRot = GetValue(pMeasure);
-			return true;
-		}
-	};
+class VistaDTrackSDKBodyTranscodeFactory : public IVistaMeasureTranscoderFactory {
+ public:
+  virtual IVistaMeasureTranscode* CreateTranscoder() {
+    return new VistaDTrackSDKBodyTranscode;
+  }
+};
 
-	IVistaPropertyGetFunctor *SapGetter[] =
-	{
-		new VistaDTrackSDKPosTranscode(VistaDTrackSDKMarkerTranscode::GetTypeString(),
-		"dtrack SDK MARKER 3D position values"),
-		new VistaDTrackSDKPosTranscode(VistaDTrackSDKBodyTranscode::GetTypeString(),
-		"dtrack SDK BODY 3D position values"),
-		new VistaDTrackSDKBodyOrientationTranscode,
-		new VistaDTrackSDKIdTranscode(VistaDTrackSDKMarkerTranscode::GetTypeString(),
-		"dtrack SDK MARKER 3D id"),
-		new VistaDTrackSDKIdTranscode(VistaDTrackSDKBodyTranscode::GetTypeString(),
-		"dtrack SDK BODY 3D id"),
-		new VistaDTrackSDKQualityTranscode(VistaDTrackSDKBodyTranscode::GetTypeString(),
-		"dtrack SDK BODY quality"),
-		new VistaDTrackSDKQualityTranscode(VistaDTrackSDKMarkerTranscode::GetTypeString(),
-		"dtrack SDK MARKER quality"),
-		NULL
-	};
+/*
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+*/
 
+class VistaDTrackSDKTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory {
+ public:
+  VistaDTrackSDKTranscoderFactoryFactory() {
+    CreateCreators(m_creators);
+  }
 
+  ~VistaDTrackSDKTranscoderFactoryFactory() {
+    CleanupCreators(m_creators);
+  }
 
-	class VistaDTrackSDKMarkerTranscodeFactory : public IVistaMeasureTranscoderFactory
-	{
-	public:
-		virtual IVistaMeasureTranscode *CreateTranscoder()
-		{
-			return new VistaDTrackSDKMarkerTranscode;
-		}
-	};
+  typedef std::map<std::string, ICreateTranscoder*> CRMAP;
+  CRMAP                                             m_creators;
 
-	class VistaDTrackSDKBodyTranscodeFactory : public IVistaMeasureTranscoderFactory
-	{
-	public:
-		virtual IVistaMeasureTranscode *CreateTranscoder()
-		{
-			return new VistaDTrackSDKBodyTranscode;
-		}
-	};
+  static void CreateCreators(CRMAP& mp) {
+    mp["BODY"]   = new TCreateTranscoder<VistaDTrackSDKBodyTranscode>;
+    mp["MARKER"] = new TCreateTranscoder<VistaDTrackSDKMarkerTranscode>;
+  }
 
+  static void CleanupCreators(CRMAP& mp) {
+    for (CRMAP::iterator it = mp.begin(); it != mp.end(); ++it)
+      delete (*it).second;
 
-	/*
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	A
-	*/
+    mp.clear();
+  }
 
-	class VistaDTrackSDKTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory
-	{
-	public:
-		VistaDTrackSDKTranscoderFactoryFactory()
-		{
-			CreateCreators(m_creators);
-		}
+  virtual IVistaMeasureTranscoderFactory* CreateFactoryForType(const std::string& strTypeName) {
+    CRMAP::const_iterator it = m_creators.find(strTypeName);
+    if (it == m_creators.end())
+      return NULL;
+    return (*it).second->Create();
+  }
 
-		~VistaDTrackSDKTranscoderFactoryFactory()
-		{
-			CleanupCreators(m_creators);
-		}
+  virtual void DestroyTranscoderFactory(IVistaMeasureTranscoderFactory* fac) {
+    delete fac;
+  }
 
-		typedef std::map<std::string,ICreateTranscoder*> CRMAP;
-		CRMAP m_creators;
+  static void OnUnload() {
+    CRMAP mp;
+    CreateCreators(mp);
+    for (CRMAP::iterator it = mp.begin(); it != mp.end(); ++it)
+      (*it).second->OnUnload();
+    CleanupCreators(mp);
+  }
+};
 
-
-		static void CreateCreators(CRMAP &mp)
-		{
-			mp["BODY"]  = new TCreateTranscoder<VistaDTrackSDKBodyTranscode>;
-			mp["MARKER"]   = new TCreateTranscoder<VistaDTrackSDKMarkerTranscode>;
-		}
-
-		static void CleanupCreators( CRMAP &mp )
-		{
-			for( CRMAP::iterator it = mp.begin(); it != mp.end(); ++it )
-				delete (*it).second;
-
-			mp.clear();
-		}
-
-		virtual IVistaMeasureTranscoderFactory *CreateFactoryForType( const std::string &strTypeName )
-		{
-			CRMAP::const_iterator it = m_creators.find( strTypeName );
-			if( it == m_creators.end() )
-				return NULL;
-			return (*it).second->Create();
-		}
-
-
-		virtual void DestroyTranscoderFactory( IVistaMeasureTranscoderFactory *fac )
-		{
-			delete fac;
-		}
-
-		static void OnUnload()
-		{
-			CRMAP mp;
-			CreateCreators(mp);
-			for( CRMAP::iterator it = mp.begin(); it != mp.end(); ++it )
-				(*it).second->OnUnload();
-			CleanupCreators(mp);
-		}
-	};
-
-
-}
-
+} // namespace
 
 #ifdef VISTADTRACKSDKTRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaDTrackSDKTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(VistaDTrackSDKTranscoderFactoryFactory)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaDTrackSDKDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(VistaDTrackSDKDriverTranscoderFactoryFactory)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
 IMPTRANSCODERPLUG_CLEANUP(VistaDTrackSDKTranscoderFactoryFactory)
-
-
-

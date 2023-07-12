@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTARUNTIMELIMITER_H
 #define _VISTARUNTIMELIMITER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,9 +30,8 @@
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaBase/VistaTimer.h>
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/EventManager/VistaEventHandler.h>
-
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -54,29 +51,27 @@ class VistaSystem;
  * a certain time or number of frames. This can help for example
  * to automatically test if the application runs properly
  */
-class VISTAKERNELAPI VistaRuntimeLimiter : public VistaEventHandler
-{
-public:
-	/**
-	 * automatically registers itself als event manager for the system
-	 */
-	VistaRuntimeLimiter( VistaSystem* pSystem );
-	virtual ~VistaRuntimeLimiter();
+class VISTAKERNELAPI VistaRuntimeLimiter : public VistaEventHandler {
+ public:
+  /**
+   * automatically registers itself als event manager for the system
+   */
+  VistaRuntimeLimiter(VistaSystem* pSystem);
+  virtual ~VistaRuntimeLimiter();
 
-	unsigned int GetFrameLimit() const;
-	void SetFrameLimit( const unsigned int& oValue );
+  unsigned int GetFrameLimit() const;
+  void         SetFrameLimit(const unsigned int& oValue);
 
-	VistaType::microtime GetTimeLimit() const;
-	void SetTimeLimit( const VistaType::microtime& oValue );
+  VistaType::microtime GetTimeLimit() const;
+  void                 SetTimeLimit(const VistaType::microtime& oValue);
 
-	virtual void HandleEvent( VistaEvent* pEvent );
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-private:
-	VistaSystem* m_pSystem;
-	unsigned int m_nFrameLimit;
-	VistaType::microtime m_nTimeLimit;
-	VistaTimer m_oTimer;
+ private:
+  VistaSystem*         m_pSystem;
+  unsigned int         m_nFrameLimit;
+  VistaType::microtime m_nTimeLimit;
+  VistaTimer           m_oTimer;
 };
 
 #endif //_VISTARUNTIMELIMITER_H
-

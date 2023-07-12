@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACONNECTIONFILETIMED_H
 #define _VISTACONNECTIONFILETIMED_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <ctime>
 #include "VistaConnectionFile.h"
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
+#include <ctime>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -43,51 +42,44 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI VistaConnectionFileTimed : public VistaConnectionFile {
+ public:
+  VistaConnectionFileTimed(const std::string& sFileName, const bool bPulse, const float fFrequency,
+      const bool bIncoming = true);
+  virtual ~VistaConnectionFileTimed(){};
 
-class VISTAINTERPROCCOMMAPI VistaConnectionFileTimed : public VistaConnectionFile
-{
-public:
-	VistaConnectionFileTimed( const std::string & sFileName,
-				   const bool bPulse,
-				   const float fFrequency,
-				   const bool bIncoming = true ) ;
-	virtual ~VistaConnectionFileTimed() {};
+  /**
+   * Receive shall read some information from the connection
+   *
+   * @param   length   maximum length of bytes to be received
+   * @param  buffer   the received information
+   *
+   * @return  number of received bytes
+   */
+  int Receive(void* buffer, const int length, int iTimeout = 0);
 
-	 /**
-	 * Receive shall read some information from the connection
-	 *
-	 * @param   length   maximum length of bytes to be received
-	 * @param  buffer   the received information
-	 *
-	 * @return  number of received bytes
-	 */
-	int Receive ( void * buffer, const int length, int iTimeout = 0 );
+  /**
+   * Send shall write some information to the connection
+   *
+   * @param   buffer   the information which shall be sent
+   *          length   the length of the information to send
+   *
+   * @return  1   if data was completely sent
+   *          0   otherwise
+   */
+  int Send(const void* buffer, const int length);
 
-	/**
-	 * Send shall write some information to the connection
-	 *
-	 * @param   buffer   the information which shall be sent
-	 *          length   the length of the information to send
-	 *
-	 * @return  1   if data was completely sent
-	 *          0   otherwise
-	 */
-	int Send    ( const void * buffer, const int length ) ;
+ private:
+  bool m_bStatusOK;
+  bool m_bIncoming;
+  bool m_bPulse;
 
-private:
-	bool         m_bStatusOK;
-	bool         m_bIncoming;
-	bool         m_bPulse;
-
-	clock_t      m_LastTime;
-	float        m_fFrequency;
-
+  clock_t m_LastTime;
+  float   m_fFrequency;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif
-

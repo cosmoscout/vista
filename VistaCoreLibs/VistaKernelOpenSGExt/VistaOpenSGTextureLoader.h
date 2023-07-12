@@ -21,121 +21,106 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGTEXTURELOADER_H
 #define _VISTAOPENSGTEXTURELOADER_H
 
 #include "VistaKernelOpenSGExtConfig.h"
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
-namespace osg
-{
-	template< class Ref > class RefPtr;
-	template< class BasePtrTypeT, class FieldContainerTypeT > class FCPtr;
+namespace osg {
+template <class Ref>
+class RefPtr;
+template <class BasePtrTypeT, class FieldContainerTypeT>
+class FCPtr;
 
-	class AttachmentPtr;
-	class AttachmentContainerPtr;
-	class StateChunk;
-	class TextureChunk;
-	class CubeTextureChunk;
-	class Image;
+class AttachmentPtr;
+class AttachmentContainerPtr;
+class StateChunk;
+class TextureChunk;
+class CubeTextureChunk;
+class Image;
 
-	typedef FCPtr< AttachmentPtr, StateChunk > StateChunkPtr;
-	typedef FCPtr< StateChunkPtr, TextureChunk > TextureChunkPtr;
-	typedef FCPtr< TextureChunkPtr, CubeTextureChunk > CubeTextureChunkPtr;
-	typedef FCPtr< AttachmentContainerPtr, Image > ImagePtr;
-	
-	typedef RefPtr< TextureChunkPtr > TextureChunkRefPtr;
-	typedef RefPtr< CubeTextureChunkPtr > CubeTextureChunkRefPtr;
-}
+typedef FCPtr<AttachmentPtr, StateChunk>         StateChunkPtr;
+typedef FCPtr<StateChunkPtr, TextureChunk>       TextureChunkPtr;
+typedef FCPtr<TextureChunkPtr, CubeTextureChunk> CubeTextureChunkPtr;
+typedef FCPtr<AttachmentContainerPtr, Image>     ImagePtr;
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGTextureLoader
-{
-public:
-	VistaOpenSGTextureLoader();
-	virtual ~VistaOpenSGTextureLoader();
-	
-	int GetDefaultAnisotropy() const;
-	void SetDefaultAnisotropy( const int oValue );
+typedef RefPtr<TextureChunkPtr>     TextureChunkRefPtr;
+typedef RefPtr<CubeTextureChunkPtr> CubeTextureChunkRefPtr;
+} // namespace osg
 
-	virtual osg::TextureChunkPtr LoadTexture( const std::string& sFilename );
-	virtual osg::TextureChunkPtr LoadNormalMapTexture( const std::string& sFilename );
-	virtual osg::TextureChunkPtr LoadNormalMapTextureFromBumpMap( const std::string& sFilename,
-																const float nNormalMagnitude,
-																const bool bSaveConvertedImage );
-	virtual osg::CubeTextureChunkPtr LoadCubeMapTexture( const std::string& sTopFile,
-													const std::string& sBottomFile,
-													const std::string& sLeftFile,
-													const std::string& sRightFile,
-													const std::string& sFrontFile,
-													const std::string& sBackFile );
-	virtual osg::CubeTextureChunkPtr LoadCubeMapTexture( const std::string& sFolder );
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGTextureLoader {
+ public:
+  VistaOpenSGTextureLoader();
+  virtual ~VistaOpenSGTextureLoader();
 
-	virtual bool ConvertBumpMapImageToNormalMap( osg::ImagePtr, const float nNormalMagnitude );
+  int  GetDefaultAnisotropy() const;
+  void SetDefaultAnisotropy(const int oValue);
 
-	virtual osg::TextureChunkPtr RetrieveTexture( const std::string& sFilename );
-	virtual osg::TextureChunkPtr RetrieveNormalMapTexture( const std::string& sFilename );
-	virtual osg::TextureChunkPtr RetrieveNormalMapTextureFromBumpMap( const std::string& sFilename,
-																const float nNormalMagnitude,
-																const bool bSaveConvertedImage );
+  virtual osg::TextureChunkPtr LoadTexture(const std::string& sFilename);
+  virtual osg::TextureChunkPtr LoadNormalMapTexture(const std::string& sFilename);
+  virtual osg::TextureChunkPtr LoadNormalMapTextureFromBumpMap(
+      const std::string& sFilename, const float nNormalMagnitude, const bool bSaveConvertedImage);
+  virtual osg::CubeTextureChunkPtr LoadCubeMapTexture(const std::string& sTopFile,
+      const std::string& sBottomFile, const std::string& sLeftFile, const std::string& sRightFile,
+      const std::string& sFrontFile, const std::string& sBackFile);
+  virtual osg::CubeTextureChunkPtr LoadCubeMapTexture(const std::string& sFolder);
 
-		
-	virtual osg::CubeTextureChunkPtr RetrieveCubemapTexture( const std::string& sTopFile,
-													const std::string& sBottomFile,
-													const std::string& sLeftFile,
-													const std::string& sRightFile,
-													const std::string& sFrontFile,
-													const std::string& sBackFile );
-	virtual osg::CubeTextureChunkPtr RetrieveCubemapTexture( const std::string& sFolder );
+  virtual bool ConvertBumpMapImageToNormalMap(osg::ImagePtr, const float nNormalMagnitude);
 
-	const std::vector< std::string >& GetImageSearchPathes() const;
-	void SetImageSearchPathes( const std::vector< std::string >& vecSearchPathes );
-	void AddImageSearchPath( const std::string& sPath );
+  virtual osg::TextureChunkPtr RetrieveTexture(const std::string& sFilename);
+  virtual osg::TextureChunkPtr RetrieveNormalMapTexture(const std::string& sFilename);
+  virtual osg::TextureChunkPtr RetrieveNormalMapTextureFromBumpMap(
+      const std::string& sFilename, const float nNormalMagnitude, const bool bSaveConvertedImage);
 
-	const std::vector< std::string >& GetImageFileExtensions() const;
-	void SetImageFileExtensions( const std::vector< std::string >& vecExtensions );
-	void AddImageFileExtensions( const std::string& sExtension );
-protected:
-	/**
-	 * Searches for the image file with the specified name. Default implementation
-	 * finds images with absolute path or relative path to one of the search dirs,
-	 * and also searches for different image file extensions
-	 */
-	virtual std::string GetImageFileLocation( const std::string& sImage );
+  virtual osg::CubeTextureChunkPtr RetrieveCubemapTexture(const std::string& sTopFile,
+      const std::string& sBottomFile, const std::string& sLeftFile, const std::string& sRightFile,
+      const std::string& sFrontFile, const std::string& sBackFile);
+  virtual osg::CubeTextureChunkPtr RetrieveCubemapTexture(const std::string& sFolder);
 
-	/**
-	 * Looks for cubemaps in the specified folder. Default implementation looks for files
-	 * [pos|neg][x|y|], or [front|back|left|right|bottom|top],
-	 * but specialized implementations can extend this
-	 */
-	virtual bool GetCubemapFileLocations( const std::string& sFolder,
-													std::string& sTopFile,
-													std::string& sBottomFile,
-													std::string& sLeftFile,
-													std::string& sRightFile,
-													std::string& sFrontFile,
-													std::string& sBackFile );
+  const std::vector<std::string>& GetImageSearchPathes() const;
+  void SetImageSearchPathes(const std::vector<std::string>& vecSearchPathes);
+  void AddImageSearchPath(const std::string& sPath);
 
-	virtual std::string GetNormalMapFilenameForBumpmap( const std::string& sBumpmapImage, const float nNormalMagnitude ) const;
-	virtual std::string GetCubemapIndexString( const std::string& sTopFile,
-													const std::string& sBottomFile,
-													const std::string& sLeftFile,
-													const std::string& sRightFile,
-													const std::string& sFrontFile,
-													const std::string& sBackFile ) const;
-	
-private:
-	int m_nDefaultAnisotropy;
+  const std::vector<std::string>& GetImageFileExtensions() const;
+  void SetImageFileExtensions(const std::vector<std::string>& vecExtensions);
+  void AddImageFileExtensions(const std::string& sExtension);
 
-	std::vector< std::string > m_vecImageFileExtensions;
-	std::vector< std::string > m_vecSearchPathes;
-	
-	std::map< std::string, osg::TextureChunkRefPtr > m_mapLoadedTextures;
-	std::map< std::string, osg::TextureChunkRefPtr > m_mapLoadedNormalTextures;
-	std::map< std::string, osg::CubeTextureChunkRefPtr > m_mapCubemapTextures;
+ protected:
+  /**
+   * Searches for the image file with the specified name. Default implementation
+   * finds images with absolute path or relative path to one of the search dirs,
+   * and also searches for different image file extensions
+   */
+  virtual std::string GetImageFileLocation(const std::string& sImage);
+
+  /**
+   * Looks for cubemaps in the specified folder. Default implementation looks for files
+   * [pos|neg][x|y|], or [front|back|left|right|bottom|top],
+   * but specialized implementations can extend this
+   */
+  virtual bool GetCubemapFileLocations(const std::string& sFolder, std::string& sTopFile,
+      std::string& sBottomFile, std::string& sLeftFile, std::string& sRightFile,
+      std::string& sFrontFile, std::string& sBackFile);
+
+  virtual std::string GetNormalMapFilenameForBumpmap(
+      const std::string& sBumpmapImage, const float nNormalMagnitude) const;
+  virtual std::string GetCubemapIndexString(const std::string& sTopFile,
+      const std::string& sBottomFile, const std::string& sLeftFile, const std::string& sRightFile,
+      const std::string& sFrontFile, const std::string& sBackFile) const;
+
+ private:
+  int m_nDefaultAnisotropy;
+
+  std::vector<std::string> m_vecImageFileExtensions;
+  std::vector<std::string> m_vecSearchPathes;
+
+  std::map<std::string, osg::TextureChunkRefPtr>     m_mapLoadedTextures;
+  std::map<std::string, osg::TextureChunkRefPtr>     m_mapLoadedNormalTextures;
+  std::map<std::string, osg::CubeTextureChunkRefPtr> m_mapCubemapTextures;
 };
 
 #endif // _VISTAOPENSGTEXTURELOADER_H

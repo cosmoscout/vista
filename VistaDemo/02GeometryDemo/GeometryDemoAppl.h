@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /*                                                                            */
 /* This Demo will create a box and a sphere (textured), both located in       */
@@ -51,26 +50,25 @@ class VistaGeometry;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class GeometryDemoAppl
-{
-public:
-	GeometryDemoAppl();	
-	virtual ~GeometryDemoAppl();
+class GeometryDemoAppl {
+ public:
+  GeometryDemoAppl();
+  virtual ~GeometryDemoAppl();
 
-	bool Init( int argc, char* argv[] );
-	void Run();
+  bool Init(int argc, char* argv[]);
+  void Run();
 
-private:
-	VistaSystem*	m_pVistaSystem;
+ private:
+  VistaSystem* m_pVistaSystem;
 
-	VistaGeometry*	m_pPlane;
-	VistaGeometry*	m_pBox;
-	VistaGeometry*	m_pDisk;
-	VistaGeometry*	m_pCone;
-	VistaGeometry*	m_pTorus;
-	VistaGeometry*	m_pEllipsoid;
-	VistaGeometry*	m_pSphere;
-	VistaGeometry*	m_pTriangle;
+  VistaGeometry* m_pPlane;
+  VistaGeometry* m_pBox;
+  VistaGeometry* m_pDisk;
+  VistaGeometry* m_pCone;
+  VistaGeometry* m_pTorus;
+  VistaGeometry* m_pEllipsoid;
+  VistaGeometry* m_pSphere;
+  VistaGeometry* m_pTriangle;
 };
 
 /*============================================================================*/
@@ -78,4 +76,3 @@ private:
 /*============================================================================*/
 
 #endif // _GEOMETRYDEMOAPPL_H
-

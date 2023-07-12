@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNKEYSTATENODE_H
 #define _VISTADFNKEYSTATENODE_H
 
@@ -31,14 +30,13 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 #include "VistaDfnKeyCallbackNode.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -59,32 +57,30 @@ class VistaKeyboardSystemControl;
  * @ingroup VdfnNodes
  * @outport{value, bool, pressed or released}
  */
-class VISTAKERNELAPI VistaDfnKeyStateNode : public VistaDfnKeyCallbackNode
-{
-public:
-	VistaDfnKeyStateNode();
-	~VistaDfnKeyStateNode();
-	
-	virtual void SetupKeyboardCallback(  VistaKeyboardSystemControl* pKeyboard
-										, const int nKeyCode
-										, const int nModCode
-										, const std::string& sDescription
-										, const bool bForce );
-	
-	bool PrepareEvaluationRun();
-	bool GetIsValid() const;
+class VISTAKERNELAPI VistaDfnKeyStateNode : public VistaDfnKeyCallbackNode {
+ public:
+  VistaDfnKeyStateNode();
+  ~VistaDfnKeyStateNode();
 
-	IVistaExplicitCallbackInterface* GetCallback() const;
-protected:
-	bool DoEvalNode();
-	virtual unsigned int CalcUpdateNeededScore() const;
+  virtual void SetupKeyboardCallback(VistaKeyboardSystemControl* pKeyboard, const int nKeyCode,
+      const int nModCode, const std::string& sDescription, const bool bForce);
 
-	virtual void Callback( const CounterCallback* pCallback );
-private:	
-	VistaDfnKeyCallbackNode::CounterCallback* m_pCallbackKeyUp;
-	TVdfnPort<bool>* m_pKeyState;
-	bool m_bKeyState;
-	unsigned int m_uiUpdateScore;
+  bool PrepareEvaluationRun();
+  bool GetIsValid() const;
+
+  IVistaExplicitCallbackInterface* GetCallback() const;
+
+ protected:
+  bool                 DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const;
+
+  virtual void Callback(const CounterCallback* pCallback);
+
+ private:
+  VistaDfnKeyCallbackNode::CounterCallback* m_pCallbackKeyUp;
+  TVdfnPort<bool>*                          m_pKeyState;
+  bool                                      m_bKeyState;
+  unsigned int                              m_uiUpdateScore;
 };
 
 /*============================================================================*/
@@ -96,4 +92,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNKEYSTATENODE_H
-

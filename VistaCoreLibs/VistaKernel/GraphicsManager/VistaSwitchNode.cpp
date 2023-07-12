@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaKernel/GraphicsManager/VistaSwitchNode.h"
 #include "VistaKernel/GraphicsManager/VistaNodeBridge.h"
 /*============================================================================*/
@@ -32,48 +31,40 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaSwitchNode::VistaSwitchNode()
-{
-	m_nType = VISTA_SWITCHNODE;
+VistaSwitchNode::VistaSwitchNode() {
+  m_nType = VISTA_SWITCHNODE;
 }
 
-VistaSwitchNode::VistaSwitchNode(	VistaGroupNode*			pParent, 
-									IVistaNodeBridge*			pBridge,
-									IVistaNodeData*				pData,
-									std::string					strName) 
-: VistaGroupNode(pParent, pBridge, pData, strName)
-{
-	m_nType = VISTA_SWITCHNODE;
+VistaSwitchNode::VistaSwitchNode(
+    VistaGroupNode* pParent, IVistaNodeBridge* pBridge, IVistaNodeData* pData, std::string strName)
+    : VistaGroupNode(pParent, pBridge, pData, strName) {
+  m_nType = VISTA_SWITCHNODE;
 }
 
-
-VistaSwitchNode::~VistaSwitchNode()
-{
+VistaSwitchNode::~VistaSwitchNode() {
 }
 
 // ============================================================================
 // ============================================================================
-bool VistaSwitchNode::SetActiveChild(int i)
-{
-	//if(i>=0 && i<(int)m_vecChildren.size() || i == -1)
-	return m_pBridge->SetActiveChild(i, m_pData);
-	//return false;
+bool VistaSwitchNode::SetActiveChild(int i) {
+  // if(i>=0 && i<(int)m_vecChildren.size() || i == -1)
+  return m_pBridge->SetActiveChild(i, m_pData);
+  // return false;
 }
 // ============================================================================
 // ============================================================================
-int VistaSwitchNode::GetActiveChild() const
-{
-	return m_pBridge->GetActiveChild(m_pData);
+int VistaSwitchNode::GetActiveChild() const {
+  return m_pBridge->GetActiveChild(m_pData);
 }
 // ============================================================================
 // ============================================================================
 /*
 void VistaSwitchNode::Debug(std::ostream& out, int nLevel)
 {
-	VistaGroupNode::Debug(out,nLevel);
-	for(int i=0; i<nLevel; i++)
-		out << "\t";
-	out << "|  Currently active child: " <<  GetActiveChild() << "" << std::endl;
+        VistaGroupNode::Debug(out,nLevel);
+        for(int i=0; i<nLevel; i++)
+                out << "\t";
+        out << "|  Currently active child: " <<  GetActiveChild() << "" << std::endl;
 }
 */
 // ============================================================================

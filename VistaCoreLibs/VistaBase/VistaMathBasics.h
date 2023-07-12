@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMATHBASICS_H
 #define _VISTAMATHBASICS_H
 
@@ -49,111 +48,93 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace Vista
-{
-	const float Pi      = 3.14159265358979323846f;
-	const float Epsilon = std::numeric_limits<float>::epsilon();
+namespace Vista {
+const float Pi      = 3.14159265358979323846f;
+const float Epsilon = std::numeric_limits<float>::epsilon();
 
-	enum AXIS
-	{
-		X	= 0,
-		Y	= 1,
-		Z	= 2,
-		W	= 3
-	};	
+enum AXIS { X = 0, Y = 1, Z = 2, W = 3 };
 
-	float DegToRad( const float fDegrees );
-	float RadToDeg( const float fRadians );
+float DegToRad(const float fDegrees);
+float RadToDeg(const float fRadians);
 
-	// true iff fValue not NaN, not infinity, not degenerated
-	template< typename TFloat >
-	bool IsValidNumber( const TFloat fValue );
+// true iff fValue not NaN, not infinity, not degenerated
+template <typename TFloat>
+bool IsValidNumber(const TFloat fValue);
 
-	// clamps val to the range [minVal, maxVal]
-	template< typename TFloat > 
-	TFloat Clamp( const TFloat val, const TFloat minVal, const TFloat maxVal );
+// clamps val to the range [minVal, maxVal]
+template <typename TFloat>
+TFloat Clamp(const TFloat val, const TFloat minVal, const TFloat maxVal);
 
-	// mixes valA and valB using a param in [0, 1]
-	template< typename TFloat, typename TParam >
-	TFloat Mix( const TParam param, const TFloat valA, const TFloat valB );
-	
-	// true iff val >= minVal && val <= maxVal
-	template< typename TFloat >
-	bool GetIsInRangeInclusive(const TFloat val, const TFloat minVal, const TFloat maxVal);
+// mixes valA and valB using a param in [0, 1]
+template <typename TFloat, typename TParam>
+TFloat Mix(const TParam param, const TFloat valA, const TFloat valB);
 
-	// true iff val > minVal && val < maxVal
-	template< typename TFloat >
-	bool GetIsInRangeExclusive(const TFloat val, const TFloat minVal, const TFloat maxVal);
+// true iff val >= minVal && val <= maxVal
+template <typename TFloat>
+bool GetIsInRangeInclusive(const TFloat val, const TFloat minVal, const TFloat maxVal);
 
+// true iff val > minVal && val < maxVal
+template <typename TFloat>
+bool GetIsInRangeExclusive(const TFloat val, const TFloat minVal, const TFloat maxVal);
 
-	template< typename TFloat >
-	TFloat Sign( const TFloat val );
+template <typename TFloat>
+TFloat Sign(const TFloat val);
 } // namespace Vista
 
 /**
  * Convert angles given in radians to degrees and vice versa.
  */
-inline float Vista::DegToRad( const float fDegrees )
-{
-	return fDegrees / 180.0f * Vista::Pi;
+inline float Vista::DegToRad(const float fDegrees) {
+  return fDegrees / 180.0f * Vista::Pi;
 }
 
-inline float Vista::RadToDeg( const float fRadians )
-{
-	return fRadians * 180.0f / Vista::Pi;
+inline float Vista::RadToDeg(const float fRadians) {
+  return fRadians * 180.0f / Vista::Pi;
 }
 
-template< typename TFloat >
-inline bool Vista::IsValidNumber( const TFloat nNumber )
-{
-	if( nNumber != nNumber )
-		return false;
-	if( nNumber == 0 )
-		return true;
-	TFloat nAbs = std::abs( nNumber );
-	if( nAbs == std::numeric_limits<TFloat>::infinity() )
-		return false;
-	if( nAbs < std::numeric_limits<TFloat>::min() )
-		return false;
-	return true;
+template <typename TFloat>
+inline bool Vista::IsValidNumber(const TFloat nNumber) {
+  if (nNumber != nNumber)
+    return false;
+  if (nNumber == 0)
+    return true;
+  TFloat nAbs = std::abs(nNumber);
+  if (nAbs == std::numeric_limits<TFloat>::infinity())
+    return false;
+  if (nAbs < std::numeric_limits<TFloat>::min())
+    return false;
+  return true;
 }
 
-template< typename TFloat >
-TFloat Vista::Clamp( const TFloat val, const TFloat minVal, const TFloat maxVal )
-{
-	// @todo Interfers with min/max macros on windows.
-	//return std::min( std::max( nVal, nMinVal ), nMaxVal );
+template <typename TFloat>
+TFloat Vista::Clamp(const TFloat val, const TFloat minVal, const TFloat maxVal) {
+  // @todo Interfers with min/max macros on windows.
+  // return std::min( std::max( nVal, nMinVal ), nMaxVal );
 
-	//     ------- min check ----|------------- max check --------
-	return val < minVal ? minVal : ( val > maxVal ? maxVal : val );
+  //     ------- min check ----|------------- max check --------
+  return val < minVal ? minVal : (val > maxVal ? maxVal : val);
 }
 
-template< typename TFloat, typename TParam >
-TFloat Vista::Mix( const TParam param, const TFloat valA, const TFloat valB )
-{
-	assert( param >= TParam( 0.0 ) && param <= TParam( 1.0 ) && "Invalid mix param." );
-	return ( TParam( 1.0 ) - param ) * valA + param * valB;
+template <typename TFloat, typename TParam>
+TFloat Vista::Mix(const TParam param, const TFloat valA, const TFloat valB) {
+  assert(param >= TParam(0.0) && param <= TParam(1.0) && "Invalid mix param.");
+  return (TParam(1.0) - param) * valA + param * valB;
 }
 
-template< typename TFloat >
-bool Vista::GetIsInRangeInclusive(const TFloat val, const TFloat minVal, const TFloat maxVal)
-{
-	return ((val >= minVal) && (val <= maxVal));
+template <typename TFloat>
+bool Vista::GetIsInRangeInclusive(const TFloat val, const TFloat minVal, const TFloat maxVal) {
+  return ((val >= minVal) && (val <= maxVal));
 }
 
-template< typename TFloat >
-bool Vista::GetIsInRangeExclusive(const TFloat val, const TFloat minVal, const TFloat maxVal)
-{
-	return ((val > minVal) && (val < maxVal));
+template <typename TFloat>
+bool Vista::GetIsInRangeExclusive(const TFloat val, const TFloat minVal, const TFloat maxVal) {
+  return ((val > minVal) && (val < maxVal));
 }
 
-
-template< typename TFloat >
-TFloat Vista::Sign( const TFloat val )
-{
-	const bool bPositive = ( val >= TFloat( 0. ) );
-	return ( bPositive ? TFloat( 1. ) : TFloat( -1. ) );
+template <typename TFloat>
+TFloat Vista::Sign(const TFloat val) {
+  const bool bPositive = (val >= TFloat(0.));
+  return (bPositive ? TFloat(1.) : TFloat(-1.));
 }
-
 
 #endif //_VISTAMATHBASICS_H

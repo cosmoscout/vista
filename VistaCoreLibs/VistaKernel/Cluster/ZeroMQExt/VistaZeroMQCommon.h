@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAZEROMQCOMMON_H
 #define _VISTAZEROMQCOMMON_H
 
@@ -33,21 +32,19 @@
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
 /*============================================================================*/
-namespace zmq
-{
-	class context_t;
+namespace zmq {
+class context_t;
 }
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VistaZeroMQCommon
-{
-	VISTAKERNELAPI void RegisterZeroMQUser();
-	VISTAKERNELAPI void UnregisterZeroMQUser();
+namespace VistaZeroMQCommon {
+VISTAKERNELAPI void RegisterZeroMQUser();
+VISTAKERNELAPI void UnregisterZeroMQUser();
 
-	VISTAKERNELAPI zmq::context_t& GetContext();
-}
+VISTAKERNELAPI zmq::context_t& GetContext();
+} // namespace VistaZeroMQCommon
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

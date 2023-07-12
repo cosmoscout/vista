@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaHapticDeviceEmulatorDriver.h"
 
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverConnectionAspect.h>
@@ -29,9 +28,9 @@
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverWorkspaceAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-#include <VistaInterProcComm/Connections/VistaConnection.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
+#include <VistaInterProcComm/Connections/VistaConnection.h>
 
 #include <VistaBase/VistaExceptionBase.h>
 
@@ -52,41 +51,39 @@ using namespace std;
 #define VISTAHAPTICDEVICEEMULATORPLUGINAPI
 #endif
 
-namespace
-{
-	VistaHapticDeviceEmulatorDriverFactory *SpFactory = NULL;
+namespace {
+VistaHapticDeviceEmulatorDriverFactory* SpFactory = NULL;
 }
 
 /*
 IVistaDriverCreationMethod *VistaHapticDeviceEmulatorDriver::GetDriverFactoryMethod()
 {
-	if(SpFactory == NULL)
-	{
-		SpFactory = new VistaHapticDeviceEmulatorDriverFactory;
-		SpFactory->RegisterSensorType( "",
-			sizeof(_sPhantomMeasure),
-			1000,
-			new VistaHapticDeviceEmulatorTranscoderFactory,
-			VistaHapticDeviceEmulatorDriverMeasureTranscode::GetTypeString());
-	}
-	return SpFactory;
+        if(SpFactory == NULL)
+        {
+                SpFactory = new VistaHapticDeviceEmulatorDriverFactory;
+                SpFactory->RegisterSensorType( "",
+                        sizeof(_sPhantomMeasure),
+                        1000,
+                        new VistaHapticDeviceEmulatorTranscoderFactory,
+                        VistaHapticDeviceEmulatorDriverMeasureTranscode::GetTypeString());
+        }
+        return SpFactory;
 }*/
 
-extern "C" VISTAHAPTICDEVICEEMULATORPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaHapticDeviceEmulatorDriver(crm);
+extern "C" VISTAHAPTICDEVICEEMULATORPLUGINAPI IVistaDeviceDriver* CreateDevice(
+    IVistaDriverCreationMethod* crm) {
+  return new VistaHapticDeviceEmulatorDriver(crm);
 }
 
-extern "C" VISTAHAPTICDEVICEEMULATORPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaHapticDeviceEmulatorDriverFactory(fac);
+extern "C" VISTAHAPTICDEVICEEMULATORPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaHapticDeviceEmulatorDriverFactory(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAHAPTICDEVICEEMULATORPLUGINAPI const char *GetDeviceClassName()
-{
-	return "HAPTICDEVICEEMULATOR";
+extern "C" VISTAHAPTICDEVICEEMULATORPLUGINAPI const char* GetDeviceClassName() {
+  return "HAPTICDEVICEEMULATOR";
 }

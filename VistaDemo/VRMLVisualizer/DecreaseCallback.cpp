@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "DecreaseCallback.h"
 #include "VrmlVisualizer.h"
 
@@ -35,30 +34,27 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-DecreaseCallback::DecreaseCallback( VrmlVisualizer *pVrmlVisualizer )
-	:	m_pVrmlVisualizer( pVrmlVisualizer )
-{}
+DecreaseCallback::DecreaseCallback(VrmlVisualizer* pVrmlVisualizer)
+    : m_pVrmlVisualizer(pVrmlVisualizer) {
+}
 
-DecreaseCallback::~DecreaseCallback(){}
+DecreaseCallback::~DecreaseCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool DecreaseCallback::Do()
-{
-	// check if the animation is running
-	if( m_pVrmlVisualizer->GetPropertyList().GetValueOrDefault<bool>("animation") )
-	{
-		// make the animation run slower
-		m_pVrmlVisualizer->DecreaseStepSpeed();
-	}
-	else
-	{
-		// got to the previous step
-		m_pVrmlVisualizer->PrevStep();
-	}
-	return true;
+bool DecreaseCallback::Do() {
+  // check if the animation is running
+  if (m_pVrmlVisualizer->GetPropertyList().GetValueOrDefault<bool>("animation")) {
+    // make the animation run slower
+    m_pVrmlVisualizer->DecreaseStepSpeed();
+  } else {
+    // got to the previous step
+    m_pVrmlVisualizer->PrevStep();
+  }
+  return true;
 }
 
 /*============================================================================*/

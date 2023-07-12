@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <GL/glew.h>
 
 #include "VistaSimpleTextOverlay.h"
 
-#include <VistaKernel/DisplayManager/VistaTextEntity.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
+#include <VistaKernel/DisplayManager/VistaTextEntity.h>
 
-#include <VistaBase/VistaStreamUtils.h>
 #include <VistaAspects/VistaObserver.h>
+#include <VistaBase/VistaStreamUtils.h>
 
 // Include Windows header for OpenGL
 #if defined(WIN32)
@@ -38,11 +37,11 @@
 #endif
 
 #if defined(DARWIN)
-	#include <OpenGL/OpenGL.h>
-	#include <OpenGL/glu.h>
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/glu.h>
 #else
-	#include <GL/gl.h>
-	#include <GL/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 
 #include <algorithm>
@@ -51,173 +50,146 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-bool SortByYPos( const IVistaTextEntity* pText1, const IVistaTextEntity* pText2 )
-{
-	return pText1->GetYPos() < pText2->GetYPos();
+bool SortByYPos(const IVistaTextEntity* pText1, const IVistaTextEntity* pText2) {
+  return pText1->GetYPos() < pText2->GetYPos();
 }
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaSimpleTextOverlay::VistaSimpleTextOverlay(
-										VistaDisplayManager *pDisplayManager,
-										const std::string& sViewportName )
-: IVistaSceneOverlay( pDisplayManager, sViewportName )
-, m_nWidth( 120 )
-, m_nHeight( 120 )
-, m_bEnabled( true )
-{
-	if( GetAttachedViewport() )
-	{
-		GetAttachedViewport()->GetViewportProperties()->GetSize( m_nWidth, m_nHeight );
-		GetAttachedViewport()->GetViewportProperties()->GetPosition( m_nPosX, m_nPosY );
-	}
+    VistaDisplayManager* pDisplayManager, const std::string& sViewportName)
+    : IVistaSceneOverlay(pDisplayManager, sViewportName)
+    , m_nWidth(120)
+    , m_nHeight(120)
+    , m_bEnabled(true) {
+  if (GetAttachedViewport()) {
+    GetAttachedViewport()->GetViewportProperties()->GetSize(m_nWidth, m_nHeight);
+    GetAttachedViewport()->GetViewportProperties()->GetPosition(m_nPosX, m_nPosY);
+  }
 }
 
-VistaSimpleTextOverlay::VistaSimpleTextOverlay( VistaViewport* pViewport )
-: IVistaSceneOverlay( pViewport )
-, m_nWidth( 120 )
-, m_nHeight( 120 )
-, m_nPosX( 0 )
-, m_nPosY( 0 )
-, m_bEnabled( true )
-{
-	if( GetAttachedViewport() )
-	{
-		GetAttachedViewport()->GetViewportProperties()->GetSize( m_nWidth, m_nHeight );
-		GetAttachedViewport()->GetViewportProperties()->GetPosition( m_nPosX, m_nPosY );
-	}
+VistaSimpleTextOverlay::VistaSimpleTextOverlay(VistaViewport* pViewport)
+    : IVistaSceneOverlay(pViewport)
+    , m_nWidth(120)
+    , m_nHeight(120)
+    , m_nPosX(0)
+    , m_nPosY(0)
+    , m_bEnabled(true) {
+  if (GetAttachedViewport()) {
+    GetAttachedViewport()->GetViewportProperties()->GetSize(m_nWidth, m_nHeight);
+    GetAttachedViewport()->GetViewportProperties()->GetPosition(m_nPosX, m_nPosY);
+  }
 }
 
-VistaSimpleTextOverlay::~VistaSimpleTextOverlay()
-{
-	for( std::list<IVistaTextEntity*>::iterator itToDelete 
-			= m_liMemoryManagedTexts.begin();
-			itToDelete != m_liMemoryManagedTexts.end();
-			++itToDelete )
-	{
-		delete (*itToDelete);
-	}
+VistaSimpleTextOverlay::~VistaSimpleTextOverlay() {
+  for (std::list<IVistaTextEntity*>::iterator itToDelete = m_liMemoryManagedTexts.begin();
+       itToDelete != m_liMemoryManagedTexts.end(); ++itToDelete) {
+    delete (*itToDelete);
+  }
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-bool VistaSimpleTextOverlay::AddText( IVistaTextEntity* pText,
-										 bool bManageDeletion )
-{
-	m_liTexts.push_back( pText );
-	m_liTexts.sort( SortByYPos );
-	if( bManageDeletion )
-		m_liMemoryManagedTexts.push_back( pText );
-	return true;
+bool VistaSimpleTextOverlay::AddText(IVistaTextEntity* pText, bool bManageDeletion) {
+  m_liTexts.push_back(pText);
+  m_liTexts.sort(SortByYPos);
+  if (bManageDeletion)
+    m_liMemoryManagedTexts.push_back(pText);
+  return true;
 }
 
-bool VistaSimpleTextOverlay::RemText( IVistaTextEntity* pText )
-{
-	m_liTexts.remove( pText );
-	m_liTexts.sort( SortByYPos );
-	std::list<IVistaTextEntity*>::iterator itToDelete 
-						= std::find( m_liMemoryManagedTexts.begin(),
-									m_liMemoryManagedTexts.end(),
-									pText );
-	if( itToDelete != m_liMemoryManagedTexts.end() )
-	{
-		m_liMemoryManagedTexts.erase( itToDelete );
-		delete pText;
-	}
-	return true;
+bool VistaSimpleTextOverlay::RemText(IVistaTextEntity* pText) {
+  m_liTexts.remove(pText);
+  m_liTexts.sort(SortByYPos);
+  std::list<IVistaTextEntity*>::iterator itToDelete =
+      std::find(m_liMemoryManagedTexts.begin(), m_liMemoryManagedTexts.end(), pText);
+  if (itToDelete != m_liMemoryManagedTexts.end()) {
+    m_liMemoryManagedTexts.erase(itToDelete);
+    delete pText;
+  }
+  return true;
 }
 
-bool VistaSimpleTextOverlay::GetIsEnabled() const
-{
-	return m_bEnabled;
+bool VistaSimpleTextOverlay::GetIsEnabled() const {
+  return m_bEnabled;
 }
 
-void VistaSimpleTextOverlay::SetIsEnabled(bool bEnabled)
-{
-	m_bEnabled = bEnabled;
+void VistaSimpleTextOverlay::SetIsEnabled(bool bEnabled) {
+  m_bEnabled = bEnabled;
 }
 
-void VistaSimpleTextOverlay::UpdateOnViewportChange( int iWidth, int iHeight,
-														int iPosX, int iPosY )
-{
-	m_nWidth = iWidth;
-	m_nHeight = iHeight;
-	m_nPosX = iPosX;
-	m_nPosY = iPosY;
+void VistaSimpleTextOverlay::UpdateOnViewportChange(int iWidth, int iHeight, int iPosX, int iPosY) {
+  m_nWidth  = iWidth;
+  m_nHeight = iHeight;
+  m_nPosX   = iPosX;
+  m_nPosY   = iPosY;
 }
 
-bool VistaSimpleTextOverlay::Do()
-{
-	if( !m_bEnabled || m_liTexts.empty() )
-		return true; // everything is all right, we are not visible or have no text
+bool VistaSimpleTextOverlay::Do() {
+  if (!m_bEnabled || m_liTexts.empty())
+    return true; // everything is all right, we are not visible or have no text
 
-	bool bSortList = false;
+  bool bSortList = false;
 
-	glPushAttrib( GL_ALL_ATTRIB_BITS );
-	glDisable( GL_LIGHTING );
-	glDisable( GL_DEPTH_TEST );
-	glDisable( GL_TEXTURE_2D );
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_TEXTURE_2D);
 
-	float fLastYPos = 0.0f;
-	float fAccumRasterPos = 0;
+  float fLastYPos       = 0.0f;
+  float fAccumRasterPos = 0;
 
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
 
-	// Note: y is inverted, so we start at the top left
-	//gluOrtho2D( m_nPosX, m_nPosX + m_nWidth, -m_nPosY + m_nHeight, -m_nPosY );	
-	gluOrtho2D( 0, m_nWidth, m_nHeight, 0 );	
+  // Note: y is inverted, so we start at the top left
+  // gluOrtho2D( m_nPosX, m_nPosX + m_nWidth, -m_nPosY + m_nHeight, -m_nPosY );
+  gluOrtho2D(0, m_nWidth, m_nHeight, 0);
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
 
-	for( std::list<IVistaTextEntity*>::const_iterator cit = m_liTexts.begin();
-		cit != m_liTexts.end(); ++cit )
-	{
-		if( (*cit)->GetEnabled() == false )
-			continue;
+  for (std::list<IVistaTextEntity*>::const_iterator cit = m_liTexts.begin(); cit != m_liTexts.end();
+       ++cit) {
+    if ((*cit)->GetEnabled() == false)
+      continue;
 
-		if( fLastYPos > (*cit)->GetYPos() )
-			bSortList = true;
+    if (fLastYPos > (*cit)->GetYPos())
+      bSortList = true;
 
-		int iTextSize =(*cit)->GetFontSize();
+    int iTextSize = (*cit)->GetFontSize();
 
-		float fLineAdvance = (*cit)->GetYPos() - fLastYPos;
-		fAccumRasterPos += (float)iTextSize * fLineAdvance;
+    float fLineAdvance = (*cit)->GetYPos() - fLastYPos;
+    fAccumRasterPos += (float)iTextSize * fLineAdvance;
 
-		glColor3f( (*cit)->GetColor().GetRed(),
-					(*cit)->GetColor().GetGreen(),
-					(*cit)->GetColor().GetBlue() );
+    glColor3f(
+        (*cit)->GetColor().GetRed(), (*cit)->GetColor().GetGreen(), (*cit)->GetColor().GetBlue());
 
-		 /// @todo Translate OpenGL coords to window coords
-		glRasterPos2f( (*cit)->GetXPos() * iTextSize,
-						fAccumRasterPos );
+    /// @todo Translate OpenGL coords to window coords
+    glRasterPos2f((*cit)->GetXPos() * iTextSize, fAccumRasterPos);
 
-		fLastYPos = (*cit)->GetYPos();
+    fLastYPos = (*cit)->GetYPos();
 
-		(*cit)->DrawCharacters();			
-	}
+    (*cit)->DrawCharacters();
+  }
 
+  glPopMatrix();
 
-	glPopMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
 
-	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
+  glPopAttrib();
 
-	glPopAttrib();
+  if (bSortList)
+    m_liTexts.sort(SortByYPos);
 
-	if( bSortList )
-		m_liTexts.sort( SortByYPos );
-
-	return true;
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

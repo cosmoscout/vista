@@ -21,16 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTCPServer.h"
-#include "VistaTCPServerSocket.h"
 #include "VistaSocketAddress.h"
+#include "VistaTCPServerSocket.h"
 
 #include <VistaBase/VistaStreamUtils.h>
 
 #include <iostream>
 using namespace std;
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -40,105 +38,87 @@ using namespace std;
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaTCPServer::VistaTCPServer(const VistaSocketAddress &rAdd, int iBacklog,
-								 bool bForceReuse)
-: m_iBacklog(iBacklog)
-{
-	SetupSocket(rAdd, bForceReuse);
+VistaTCPServer::VistaTCPServer(const VistaSocketAddress& rAdd, int iBacklog, bool bForceReuse)
+    : m_iBacklog(iBacklog) {
+  SetupSocket(rAdd, bForceReuse);
 }
 
-VistaTCPServer::VistaTCPServer(const string &sMyHostName, int iMyPort,
-								 int iBacklog, bool bForceReuse )
-: m_iBacklog(iBacklog)
-{
-	VistaSocketAddress myAdd(sMyHostName, iMyPort);
-	SetupSocket(myAdd, bForceReuse);
+VistaTCPServer::VistaTCPServer(
+    const string& sMyHostName, int iMyPort, int iBacklog, bool bForceReuse)
+    : m_iBacklog(iBacklog) {
+  VistaSocketAddress myAdd(sMyHostName, iMyPort);
+  SetupSocket(myAdd, bForceReuse);
 }
 
+VistaTCPServer::~VistaTCPServer() {
+  if (m_pServerSocket && m_pServerSocket->GetIsOpen()) {
+    // vstr::debugi() << "VistaTCPServer::~VistaTCPServer() -- CLOSING SOCKET" << std::endl;
+    m_pServerSocket->CloseSocket();
+  }
 
-VistaTCPServer::~VistaTCPServer()
-{
-	if(m_pServerSocket && m_pServerSocket->GetIsOpen())
-	{
-		//vstr::debugi() << "VistaTCPServer::~VistaTCPServer() -- CLOSING SOCKET" << std::endl;
-		m_pServerSocket->CloseSocket();
-	}
-		
-	delete m_pServerSocket;
-	m_pServerSocket = (VistaTCPServerSocket*)0xDEADBEEF;
+  delete m_pServerSocket;
+  m_pServerSocket = (VistaTCPServerSocket*)0xDEADBEEF;
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-void VistaTCPServer::SetupSocket(const VistaSocketAddress &myAdd,
-								  bool bForceReuse)
-{
-	m_pServerSocket = new VistaTCPServerSocket;
-	if((*m_pServerSocket).OpenSocket())
-	{
-		if(bForceReuse)
-			(*m_pServerSocket).SetSocketReuse(bForceReuse);
+void VistaTCPServer::SetupSocket(const VistaSocketAddress& myAdd, bool bForceReuse) {
+  m_pServerSocket = new VistaTCPServerSocket;
+  if ((*m_pServerSocket).OpenSocket()) {
+    if (bForceReuse)
+      (*m_pServerSocket).SetSocketReuse(bForceReuse);
 
-		if((*m_pServerSocket).BindToAddress(myAdd))
-		{
-			(*m_pServerSocket).SetIsBlocking(true);
-			m_bValid = true;
-		}
-		else
-		{
-			vstr::errp() << "VistaTCPServer::VistaTCPServer(): "
-					"Error opening Server-socket (BIND-TO-ADDRESS-FAILED)." << std::endl;
-			(*m_pServerSocket).CloseSocket();
-			m_bValid = false;
-			delete m_pServerSocket;
-			m_pServerSocket = NULL;
-		}
-	}
-	else
-	{
-		vstr::errp() << "VistaTCPServer::VistaTCPServer(): "
-				"Error opening Server-socket (OPEN-FAILED)." << std::endl;
-		(*m_pServerSocket).CloseSocket();
-		m_bValid = false;
-		delete m_pServerSocket;
-		m_pServerSocket = NULL;
-	}
+    if ((*m_pServerSocket).BindToAddress(myAdd)) {
+      (*m_pServerSocket).SetIsBlocking(true);
+      m_bValid = true;
+    } else {
+      vstr::errp() << "VistaTCPServer::VistaTCPServer(): "
+                      "Error opening Server-socket (BIND-TO-ADDRESS-FAILED)."
+                   << std::endl;
+      (*m_pServerSocket).CloseSocket();
+      m_bValid = false;
+      delete m_pServerSocket;
+      m_pServerSocket = NULL;
+    }
+  } else {
+    vstr::errp() << "VistaTCPServer::VistaTCPServer(): "
+                    "Error opening Server-socket (OPEN-FAILED)."
+                 << std::endl;
+    (*m_pServerSocket).CloseSocket();
+    m_bValid = false;
+    delete m_pServerSocket;
+    m_pServerSocket = NULL;
+  }
 
-	if ( m_bValid && m_iBacklog)
-		(*m_pServerSocket).Listen(m_iBacklog);
+  if (m_bValid && m_iBacklog)
+    (*m_pServerSocket).Listen(m_iBacklog);
 }
 
-VistaTCPSocket *VistaTCPServer::GetNextClient(int iBacklog)
-{
-	if(!m_bValid)
-		return NULL;
+VistaTCPSocket* VistaTCPServer::GetNextClient(int iBacklog) {
+  if (!m_bValid)
+    return NULL;
 
-	if ( iBacklog != m_iBacklog)
-		m_iBacklog = iBacklog;
+  if (iBacklog != m_iBacklog)
+    m_iBacklog = iBacklog;
 
-	(*m_pServerSocket).Listen(m_iBacklog);
-	return (*m_pServerSocket).Accept();
+  (*m_pServerSocket).Listen(m_iBacklog);
+  return (*m_pServerSocket).Accept();
 }
 
-
-VistaSocketAddress VistaTCPServer::GetServerAddress() const
-{
-	VistaSocketAddress adr;
-	(*m_pServerSocket).GetLocalSockName(adr);
-	return adr;
+VistaSocketAddress VistaTCPServer::GetServerAddress() const {
+  VistaSocketAddress adr;
+  (*m_pServerSocket).GetLocalSockName(adr);
+  return adr;
 }
 
-void VistaTCPServer::StopAccept()
-{
-	// close the socket :(
-	if( m_pServerSocket ) // pointer is NULL when the socket was not bound
-		(*m_pServerSocket).CloseSocket();
+void VistaTCPServer::StopAccept() {
+  // close the socket :(
+  if (m_pServerSocket) // pointer is NULL when the socket was not bound
+    (*m_pServerSocket).CloseSocket();
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

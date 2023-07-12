@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAPHANTOMDRIVER_H
 #define __VISTAPHANTOMDRIVER_H
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAPHANTOMDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTAPHANTOMDRIVER_STATIC)
 #ifdef VISTAPHANTOMDRIVER_EXPORTS
 #define VISTAPHANTOMDRIVERAPI __declspec(dllexport)
 #else
@@ -41,11 +40,11 @@
 /*============================================================================*/
 #include "VistaPhantomCommonShare.h"
 
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverForceFeedbackAspect.h>
 #include <VistaBase/VistaVectorMath.h>
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverForceFeedbackAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-//CRM
+// CRM
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 /*============================================================================*/
@@ -69,88 +68,84 @@ class VistaDeviceIdentificationAspect;
  * data at the full data rate and offers advanced force feedback using the
  * force feedback API and LLDx.
  */
-class VISTAPHANTOMDRIVERAPI VistaPhantomDriver : public IVistaDeviceDriver
-{
-	friend class VistaPhantomForceFeedbackAspect;
-public:
+class VISTAPHANTOMDRIVERAPI VistaPhantomDriver : public IVistaDeviceDriver {
+  friend class VistaPhantomForceFeedbackAspect;
 
-	VistaPhantomDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaPhantomDriver();
+ public:
+  VistaPhantomDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaPhantomDriver();
 
-	class VISTAPHANTOMDRIVERAPI VistaPhantomForceFeedbackAspect : public IVistaDriverForceFeedbackAspect
-	{
-		friend class VistaPhantomDriver;
-	public:
-		virtual bool SetForce( const VistaVector3D   & force,
-							   const VistaVector3D &angularForce );
+  class VISTAPHANTOMDRIVERAPI VistaPhantomForceFeedbackAspect
+      : public IVistaDriverForceFeedbackAspect {
+    friend class VistaPhantomDriver;
 
-		virtual bool SetForcesEnabled(bool bEnabled);
-		virtual bool GetForcesEnabled() const;
+   public:
+    virtual bool SetForce(const VistaVector3D& force, const VistaVector3D& angularForce);
 
+    virtual bool SetForcesEnabled(bool bEnabled);
+    virtual bool GetForcesEnabled() const;
 
-		virtual int GetNumInputDOF() const;
-		virtual int GetNumOutputDOF() const;
+    virtual int GetNumInputDOF() const;
+    virtual int GetNumOutputDOF() const;
 
-        virtual float GetMaximumStiffness() const;
-        virtual float GetMaximumForce() const;
+    virtual float GetMaximumStiffness() const;
+    virtual float GetMaximumForce() const;
 
+   private:
+    VistaPhantomForceFeedbackAspect(VistaPhantomDriver* pDriver);
+    virtual ~VistaPhantomForceFeedbackAspect();
+    VistaPhantomDriver* m_pParent;
 
-	private:
-		VistaPhantomForceFeedbackAspect( VistaPhantomDriver *pDriver );
-		virtual ~VistaPhantomForceFeedbackAspect();
-		VistaPhantomDriver *m_pParent;
+    int   m_nInputDOF, m_nOutputDOF;
+    float m_nMaxForce, m_nMaxStiffness;
 
-		int m_nInputDOF,
-			m_nOutputDOF;
-        float m_nMaxForce,
-              m_nMaxStiffness;
+    VistaVector3D m_v3Force;
+    VistaVector3D m_v3AngularForce;
+  };
 
-		VistaVector3D   m_v3Force;
-		VistaVector3D   m_v3AngularForce;
-	};
+  std::string GetDeviceString() const;
+  void        SetDeviceString(const std::string& strDevice);
+  bool        GetIsWarningOnHapticUpdateRateExceed() const {
+    return m_bIsWarningOnHapticUpdateRateExceed;
+  }
+  void SetIsWarningOnHapticUpdateRateExceed(bool val) {
+    m_bIsWarningOnHapticUpdateRateExceed = val;
+  }
 
-	std::string GetDeviceString() const;
-	void SetDeviceString(const std::string &strDevice);
-	bool GetIsWarningOnHapticUpdateRateExceed() const { return m_bIsWarningOnHapticUpdateRateExceed; }
-	void SetIsWarningOnHapticUpdateRateExceed(bool val) { m_bIsWarningOnHapticUpdateRateExceed = val; }
-protected:
-	/**
-	 * Overloaded from IVistaDeviceDriver.
-	 * Tries to open the phantom device that was specified in the ProtocolAspect's name
-	 * field. Revision is ignored.
-	 */
-	bool DoConnect();
-	bool DoDisconnect();
-	bool         PhysicalEnable(bool bEnable);
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-private:
-	VistaDriverWorkspaceAspect *m_pWorkSpace;
-	IVistaDriverProtocolAspect  *m_pProtocol;
-	VistaDriverInfoAspect      *m_pInfo;
-	VistaDeviceIdentificationAspect *m_pIdentification;
-	VistaPhantomForceFeedbackAspect *m_pForceFeedBack;
-	bool m_bIsWarningOnHapticUpdateRateExceed;
-	
+ protected:
+  /**
+   * Overloaded from IVistaDeviceDriver.
+   * Tries to open the phantom device that was specified in the ProtocolAspect's name
+   * field. Revision is ignored.
+   */
+  bool         DoConnect();
+  bool         DoDisconnect();
+  bool         PhysicalEnable(bool bEnable);
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
 
-	struct _sPhantomPrivate;
-	_sPhantomPrivate *m_pPrivate;
+ private:
+  VistaDriverWorkspaceAspect*      m_pWorkSpace;
+  IVistaDriverProtocolAspect*      m_pProtocol;
+  VistaDriverInfoAspect*           m_pInfo;
+  VistaDeviceIdentificationAspect* m_pIdentification;
+  VistaPhantomForceFeedbackAspect* m_pForceFeedBack;
+  bool                             m_bIsWarningOnHapticUpdateRateExceed;
+
+  struct _sPhantomPrivate;
+  _sPhantomPrivate* m_pPrivate;
 };
 
-class VISTAPHANTOMDRIVERAPI VistaPhantomDriverFactory : public IVistaDriverCreationMethod
-{
-public:
+class VISTAPHANTOMDRIVERAPI VistaPhantomDriverFactory : public IVistaDriverCreationMethod {
+ public:
+  VistaPhantomDriverFactory(IVistaTranscoderFactoryFactory* metaFac)
+      : IVistaDriverCreationMethod(metaFac) {
+    RegisterSensorType("", sizeof(VistaPhantomMeasures::sPhantomMeasure), 1000,
+        metaFac->CreateFactoryForType("VistaPhantomDriverMeasureTranscode"));
+  }
 
-	VistaPhantomDriverFactory(IVistaTranscoderFactoryFactory *metaFac)
-		: IVistaDriverCreationMethod(metaFac)
-	{
-		RegisterSensorType( "", sizeof(VistaPhantomMeasures::sPhantomMeasure), 1000,
-			metaFac->CreateFactoryForType("VistaPhantomDriverMeasureTranscode"));
-	}
-
-	virtual IVistaDeviceDriver *CreateDriver()
-	{
-		return new VistaPhantomDriver(this);
-	}
+  virtual IVistaDeviceDriver* CreateDriver() {
+    return new VistaPhantomDriver(this);
+  }
 };
 
 /*============================================================================*/
@@ -158,4 +153,3 @@ public:
 /*============================================================================*/
 
 #endif //__VISTAPHANTOMDRIVER_H
-

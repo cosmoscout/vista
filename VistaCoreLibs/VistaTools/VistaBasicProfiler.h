@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTABASICPROFILER_H
 #define _VISTABASICPROFILER_H
 
@@ -34,14 +33,14 @@
 /*============================================================================*/
 #include "VistaToolsConfig.h"
 
-#include <VistaBase/VistaBaseTypes.h>
-#include <VistaAspects/VistaUncopyable.h>
 #include <VistaAspects/VistaSerializable.h>
+#include <VistaAspects/VistaUncopyable.h>
+#include <VistaBase/VistaBaseTypes.h>
 
-#include <map>
-#include <list>
-#include <string>
 #include <iostream>
+#include <list>
+#include <map>
+#include <string>
 #include <vector>
 
 /*============================================================================*/
@@ -56,99 +55,98 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTATOOLSAPI VistaBasicProfiler : public IVistaSerializable
-{
-	VISTA_UNCOPYABLE( VistaBasicProfiler );
-public:
-	class VISTATOOLSAPI ProfileTreeNode
-	{
-		VISTA_UNCOPYABLE( ProfileTreeNode )
-	public:
-		void Print( std::ostream& oStream, int iDepth, int iMaxDepth, int iMaxNameLength );
+class VISTATOOLSAPI VistaBasicProfiler : public IVistaSerializable {
+  VISTA_UNCOPYABLE(VistaBasicProfiler);
 
-		VistaType::microtime GetLastFrameTime() const;
-		VistaType::microtime GetFastAverage() const;
-		VistaType::microtime GetSlowAverage() const;
+ public:
+  class VISTATOOLSAPI ProfileTreeNode {
+    VISTA_UNCOPYABLE(ProfileTreeNode)
+   public:
+    void Print(std::ostream& oStream, int iDepth, int iMaxDepth, int iMaxNameLength);
 
-		int GetNumChildren() const;
-		ProfileTreeNode* GetChild( int iIndex ) const;
-		ProfileTreeNode* GetChild( const std::string& sName, bool bSearchWholeSubtree = false ) const;
-		
-	protected:
-		friend class VistaBasicProfiler;
+    VistaType::microtime GetLastFrameTime() const;
+    VistaType::microtime GetFastAverage() const;
+    VistaType::microtime GetSlowAverage() const;
 
-		ProfileTreeNode( const std::string& sName, ProfileTreeNode* pParent );
-		virtual ~ProfileTreeNode();
+    int              GetNumChildren() const;
+    ProfileTreeNode* GetChild(int iIndex) const;
+    ProfileTreeNode* GetChild(const std::string& sName, bool bSearchWholeSubtree = false) const;
 
-		void Enter();
-		ProfileTreeNode* Sub( const std::string& sName );
-		ProfileTreeNode* Leave();		
+   protected:
+    friend class VistaBasicProfiler;
 
-		void NewFrame();
-				
-		int SerializeNode( IVistaSerializer& oSerializer );
-		int DeSerializeNode( IVistaDeSerializer& oDeSerializer );
+    ProfileTreeNode(const std::string& sName, ProfileTreeNode* pParent);
+    virtual ~ProfileTreeNode();
 
-		bool operator<( const VistaBasicProfiler::ProfileTreeNode& oCompare );
+    void             Enter();
+    ProfileTreeNode* Sub(const std::string& sName);
+    ProfileTreeNode* Leave();
 
-	protected:
-		VistaType::microtime					m_dEntryTime;
-		std::string								m_sName;
-		ProfileTreeNode*						m_pParent;
-		std::map<std::string, ProfileTreeNode*>	m_mapChildren;	
-		std::list<ProfileTreeNode*>				m_liChildren;
-		VistaType::microtime					m_dCurrentFrame;
-		VistaType::microtime					m_dLastFrame;
-		VistaType::microtime					m_dFastAvg;
-		VistaType::microtime					m_dSlowAvg;
-		VistaType::microtime					m_dMax;
-	};
+    void NewFrame();
 
-public:
-	VistaBasicProfiler();
-	VistaBasicProfiler( const std::string& sRootName );
-	virtual ~VistaBasicProfiler();
+    int SerializeNode(IVistaSerializer& oSerializer);
+    int DeSerializeNode(IVistaDeSerializer& oDeSerializer);
 
-	void NewFrame();
-	void StartSection( const std::string& sName );
-	void StopSection();
-	bool StopSection( const std::string& sName );
+    bool operator<(const VistaBasicProfiler::ProfileTreeNode& oCompare);
 
-	void Reset();
+   protected:
+    VistaType::microtime                    m_dEntryTime;
+    std::string                             m_sName;
+    ProfileTreeNode*                        m_pParent;
+    std::map<std::string, ProfileTreeNode*> m_mapChildren;
+    std::list<ProfileTreeNode*>             m_liChildren;
+    VistaType::microtime                    m_dCurrentFrame;
+    VistaType::microtime                    m_dLastFrame;
+    VistaType::microtime                    m_dFastAvg;
+    VistaType::microtime                    m_dSlowAvg;
+    VistaType::microtime                    m_dMax;
+  };
 
-	static VistaBasicProfiler* GetSingleton();
-	static void SetSingleton( VistaBasicProfiler* pProfiler );
+ public:
+  VistaBasicProfiler();
+  VistaBasicProfiler(const std::string& sRootName);
+  virtual ~VistaBasicProfiler();
 
-	void PrintProfile( std::ostream& oStream, int iMaxDepth = 10 );
-	static bool PrintMultipleProfiles( std::ostream& oStream, 
-									const std::vector< std::string >& vecNames,
-									const std::vector< VistaBasicProfiler* >& vecProfilers, int iMaxDepth = 10 );
+  void NewFrame();
+  void StartSection(const std::string& sName);
+  void StopSection();
+  bool StopSection(const std::string& sName);
 
-	ProfileTreeNode* GetRoot() const;
+  void Reset();
 
-	virtual int Serialize( IVistaSerializer& oSerializer ) const;
-	virtual int DeSerialize( IVistaDeSerializer& oDeSerializer );
+  static VistaBasicProfiler* GetSingleton();
+  static void                SetSingleton(VistaBasicProfiler* pProfiler);
 
-	virtual std::string GetSignature() const;
+  void        PrintProfile(std::ostream& oStream, int iMaxDepth = 10);
+  static bool PrintMultipleProfiles(std::ostream& oStream, const std::vector<std::string>& vecNames,
+      const std::vector<VistaBasicProfiler*>& vecProfilers, int iMaxDepth = 10);
 
-	class VISTATOOLSAPI ProfileScopeObject
-	{
-	public:
-		ProfileScopeObject( const std::string& sName );
-		ProfileScopeObject( const std::string& sName, VistaBasicProfiler* pProf );
-		~ProfileScopeObject();
-	private:
-		std::string m_sName;
-		VistaBasicProfiler* m_pProfiler;
-	};
+  ProfileTreeNode* GetRoot() const;
 
-private:
-	static void DoPrintMultipleProfiles( std::ostream& oStream, const std::vector< ProfileTreeNode* >& vecProfilers, 
-									   int nDepth, int iMaxDepth, int nNameColWidth, int nEntryColWdith, int nTypeColWidth );
+  virtual int Serialize(IVistaSerializer& oSerializer) const;
+  virtual int DeSerialize(IVistaDeSerializer& oDeSerializer);
 
-	ProfileTreeNode*	m_pProfileRoot;
-	ProfileTreeNode*	m_pProfileCurrent;
-	int					m_iMaxNameLength;
+  virtual std::string GetSignature() const;
+
+  class VISTATOOLSAPI ProfileScopeObject {
+   public:
+    ProfileScopeObject(const std::string& sName);
+    ProfileScopeObject(const std::string& sName, VistaBasicProfiler* pProf);
+    ~ProfileScopeObject();
+
+   private:
+    std::string         m_sName;
+    VistaBasicProfiler* m_pProfiler;
+  };
+
+ private:
+  static void DoPrintMultipleProfiles(std::ostream& oStream,
+      const std::vector<ProfileTreeNode*>& vecProfilers, int nDepth, int iMaxDepth,
+      int nNameColWidth, int nEntryColWdith, int nTypeColWidth);
+
+  ProfileTreeNode* m_pProfileRoot;
+  ProfileTreeNode* m_pProfileCurrent;
+  int              m_iMaxNameLength;
 };
 
 /*============================================================================*/

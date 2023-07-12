@@ -21,147 +21,128 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADTRACKCOMMONSHARE_H
 #define _VISTADTRACKCOMMONSHARE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaBase/VistaBaseTypes.h>
 
-namespace VistaDTrackMeasures
-{
-	/**
-	 * memory layout of the global type sensor
-	 */
-	struct sGlobalMeasure
-	{
-		int   m_nFrameCount;
-		float m_nTimeStamp;
-	};
+namespace VistaDTrackMeasures {
+/**
+ * memory layout of the global type sensor
+ */
+struct sGlobalMeasure {
+  int   m_nFrameCount;
+  float m_nTimeStamp;
+};
 
+/**
+ * memory layout of the typical body measure
+ */
+struct sBodyMeasure {
+  double m_nId;
+  double m_nQuality;
+  double m_anPosition[3];
+  double m_anEuler[3];
+  double m_anRotation[9];
+};
 
-	/**
-	 * memory layout of the typical body measure
-	 */
-	struct sBodyMeasure
-	{
-		double m_nId;
-		double m_nQuality;
-		double m_anPosition[3];
-		double m_anEuler[3];
-		double m_anRotation[9];
-	};
+/**
+ * memory layout of the stick measure (protocol 1 flystick)
+ */
+struct sStickMeasure {
+  double m_nId;
+  double m_nQuality;
+  double m_nButtonState;
+  double m_anPosition[3];
+  double m_anEuler[3];
+  double m_anRotation[9];
+};
 
+/**
+ * memory layout of the stick measure (protocol 1 flystick)
+ */
+struct sStick2Measure {
+  double            m_nId;
+  double            m_nQuality;
+  double            m_nNumberButtonValues;
+  double            m_nNumberControllerValues;
+  double            m_anPosition[3];
+  double            m_anRotation[9];
+  VistaType::sint32 m_nButtonState;     // limits number of buttons to 32
+  double            m_anControllers[8]; //@todo: max number of controllers?
+};
 
-	/**
-	 * memory layout of the stick measure (protocol 1 flystick)
-	 */
-	struct sStickMeasure
-	{
-		double m_nId;
-		double m_nQuality;
-		double m_nButtonState;
-		double m_anPosition[3];
-		double m_anEuler[3];
-		double m_anRotation[9];
-	};
+/**
+ *  memory layout of the marker measure
+ */
+struct sMarkerMeasure {
+  double m_nId;
+  double m_nQuality;
+  double m_anPosition[3];
+};
 
-	
-	/**
-	 * memory layout of the stick measure (protocol 1 flystick)
-	 */
-	struct sStick2Measure
-	{
-		double	m_nId;
-		double	m_nQuality;
-		double	m_nNumberButtonValues;
-		double	m_nNumberControllerValues;
-		double	m_anPosition[3];
-		double	m_anRotation[9];
-		VistaType::sint32	m_nButtonState;		// limits number of buttons to 32
-		double	m_anControllers[8]; //@todo: max number of controllers?
-	};
+/**
+ * memory layout of the measure device's measure
+ */
+struct sMeasureMeasure {
+  double m_nId;
+  double m_nQuality;
+  double m_nButtonState;
+  double m_anPosition[3];
+  double m_anRotation[9];
+};
 
+/**
+ * memory layout of the base measure
+ */
+struct sBaseMasure {
+  double m_nId;
+  double m_nQuality;
+};
 
-	/**
-	 *  memory layout of the marker measure
-	 */
-	struct sMarkerMeasure
-	{
-		double m_nId;
-		double m_nQuality;
-		double m_anPosition[3];
-	};
+/**
+ * this is a dummy structure to read off the values in a generic
+ * way. the other structures are simple access functions for the
+ * transcode getters!
+ */
+struct sGenericMeasure {
+  double m_anField[18];
+};
 
-	/**
-	 * memory layout of the measure device's measure
-	 */
-	struct sMeasureMeasure
-	{
-		double m_nId;
-		double m_nQuality;
-		double m_nButtonState;
-		double m_anPosition[3];
-		double m_anRotation[9];
-	};
+/**
+ * memory layout of the typical finger measure
+ */
+struct sHandMeasure {
+  enum {
+    THUMB = 0,
+    INDEX_FINGER,
+    MIDDLE_FINGER,
+    RING_FINGER,
+    LITTLE_FINGER,
+  };
+  struct Finger {
+    double m_anPosition[3];
+    double m_anRotation[9];
+    double m_nRadius;
+    double m_nOuterPhalanxLength;
+    double m_nOuterToMiddleAngle;
+    double m_nMiddlePhalanxLength;
+    double m_nMiddleToInnerAngle;
+    double m_nInnerPhalanxLength;
+  };
+  double m_nId;
+  double m_nQuality;
+  double m_nIsRightHand;
+  double m_nNumberOfFingers;
+  double m_anPosition[3];
+  double m_anRotation[9];
+  Finger m_aFingers[5];
+};
 
-	/**
-	 * memory layout of the base measure
-	 */
-	struct sBaseMasure
-	{
-		double m_nId;
-		double m_nQuality;
-	};
-
-	/**
-	 * this is a dummy structure to read off the values in a generic
-	 * way. the other structures are simple access functions for the
-	 * transcode getters!
-	 */
-	struct sGenericMeasure
-	{
-		double m_anField[18];
-	};
-
-	/**
-	 * memory layout of the typical finger measure
-	 */
-	struct sHandMeasure
-	{
-		enum
-		{
-			THUMB = 0,
-			INDEX_FINGER,
-			MIDDLE_FINGER,
-			RING_FINGER,
-			LITTLE_FINGER,
-		};
-		struct Finger
-		{
-			double m_anPosition[3];
-			double m_anRotation[9];
-			double m_nRadius;
-			double m_nOuterPhalanxLength;
-			double m_nOuterToMiddleAngle;
-			double m_nMiddlePhalanxLength;
-			double m_nMiddleToInnerAngle;
-			double m_nInnerPhalanxLength;			
-		};
-		double m_nId;
-		double m_nQuality;
-		double m_nIsRightHand;
-		double m_nNumberOfFingers;
-		double m_anPosition[3];
-		double m_anRotation[9];
-		Finger m_aFingers[5];	
-	};
-
-}
-
+} // namespace VistaDTrackMeasures
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

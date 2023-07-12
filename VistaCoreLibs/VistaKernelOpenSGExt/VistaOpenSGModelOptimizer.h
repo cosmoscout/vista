@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGMODELOPTIMIZER_H_
 #define _VISTAOPENSGMODELOPTIMIZER_H_
 
@@ -51,79 +50,63 @@ class IVistaClusterBarrier;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGModelOptimizer
-{
-public:
-	enum
-	{
-		OPT_MERGE_MATERIALS					= 1<<0,
-		OPT_STRIPE_GEOMETRIES				= 1<<1,
-		OPT_MERGE_GEOMETRIES				= 1<<2,
-		OPT_CONVERT_GEOMS_SINGLE_INDEXED	= 1<<3,
-		OPT_USE_VBO							= 1<<4,
-		OPT_CALCULATE_NORMALS_30DEG			= 1<<5,
-		OPT_CALCULATE_NORMALS_45DEG			= 1<<6,
-		OPT_CALCULATE_NORMALS_60DEG			= 1<<7,
-		OPT_CALCULATE_NORMALS_90DEG			= 1<<8,
-		OPT_CALCULATE_NORMALS_120DEG		= 1<<9,
-		OPT_CALCULATE_NORMALS_180DEG		= 1<<10,
-		OPT_CALCULATE_TANGENT_SPACE			= 1<<11,
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGModelOptimizer {
+ public:
+  enum {
+    OPT_MERGE_MATERIALS              = 1 << 0,
+    OPT_STRIPE_GEOMETRIES            = 1 << 1,
+    OPT_MERGE_GEOMETRIES             = 1 << 2,
+    OPT_CONVERT_GEOMS_SINGLE_INDEXED = 1 << 3,
+    OPT_USE_VBO                      = 1 << 4,
+    OPT_CALCULATE_NORMALS_30DEG      = 1 << 5,
+    OPT_CALCULATE_NORMALS_45DEG      = 1 << 6,
+    OPT_CALCULATE_NORMALS_60DEG      = 1 << 7,
+    OPT_CALCULATE_NORMALS_90DEG      = 1 << 8,
+    OPT_CALCULATE_NORMALS_120DEG     = 1 << 9,
+    OPT_CALCULATE_NORMALS_180DEG     = 1 << 10,
+    OPT_CALCULATE_TANGENT_SPACE      = 1 << 11,
 
-		// preset combinations
-		OPT_NONE				= 0,
-		OPT_DEFAULT				= OPT_MERGE_MATERIALS | OPT_MERGE_GEOMETRIES,
-		OPT_ALL					= ~0
-	};
+    // preset combinations
+    OPT_NONE    = 0,
+    OPT_DEFAULT = OPT_MERGE_MATERIALS | OPT_MERGE_GEOMETRIES,
+    OPT_ALL     = ~0
+  };
 
-	static bool OptimizeNode( IVistaNode* pNode,
-						int nOptimizationMode = OPT_DEFAULT,
-						bool bVerbose = true );
-	static bool OptimizeAndSaveNode( IVistaNode* pNode,
-						const std::string& sOutputFilename,
-						int nOptimizationMode = OPT_DEFAULT,
-						bool bVerbose = true );
-	static bool OptimizeFile( const std::string& sFilename,
-						const std::string& sOutputFilename = "",
-						int nOptimizationMode = OPT_DEFAULT,
-						bool bVerbose = true  );
-	struct VISTAKERNELOPENSGEXTAPI LoadInfo
-	{
-		LoadInfo();
-		bool m_bCacheWasLoaded;
-		std::string m_sFullFilename;
-		std::string m_sCacheFilename;
-		VistaType::systemtime m_nFileTimestamp;
-		VistaType::systemtime m_nCacheTimestamp;
-	};
-	/**
-	 * Loads a model file, applies the desired optimizations, and writes it
-	 * in a dumped format.
-	 * If bCompareTimestamps is true, the cache will only be loaded if it is newer than the model file
-	 * If bAllowLoadingCachedFileWithoutOriginal is true, the cache file is loaded even if the
-	 *     original model is absent.
-	 * If ClusterBarrier is not NULL, only the cluster leader will optimize the model, while all other
-	 * nodes will wait with loading until the leader has finished writing the ptimized file
-	 * If pInfo is non-NULL and the call is successfull, it will hold info about the load
-	 */
-	static IVistaNode* LoadAutoOptimizedFile( VistaSceneGraph* pSceneGraph,
-						const std::string& sFilename,
-						int nOptimizationMode = OPT_DEFAULT,
-						const std::string& sDumpDataFormat = "osb",
-						bool bCompareTimestamps = true,
-						bool bVerbose = true,
-						bool bAllowLoadingCachedFileWithoutOriginal = false,
-						IVistaClusterBarrier* pClusterBarrier = NULL,
-						LoadInfo* pInfo = NULL );
-	static IVistaNode* LoadAutoOptimizedFile( VistaSceneGraph* pSceneGraph,
-						const std::string& sFilename,
-						const std::string& sOutputDirectory,
-						int nOptimizationMode = OPT_DEFAULT,
-						const std::string& sDumpDataFormat = "osb",
-						bool bCompareTimestamps = true,
-						bool bVerbose = true,
-						bool bAllowLoadingCachedFileWithoutOriginal = false,
-						IVistaClusterBarrier* pClusterBarrier = NULL,
-						LoadInfo* pInfo = NULL );
+  static bool OptimizeNode(
+      IVistaNode* pNode, int nOptimizationMode = OPT_DEFAULT, bool bVerbose = true);
+  static bool OptimizeAndSaveNode(IVistaNode* pNode, const std::string& sOutputFilename,
+      int nOptimizationMode = OPT_DEFAULT, bool bVerbose = true);
+  static bool OptimizeFile(const std::string& sFilename, const std::string& sOutputFilename = "",
+      int nOptimizationMode = OPT_DEFAULT, bool bVerbose = true);
+  struct VISTAKERNELOPENSGEXTAPI LoadInfo {
+    LoadInfo();
+    bool                  m_bCacheWasLoaded;
+    std::string           m_sFullFilename;
+    std::string           m_sCacheFilename;
+    VistaType::systemtime m_nFileTimestamp;
+    VistaType::systemtime m_nCacheTimestamp;
+  };
+  /**
+   * Loads a model file, applies the desired optimizations, and writes it
+   * in a dumped format.
+   * If bCompareTimestamps is true, the cache will only be loaded if it is newer than the model file
+   * If bAllowLoadingCachedFileWithoutOriginal is true, the cache file is loaded even if the
+   *     original model is absent.
+   * If ClusterBarrier is not NULL, only the cluster leader will optimize the model, while all other
+   * nodes will wait with loading until the leader has finished writing the ptimized file
+   * If pInfo is non-NULL and the call is successfull, it will hold info about the load
+   */
+  static IVistaNode* LoadAutoOptimizedFile(VistaSceneGraph* pSceneGraph,
+      const std::string& sFilename, int nOptimizationMode = OPT_DEFAULT,
+      const std::string& sDumpDataFormat = "osb", bool bCompareTimestamps = true,
+      bool bVerbose = true, bool bAllowLoadingCachedFileWithoutOriginal = false,
+      IVistaClusterBarrier* pClusterBarrier = NULL, LoadInfo* pInfo = NULL);
+  static IVistaNode* LoadAutoOptimizedFile(VistaSceneGraph* pSceneGraph,
+      const std::string& sFilename, const std::string& sOutputDirectory,
+      int nOptimizationMode = OPT_DEFAULT, const std::string& sDumpDataFormat = "osb",
+      bool bCompareTimestamps = true, bool bVerbose = true,
+      bool                  bAllowLoadingCachedFileWithoutOriginal = false,
+      IVistaClusterBarrier* pClusterBarrier = NULL, LoadInfo* pInfo = NULL);
 };
 
 /*============================================================================*/

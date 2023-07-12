@@ -21,35 +21,29 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACYBERGLOVECOMMONSHARE_H__
 #define _VISTACYBERGLOVECOMMONSHARE_H__
 
+namespace VistaCyberGloveCommonShare {
+enum VCG_ERROR_CODE {
+  VCG_ERROR_NONE = 0, // no error
 
-namespace VistaCyberGloveCommonShare
-{
-	enum VCG_ERROR_CODE
-	{
-		VCG_ERROR_NONE = 0,		// no error
+  VCG_ERROR_UNKNOWN, // unknown error
+  VCG_ERROR_GLOVE,   // error code 'eg': Glove not plugged in.
+  VCG_ERROR_SAMPLING // error code 'es': Sampling rate too fast.
+};
 
-		VCG_ERROR_UNKNOWN,		// unknown error
-		VCG_ERROR_GLOVE,		// error code 'eg': Glove not plugged in.
-		VCG_ERROR_SAMPLING		// error code 'es': Sampling rate too fast.
-	};
+struct sCyberGloveSample {
+  char m_cRecord[35];
 
-	struct sCyberGloveSample
-	{
-		char m_cRecord[35];
+  int m_nSensorsInSample;
+  int m_nSensorMask;
 
-		int m_nSensorsInSample;
-		int m_nSensorMask;
+  bool m_bIncStatusByte;
+  bool m_bIncTimestamp;
 
-		bool m_bIncStatusByte;
-		bool m_bIncTimestamp;
-
-		VCG_ERROR_CODE m_eErrorCode;
-	};
-}
-
+  VCG_ERROR_CODE m_eErrorCode;
+};
+} // namespace VistaCyberGloveCommonShare
 
 #endif //_VISTACYBERGLOVECOMMONSHARE_H__

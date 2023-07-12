@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATIMEUTILS_H
 #define _VISTATIMEUTILS_H
 
@@ -29,58 +28,51 @@
 #include "VistaBaseTypes.h"
 #include "VistaTimer.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
-class VISTABASEAPI VistaTimeUtils
-{
-public:
-	/**
-	 * @param system time
-	 * @return time since start of current day
-	 */
-	static VistaType::microtime ConvertToDayTime( VistaType::systemtime mtTime );
-	/**
-	 * Converts a system time value to several integer values
-	 * describing the current time and date
-	 */
-	static void ConvertToDate( const VistaType::systemtime dTime, 
-								int& iMillisecond,
-								int& iSecond,
-								int& iMinute,
-								int& iHour,
-								int& iDay,
-								int& iMonth,
-								int& iYear );
+class VISTABASEAPI VistaTimeUtils {
+ public:
+  /**
+   * @param system time
+   * @return time since start of current day
+   */
+  static VistaType::microtime ConvertToDayTime(VistaType::systemtime mtTime);
+  /**
+   * Converts a system time value to several integer values
+   * describing the current time and date
+   */
+  static void ConvertToDate(const VistaType::systemtime dTime, int& iMillisecond, int& iSecond,
+      int& iMinute, int& iHour, int& iDay, int& iMonth, int& iYear);
 
-	/**
-	 * Converts the system time value to a string of the form
-	 * YYMMDD_HHMMSS, which lexicographically sorts by age
-	 * This is especially suitable as postfix for filenames
-	 */
-	static std::string ConvertToLexicographicDateString( const VistaType::systemtime dTime );
+  /**
+   * Converts the system time value to a string of the form
+   * YYMMDD_HHMMSS, which lexicographically sorts by age
+   * This is especially suitable as postfix for filenames
+   */
+  static std::string ConvertToLexicographicDateString(const VistaType::systemtime dTime);
 
-	/**
-	 * Formats a time using the strftime format syntax, and returns it as string
-	 */
-	static std::string ConvertToFormattedTimeString( const VistaType::systemtime dTime, const std::string& sFormat );
+  /**
+   * Formats a time using the strftime format syntax, and returns it as string
+   */
+  static std::string ConvertToFormattedTimeString(
+      const VistaType::systemtime dTime, const std::string& sFormat);
 
-	/**
-	 * Sleeps for at least iMilliseconds
-	 * Sleep will suspend the current thread, which will be re-awoken after
-	 * the requested time or more - no guaranty is given, so it may well be longer.
-	 * Especially on Windows systems, sleep only works with the granularity of the system
-	 * timer, which is usually 15ms, so shorter sleeps will most likely be inaccurate.
-	 */
-	static void Sleep( int iMilliseconds );
+  /**
+   * Sleeps for at least iMilliseconds
+   * Sleep will suspend the current thread, which will be re-awoken after
+   * the requested time or more - no guaranty is given, so it may well be longer.
+   * Especially on Windows systems, sleep only works with the granularity of the system
+   * timer, which is usually 15ms, so shorter sleeps will most likely be inaccurate.
+   */
+  static void Sleep(int iMilliseconds);
 
-	/**
-	 * @return The standard timer singleton (same as from VistaTimer).
-	 *         If no timer instance is available yet, a new one will
-	 *         be created using the current TimerImp singleton.
-	 */
-	static const VistaTimer& GetStandardTimer();
-
+  /**
+   * @return The standard timer singleton (same as from VistaTimer).
+   *         If no timer instance is available yet, a new one will
+   *         be created using the current TimerImp singleton.
+   */
+  static const VistaTimer& GetStandardTimer();
 };
 
 #endif /* _VISTATIMERINTEUTILS_H */

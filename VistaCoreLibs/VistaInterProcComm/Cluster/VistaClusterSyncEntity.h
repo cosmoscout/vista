@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACLUSTERSYNCENTITY_H
 #define _VISTACLUSTERSYNCENTITY_H
 
@@ -30,8 +29,8 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaBase/VistaBaseTypes.h>
 #include <VistaAspects/VistaObserveable.h>
+#include <VistaBase/VistaBaseTypes.h>
 
 #include <string>
 
@@ -52,87 +51,86 @@
  * @see VistaClusterDataSync
  * @see VistaClusterDataCollect
  */
-class VISTAINTERPROCCOMMAPI IVistaClusterSyncEntity : public IVistaObserveable
-{
-public:
-	enum
-	{
-		MSG_FOLLOWER_ADDED = IVistaObserveable::MSG_LAST,
-		MSG_FOLLOWER_LOST,
-		MSG_WAIT_FAILED,
-		MSG_FATAL_ERROR,
-		MSG_LAST
-	};
-public:
-	virtual ~IVistaClusterSyncEntity();
+class VISTAINTERPROCCOMMAPI IVistaClusterSyncEntity : public IVistaObserveable {
+ public:
+  enum {
+    MSG_FOLLOWER_ADDED = IVistaObserveable::MSG_LAST,
+    MSG_FOLLOWER_LOST,
+    MSG_WAIT_FAILED,
+    MSG_FATAL_ERROR,
+    MSG_LAST
+  };
 
-	/**
-	 * Get/Set the verbosity flag to control if warnings and errors are
-	 * to be printed. Useful if one wants to perform his own output
-	 * in response to observeable notifies
-	 */
-	bool GetIsVerbose() const;
-	void SetIsVerbose( const bool bSet );
+ public:
+  virtual ~IVistaClusterSyncEntity();
 
-	/**
-	 * returns true if the SyncEntity is a leader, which usually means
-	 * that it is the instance on the cluster-leader node
-	 */
-	bool GetIsLeader() const;
+  /**
+   * Get/Set the verbosity flag to control if warnings and errors are
+   * to be printed. Useful if one wants to perform his own output
+   * in response to observeable notifies
+   */
+  bool GetIsVerbose() const;
+  void SetIsVerbose(const bool bSet);
 
-	/**
-	 * Get Number of total/active/dead followers, names for followers,
-	 * or deactivates the specific follower.
-	 * Followers are usually only specified on Leader instances, and
-	 * even then the SyncEntity may nor be aware of/have knowledge about
-	 * followers.
-	 */
-	virtual int GetNumberOfFollowers() const;
-	virtual int GetNumberOfActiveFollowers() const;
-	virtual int GetNumberOfDeadFollowers() const;
-	virtual std::string GetFollowerNameForId( const int nID ) const;
-	virtual int GetFollowerIdForName( const std::string& sName ) const;
-	virtual bool GetFollowerIsAlive( const int nID ) const;
-	virtual bool DeactivateFollower( const std::string& sName );
-	virtual bool DeactivateFollower( const int nID );
+  /**
+   * returns true if the SyncEntity is a leader, which usually means
+   * that it is the instance on the cluster-leader node
+   */
+  bool GetIsLeader() const;
 
-	/**
-	 * allows to query the follower that was added or lost last,
-	 * useful when receiving a corresponding observeable notify
-	 * only use during the corresponding notify.
-	 */
-	virtual int GetLastChangedFollower();
+  /**
+   * Get Number of total/active/dead followers, names for followers,
+   * or deactivates the specific follower.
+   * Followers are usually only specified on Leader instances, and
+   * even then the SyncEntity may nor be aware of/have knowledge about
+   * followers.
+   */
+  virtual int         GetNumberOfFollowers() const;
+  virtual int         GetNumberOfActiveFollowers() const;
+  virtual int         GetNumberOfDeadFollowers() const;
+  virtual std::string GetFollowerNameForId(const int nID) const;
+  virtual int         GetFollowerIdForName(const std::string& sName) const;
+  virtual bool        GetFollowerIsAlive(const int nID) const;
+  virtual bool        DeactivateFollower(const std::string& sName);
+  virtual bool        DeactivateFollower(const int nID);
 
-	virtual bool GetIsValid() const = 0;
+  /**
+   * allows to query the follower that was added or lost last,
+   * useful when receiving a corresponding observeable notify
+   * only use during the corresponding notify.
+   */
+  virtual int GetLastChangedFollower();
 
-	/**
-	 * BlockingThreshold determines from which size on the sent data should be
-	 * transmitted using blocking mode. This can be used to send small packages
-	 * in non-blocking mode, while using blocking send for larger packages that
-	 * might exceed the (TCP) stack size.
-	 * Not all implementations utilize this setting, indicated by returning false
-	 * 0 means always block, negative values mean never block
-	 * @return true if the value was accepted, false if it is not used/supported
-	 */
-	virtual bool SetSendBlockingThreshold( const int nNumBytes ) = 0;
-	/**
-	 * returns the blocking threshold
-	 * @return number of bytes before activating blocking send
-	 *        where negative values indicate 'never block' and 0 'always block'
-	 */
-	virtual int GetSendBlockingThreshold() const = 0;
+  virtual bool GetIsValid() const = 0;
 
-protected:
-	IVistaClusterSyncEntity( const bool bVerbose, const bool bIsLeader );
-	
-private:
-	// prevent copying
-	IVistaClusterSyncEntity( const IVistaClusterSyncEntity& );
-	IVistaClusterSyncEntity& operator= ( const IVistaClusterSyncEntity& );
+  /**
+   * BlockingThreshold determines from which size on the sent data should be
+   * transmitted using blocking mode. This can be used to send small packages
+   * in non-blocking mode, while using blocking send for larger packages that
+   * might exceed the (TCP) stack size.
+   * Not all implementations utilize this setting, indicated by returning false
+   * 0 means always block, negative values mean never block
+   * @return true if the value was accepted, false if it is not used/supported
+   */
+  virtual bool SetSendBlockingThreshold(const int nNumBytes) = 0;
+  /**
+   * returns the blocking threshold
+   * @return number of bytes before activating blocking send
+   *        where negative values indicate 'never block' and 0 'always block'
+   */
+  virtual int GetSendBlockingThreshold() const = 0;
 
-protected:
-	bool m_bVerbose;
-	bool m_bIsLeader;
+ protected:
+  IVistaClusterSyncEntity(const bool bVerbose, const bool bIsLeader);
+
+ private:
+  // prevent copying
+  IVistaClusterSyncEntity(const IVistaClusterSyncEntity&);
+  IVistaClusterSyncEntity& operator=(const IVistaClusterSyncEntity&);
+
+ protected:
+  bool m_bVerbose;
+  bool m_bIsLeader;
 };
 
 /*============================================================================*/

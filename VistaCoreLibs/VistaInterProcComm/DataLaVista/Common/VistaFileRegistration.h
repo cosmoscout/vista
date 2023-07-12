@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTAFILEREGISTRATION_H
 #define IDLVISTAFILEREGISTRATION_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaRegistration.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <string>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -44,31 +42,25 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaFileRegistration : public IDLVistaRegistration
-{
-private:
-	/**
-	 * We prohibit the copying.
-	 */
-	DLVistaFileRegistration(DLVistaFileRegistration &);
+class VISTAINTERPROCCOMMAPI DLVistaFileRegistration : public IDLVistaRegistration {
+ private:
+  /**
+   * We prohibit the copying.
+   */
+  DLVistaFileRegistration(DLVistaFileRegistration&);
 
+  int m_iPacketTypeCount;
 
-	int m_iPacketTypeCount;
-protected:
+ protected:
+  virtual int CreateTypeIdForName(const std::string& SName);
 
-
-	virtual int CreateTypeIdForName(const std::string &SName);
-
-public:
-	DLVistaFileRegistration(const std::string &SFName);
-	virtual ~DLVistaFileRegistration();
+ public:
+  DLVistaFileRegistration(const std::string& SFName);
+  virtual ~DLVistaFileRegistration();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //IDLVISTAFILTER_H
-
-
+#endif // IDLVISTAFILTER_H

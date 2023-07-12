@@ -21,29 +21,24 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
 #include "VistaPipeConstructionKit.h"
-#include "VistaNullError.h"
 #include "VistaCheckError.h"
-#include <VistaInterProcComm/DataLaVista/Base/VistaRegistration.h>
+#include "VistaNullError.h"
 #include <VistaInterProcComm/DataLaVista/Base/VistaPipeComponent.h>
-
+#include <VistaInterProcComm/DataLaVista/Base/VistaRegistration.h>
 
 #include <cstdio>
 #include <list>
 
 using namespace std;
 
-
 #if defined(WIN32)
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4996)
 #endif
-
 
 /*============================================================================*/
 /* STATICS                                                                    */
@@ -53,54 +48,44 @@ using namespace std;
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-
-DLVistaPipeConstructionKit::DLVistaPipeConstructionKit()
-{
+DLVistaPipeConstructionKit::DLVistaPipeConstructionKit() {
 }
 
-DLVistaPipeConstructionKit::~DLVistaPipeConstructionKit()
-{
-
+DLVistaPipeConstructionKit::~DLVistaPipeConstructionKit() {
 }
-
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-DLVistaCheckError DLVistaPipeConstructionKit::Join(IDLVistaPipeComponent *pIn, IDLVistaPipeComponent *pOut)
-{
-	bool bRet = pIn->AttachOutputComponent(pOut);
-	bRet = bRet && pOut->AttachInputComponent(pIn);
+DLVistaCheckError DLVistaPipeConstructionKit::Join(
+    IDLVistaPipeComponent* pIn, IDLVistaPipeComponent* pOut) {
+  bool bRet = pIn->AttachOutputComponent(pOut);
+  bRet      = bRet && pOut->AttachInputComponent(pIn);
 
-	if(bRet)
-		return DLVistaNullError();
-	else
-	{
-		char cBuffer[128];
-		sprintf(cBuffer, "Attaching %lx with %lx returned false.", long(pIn), long(pOut));
-		return DLVistaCheckError("DLVistaPipeConstructionKit::Join() -- ERROR", cBuffer);
-	}
+  if (bRet)
+    return DLVistaNullError();
+  else {
+    char cBuffer[128];
+    sprintf(cBuffer, "Attaching %lx with %lx returned false.", long(pIn), long(pOut));
+    return DLVistaCheckError("DLVistaPipeConstructionKit::Join() -- ERROR", cBuffer);
+  }
 }
 
-DLVistaCheckError DLVistaPipeConstructionKit::LinearJoin(const list<IDLVistaPipeComponent *> &liComponents)
-{
-	list<IDLVistaPipeComponent *>::const_iterator it;
-	list<IDLVistaPipeComponent *>::const_iterator iprev;
-	for(it = liComponents.begin(); it != liComponents.end(); )
-	{
-		iprev = it++;
-		if(it != liComponents.end())
-		{
-			DLVistaCheckError err = Join(*iprev, *it);
-			if(!err.IsNullError())
-				return err;
-		}
-		else
-			break;
-	}
+DLVistaCheckError DLVistaPipeConstructionKit::LinearJoin(
+    const list<IDLVistaPipeComponent*>& liComponents) {
+  list<IDLVistaPipeComponent*>::const_iterator it;
+  list<IDLVistaPipeComponent*>::const_iterator iprev;
+  for (it = liComponents.begin(); it != liComponents.end();) {
+    iprev = it++;
+    if (it != liComponents.end()) {
+      DLVistaCheckError err = Join(*iprev, *it);
+      if (!err.IsNullError())
+        return err;
+    } else
+      break;
+  }
 
-	return DLVistaNullError(); //DLVistaCheckError("Not-Implemented-Error", "The feature \"ExtendedJoin\" is not implemented, yet.\n");
+  return DLVistaNullError(); // DLVistaCheckError("Not-Implemented-Error", "The feature
+                             // \"ExtendedJoin\" is not implemented, yet.\n");
 }
-
-

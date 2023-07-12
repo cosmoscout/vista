@@ -21,37 +21,36 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAASPECTSCONFIG_H
 #define _VISTAASPECTSCONFIG_H
 
 // Windows DLL build
-#if (defined WIN32) && !(defined VISTAASPECTS_STATIC)  
-	#ifdef VISTAASPECTS_EXPORTS
-		#define VISTAASPECTSAPI __declspec(dllexport)
-	#else
-		#define VISTAASPECTSAPI __declspec(dllimport)
-		//#ifndef VISTA_NO_AUTOLINKING
-		//	// auto-linking for msvc8
-		//	#if _MSC_VER == 1400
-		//		#if defined(_DEBUG) || defined(DEBUG)
-		//			#pragma comment(lib, "VistaAspectsD.vc8.lib")
-		//		#else
-		//			#pragma comment(lib, "VistaAspects.vc8.lib")
-		//		#endif
-		//	#endif
-		//	// auto-linking for msvc9
-		//	#if _MSC_VER == 1500
-		//		#if defined(_DEBUG) || defined(DEBUG)
-		//			#pragma comment(lib, "VistaAspectsD.vc9.lib")
-		//		#else
-		//			#pragma comment(lib, "VistaAspects.vc9.lib")
-		//		#endif
-		//	#endif
-		//#endif
-	#endif
+#if (defined WIN32) && !(defined VISTAASPECTS_STATIC)
+#ifdef VISTAASPECTS_EXPORTS
+#define VISTAASPECTSAPI __declspec(dllexport)
+#else
+#define VISTAASPECTSAPI __declspec(dllimport)
+//#ifndef VISTA_NO_AUTOLINKING
+//	// auto-linking for msvc8
+//	#if _MSC_VER == 1400
+//		#if defined(_DEBUG) || defined(DEBUG)
+//			#pragma comment(lib, "VistaAspectsD.vc8.lib")
+//		#else
+//			#pragma comment(lib, "VistaAspects.vc8.lib")
+//		#endif
+//	#endif
+//	// auto-linking for msvc9
+//	#if _MSC_VER == 1500
+//		#if defined(_DEBUG) || defined(DEBUG)
+//			#pragma comment(lib, "VistaAspectsD.vc9.lib")
+//		#else
+//			#pragma comment(lib, "VistaAspects.vc9.lib")
+//		#endif
+//	#endif
+//#endif
+#endif
 #else // no Windows or static build
-	#define VISTAASPECTSAPI
+#define VISTAASPECTSAPI
 #endif
 
 #endif //_VISTAASPECTSCONFIG_H

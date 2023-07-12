@@ -21,6 +21,9 @@ This fork of ViSTA contains several changes which have been made before the init
 * Add optional scaling distance to intention select.
 * Add a bounding box node adapter.
 * Several methods of the volume raycaster are made virtual.
-* Add support for the HTC Vive on windows.
+* Add support for OpenVR on Windows and Linux.
 * Add possibility to change cursor type with glut windowing toollkit.
 * Remove all inheritances from std::unitary_function.
+
+## Architecture
+![VistaModuleTree](https://user-images.githubusercontent.com/9581540/194340299-8772fa0a-cc7f-4e03-b473-1e200cd8deb1.svg)

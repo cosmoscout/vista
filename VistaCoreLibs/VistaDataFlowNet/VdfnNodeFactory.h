@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNNODEFACTORY_H
 #define _VDFNNODEFACTORY_H
 
@@ -29,9 +28,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
-#include <string>
-#include <map>
 #include <list>
+#include <map>
+#include <string>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -59,107 +58,100 @@ class IVdfnNode;
  * the creation parameters.
  * All type symbols are evaluated as case-sensitive
  */
-class VISTADFNAPI VdfnNodeFactory
-{
-public:
+class VISTADFNAPI VdfnNodeFactory {
+ public:
+  /**
+   * @return retrieve the pointer to the node factory.
+   */
+  static VdfnNodeFactory* GetSingleton();
 
-	/**
-	 * @return retrieve the pointer to the node factory.
-	 */
-	static VdfnNodeFactory *GetSingleton();
+  /**
+   * basic interface for node creators. subclass and define the CreateNode()
+   * method
+   */
+  class IVdfnNodeCreator {
+   public:
+    virtual ~IVdfnNodeCreator() {
+    }
+    /**
+     * create a node given a VistaPropertyList
+     * @param oParams a VistaPropertyList that must match the need of a specific
+               node creator. This is rather fuzzy, so dig up the code here,
+               or read the node creators' documentation.
+       @return NULL in case a node could not be created, a node else
+     */
+    virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const = 0;
+  };
 
+  /**
+   * create a node using a type symbol. the type symbol is determined by the
+   * mapping of a string to a IVdfnNodeCreator. The logic is simple:
+   * -# lookup whether a node creator was mapped to strTypeSymbol
+   * -# call IVdfnNodeCreator::CreateNode() with oParams
+   *
+   * @param strTypeSymbol the node type to create
+   * @param oParams parameters for construction
+   * @see SetNodeCreator()
+   */
+  IVdfnNode* CreateNode(const std::string& strTypeSymbol, const VistaPropertyList& oParams) const;
 
-	/**
-	 * basic interface for node creators. subclass and define the CreateNode()
-	 * method
-	 */
-	class IVdfnNodeCreator
-	{
-	public:
-		virtual ~IVdfnNodeCreator() {}
-		/**
-		 * create a node given a VistaPropertyList
-		 * @param oParams a VistaPropertyList that must match the need of a specific
-		           node creator. This is rather fuzzy, so dig up the code here,
-		           or read the node creators' documentation.
-		   @return NULL in case a node could not be created, a node else
-		 */
-		virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const = 0;
-	};
+  /**
+   * creates a mapping from strTypeSymbol to pCreator.
+   * Old assignments will be silently overwritten
+   * @param strTypeSymbol the type to register (case-sensitive)
+   * @param pCreate to creator for the type (must outlive the factory)
+   * @return true
+   *
+   * @see UnSetNodeCreator()
+   */
+  bool SetNodeCreator(const std::string& strTypeSymbol, IVdfnNodeCreator* pCreator);
 
-	/**
-	 * create a node using a type symbol. the type symbol is determined by the
-	 * mapping of a string to a IVdfnNodeCreator. The logic is simple:
-	 * -# lookup whether a node creator was mapped to strTypeSymbol
-	 * -# call IVdfnNodeCreator::CreateNode() with oParams
-	 *
-	 * @param strTypeSymbol the node type to create
-	 * @param oParams parameters for construction
-	 * @see SetNodeCreator()
-	 */
-	IVdfnNode *CreateNode( const std::string &strTypeSymbol,
-						   const VistaPropertyList &oParams ) const;
+  /**
+   * clear a binding from strTypeSymbol to a node creator.
+   * Can be used for unregistering node creators. Frees the memory
+   * on the node creator.
+   * @return true when the binding was found and dissolved
+   * @param strTypeSymbol the type symbol to unbind
+   * @see SetNodeCreator()
+   */
+  bool UnSetNodeCreator(const std::string& strTypeSymbol);
 
-	/**
-	 * creates a mapping from strTypeSymbol to pCreator.
-	 * Old assignments will be silently overwritten
-	 * @param strTypeSymbol the type to register (case-sensitive)
-	 * @param pCreate to creator for the type (must outlive the factory)
-	 * @return true
-	 *
-	 * @see UnSetNodeCreator()
-	 */
-	bool SetNodeCreator( const std::string &strTypeSymbol,
-						 IVdfnNodeCreator *pCreator );
+  /**
+   * @return retrieve a list of available type symbols to create nodes for.
+   */
+  std::list<std::string> GetNodeCreators() const;
 
-	/**
-	 * clear a binding from strTypeSymbol to a node creator.
-	 * Can be used for unregistering node creators. Frees the memory
-	 * on the node creator.
-	 * @return true when the binding was found and dissolved
-	 * @param strTypeSymbol the type symbol to unbind
-	 * @see SetNodeCreator()
-	 */
-	bool UnSetNodeCreator( const std::string &strTypeSymbol );
+  /**
+   * @return true when strCreatorName maps to an IVdfnNodeCreator
+   */
+  bool GetHasCreator(const std::string& strCreatorName) const;
 
-	/**
-	 * @return retrieve a list of available type symbols to create nodes for.
-	 */
-	std::list<std::string> GetNodeCreators() const;
+ protected:
+ private:
+  VdfnNodeFactory();
 
+  /**
+   * deletes all registered node creators.
+   */
+  ~VdfnNodeFactory();
 
-	/**
-	 * @return true when strCreatorName maps to an IVdfnNodeCreator
-	 */
-	bool GetHasCreator( const std::string &strCreatorName ) const;
-protected:
-private:
-	VdfnNodeFactory();
-
-	/**
-	 * deletes all registered node creators.
-	 */
-	~VdfnNodeFactory();
-
-	typedef std::map<std::string, IVdfnNodeCreator* > CRMAP;
-	CRMAP m_mpCreators;
+  typedef std::map<std::string, IVdfnNodeCreator*> CRMAP;
+  CRMAP                                            m_mpCreators;
 };
 
 /**
  * default template for simple node creation, simply create a type T node,
  * without arguments and without inspecting the oParams
  */
-template<class T>
-class TVdfnDefaultNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	/**
-	 * @return a new node of type T
-	 */
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const
-	{
-		return new T;
-	}
+template <class T>
+class TVdfnDefaultNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  /**
+   * @return a new node of type T
+   */
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const {
+    return new T;
+  }
 };
 
 /*============================================================================*/
@@ -167,4 +159,3 @@ public:
 /*============================================================================*/
 
 #endif //_VDFNNODEFACTORY_H
-

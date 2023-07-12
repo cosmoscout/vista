@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "EnDisableCallback.h"
 
 #include <VistaKernel/GraphicsManager/VistaTransformNode.h>
@@ -34,27 +33,25 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-EnDisableCallback::EnDisableCallback( const std::vector<VistaTransformNode*> &nodes )
-	:	mNodes( nodes )
-{}
+EnDisableCallback::EnDisableCallback(const std::vector<VistaTransformNode*>& nodes)
+    : mNodes(nodes) {
+}
 
-EnDisableCallback::~EnDisableCallback(){}
+EnDisableCallback::~EnDisableCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool EnDisableCallback::Do()
-{
-	// iterate over all nodes
-	for( std::vector<VistaTransformNode*>::const_iterator it = mNodes.begin();
-			it < mNodes.end();
-			++it )
-	{
-		// toggle the enabled status
-		(*it)->SetIsEnabled( !(*it)->GetIsEnabled() );
-	}
-	return true;
+bool EnDisableCallback::Do() {
+  // iterate over all nodes
+  for (std::vector<VistaTransformNode*>::const_iterator it = mNodes.begin(); it < mNodes.end();
+       ++it) {
+    // toggle the enabled status
+    (*it)->SetIsEnabled(!(*it)->GetIsEnabled());
+  }
+  return true;
 }
 
 /*============================================================================*/

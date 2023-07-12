@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnAxisRotateNode.h"
 
 /*============================================================================*/
@@ -32,53 +31,45 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VdfnAxisRotateNode::VdfnAxisRotateNode()
-: IVdfnNode(),
-  m_pAngle(NULL),
-  m_pAxis(NULL),
-  m_pAxisAndAngle(NULL),
-  m_pOut(new TVdfnPort<VistaQuaternion> )
-{
-	RegisterInPortPrototype( "angle", new TVdfnPortTypeCompare< TVdfnPort<float> >);
-	RegisterInPortPrototype( "axis", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
-	RegisterInPortPrototype( "axisandangle", new TVdfnPortTypeCompare<TVdfnPort<VistaAxisAndAngle> >);
-	RegisterOutPort( "out", m_pOut );
+    : IVdfnNode()
+    , m_pAngle(NULL)
+    , m_pAxis(NULL)
+    , m_pAxisAndAngle(NULL)
+    , m_pOut(new TVdfnPort<VistaQuaternion>) {
+  RegisterInPortPrototype("angle", new TVdfnPortTypeCompare<TVdfnPort<float>>);
+  RegisterInPortPrototype("axis", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype("axisandangle", new TVdfnPortTypeCompare<TVdfnPort<VistaAxisAndAngle>>);
+  RegisterOutPort("out", m_pOut);
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnAxisRotateNode::GetIsValid() const
-{
-	return ( ( (m_pAxisAndAngle == NULL) && (m_pAxis && m_pAngle) )
-		  || ( (m_pAxisAndAngle) &&  (!m_pAxis && !m_pAngle) ) );
+bool VdfnAxisRotateNode::GetIsValid() const {
+  return (((m_pAxisAndAngle == NULL) && (m_pAxis && m_pAngle)) ||
+          ((m_pAxisAndAngle) && (!m_pAxis && !m_pAngle)));
 }
 
-bool VdfnAxisRotateNode::PrepareEvaluationRun()
-{
-	m_pAngle = dynamic_cast<TVdfnPort<float>*>(GetInPort("angle"));
-	m_pAxis  = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("axis"));
-	m_pAxisAndAngle = dynamic_cast<TVdfnPort<VistaAxisAndAngle>*>(GetInPort("axisandangle"));
+bool VdfnAxisRotateNode::PrepareEvaluationRun() {
+  m_pAngle        = dynamic_cast<TVdfnPort<float>*>(GetInPort("angle"));
+  m_pAxis         = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("axis"));
+  m_pAxisAndAngle = dynamic_cast<TVdfnPort<VistaAxisAndAngle>*>(GetInPort("axisandangle"));
 
-	return GetIsValid();
+  return GetIsValid();
 }
 
-bool VdfnAxisRotateNode::DoEvalNode()
-{
-	if( m_pAxisAndAngle )
-	{
-		VistaAxisAndAngle aaa = m_pAxisAndAngle->GetValue();
-		m_pOut->SetValue( VistaQuaternion( aaa ), GetUpdateTimeStamp() );
-	}
-	else
-	{
-		VistaAxisAndAngle aaa( m_pAxis->GetValue(), m_pAngle->GetValue() );
-		m_pOut->SetValue( VistaQuaternion(aaa), GetUpdateTimeStamp() );
-	}
-	return true;
+bool VdfnAxisRotateNode::DoEvalNode() {
+  if (m_pAxisAndAngle) {
+    VistaAxisAndAngle aaa = m_pAxisAndAngle->GetValue();
+    m_pOut->SetValue(VistaQuaternion(aaa), GetUpdateTimeStamp());
+  } else {
+    VistaAxisAndAngle aaa(m_pAxis->GetValue(), m_pAngle->GetValue());
+    m_pOut->SetValue(VistaQuaternion(aaa), GetUpdateTimeStamp());
+  }
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnActionObject.h" 
+#include "VdfnActionObject.h"
 #include <VistaAspects/VistaPropertyFunctorRegistry.h>
 
 /*============================================================================*/
@@ -32,68 +31,54 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVdfnActionObject::IVdfnActionObject() 
-: IVistaReflectionable()
-, m_dUpdateTimeStamp( 0 )
-{
+IVdfnActionObject::IVdfnActionObject()
+    : IVistaReflectionable()
+    , m_dUpdateTimeStamp(0) {
 }
 
-IVdfnActionObject::~IVdfnActionObject() 
-{
+IVdfnActionObject::~IVdfnActionObject() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-IVdfnActionObject::IActionGet *IVdfnActionObject::GetActionGet( const std::string &strSymbol ) const
-{
-	VistaPropertyFunctorRegistry *pReg = VistaPropertyFunctorRegistry::GetSingleton();
-	if(m_liBaseListCache.empty())
-	{
-		// ... ah, yes
-		// cache it
-		m_liBaseListCache = GetBaseTypeList();
-	}
-	// use the cached version for the get-functor
-	return dynamic_cast<IActionGet*>(pReg->GetGetFunctor(strSymbol, 
-		   GetReflectionableType(), m_liBaseListCache));
+IVdfnActionObject::IActionGet* IVdfnActionObject::GetActionGet(const std::string& strSymbol) const {
+  VistaPropertyFunctorRegistry* pReg = VistaPropertyFunctorRegistry::GetSingleton();
+  if (m_liBaseListCache.empty()) {
+    // ... ah, yes
+    // cache it
+    m_liBaseListCache = GetBaseTypeList();
+  }
+  // use the cached version for the get-functor
+  return dynamic_cast<IActionGet*>(
+      pReg->GetGetFunctor(strSymbol, GetReflectionableType(), m_liBaseListCache));
 }
 
-IVdfnActionObject::IActionSet *IVdfnActionObject::GetActionSet( const std::string &strSymbol ) const
-{
-	VistaPropertyFunctorRegistry *pReg = VistaPropertyFunctorRegistry::GetSingleton();
-	// ok, ok... it is a const-setter, but we might need to cache the
-	// base-class list, as this is unlikely to change, so we check
-	// whether we have to build it
-	if(m_liBaseListCache.empty())
-	{
-		// ... ah, yes
-		// cache it
-		m_liBaseListCache = GetBaseTypeList();
-	}
-	// use the cached version for the get-functor
-	return dynamic_cast<IActionSet*>(pReg->GetSetFunctor(strSymbol, 
-		   GetReflectionableType(), m_liBaseListCache));
+IVdfnActionObject::IActionSet* IVdfnActionObject::GetActionSet(const std::string& strSymbol) const {
+  VistaPropertyFunctorRegistry* pReg = VistaPropertyFunctorRegistry::GetSingleton();
+  // ok, ok... it is a const-setter, but we might need to cache the
+  // base-class list, as this is unlikely to change, so we check
+  // whether we have to build it
+  if (m_liBaseListCache.empty()) {
+    // ... ah, yes
+    // cache it
+    m_liBaseListCache = GetBaseTypeList();
+  }
+  // use the cached version for the get-functor
+  return dynamic_cast<IActionSet*>(
+      pReg->GetSetFunctor(strSymbol, GetReflectionableType(), m_liBaseListCache));
 }
 
-bool IVdfnActionObject::Pull()
-{
-	return false;
+bool IVdfnActionObject::Pull() {
+  return false;
 }
 
-void IVdfnActionObject::SetUpdateTimeStamp( const VistaType::microtime dTimestamp,
-											const bool bInportsChanged )
-{
-	m_dUpdateTimeStamp = dTimestamp;
+void IVdfnActionObject::SetUpdateTimeStamp(
+    const VistaType::microtime dTimestamp, const bool bInportsChanged) {
+  m_dUpdateTimeStamp = dTimestamp;
 }
 
-VistaType::microtime IVdfnActionObject::GetUpdateTimeStamp() const
-{
-	return m_dUpdateTimeStamp;
+VistaType::microtime IVdfnActionObject::GetUpdateTimeStamp() const {
+  return m_dUpdateTimeStamp;
 }
-
-
-
-
-

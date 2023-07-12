@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _ENDISABLECALLBACK_H
 #define _ENDISABLECALLBACK_H
 
@@ -51,35 +50,31 @@ class VistaTransformNode;
  * CEnDisableCallback
  * This callback toggles the enabled status of each load node
  */
-class EnDisableCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	
-	/**
-	 * Constructor
-	 * This constructor gets a list of all loaded nodes by reference
-	 */
-	EnDisableCallback( const std::vector<VistaTransformNode*> &nodes );
+class EnDisableCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * This constructor gets a list of all loaded nodes by reference
+   */
+  EnDisableCallback(const std::vector<VistaTransformNode*>& nodes);
 
-	/**
-	 * Destructor
-	 * Nothing to do here yet.
-	 */
-	virtual ~EnDisableCallback();
+  /**
+   * Destructor
+   * Nothing to do here yet.
+   */
+  virtual ~EnDisableCallback();
 
-	/**
-	 * Do
-	 * The Do method is invoced by the application.
-	 */
-	bool Do();
+  /**
+   * Do
+   * The Do method is invoced by the application.
+   */
+  bool Do();
 
-private:
-	
-	/**
-	 * The list of all loaded nodes.
-	 */
-	const std::vector<VistaTransformNode*> &mNodes;
-
+ private:
+  /**
+   * The list of all loaded nodes.
+   */
+  const std::vector<VistaTransformNode*>& mNodes;
 };
 
 /*============================================================================*/

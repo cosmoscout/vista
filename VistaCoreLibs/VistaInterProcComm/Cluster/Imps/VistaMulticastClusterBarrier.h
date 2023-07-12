@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAMULTICASTCLUSTERBARRIER_H
 #define _VISTAMULTICASTCLUSTERBARRIER_H
 
@@ -30,11 +29,11 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBarrierIPBase.h>
+#include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -45,60 +44,51 @@ class VistaConnectionIP;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaMulticastClusterLeaderBarrier : public VistaClusterLeaderBarrierIPBase
-{
-public:
-	VistaMulticastClusterLeaderBarrier( const std::string& sOwnIP,
-									const std::string& sMulticastIP,
-									const int nMulticastPort,
-									const bool bVerbose = true );
-	explicit VistaMulticastClusterLeaderBarrier( VistaMcastSocket* pMulticastSocket,
-									const bool bManageDeletion = true,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaMulticastClusterLeaderBarrier
+    : public VistaClusterLeaderBarrierIPBase {
+ public:
+  VistaMulticastClusterLeaderBarrier(const std::string& sOwnIP, const std::string& sMulticastIP,
+      const int nMulticastPort, const bool bVerbose = true);
+  explicit VistaMulticastClusterLeaderBarrier(VistaMcastSocket* pMulticastSocket,
+      const bool bManageDeletion = true, const bool bVerbose = true);
 
-	virtual ~VistaMulticastClusterLeaderBarrier();	
+  virtual ~VistaMulticastClusterLeaderBarrier();
 
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool GetIsValid() const;
 
-	virtual bool GetIsValid() const;
+  virtual std::string GetBarrierType() const;
 
-	virtual std::string GetBarrierType() const;
-
-
-private:
-	VistaMcastSocket*		m_pMulticastSocket;
-	bool					m_bDeleteMulticastSocket;
+ private:
+  VistaMcastSocket* m_pMulticastSocket;
+  bool              m_bDeleteMulticastSocket;
 };
 
-class VISTAINTERPROCCOMMAPI VistaMulticastClusterFollowerBarrier : public VistaClusterFollowerBarrierIPBase
-{
-public:
-	VistaMulticastClusterFollowerBarrier( const std::string& sMulticastIP,
-									const int nMulticastPort,
-									VistaConnectionIP* pLeaderConnection,
-									const bool bManageConnection = true,
-									const bool bVerbose = true );
-	VistaMulticastClusterFollowerBarrier( VistaMcastSocket* pMulticastSocket,
-									VistaConnectionIP* pLeaderConnection,
-									const bool bManageSocket = true,
-									const bool bManageConnection = true,
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaMulticastClusterFollowerBarrier
+    : public VistaClusterFollowerBarrierIPBase {
+ public:
+  VistaMulticastClusterFollowerBarrier(const std::string& sMulticastIP, const int nMulticastPort,
+      VistaConnectionIP* pLeaderConnection, const bool bManageConnection = true,
+      const bool bVerbose = true);
+  VistaMulticastClusterFollowerBarrier(VistaMcastSocket* pMulticastSocket,
+      VistaConnectionIP* pLeaderConnection, const bool bManageSocket = true,
+      const bool bManageConnection = true, const bool bVerbose = true);
 
-	virtual ~VistaMulticastClusterFollowerBarrier();
+  virtual ~VistaMulticastClusterFollowerBarrier();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-private:
-	VistaType::sint32	m_nBarrierCount;
-	VistaMcastSocket*	m_pMulticastSocket;
-	VistaConnectionIP*	m_pLeaderConn;
-	bool				m_bManageSocket;
-	bool				m_bSwap;
+ private:
+  VistaType::sint32  m_nBarrierCount;
+  VistaMcastSocket*  m_pMulticastSocket;
+  VistaConnectionIP* m_pLeaderConn;
+  bool               m_bManageSocket;
+  bool               m_bSwap;
 };
 
 /*============================================================================*/

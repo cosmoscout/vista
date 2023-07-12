@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAVIEWPORTRESIZETOPROJECTIONADAPTER_H
 #define _VISTAVIEWPORTRESIZETOPROJECTIONADAPTER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,7 +30,6 @@
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include "VistaAspects/VistaObserver.h"
-
 
 /*============================================================================*/
 /* DEFINITIONS                                                                */
@@ -48,39 +45,37 @@ class VistaViewport;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaViewportResizeToProjectionAdapter : public IVistaObserver
-{
-public:
-	VistaViewportResizeToProjectionAdapter( VistaViewport* pViewport );
-	virtual ~VistaViewportResizeToProjectionAdapter();
+class VISTAKERNELAPI VistaViewportResizeToProjectionAdapter : public IVistaObserver {
+ public:
+  VistaViewportResizeToProjectionAdapter(VistaViewport* pViewport);
+  virtual ~VistaViewportResizeToProjectionAdapter();
 
+  enum ProjectionUpdateMode {
+    UNDEFINED_PROJECTION_UPDATE_MODE = -1,
+    NO_PROJECTION_CHANGE,
+    MAINTAIN_HORIZONTAL_FOV,
+    MAINTAIN_VERTICAL_FOV,
+    MAINTAIN_SCALE,
+  };
+  static std::string          GetNameForProjectionUpdateMode(const ProjectionUpdateMode eMode);
+  static ProjectionUpdateMode GetProjectionUpdateModeFromString(const std::string& sString);
 
-	enum ProjectionUpdateMode
-	{
-		UNDEFINED_PROJECTION_UPDATE_MODE = -1,
-		NO_PROJECTION_CHANGE,
-		MAINTAIN_HORIZONTAL_FOV,
-		MAINTAIN_VERTICAL_FOV,
-		MAINTAIN_SCALE,
-	};
-	static std::string GetNameForProjectionUpdateMode( const ProjectionUpdateMode eMode );
-	static ProjectionUpdateMode GetProjectionUpdateModeFromString( const std::string& sString );
-	
-	VistaViewport* GetViewport() const;
-	void SetViewport( VistaViewport* pViewport );
-	
-	VistaViewportResizeToProjectionAdapter::ProjectionUpdateMode GetUpdateMode() const;
-	void SetUpdateMode( const VistaViewportResizeToProjectionAdapter::ProjectionUpdateMode eProjection );
+  VistaViewport* GetViewport() const;
+  void           SetViewport(VistaViewport* pViewport);
 
-	virtual void ObserverUpdate( IVistaObserveable* pObserveable, int nMsg, int nTicket );
+  VistaViewportResizeToProjectionAdapter::ProjectionUpdateMode GetUpdateMode() const;
+  void                                                         SetUpdateMode(
+                                                              const VistaViewportResizeToProjectionAdapter::ProjectionUpdateMode eProjection);
 
-	void UpdateProjectionAfterViewportChange();
+  virtual void ObserverUpdate(IVistaObserveable* pObserveable, int nMsg, int nTicket);
 
-private:
-	VistaViewport* m_pViewport;
-	ProjectionUpdateMode m_eUpdateMode;
-	int m_nCurrentSizeX;
-	int m_nCurrentSizeY;
+  void UpdateProjectionAfterViewportChange();
+
+ private:
+  VistaViewport*       m_pViewport;
+  ProjectionUpdateMode m_eUpdateMode;
+  int                  m_nCurrentSizeX;
+  int                  m_nCurrentSizeY;
 };
 
 /*============================================================================*/

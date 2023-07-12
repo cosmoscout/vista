@@ -21,11 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32) || defined(LINUX) && !defined(ARM)
 #define DLV_IX86
 #endif
-
 
 #if defined(DLV_IX86)
 
@@ -39,56 +37,52 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaRTC.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaPentiumBasedRTC : public IDLVistaRTC
-{
-public:
-	DLVistaPentiumBasedRTC();
+class VISTAINTERPROCCOMMAPI DLVistaPentiumBasedRTC : public IDLVistaRTC {
+ public:
+  DLVistaPentiumBasedRTC();
 
-	virtual ~DLVistaPentiumBasedRTC();
+  virtual ~DLVistaPentiumBasedRTC();
 
-	virtual DLV_INT64 GetTickCount() const;
+  virtual DLV_INT64 GetTickCount() const;
 
-	virtual DLV_INT32 GetTimeStamp() const;
+  virtual DLV_INT32 GetTimeStamp() const;
 
-	virtual double GetTickToSecond( DLV_INT64 nTs ) const;
+  virtual double GetTickToSecond(DLV_INT64 nTs) const;
 
-	virtual double GetSystemTime() const;
+  virtual double GetSystemTime() const;
 
-	//virtual const char *GetPrintfFormatSpecifier();
+  // virtual const char *GetPrintfFormatSpecifier();
 
-	void SetClockFrequency(DLV_INT64 nFreq);
-	DLV_INT64 GetClockFrequency() const;
-protected:
-	DLV_INT64 GetPentiumCounter() const;
-private:
-	/**
-	 * We prohibit copying
-	 */
-	DLVistaPentiumBasedRTC(const DLVistaPentiumBasedRTC &);
-	DLVistaPentiumBasedRTC& operator= (const DLVistaPentiumBasedRTC&);
+  void      SetClockFrequency(DLV_INT64 nFreq);
+  DLV_INT64 GetClockFrequency() const;
 
-	DLV_INT64 m_nFrequency;
+ protected:
+  DLV_INT64 GetPentiumCounter() const;
 
+ private:
+  /**
+   * We prohibit copying
+   */
+  DLVistaPentiumBasedRTC(const DLVistaPentiumBasedRTC&);
+  DLVistaPentiumBasedRTC& operator=(const DLVistaPentiumBasedRTC&);
+
+  DLV_INT64 m_nFrequency;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //IDLVISTAFILTER_H
+#endif // IDLVISTAFILTER_H
 #endif // IX86
-

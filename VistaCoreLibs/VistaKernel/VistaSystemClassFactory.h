@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASYSTEMCLASSFACTORY_H
 #define _VISTASYSTEMCLASSFACTORY_H
 
@@ -31,9 +30,9 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <vector>
 #include <ostream>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -53,34 +52,26 @@ class IVistaWindowingToolkit;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI IVistaSystemClassFactory
-{
-public:
-	enum Manager
-	{
-		DISPLAY,
-		GRAPHICS,
-		INTERACTION
-	};
+class VISTAKERNELAPI IVistaSystemClassFactory {
+ public:
+  enum Manager { DISPLAY, GRAPHICS, INTERACTION };
 
-	virtual ~IVistaSystemClassFactory()
-	{
-	}
+  virtual ~IVistaSystemClassFactory() {
+  }
 
-	virtual std::vector<Manager> GetInitOrder() const = 0;
+  virtual std::vector<Manager> GetInitOrder() const = 0;
 
-	virtual VistaGraphicsManager* CreateGraphicsManager() = 0;
-	virtual IVistaGraphicsBridge* CreateGraphicsBridge() = 0;
-	virtual IVistaNodeBridge* CreateNodeBridge() = 0;
-	virtual VistaDisplayManager* CreateDisplayManager() = 0;
-	virtual VistaInteractionManager* CreateInteractionManager() = 0;
+  virtual VistaGraphicsManager*    CreateGraphicsManager()    = 0;
+  virtual IVistaGraphicsBridge*    CreateGraphicsBridge()     = 0;
+  virtual IVistaNodeBridge*        CreateNodeBridge()         = 0;
+  virtual VistaDisplayManager*     CreateDisplayManager()     = 0;
+  virtual VistaInteractionManager* CreateInteractionManager() = 0;
 
-	virtual void Debug(std::ostream &out, bool bVerbose = true) const = 0;
+  virtual void Debug(std::ostream& out, bool bVerbose = true) const = 0;
 
-protected:
-	IVistaSystemClassFactory()
-	{
-	}
+ protected:
+  IVistaSystemClassFactory() {
+  }
 };
 
 /*============================================================================*/
@@ -88,5 +79,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTASYSTEMCLASSFACTORY_H
-
-

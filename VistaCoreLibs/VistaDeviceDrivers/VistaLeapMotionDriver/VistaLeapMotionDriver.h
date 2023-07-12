@@ -21,38 +21,35 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTALEAPMOTIONDRIVER_H
 #define _VISTALEAPMOTIONDRIVER_H
-
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include "VistaLeapMotionCommonShare.h"
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-//Creation Method
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
+// Creation Method
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverGenericParameterAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTALEAPMOTIONDRIVER_STATIC) 
-	#ifdef VISTALEAPMOTIONDRIVER_EXPORTS
-		#define VISTALEAPMOTIONDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTALEAPMOTIONDRIVERAPI __declspec(dllimport)
-	#endif
+// Windows DLL build
+#if defined(WIN32) && !defined(VISTALEAPMOTIONDRIVER_STATIC)
+#ifdef VISTALEAPMOTIONDRIVER_EXPORTS
+#define VISTALEAPMOTIONDRIVERAPI __declspec(dllexport)
+#else
+#define VISTALEAPMOTIONDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTALEAPMOTIONDRIVERAPI
+#define VISTALEAPMOTIONDRIVERAPI
 #endif
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -62,159 +59,148 @@ class VistaDriverSensorMappingAspect;
 class VistaDriverGenericParameterAspect;
 class VistaDriverThreadAspect;
 
-namespace Leap
-{
-	class Controller;
-	class Gesture;
-	class Frame;
-}
+namespace Leap {
+class Controller;
+class Gesture;
+class Frame;
+} // namespace Leap
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTALEAPMOTIONDRIVERAPI VistaLeapMotionDriver : public IVistaDeviceDriver
-{
-public:
-	class LeapListener;
+class VISTALEAPMOTIONDRIVERAPI VistaLeapMotionDriver : public IVistaDeviceDriver {
+ public:
+  class LeapListener;
 
-	VistaLeapMotionDriver( IVistaDriverCreationMethod* pCreationMethod );
-	virtual ~VistaLeapMotionDriver();
+  VistaLeapMotionDriver(IVistaDriverCreationMethod* pCreationMethod);
+  virtual ~VistaLeapMotionDriver();
 
-	class Parameters : public VistaDriverGenericParameterAspect::IParameterContainer
-	{
-		REFL_DECLARE
-	public:
-		Parameters( VistaLeapMotionDriver* pDriver );
+  class Parameters : public VistaDriverGenericParameterAspect::IParameterContainer {
+    REFL_DECLARE
+   public:
+    Parameters(VistaLeapMotionDriver* pDriver);
 
-		enum 
-		{
-			MSG_POLICY_FLAGS_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
-			MSG_GESTURE_FLAGS_CHG,
-			MSG_CONNECTION_TIMEOUT_CHG,
-			MSG_CONNECTION_STATE_CHG,
-			MSG_LAST
-		};
+    enum {
+      MSG_POLICY_FLAGS_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
+      MSG_GESTURE_FLAGS_CHG,
+      MSG_CONNECTION_TIMEOUT_CHG,
+      MSG_CONNECTION_STATE_CHG,
+      MSG_LAST
+    };
 
+    enum GestureFlags {
+      NO_GESTURE_ENABLED = 0,
+      CIRCLE_ENABLED     = (1 << 0),
+      SWIPE_ENABLED      = (1 << 1),
+      KEY_TAP_ENABLED    = (1 << 2),
+      SCREEN_TAP_ENABLED = (1 << 3),
+      ALL_ENABLED        = CIRCLE_ENABLED | SWIPE_ENABLED | KEY_TAP_ENABLED | SCREEN_TAP_ENABLED,
+    };
 
-		enum GestureFlags
-		{
-			NO_GESTURE_ENABLED = 0,
-			CIRCLE_ENABLED     = ( 1 << 0 ),
-			SWIPE_ENABLED      = ( 1 << 1 ),
-			KEY_TAP_ENABLED    = ( 1 << 2 ),
-			SCREEN_TAP_ENABLED = ( 1 << 3 ),
-			ALL_ENABLED        = CIRCLE_ENABLED | SWIPE_ENABLED | KEY_TAP_ENABLED | SCREEN_TAP_ENABLED,
-		};
+    GestureFlags GetGestureFlags() const;
+    bool         SetGestureFlags(GestureFlags flags);
 
-		GestureFlags GetGestureFlags() const;
-		bool SetGestureFlags( GestureFlags flags );
+    enum PolicyFlags {
+      POLICY_DEFAULT           = 0,
+      POLICY_BACKGROUND_FRAMES = (1 << 0),
+      POLICY_IMAGES            = (1 << 1),
+      POLICY_OPTIMIZE_HMD      = (1 << 2)
+    };
 
-		enum PolicyFlags
-		{
-			POLICY_DEFAULT = 0,
-	        POLICY_BACKGROUND_FRAMES = (1 << 0),
-            POLICY_IMAGES = (1 << 1),
-	        POLICY_OPTIMIZE_HMD = (1 << 2)
-		};
+    PolicyFlags GetPolicyFlags() const;
+    bool        SetPolicyFlags(PolicyFlags flags);
 
-		PolicyFlags GetPolicyFlags() const;
-		bool SetPolicyFlags( PolicyFlags flags );
+    /*
+     * Gesture.Circle.MinRadius              float      5.0           mm
+     * Gesture.Circle.MinArc                 float      1.5 * pi      radians
+     * Gesture.Swipe.MinLength               float      150           mm
+     * Gesture.Swipe.MinVelocity             float      1000          mm/s
+     * Gesture.KeyTap.MinDownVelocity        float      50            mm/s
+     * Gesture.KeyTap.HistorySeconds         float      0.1           s
+     * Gesture.KeyTap.MinDistance            float      3.0           mm
+     * Gesture.ScreenTap.MinForwardVelocity  float      50            mm/s
+     * Gesture.ScreenTap.HistorySeconds      float      0.1           s
+     * Gesture.ScreenTap.MinDistance         float      5.0           mm
+     */
 
+    float GetGestureProp(const std::string& prop_name) const;
+    bool  SetGestureProp(const std::string& prop_name, float value);
 
-		/*
-		* Gesture.Circle.MinRadius              float      5.0           mm
-		* Gesture.Circle.MinArc                 float      1.5 * pi      radians
-		* Gesture.Swipe.MinLength               float      150           mm
-		* Gesture.Swipe.MinVelocity             float      1000          mm/s
-		* Gesture.KeyTap.MinDownVelocity        float      50            mm/s
-		* Gesture.KeyTap.HistorySeconds         float      0.1           s
-		* Gesture.KeyTap.MinDistance            float      3.0           mm
-		* Gesture.ScreenTap.MinForwardVelocity  float      50            mm/s
-		* Gesture.ScreenTap.HistorySeconds      float      0.1           s
-		* Gesture.ScreenTap.MinDistance         float      5.0           mm
-		*/
+    VistaType::microtime GetConnectionTimeout() const;
+    bool                 SetConnectionTimeout(VistaType::microtime timout_in_s);
 
-		float GetGestureProp( const std::string &prop_name ) const;
-		bool  SetGestureProp( const std::string &prop_name, float value );
+    bool GetListenerConnectionState() const;
 
-		VistaType::microtime GetConnectionTimeout() const;
-		bool SetConnectionTimeout( VistaType::microtime timout_in_s );
+   private:
+    friend class LeapListener;
+    friend class VistaLeapMotionDriver;
 
-		
-		bool GetListenerConnectionState() const;
+    void ApplyGestureConfiguration();
+    void ApplyPolicyFlags();
 
-	private:
-		friend class LeapListener;
-		friend class VistaLeapMotionDriver;
+    bool SetListenerConnectionState(bool connection_state);
 
-		void ApplyGestureConfiguration();
-		void ApplyPolicyFlags();
+    VistaLeapMotionDriver* m_parent;
 
-		bool SetListenerConnectionState( bool connection_state );
+    GestureFlags m_gesture_flags;
+    PolicyFlags  m_policy_flags;
 
-		VistaLeapMotionDriver* m_parent;
+    VistaType::microtime m_connection_timeout;
 
-		GestureFlags m_gesture_flags;
-		PolicyFlags  m_policy_flags;
+    std::map<std::string, float> m_param_cache;
 
-		VistaType::microtime m_connection_timeout;
+    bool m_listener_connection_state;
+  };
 
-		std::map< std::string, float > m_param_cache;
+  Parameters* GetParameters() const;
 
-		bool m_listener_connection_state;
-	};
+  Leap::Controller* GetLeapController() const;
 
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool PhysicalEnable(bool bEnable);
 
-	Parameters *GetParameters() const;
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-	Leap::Controller *GetLeapController() const;
-protected:
-	virtual bool DoSensorUpdate( VistaType::microtime dTs );
-	virtual bool PhysicalEnable( bool bEnable );
+  void ProcessFrame(const Leap::Frame& oFrame, VistaType::microtime dTs);
+  void ProcessGesture(const int nSensorTypeId, const Leap::Gesture& oGesture,
+      const VistaType::microtime nTime, VistaType::uint64 driver_time_stamp);
 
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+ private:
+  VistaDriverSensorMappingAspect*    m_pSensors;
+  VistaDriverGenericParameterAspect* m_pConfigAspect;
+  VistaDriverThreadAspect*           m_pThreadAspect;
 
-	void ProcessFrame( const Leap::Frame& oFrame, VistaType::microtime dTs );
-	void ProcessGesture( const int nSensorTypeId, const Leap::Gesture& oGesture, const VistaType::microtime nTime, VistaType::uint64 driver_time_stamp );
+  LeapListener*     m_pListener;
+  Leap::Controller* m_pLeapController;
 
-private:
-	VistaDriverSensorMappingAspect*		m_pSensors;	
-	VistaDriverGenericParameterAspect*  m_pConfigAspect;
-	VistaDriverThreadAspect*            m_pThreadAspect;
+  bool m_bListenerIsRegistered;
 
+  unsigned int m_nHandsSensorId;
+  unsigned int m_nFingerSensorId;
+  unsigned int m_nToolsSensorId;
+  unsigned int m_nTapGestureSensorId;
+  unsigned int m_nGestureSensorId;
+  unsigned int m_nCircleGestureSensorId;
+  unsigned int m_nScreenTapGestureSensorId;
+  unsigned int m_nKeyTapGestureSensorId;
+  unsigned int m_nSwipeGestureSensorId;
+  unsigned int m_nImageSensorId;
 
-	LeapListener*     m_pListener;
-	Leap::Controller* m_pLeapController;
+  VistaType::uint64 m_nLastFrameId;
 
-	bool m_bListenerIsRegistered;
+  Parameters* m_pParameters;
 
-	unsigned int m_nHandsSensorId;
-	unsigned int m_nFingerSensorId;
-	unsigned int m_nToolsSensorId;
-	unsigned int m_nTapGestureSensorId;
-	unsigned int m_nGestureSensorId;
-	unsigned int m_nCircleGestureSensorId;
-	unsigned int m_nScreenTapGestureSensorId;
-	unsigned int m_nKeyTapGestureSensorId;
-	unsigned int m_nSwipeGestureSensorId;	
-	unsigned int m_nImageSensorId;
-
-	VistaType::uint64 m_nLastFrameId;
-
-	Parameters* m_pParameters;
-
-	VistaMutex m_oConnectionGuardMutex;	
+  VistaMutex m_oConnectionGuardMutex;
 };
 
+// CREATION METHOD
 
-//CREATION METHOD
-
-class VISTALEAPMOTIONDRIVERAPI VistaLeapMotionCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaLeapMotionCreationMethod(IVistaTranscoderFactoryFactory *metaFac);
-	virtual IVistaDeviceDriver *CreateDriver();
+class VISTALEAPMOTIONDRIVERAPI VistaLeapMotionCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaLeapMotionCreationMethod(IVistaTranscoderFactoryFactory* metaFac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/

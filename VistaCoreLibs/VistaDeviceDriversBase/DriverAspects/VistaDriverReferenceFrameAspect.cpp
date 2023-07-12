@@ -21,13 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDriverReferenceFrameAspect.h" 
+#include "VistaDriverReferenceFrameAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
 
-#include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #if defined(SUNOS)
 #include <typeinfo.h>
@@ -37,22 +36,20 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int IVistaDriverReferenceFrameAspect::m_nAspectId  = -1;
+int IVistaDriverReferenceFrameAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 IVistaDriverReferenceFrameAspect::IVistaDriverReferenceFrameAspect()
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(false)
-{
-	if(IVistaDriverReferenceFrameAspect::GetAspectId() == -1) // unregistered
-		IVistaDriverReferenceFrameAspect::SetAspectId( 
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("REFFRAME"));
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(false) {
+  if (IVistaDriverReferenceFrameAspect::GetAspectId() == -1) // unregistered
+    IVistaDriverReferenceFrameAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("REFFRAME"));
 
-	SetId(IVistaDriverReferenceFrameAspect::GetAspectId());
+  SetId(IVistaDriverReferenceFrameAspect::GetAspectId());
 }
 
-IVistaDriverReferenceFrameAspect::~IVistaDriverReferenceFrameAspect()
-{
+IVistaDriverReferenceFrameAspect::~IVistaDriverReferenceFrameAspect() {
 }
 
 /*============================================================================*/
@@ -62,20 +59,15 @@ IVistaDriverReferenceFrameAspect::~IVistaDriverReferenceFrameAspect()
 // #########################################
 // OVERWRITE IN SUBCLASSES
 // #########################################
-int  IVistaDriverReferenceFrameAspect::GetAspectId()
-{
-	return IVistaDriverReferenceFrameAspect::m_nAspectId;
+int IVistaDriverReferenceFrameAspect::GetAspectId() {
+  return IVistaDriverReferenceFrameAspect::m_nAspectId;
 }
 
-void IVistaDriverReferenceFrameAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
-
+void IVistaDriverReferenceFrameAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

@@ -21,24 +21,23 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaMemoryInfo.h"
 
 #include <VistaBase/VistaExceptionBase.h>
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 
 #if defined(WIN32)
-#include <Windows.h>
 #include <Psapi.h>
+#include <Windows.h>
 #pragma comment(lib, "Psapi.lib")
 #else
-#include <unistd.h>
-#include <iostream>
-#include <vector>
-#include <string>
 #include <cstdio>
+#include <iostream>
+#include <string>
+#include <unistd.h>
+#include <vector>
 #endif
 
 /*============================================================================*/
@@ -48,106 +47,97 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaMemoryInfo::VistaMemoryInfo()
-{
+VistaMemoryInfo::VistaMemoryInfo() {
 }
 
-VistaMemoryInfo::~VistaMemoryInfo()
-{
+VistaMemoryInfo::~VistaMemoryInfo() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-long VistaMemoryInfo::GetWorkingSet()
-{
+long VistaMemoryInfo::GetWorkingSet() {
 #ifdef WIN32
-    {
-	HANDLE hMe = GetCurrentProcess();
-	PROCESS_MEMORY_COUNTERS oProcData;
-	BOOL rv = GetProcessMemoryInfo(hMe, &oProcData, sizeof oProcData);
-	if(rv == TRUE)
-	{
-	    return (long)oProcData.WorkingSetSize;
-	}
+  {
+    HANDLE                  hMe = GetCurrentProcess();
+    PROCESS_MEMORY_COUNTERS oProcData;
+    BOOL                    rv = GetProcessMemoryInfo(hMe, &oProcData, sizeof oProcData);
+    if (rv == TRUE) {
+      return (long)oProcData.WorkingSetSize;
     }
-#elif defined (LINUX)
-    {
-	/**
-	 *  - read /proc/getpid()/stat
-	 *  - tokenize the output
-	 *  - entry 23 (vsize) is what we are looking for here
-	 *  -> as process names containing numbers, spaces and braces may
-	 *     result in different numbers of tokens, we count from back...
-	 */
-	
-    	long mem = -1;
+  }
+#elif defined(LINUX)
+  {
+    /**
+     *  - read /proc/getpid()/stat
+     *  - tokenize the output
+     *  - entry 23 (vsize) is what we are looking for here
+     *  -> as process names containing numbers, spaces and braces may
+     *     result in different numbers of tokens, we count from back...
+     */
 
-	// read stat from /proc interface
-    	char filename[256];
-    	sprintf(filename, "/proc/%d/stat", getpid());
-    	FILE *file = fopen(filename, "r");
-    	char linebuffer[1024];
-    	int nReadBytes = fread(linebuffer, 1, 1024, file);
-    	fclose(file);
+    long mem = -1;
 
-		// tokenize
-		std::vector<std::string> tokens(1);
-		std::string cur;
-		int idx = 0;
-		while(idx < nReadBytes)
-		{
-			char c = linebuffer[idx++];
-			if(isspace(c))
-			{
-			// token finished
-			tokens.push_back(cur);
-			cur.clear();
-			continue;
-			}
-			cur.push_back(c);
-		}
+    // read stat from /proc interface
+    char filename[256];
+    sprintf(filename, "/proc/%d/stat", getpid());
+    FILE* file = fopen(filename, "r");
+    char  linebuffer[1024];
+    int   nReadBytes = fread(linebuffer, 1, 1024, file);
+    fclose(file);
 
-	//		// debug output
-	//		for(int i = 0; i < tokens.size(); ++i)
-	//		{
-	//			std::cout << i << ": " << tokens[i] << std::endl;
-	//		}
-	//
-	//		std::cout << "vsize: " << tokens[tokens.size()-20] << std::endl;
-
-		// get the token containing vsize and make a number out of it
-		mem = strtol(tokens[tokens.size()-20].c_str(), NULL, 10);
-		return mem;
+    // tokenize
+    std::vector<std::string> tokens(1);
+    std::string              cur;
+    int                      idx = 0;
+    while (idx < nReadBytes) {
+      char c = linebuffer[idx++];
+      if (isspace(c)) {
+        // token finished
+        tokens.push_back(cur);
+        cur.clear();
+        continue;
+      }
+      cur.push_back(c);
     }
+
+    //		// debug output
+    //		for(int i = 0; i < tokens.size(); ++i)
+    //		{
+    //			std::cout << i << ": " << tokens[i] << std::endl;
+    //		}
+    //
+    //		std::cout << "vsize: " << tokens[tokens.size()-20] << std::endl;
+
+    // get the token containing vsize and make a number out of it
+    mem = strtol(tokens[tokens.size() - 20].c_str(), NULL, 10);
+    return mem;
+  }
 #else
-    vtoolserr << "[VistaMemoryInfo] GetWorkingSet() not implemented for this platform!" << std::endl;
+  vtoolserr << "[VistaMemoryInfo] GetWorkingSet() not implemented for this platform!" << std::endl;
 #endif
 
-    // error
-    return -1;
+  // error
+  return -1;
 }
 
-long VistaMemoryInfo::GetPeakWorkingSet()
-{
+long VistaMemoryInfo::GetPeakWorkingSet() {
 #ifdef WIN32
-    {
-		HANDLE hMe = GetCurrentProcess();
-		PROCESS_MEMORY_COUNTERS oProcData;
-		BOOL rv = GetProcessMemoryInfo(hMe, &oProcData, sizeof oProcData);
-		if(rv == TRUE)
-		{
-			return (long)oProcData.PeakWorkingSetSize;
-		}
+  {
+    HANDLE                  hMe = GetCurrentProcess();
+    PROCESS_MEMORY_COUNTERS oProcData;
+    BOOL                    rv = GetProcessMemoryInfo(hMe, &oProcData, sizeof oProcData);
+    if (rv == TRUE) {
+      return (long)oProcData.PeakWorkingSetSize;
     }
+  }
 #else
-    VISTA_THROW_NOT_IMPLEMENTED
+  VISTA_THROW_NOT_IMPLEMENTED
 #endif
 
-    // error
-    return -1;
+  // error
+  return -1;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

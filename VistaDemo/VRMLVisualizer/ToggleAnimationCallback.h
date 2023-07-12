@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _TOGGLEANIMATIONCALLBACK_H
 #define _TOGGLEANIMATIONCALLBACK_H
 
@@ -48,34 +47,30 @@
  * CToggleAnimationCallback
  * This Callbacks switches the animation on and off.
  */
-class ToggleAnimationCallback : public IVistaExplicitCallbackInterface
-{
-public:
-	
-	/**
-	 * Constructor
-	 * The Constructor needs the application's PropertyList.
-	 */
-	ToggleAnimationCallback( VistaPropertyList &props );
-	
-	/**
-	 * Destructor
-	 * Not my PropertyList -> nothing todo
-	 */
-	virtual ~ToggleAnimationCallback();
+class ToggleAnimationCallback : public IVistaExplicitCallbackInterface {
+ public:
+  /**
+   * Constructor
+   * The Constructor needs the application's PropertyList.
+   */
+  ToggleAnimationCallback(VistaPropertyList& props);
 
-	/**
-	 * This method is invoked by the application.
-	 */
-	bool Do();
+  /**
+   * Destructor
+   * Not my PropertyList -> nothing todo
+   */
+  virtual ~ToggleAnimationCallback();
 
-private:
-	
-	/**
-	 * Tha applicaitions PropertyList.
-	 */
-	VistaPropertyList &mProps;
+  /**
+   * This method is invoked by the application.
+   */
+  bool Do();
 
+ private:
+  /**
+   * Tha applicaitions PropertyList.
+   */
+  VistaPropertyList& mProps;
 };
 
 /*============================================================================*/

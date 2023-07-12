@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*
 
 What is Bob doing?
@@ -52,44 +51,38 @@ follow Alice directly. But maybe Alice and Bob only had a hissy fight ...
 /*============================================================================*/
 /* main()                                                                     */
 /*============================================================================*/
-int main(int argc, char **argv)
-{
-	// Initialize our Vista System
-	VistaSystem *pVistaSystem = new VistaSystem;
-	pVistaSystem->IntroMsg();
+int main(int argc, char** argv) {
+  // Initialize our Vista System
+  VistaSystem* pVistaSystem = new VistaSystem;
+  pVistaSystem->IntroMsg();
 
-	std::list<std::string> liSearchPaths;
-	liSearchPaths.push_back("../configfiles/");
-	liSearchPaths.push_back("./configfiles/");
-	pVistaSystem->SetIniSearchPaths(liSearchPaths); 
+  std::list<std::string> liSearchPaths;
+  liSearchPaths.push_back("../configfiles/");
+  liSearchPaths.push_back("./configfiles/");
+  pVistaSystem->SetIniSearchPaths(liSearchPaths);
 
-	Bob *pBob = 0;
+  Bob* pBob = 0;
 
-	if(pVistaSystem->Init(argc, argv))
-	{
-		try
-		{
-			//Create Bob, Create Scene
-			pBob = new Bob( pVistaSystem );
-		}
+  if (pVistaSystem->Init(argc, argv)) {
+    try {
+      // Create Bob, Create Scene
+      pBob = new Bob(pVistaSystem);
+    }
 
-		catch(VistaExceptionBase &eException)
-		{
-			//Something went terribly wrong. Better stop.
-			eException.PrintException();
-			return 0;
-		}
+    catch (VistaExceptionBase& eException) {
+      // Something went terribly wrong. Better stop.
+      eException.PrintException();
+      return 0;
+    }
 
+    // Create the CommandHandler, link it with Bob
+    CommandHandler oCommandHandler(pVistaSystem->GetEventManager(), pBob);
+    // Get Bob going
+    pVistaSystem->Run();
+  }
 
-		// Create the CommandHandler, link it with Bob
-		CommandHandler oCommandHandler( pVistaSystem->GetEventManager(), pBob);
-		// Get Bob going
-		pVistaSystem->Run();
-	}
+  delete pBob;
+  delete pVistaSystem;
 
-	delete pBob;
-	delete pVistaSystem;
-
-	return 0;
+  return 0;
 }
-

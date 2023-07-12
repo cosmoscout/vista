@@ -20,12 +20,12 @@
 /*                                Contributors                                */
 /*                                                                            */
 /*============================================================================*/
-// $Id$                    
+// $Id$
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -39,4 +39,3 @@ OSG_BEGIN_NAMESPACE
 OSG_END_NAMESPACE
 
 #define OSGVistaOpenGLDrawCore_INLINE_CVSID "@(#)$Id$"
-

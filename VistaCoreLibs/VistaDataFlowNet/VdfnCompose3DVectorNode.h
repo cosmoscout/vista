@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCOMPOSE3DVECTORNODE
 #define _VDFNCOMPOSE3DVECTORNODE
 
@@ -59,25 +58,24 @@
  *
  * @outport{out,VistaVector3D, assembled vector}
  */
-class VISTADFNAPI VdfnCompose3DVectorNode : public IVdfnNode
-{
-public:
-	VdfnCompose3DVectorNode();
-	virtual ~VdfnCompose3DVectorNode();
+class VISTADFNAPI VdfnCompose3DVectorNode : public IVdfnNode {
+ public:
+  VdfnCompose3DVectorNode();
+  virtual ~VdfnCompose3DVectorNode();
 
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
-	TVdfnPort<float>*				m_pInX;
-	TVdfnPort<float>*				m_pInY;
-	TVdfnPort<float>*				m_pInZ;
-	TVdfnPort<float>*				m_pInW;
-	TVdfnPort<VistaVector3D>*		m_pOut;
+ private:
+  TVdfnPort<float>*         m_pInX;
+  TVdfnPort<float>*         m_pInY;
+  TVdfnPort<float>*         m_pInZ;
+  TVdfnPort<float>*         m_pInW;
+  TVdfnPort<VistaVector3D>* m_pOut;
 };
 
 /*============================================================================*/

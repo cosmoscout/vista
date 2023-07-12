@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaClusterDataCollect.h"
 
 #include <VistaBase/VistaTimeUtils.h>
@@ -33,16 +32,13 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaClusterDataCollect::IVistaClusterDataCollect( const bool bVerbose, const bool bIsLeader )
-: IVistaClusterSyncEntity( bVerbose, bIsLeader )
-{
+IVistaClusterDataCollect::IVistaClusterDataCollect(const bool bVerbose, const bool bIsLeader)
+    : IVistaClusterSyncEntity(bVerbose, bIsLeader) {
 }
 
-IVistaClusterDataCollect::~IVistaClusterDataCollect()
-{
+IVistaClusterDataCollect::~IVistaClusterDataCollect() {
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-

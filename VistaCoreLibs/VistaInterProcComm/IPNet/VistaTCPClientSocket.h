@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATCPCLIENTSOCKET_H
 #define _VISTATCPCLIENTSOCKET_H
 
@@ -29,8 +28,8 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaTCPSocket.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,7 +43,6 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-
 /**
  * This is the counterpart to a VistaTCPServerSocket. It is used to ease client
  * operations in conjucntion with a tcp-based client-server topology.
@@ -53,41 +51,37 @@
  * realized by the following sequence:
  * <ol>
  *  <li>VistaTCPClientSocket client;
- *  <li>if( client.ConnectToServer("www.whatyouwant.com", 80) ) { std::cout << "connected.\n"; client.CloseSocket() };
+ *  <li>if( client.ConnectToServer("www.whatyouwant.com", 80) ) { std::cout << "connected.\n";
+ * client.CloseSocket() };
  * </ol>
  */
-class VISTAINTERPROCCOMMAPI VistaTCPClientSocket : public VistaTCPSocket
-{
-private:
-protected:
+class VISTAINTERPROCCOMMAPI VistaTCPClientSocket : public VistaTCPSocket {
+ private:
+ protected:
+ public:
+  /**
+   * Creates a TCP socket that is used to connect to a tcp-server socket
+   * somewhere on the net.
+   */
+  VistaTCPClientSocket();
 
-public:
+  /**
+   * Does NOT close the socket.
+   */
+  virtual ~VistaTCPClientSocket();
 
-	/**
-	 * Creates a TCP socket that is used to connect to a tcp-server socket
-	 * somewhere on the net.
-	 */
-	VistaTCPClientSocket();
-
-	/**
-	 * Does NOT close the socket.
-	 */
-	virtual ~VistaTCPClientSocket();
-
-
-	/**
-	 * Easy, simple and failsafe way to connect to a tcp-server.
-	 * @param sServerHostName the name of the server as a string (either FQDN or dotted number-notation
-	 * @param iServerPort the portnumber to connect to (e.g. 80 for http access)
-	 * @return false if something went wrong (e.g. connection was refused)
-	 */
-	bool ConnectToServer(const std::string &sServerHostName, int iServerPort);
+  /**
+   * Easy, simple and failsafe way to connect to a tcp-server.
+   * @param sServerHostName the name of the server as a string (either FQDN or dotted
+   * number-notation
+   * @param iServerPort the portnumber to connect to (e.g. 80 for http access)
+   * @return false if something went wrong (e.g. connection was refused)
+   */
+  bool ConnectToServer(const std::string& sServerHostName, int iServerPort);
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

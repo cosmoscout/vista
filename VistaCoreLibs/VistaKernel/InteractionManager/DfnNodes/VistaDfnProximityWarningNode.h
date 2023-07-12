@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNPROXIMITYWARNINGNODE_H
 #define _VISTADFNPROXIMITYWARNINGNODE_H
 
@@ -30,9 +29,9 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <VistaDataFlowNet/VdfnSerializer.h>
 #include <VistaDataFlowNet/VdfnNode.h>
 #include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
 
 #include <VistaDataFlowNet/VdfnNodeFactory.h>
 
@@ -60,42 +59,41 @@ class IVistaProximityWarningBase;
  * @inport{enabled, bool, optional, enables or disables the proximity warnings}
  * @inport{-any-, VistaVector3D, optional ,time delta to last evaluation}
  */
-class VISTAKERNELAPI VistaDfnProximityWarningNode : public IVdfnNode
-{
-public:
-	VistaDfnProximityWarningNode();
-	virtual ~VistaDfnProximityWarningNode();
+class VISTAKERNELAPI VistaDfnProximityWarningNode : public IVdfnNode {
+ public:
+  VistaDfnProximityWarningNode();
+  virtual ~VistaDfnProximityWarningNode();
 
-	void AddWarning( IVistaProximityWarningBase* pWarn );
+  void AddWarning(IVistaProximityWarningBase* pWarn);
 
-	virtual bool PrepareEvaluationRun();
-	virtual bool GetIsValid() const;
+  virtual bool PrepareEvaluationRun();
+  virtual bool GetIsValid() const;
 
-	bool GetIsEnabled() const;
-	bool SetIsEnabled( const bool bSet );
-protected:
-	virtual bool DoEvalNode();
+  bool GetIsEnabled() const;
+  bool SetIsEnabled(const bool bSet);
 
-	virtual bool SetInPort( const std::string &sName, IVdfnPort *pPort );
+ protected:
+  virtual bool DoEvalNode();
 
-	virtual void OnActivation( double dTs );
-	virtual void OnDeactivation( double dTs );
+  virtual bool SetInPort(const std::string& sName, IVdfnPort* pPort);
 
-private:
-	TVdfnPort<VistaVector3D>* m_pUserPositionPort;
-	TVdfnPort<VistaQuaternion>* m_pUserOrientationPort;
-	TVdfnPort<bool>* m_pEnabledPort;
+  virtual void OnActivation(double dTs);
+  virtual void OnDeactivation(double dTs);
 
-	bool m_bEnabled;
+ private:
+  TVdfnPort<VistaVector3D>*   m_pUserPositionPort;
+  TVdfnPort<VistaQuaternion>* m_pUserOrientationPort;
+  TVdfnPort<bool>*            m_pEnabledPort;
 
-	std::vector<TVdfnPort<VistaVector3D>*> m_vecAdditionalPorts;
+  bool m_bEnabled;
 
-	std::vector<IVistaProximityWarningBase*> m_vecWarnings;
+  std::vector<TVdfnPort<VistaVector3D>*> m_vecAdditionalPorts;
+
+  std::vector<IVistaProximityWarningBase*> m_vecWarnings;
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
 
 #endif // _VISTADFNPROXIMITYWARNINGNODE_H

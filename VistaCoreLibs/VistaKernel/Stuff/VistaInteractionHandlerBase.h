@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINTERACTIONHANDLERBASE_H
 #define _VISTAINTERACTIONHANDLERBASE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -48,27 +46,25 @@ class VistaInteractionEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI IVistaInteractionHandlerBase : public VistaEventHandler
-{
-public:
-	virtual ~IVistaInteractionHandlerBase();
+class VISTAKERNELAPI IVistaInteractionHandlerBase : public VistaEventHandler {
+ public:
+  virtual ~IVistaInteractionHandlerBase();
 
-	void HandleEvent(VistaEvent *pEvent);
-protected:
-	IVistaInteractionHandlerBase(VistaEventManager *pEvMgr,
-								 unsigned int nRoleId,
-								 bool bNeedsTime);
+  void HandleEvent(VistaEvent* pEvent);
 
-	virtual bool HandleContextChange( VistaInteractionEvent * ) = 0;
-	virtual bool HandleGraphUpdate( VistaInteractionEvent * ) = 0;
+ protected:
+  IVistaInteractionHandlerBase(VistaEventManager* pEvMgr, unsigned int nRoleId, bool bNeedsTime);
 
-	virtual bool HandleTimeUpdate( double dTs, double dLastTs );
+  virtual bool HandleContextChange(VistaInteractionEvent*) = 0;
+  virtual bool HandleGraphUpdate(VistaInteractionEvent*)   = 0;
 
-private:
-	VistaEventManager *m_pEvMgr;
-	double m_dTs;
-	bool   m_bNeedsTime;
-	unsigned int m_nRoleId;
+  virtual bool HandleTimeUpdate(double dTs, double dLastTs);
+
+ private:
+  VistaEventManager* m_pEvMgr;
+  double             m_dTs;
+  bool               m_bNeedsTime;
+  unsigned int       m_nRoleId;
 };
 
 /*============================================================================*/
@@ -76,4 +72,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAINTERACTIONHANDLERBASE_H
-

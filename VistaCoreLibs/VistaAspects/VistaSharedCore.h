@@ -46,32 +46,29 @@
 /*============================================================================*/
 
 /**
- * 
+ *
  */
-class VISTAASPECTSAPI IVistaSharedCore
-{
-public:
-	VistaType::sint32 GetReferenceCount() const;
-	void IncReferenceCount();
-	/**
-	 * Decreases refcount, and deletes itself when no more refs exist
-	 */
-	void DecReferenceCount();
+class VISTAASPECTSAPI IVistaSharedCore {
+ public:
+  VistaType::sint32 GetReferenceCount() const;
+  void              IncReferenceCount();
+  /**
+   * Decreases refcount, and deletes itself when no more refs exist
+   */
+  void DecReferenceCount();
 
-	virtual IVistaSharedCore* Clone() const = 0;	
+  virtual IVistaSharedCore* Clone() const = 0;
 
-protected:
-	IVistaSharedCore();
-	virtual ~IVistaSharedCore();
-	
-private:
-	VistaSigned32Atomic m_nReferenceCount;
+ protected:
+  IVistaSharedCore();
+  virtual ~IVistaSharedCore();
+
+ private:
+  VistaSigned32Atomic m_nReferenceCount;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASHAREDCORE_H
-

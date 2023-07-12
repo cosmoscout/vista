@@ -21,61 +21,52 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaGlutMouseDriver.h"
 
 #if defined(WIN32) && !defined(VISTAGLUTMOUSEPLUGIN_STATIC)
-	#ifdef VISTAGLUTMOUSEPLUGIN_EXPORTS
-		#define VISTAGLUTMOUSEPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTAGLUTMOUSEPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAGLUTMOUSEPLUGIN_EXPORTS
+#define VISTAGLUTMOUSEPLUGINAPI __declspec(dllexport)
+#else
+#define VISTAGLUTMOUSEPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAGLUTMOUSEPLUGINAPI
+#define VISTAGLUTMOUSEPLUGINAPI
 #endif
 
-namespace
-{
-	VistaGlutMouseDriverCreationMethod *SpFactory = NULL;
+namespace {
+VistaGlutMouseDriverCreationMethod* SpFactory = NULL;
 }
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTAGLUTKEYBOARDDRIVERCONFIG_H
 
-extern "C" VISTAGLUTMOUSEPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if(SpFactory == NULL)
-		SpFactory = new VistaGlutMouseDriverCreationMethod(fac);
-	return SpFactory;
+extern "C" VISTAGLUTMOUSEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaGlutMouseDriverCreationMethod(fac);
+  return SpFactory;
 }
 
-extern "C" VISTAGLUTMOUSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( crm == SpFactory )
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
+extern "C" VISTAGLUTMOUSEPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == SpFactory)
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
 }
 
-extern "C" VISTAGLUTMOUSEPLUGINAPI const char *GetDeviceClassName()
-{
-	return "GLUTMOUSE";
+extern "C" VISTAGLUTMOUSEPLUGINAPI const char* GetDeviceClassName() {
+  return "GLUTMOUSE";
 }

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAVERSION_H
 #define _VISTAVERSION_H
 
@@ -47,15 +46,14 @@
  * 				<td align="left"><b>May 20th, 2016</b></td>
  * 			</tr>
  * 			<tr><td colspan=2>&nbsp;</td></tr>
- * 			<tr><td align="center" colspan=2><i>This is the ViSTA release 1.16.0, codename "HUBBLE".</i></td></tr>
- * 			<tr><td align="center" colspan=2><i>It is dedicated to the Hubble Space Telescope, one of the</i></td></tr>
- * 			<tr><td align="center" colspan=2><i>largest and most versatile space telescopes, observing in the</i></td></tr>
- * 			<tr><td align="center" colspan=2><i>infrared, visible and ultraviolet spectra.</i></td></tr>
- * 			<tr><td align="center" colspan=2><i>It entered service on May 20th, 1990.</i></td></tr>
- * 			<tr><td colspan=2>&nbsp;</td></tr>
- * 			<tr>
- * 				<td align="right">full version:</td>
- * 				<td align="left"><b>1.16.0</b></td>
+ * 			<tr><td align="center" colspan=2><i>This is the ViSTA release 1.16.0, codename
+ * "HUBBLE".</i></td></tr> <tr><td align="center" colspan=2><i>It is dedicated to the Hubble Space
+ * Telescope, one of the</i></td></tr> <tr><td align="center" colspan=2><i>largest and most
+ * versatile space telescopes, observing in the</i></td></tr> <tr><td align="center"
+ * colspan=2><i>infrared, visible and ultraviolet spectra.</i></td></tr> <tr><td align="center"
+ * colspan=2><i>It entered service on May 20th, 1990.</i></td></tr> <tr><td
+ * colspan=2>&nbsp;</td></tr> <tr> <td align="right">full version:</td> <td
+ * align="left"><b>1.16.0</b></td>
  * 			</tr>
  * 			<tr>
  * 				<td align="right">release date:</td>
@@ -65,14 +63,12 @@
  * 	</div>
  */
 
-
-
 #define VISTA_HEAD
 #define VISTA_RELEASE_NAME "HEAD"
 //#define VISTA_RELEASE_NAME "HUBBLE"
 #define VISTA_VERSION "1.16.0"
-#define VISTA_MAJOR    1
-#define VISTA_MINOR    16
+#define VISTA_MAJOR 1
+#define VISTA_MINOR 16
 #define VISTA_REVISION 0
 
 /*============================================================================*/
@@ -82,16 +78,15 @@
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTABASEAPI VistaVersion
-{
-public:
-	static const char *GetReleaseName();
-	static const char *GetVersion();
-	static int GetMajor();
-	static int GetMinor();
-	static int GetRevision();
-	static const char *GetBuildTimeString();
-	static const char *GetBuildDateString();
+class VISTABASEAPI VistaVersion {
+ public:
+  static const char* GetReleaseName();
+  static const char* GetVersion();
+  static int         GetMajor();
+  static int         GetMinor();
+  static int         GetRevision();
+  static const char* GetBuildTimeString();
+  static const char* GetBuildDateString();
 };
 
 #endif //_VISTAVERSION_H

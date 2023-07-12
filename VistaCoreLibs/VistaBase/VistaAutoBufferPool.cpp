@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaAutoBufferPool.h"
 
 #include <VistaBase/VistaStreamUtils.h>
@@ -32,84 +31,69 @@
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-namespace
-{
-	class _findUnique : public std::unary_function<const VistaAutoWriteBuffer, bool>
-	{
-	public:
-		bool operator()( const VistaAutoWriteBuffer &b ) const
-		{
-			// if there is only one owner, it is the pool (since we created it, we own it)
-			return b.HasOneOwner();
-		}
-	};
+namespace {
+class _findUnique : public std::unary_function<const VistaAutoWriteBuffer, bool> {
+ public:
+  bool operator()(const VistaAutoWriteBuffer& b) const {
+    // if there is only one owner, it is the pool (since we created it, we own it)
+    return b.HasOneOwner();
+  }
+};
 
 #ifdef DEBUG
-	class _checkCount : public std::unary_function<const VistaAutoWriteBuffer, void>
-	{
-	public:
-		void operator()( const VistaAutoWriteBuffer &b ) const
-		{
-			if( b.HasOneOwner() == false )
-				vstr::outi() << "VistaAutoWriteBuffer @ " << &b
-				                    << " seems still to be owned be someone else than this pool, "
-				                    << "but was create by bufferpool that is now destroyed."
-				                    << std::endl;
-		}
-	};
+class _checkCount : public std::unary_function<const VistaAutoWriteBuffer, void> {
+ public:
+  void operator()(const VistaAutoWriteBuffer& b) const {
+    if (b.HasOneOwner() == false)
+      vstr::outi() << "VistaAutoWriteBuffer @ " << &b
+                   << " seems still to be owned be someone else than this pool, "
+                   << "but was create by bufferpool that is now destroyed." << std::endl;
+  }
+};
 #endif
-}
+} // namespace
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-VistaAutoBufferPool::VistaAutoBufferPool( size_t nNumBufsPreAlloced, size_t nBufDefSize, bool resizeOnNeed )
-: m_pool()
-, m_bAdaptSize( resizeOnNeed )
-{
-	for( size_t n=0 ; n < nNumBufsPreAlloced; ++n )
-		m_pool.push_back( VistaAutoWriteBuffer(nBufDefSize) );
+VistaAutoBufferPool::VistaAutoBufferPool(
+    size_t nNumBufsPreAlloced, size_t nBufDefSize, bool resizeOnNeed)
+    : m_pool()
+    , m_bAdaptSize(resizeOnNeed) {
+  for (size_t n = 0; n < nNumBufsPreAlloced; ++n)
+    m_pool.push_back(VistaAutoWriteBuffer(nBufDefSize));
 }
 
-VistaAutoBufferPool::~VistaAutoBufferPool()
-{
+VistaAutoBufferPool::~VistaAutoBufferPool() {
 #if defined(DEBUG)
-	std::for_each( m_pool.begin(), m_pool.end(), _checkCount() );
+  std::for_each(m_pool.begin(), m_pool.end(), _checkCount());
 #endif
 }
 
+VistaAutoWriteBuffer VistaAutoBufferPool::GetBufferWrite() {
+  std::vector<VistaAutoWriteBuffer>::const_iterator cit = SearchNextAvailable();
+  if (cit == m_pool.end()) {
+    if (m_bAdaptSize) {
+      m_pool.push_back(VistaAutoWriteBuffer(0));
+      return m_pool.back();
+    } else
+      return VistaAutoWriteBuffer(); // invalid buffer
+  }
 
-VistaAutoWriteBuffer VistaAutoBufferPool::GetBufferWrite()
-{
-	std::vector<VistaAutoWriteBuffer>::const_iterator cit = SearchNextAvailable();
-	if( cit == m_pool.end() )
-	{
-		if( m_bAdaptSize )
-		{
-			m_pool.push_back( VistaAutoWriteBuffer(0) );
-			return m_pool.back();
-		}
-		else
-			return VistaAutoWriteBuffer(); // invalid buffer
-	}
-
-	return *cit;
+  return *cit;
 }
 
-size_t VistaAutoBufferPool::GetCurrentNumOfBuffers() const
-{
-	return m_pool.size();
+size_t VistaAutoBufferPool::GetCurrentNumOfBuffers() const {
+  return m_pool.size();
 }
 
-std::vector<VistaAutoWriteBuffer>::const_iterator VistaAutoBufferPool::SearchNextAvailable() const
-{
-	return std::find_if( m_pool.begin(), m_pool.end(), _findUnique() );
+std::vector<VistaAutoWriteBuffer>::const_iterator VistaAutoBufferPool::SearchNextAvailable() const {
+  return std::find_if(m_pool.begin(), m_pool.end(), _findUnique());
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _CPROCESS_CALLBACK_H
 #define _CPROCESS_CALLBACK_H
 
@@ -31,7 +30,6 @@
 
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
 
-
 class VistaGraphicsEvent;
 class VistaEventManager;
 class VistaEvent;
@@ -40,26 +38,23 @@ class VistaEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class ProcessCallback : public IVistaExplicitCallbackInterface
-{
-public:
+class ProcessCallback : public IVistaExplicitCallbackInterface {
+ public:
+  static const int NULL_EVENT     = 0;
+  static const int GRAPHICS_EVENT = 1;
+  static const int DEMO_EVENT     = 2;
 
-	static const int NULL_EVENT = 0;
-	static const int GRAPHICS_EVENT = 1;
-	static const int DEMO_EVENT = 2;
+  ProcessCallback(int iEventType, VistaEventManager* pEventManager);
+  ~ProcessCallback();
 
-	ProcessCallback(int iEventType, VistaEventManager* pEventManager);
-	~ProcessCallback();
+  // Interface
+  bool PrepareCallback();
+  bool Do();
+  bool PostCallback();
 
-	// Interface
-	bool PrepareCallback();
-	bool Do();
-	bool PostCallback();
-
-
-private:
-	VistaEventManager*		m_pEventManager;
-	int						m_iEventType;
+ private:
+  VistaEventManager* m_pEventManager;
+  int                m_iEventType;
 };
 
 #endif

@@ -21,186 +21,165 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaPacketPump.h"
 #include <VistaInterProcComm/Concurrency/VistaThreadLoop.h>
 
 // inner class: PumpLoop
 
-class VistaPumpLoop : public VistaThreadLoop
-{
-private:
-	IDLVistaPipeComponent *m_pComponent;
-	DLVistaPacketPump    *m_pDest;
-	int                    m_msecs;
-protected:
-public:
-	VistaPumpLoop(DLVistaPacketPump *pPumpComp);
-	~VistaPumpLoop();
+class VistaPumpLoop : public VistaThreadLoop {
+ private:
+  IDLVistaPipeComponent* m_pComponent;
+  DLVistaPacketPump*     m_pDest;
+  int                    m_msecs;
 
-	bool LoopBody();
+ protected:
+ public:
+  VistaPumpLoop(DLVistaPacketPump* pPumpComp);
+  ~VistaPumpLoop();
 
-	IDLVistaPipeComponent *GetPumpSourceComponent() const { return m_pComponent; }
-	void                   SetPumpSourceComponent(IDLVistaPipeComponent *pComponent) { m_pComponent = pComponent; }
+  bool LoopBody();
 
-	int                    GetPumpBurst() const { return m_msecs; }
-	void                   SetPumpBurst(int msecs) { m_msecs = msecs; }
+  IDLVistaPipeComponent* GetPumpSourceComponent() const {
+    return m_pComponent;
+  }
+  void SetPumpSourceComponent(IDLVistaPipeComponent* pComponent) {
+    m_pComponent = pComponent;
+  }
+
+  int GetPumpBurst() const {
+    return m_msecs;
+  }
+  void SetPumpBurst(int msecs) {
+    m_msecs = msecs;
+  }
 };
 
-
-VistaPumpLoop::VistaPumpLoop(DLVistaPacketPump *pComponent)
-{
-	m_pDest = pComponent;
-	m_pComponent = NULL;
-	m_msecs = 1;
+VistaPumpLoop::VistaPumpLoop(DLVistaPacketPump* pComponent) {
+  m_pDest      = pComponent;
+  m_pComponent = NULL;
+  m_msecs      = 1;
 }
 
-VistaPumpLoop::~VistaPumpLoop()
-{
+VistaPumpLoop::~VistaPumpLoop() {
 }
 
-bool VistaPumpLoop::LoopBody()
-{
+bool VistaPumpLoop::LoopBody() {
 
-	IDLVistaDataPacket *pPacket = m_pComponent->ReturnPacket();
-	bool bFlag = false;
-	while(m_pComponent && pPacket)
-	{
-		m_pDest->RecycleDataPacket(pPacket, m_pComponent, false);
-		bFlag = true;
-		pPacket = m_pComponent->ReturnPacket();
-	}
+  IDLVistaDataPacket* pPacket = m_pComponent->ReturnPacket();
+  bool                bFlag   = false;
+  while (m_pComponent && pPacket) {
+    m_pDest->RecycleDataPacket(pPacket, m_pComponent, false);
+    bFlag   = true;
+    pPacket = m_pComponent->ReturnPacket();
+  }
 
-	if(bFlag)
-		return false;
-	return false;
+  if (bFlag)
+    return false;
+  return false;
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 DLVistaPacketPump::DLVistaPacketPump(int iPumpBurst)
-: IDLVistaPipe(), IDLVistaActiveComponent()
-{
-	m_pPumpLoop = new VistaPumpLoop(this);
-	static_cast<VistaPumpLoop *>(m_pPumpLoop)->SetPumpBurst(iPumpBurst);
+    : IDLVistaPipe()
+    , IDLVistaActiveComponent() {
+  m_pPumpLoop = new VistaPumpLoop(this);
+  static_cast<VistaPumpLoop*>(m_pPumpLoop)->SetPumpBurst(iPumpBurst);
 }
 
-DLVistaPacketPump::~DLVistaPacketPump()
-{
-	delete m_pPumpLoop;
+DLVistaPacketPump::~DLVistaPacketPump() {
+  delete m_pPumpLoop;
 }
 
-bool DLVistaPacketPump::StartComponent() 
-{
-	return m_pPumpLoop->Run();
+bool DLVistaPacketPump::StartComponent() {
+  return m_pPumpLoop->Run();
 }
 
-bool DLVistaPacketPump::StopComponentGently(bool bJoin) 
-{
-	return m_pPumpLoop->StopGently(bJoin);
+bool DLVistaPacketPump::StopComponentGently(bool bJoin) {
+  return m_pPumpLoop->StopGently(bJoin);
 }
 
-bool DLVistaPacketPump::PauseComponent(bool bJoin) 
-{
-	return m_pPumpLoop->PauseThread(bJoin);
+bool DLVistaPacketPump::PauseComponent(bool bJoin) {
+  return m_pPumpLoop->PauseThread(bJoin);
 }
 
-bool DLVistaPacketPump::UnPauseComponent(bool bJoin) 
-{
-	return m_pPumpLoop->UnpauseThread();
+bool DLVistaPacketPump::UnPauseComponent(bool bJoin) {
+  return m_pPumpLoop->UnpauseThread();
 }
 
-
-bool DLVistaPacketPump::StopComponent(bool bJoin) 
-{
-	return m_pPumpLoop->Suspend();
+bool DLVistaPacketPump::StopComponent(bool bJoin) {
+  return m_pPumpLoop->Suspend();
 }
 
-bool DLVistaPacketPump::HaltComponent() 
-{
-	return m_pPumpLoop->Abort();
+bool DLVistaPacketPump::HaltComponent() {
+  return m_pPumpLoop->Abort();
 }
 
-bool DLVistaPacketPump::IsComponentRunning() const 
-{
-	return m_pPumpLoop->IsRunning();
+bool DLVistaPacketPump::IsComponentRunning() const {
+  return m_pPumpLoop->IsRunning();
 }
 
-bool DLVistaPacketPump::IsFull() const 
-{
-	return false;
+bool DLVistaPacketPump::IsFull() const {
+  return false;
 }
 
-bool DLVistaPacketPump::IsEmpty() const 
-{
-	return false;
+bool DLVistaPacketPump::IsEmpty() const {
+  return false;
 }
 
-int DLVistaPacketPump::Capacity() const 
-{
-	return false;
+int DLVistaPacketPump::Capacity() const {
+  return false;
 }
 
-bool DLVistaPacketPump::AttachOutputComponent(IDLVistaPipeComponent * pComp)
-{
-	
-	bool bRet = IDLVistaPipe::AttachOutputComponent(pComp);
-	if(bRet)
-	{
-		// we should not do this while running!
-		if(m_pPumpLoop->IsRunning())
-		{
-			m_pPumpLoop->PauseThread(true);
-			static_cast<VistaPumpLoop *>(m_pPumpLoop)->SetPumpSourceComponent(pComp);
-			m_pPumpLoop->UnpauseThread();
-		}
-		else
-			static_cast<VistaPumpLoop *>(m_pPumpLoop)->SetPumpSourceComponent(pComp);
+bool DLVistaPacketPump::AttachOutputComponent(IDLVistaPipeComponent* pComp) {
 
-		return true;
-	}
-	return false;
+  bool bRet = IDLVistaPipe::AttachOutputComponent(pComp);
+  if (bRet) {
+    // we should not do this while running!
+    if (m_pPumpLoop->IsRunning()) {
+      m_pPumpLoop->PauseThread(true);
+      static_cast<VistaPumpLoop*>(m_pPumpLoop)->SetPumpSourceComponent(pComp);
+      m_pPumpLoop->UnpauseThread();
+    } else
+      static_cast<VistaPumpLoop*>(m_pPumpLoop)->SetPumpSourceComponent(pComp);
+
+    return true;
+  }
+  return false;
 }
 
-bool DLVistaPacketPump::DetachOutputComponent(IDLVistaPipeComponent * pComp)
-{
-	bool bRet = IDLVistaPipe::DetachOutputComponent(pComp);
+bool DLVistaPacketPump::DetachOutputComponent(IDLVistaPipeComponent* pComp) {
+  bool bRet = IDLVistaPipe::DetachOutputComponent(pComp);
 
-	if(bRet && m_pPumpLoop->IsRunning())
-	{
-		m_pPumpLoop->PauseThread(true);
-		static_cast<VistaPumpLoop *>(m_pPumpLoop)->SetPumpSourceComponent(NULL);
-		m_pPumpLoop->UnpauseThread();
-	}
+  if (bRet && m_pPumpLoop->IsRunning()) {
+    m_pPumpLoop->PauseThread(true);
+    static_cast<VistaPumpLoop*>(m_pPumpLoop)->SetPumpSourceComponent(NULL);
+    m_pPumpLoop->UnpauseThread();
+  }
 
-	return bRet;
+  return bRet;
 }
 
-bool DLVistaPacketPump::AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock)
-{
-	return m_pOutput->AcceptDataPacket(pPacket, this, bBlock);
+bool DLVistaPacketPump::AcceptDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock) {
+  return m_pOutput->AcceptDataPacket(pPacket, this, bBlock);
 }
 
-bool DLVistaPacketPump::RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock)
-{
-	return m_pInput->RecycleDataPacket(pPacket, this, bBlock);
+bool DLVistaPacketPump::RecycleDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock) {
+  return m_pInput->RecycleDataPacket(pPacket, this, bBlock);
 }
 
-IDLVistaDataPacket * DLVistaPacketPump::GivePacket(bool bBlock)
-{
-	// forward this request
-	return this->m_pOutput->GivePacket(bBlock);
+IDLVistaDataPacket* DLVistaPacketPump::GivePacket(bool bBlock) {
+  // forward this request
+  return this->m_pOutput->GivePacket(bBlock);
 }
 
-IDLVistaDataPacket *DLVistaPacketPump::ReturnPacket()
-{
-	// forward this request!
-	return m_pOutput->ReturnPacket();
+IDLVistaDataPacket* DLVistaPacketPump::ReturnPacket() {
+  // forward this request!
+  return m_pOutput->ReturnPacket();
 }
 
-bool DLVistaPacketPump::InitPacketMgmt() 
-{
-	return true;
+bool DLVistaPacketPump::InitPacketMgmt() {
+  return true;
 }
-
-

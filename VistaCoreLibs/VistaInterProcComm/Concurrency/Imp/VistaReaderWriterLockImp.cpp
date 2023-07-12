@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaReaderWriterLockImp.h" 
+#include "VistaReaderWriterLockImp.h"
 #include "../VistaMutex.h"
 #include "../VistaThreadCondition.h"
 
@@ -34,122 +33,99 @@
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-class VistaVanillaReaderWriterLockImp : public IVistaReaderWriterLockImp
-{
-	public:
-	VistaVanillaReaderWriterLockImp()
-	{
-	m_nReadersReading = 0;
-		m_nWritersWriting = 0;
-	m_nWritersPending = 0;
-	m_pLock      = new VistaMutex;
-	m_pCondition = new VistaThreadCondition;
-	}
-	
-	
-	virtual ~VistaVanillaReaderWriterLockImp()
-	{
-	// we should test for locked mutexes here...
-	delete m_pLock;
-	delete m_pCondition;
-	}
-	
-	virtual bool ReaderLock()
-	{   
-		m_pLock->Lock();
-		while(m_nWritersWriting)
-		{
-			m_pCondition->WaitForCondition(*m_pLock);
-		}
-		
-		++m_nReadersReading;
-	m_pLock->Unlock();
-		return true;
-	}
-	
-	virtual bool ReaderUnlock()
-	{
-	m_pLock->Lock();
-		if (m_nReadersReading == 0) 
-	{
-		m_pLock->Unlock();	
-				return false;
-		} 
-	else 
-	{
-		--m_nReadersReading;
-		if (m_nReadersReading == 0)
-		{
-			m_pCondition->SignalCondition();
-		}
-		m_pLock->Unlock();
-		return true;
-	}
-	}
-	
-	virtual bool WriterLock()
-	{
-	m_pLock->Lock();
-		while(m_nWritersWriting) 
-	{
-		m_pCondition->WaitForCondition(*m_pLock);
-		}
-		++m_nWritersWriting;
-	m_pLock->Unlock();
-		return true;
-	}
-	
-	virtual bool WriterUnlock()
-	{
-	m_pLock->Lock();
-		if (m_nWritersWriting == 0) 
-	{
-			m_pLock->Unlock();
-			return false;
-		} 
-	else 
-	{
-			m_nWritersWriting = 0;
-			m_pCondition->BroadcastCondition();
-			m_pLock->Unlock();
-			return true;
-		}
-	}
-	
-	
-	protected:
-	private:
-	VistaMutex * m_pLock;
-	VistaThreadCondition * m_pCondition;
-	int m_nReadersReading;
-	int m_nWritersWriting;
-	int m_nWritersPending;
+class VistaVanillaReaderWriterLockImp : public IVistaReaderWriterLockImp {
+ public:
+  VistaVanillaReaderWriterLockImp() {
+    m_nReadersReading = 0;
+    m_nWritersWriting = 0;
+    m_nWritersPending = 0;
+    m_pLock           = new VistaMutex;
+    m_pCondition      = new VistaThreadCondition;
+  }
+
+  virtual ~VistaVanillaReaderWriterLockImp() {
+    // we should test for locked mutexes here...
+    delete m_pLock;
+    delete m_pCondition;
+  }
+
+  virtual bool ReaderLock() {
+    m_pLock->Lock();
+    while (m_nWritersWriting) {
+      m_pCondition->WaitForCondition(*m_pLock);
+    }
+
+    ++m_nReadersReading;
+    m_pLock->Unlock();
+    return true;
+  }
+
+  virtual bool ReaderUnlock() {
+    m_pLock->Lock();
+    if (m_nReadersReading == 0) {
+      m_pLock->Unlock();
+      return false;
+    } else {
+      --m_nReadersReading;
+      if (m_nReadersReading == 0) {
+        m_pCondition->SignalCondition();
+      }
+      m_pLock->Unlock();
+      return true;
+    }
+  }
+
+  virtual bool WriterLock() {
+    m_pLock->Lock();
+    while (m_nWritersWriting) {
+      m_pCondition->WaitForCondition(*m_pLock);
+    }
+    ++m_nWritersWriting;
+    m_pLock->Unlock();
+    return true;
+  }
+
+  virtual bool WriterUnlock() {
+    m_pLock->Lock();
+    if (m_nWritersWriting == 0) {
+      m_pLock->Unlock();
+      return false;
+    } else {
+      m_nWritersWriting = 0;
+      m_pCondition->BroadcastCondition();
+      m_pLock->Unlock();
+      return true;
+    }
+  }
+
+ protected:
+ private:
+  VistaMutex*           m_pLock;
+  VistaThreadCondition* m_pCondition;
+  int                   m_nReadersReading;
+  int                   m_nWritersWriting;
+  int                   m_nWritersPending;
 };
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaReaderWriterLockImp::IVistaReaderWriterLockImp()
-{
+IVistaReaderWriterLockImp::IVistaReaderWriterLockImp() {
 }
 
-IVistaReaderWriterLockImp::~IVistaReaderWriterLockImp()
-{
+IVistaReaderWriterLockImp::~IVistaReaderWriterLockImp() {
 }
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-IVistaReaderWriterLockImp *IVistaReaderWriterLockImp::CreateReaderWriterLock()
-{
-	#if defined(VISTA_THREADING_POSIX) && defined(_USE_PTHREAD_RWLOCK)
-	return new VistaPthreadReaderWriterLockImp;
-	#else
-	return new VistaVanillaReaderWriterLockImp;
-	#endif
+IVistaReaderWriterLockImp* IVistaReaderWriterLockImp::CreateReaderWriterLock() {
+#if defined(VISTA_THREADING_POSIX) && defined(_USE_PTHREAD_RWLOCK)
+  return new VistaPthreadReaderWriterLockImp;
+#else
+  return new VistaVanillaReaderWriterLockImp;
+#endif
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

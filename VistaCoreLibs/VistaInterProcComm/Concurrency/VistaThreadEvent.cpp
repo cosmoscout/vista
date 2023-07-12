@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaThreadEvent.h"
 #include "Imp/VistaThreadEventImp.h"
 
@@ -33,23 +32,18 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-
-VistaThreadEvent::VistaThreadEvent( bool waitable_event )
-{
-	m_pImpl = IVistaThreadEventImp::CreateThreadEventImp( waitable_event );
+VistaThreadEvent::VistaThreadEvent(bool waitable_event) {
+  m_pImpl = IVistaThreadEventImp::CreateThreadEventImp(waitable_event);
 }
 
-VistaThreadEvent::VistaThreadEvent(WaitBehavior wait_behavior)
-{
-	m_pImpl =  IVistaThreadEventImp::CreateThreadEventImp(wait_behavior == WAITABLE_EVENT ? true : false );
+VistaThreadEvent::VistaThreadEvent(WaitBehavior wait_behavior) {
+  m_pImpl =
+      IVistaThreadEventImp::CreateThreadEventImp(wait_behavior == WAITABLE_EVENT ? true : false);
 }
 
-
-VistaThreadEvent::~VistaThreadEvent()
-{
-	delete m_pImpl;
+VistaThreadEvent::~VistaThreadEvent() {
+  delete m_pImpl;
 }
-
 
 /*============================================================================*/
 /*============================================================================*/
@@ -59,37 +53,31 @@ VistaThreadEvent::~VistaThreadEvent()
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-void VistaThreadEvent::SignalEvent()
-{
-	m_pImpl->SignalEvent();
+void VistaThreadEvent::SignalEvent() {
+  m_pImpl->SignalEvent();
 }
 
-bool VistaThreadEvent::WaitForEvent(int iTimeoutMSecs)
-{
-	return m_pImpl->WaitForEvent(iTimeoutMSecs);
+bool VistaThreadEvent::WaitForEvent(int iTimeoutMSecs) {
+  return m_pImpl->WaitForEvent(iTimeoutMSecs);
 }
 
-bool VistaThreadEvent::WaitForEvent(bool bBlock)
-{
-	return m_pImpl->WaitForEvent(bBlock);
+bool VistaThreadEvent::WaitForEvent(bool bBlock) {
+  return m_pImpl->WaitForEvent(bBlock);
 }
 
-HANDLE VistaThreadEvent::GetEventSignalHandle() const
-{
-	return m_pImpl->GetEventSignalHandle();
+HANDLE VistaThreadEvent::GetEventSignalHandle() const {
+  return m_pImpl->GetEventSignalHandle();
 }
 
-HANDLE VistaThreadEvent::GetEventWaitHandle() const
-{
-	return m_pImpl->GetEventWaitHandle();
+HANDLE VistaThreadEvent::GetEventWaitHandle() const {
+  return m_pImpl->GetEventWaitHandle();
 }
 
-
-bool VistaThreadEvent::ResetThisEvent( ResetBehavior reset_behavior )
-{
-	return m_pImpl->ResetThisEvent( reset_behavior == RESET_ALL_EVENTS ? IVistaThreadEventImp::RESET_ALL_EVENTS : IVistaThreadEventImp::RESET_JUST_ONE_EVENT );
+bool VistaThreadEvent::ResetThisEvent(ResetBehavior reset_behavior) {
+  return m_pImpl->ResetThisEvent(reset_behavior == RESET_ALL_EVENTS
+                                     ? IVistaThreadEventImp::RESET_ALL_EVENTS
+                                     : IVistaThreadEventImp::RESET_JUST_ONE_EVENT);
 }
 
 // ============================================================================
 // ============================================================================
-

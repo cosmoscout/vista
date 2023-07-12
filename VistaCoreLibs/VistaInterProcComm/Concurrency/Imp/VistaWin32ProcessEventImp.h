@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAWIN32PROCESSEVENTIMPL_H
@@ -29,36 +28,32 @@
 
 #include "VistaProcessEventImp.h"
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
 class VistaProcessEventImp;
 
-class VISTAINTERPROCCOMMAPI VistaWin32ProcessEventImp : public IVistaProcessEventImp
-{
-public:
-	// signaller ctor
-	VistaWin32ProcessEventImp( const std::string& sEventName );
-	// receiver ctor
-	VistaWin32ProcessEventImp( const std::string& sEventName, const int nMaxWaitForSignaller );
-	virtual ~VistaWin32ProcessEventImp();
+class VISTAINTERPROCCOMMAPI VistaWin32ProcessEventImp : public IVistaProcessEventImp {
+ public:
+  // signaller ctor
+  VistaWin32ProcessEventImp(const std::string& sEventName);
+  // receiver ctor
+  VistaWin32ProcessEventImp(const std::string& sEventName, const int nMaxWaitForSignaller);
+  virtual ~VistaWin32ProcessEventImp();
 
-	bool GetIsValid() const;
+  bool GetIsValid() const;
 
-	bool SignalEvent();
-	bool WaitForEvent( bool bBlock );
-	bool WaitForEvent( int iBlockTime );
+  bool SignalEvent();
+  bool WaitForEvent(bool bBlock);
+  bool WaitForEvent(int iBlockTime);
 
-private:
-	HANDLE m_pEventHandle;
+ private:
+  HANDLE m_pEventHandle;
 };
-
 
 /*============================================================================*/
 
 #endif // _VISTAITERATIONTHREAD_H
 
 #endif // VISTA_THREADING_WIN32
-

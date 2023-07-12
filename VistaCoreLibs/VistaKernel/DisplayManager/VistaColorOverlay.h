@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAFADEOUTOVERLAY_H
 #define _VISTAFADEOUTOVERLAY_H
 
@@ -29,9 +28,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaBase/VistaColor.h>
 #include <VistaKernel/DisplayManager/VistaSceneOverlay.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -48,32 +47,30 @@ class VistaViewport;
 /**
  * Overlay that simply fills the whole viewport with a single color (e.g. for fadeouts)
  */
-class VISTAKERNELAPI VistaColorOverlay : public IVistaSceneOverlay
-{
-public:
-	VistaColorOverlay( VistaDisplayManager* pDisplayManager,
-						const std::string& sViewportName = "" );
-	VistaColorOverlay( VistaViewport* pViewport );
-	~VistaColorOverlay();
+class VISTAKERNELAPI VistaColorOverlay : public IVistaSceneOverlay {
+ public:
+  VistaColorOverlay(VistaDisplayManager* pDisplayManager, const std::string& sViewportName = "");
+  VistaColorOverlay(VistaViewport* pViewport);
+  ~VistaColorOverlay();
 
-	virtual bool GetIsEnabled() const;
+  virtual bool GetIsEnabled() const;
 
-	virtual void SetIsEnabled( bool bEnabled );
+  virtual void SetIsEnabled(bool bEnabled);
 
-	virtual void UpdateOnViewportChange( int iWidth, int iHeight, int iPosX, int iPosY );
+  virtual void UpdateOnViewportChange(int iWidth, int iHeight, int iPosX, int iPosY);
 
-	virtual bool Do();
-	VistaColor GetColor() const;
-	void SetColor( const VistaColor& oColor );
-	/**
-	 * G/SetOpacity retrieves/modifies only the alpha component of the color
-	 */
-	float GetOpacity() const;
-	void SetOpacity( const float nOpacity );
-private:
-	bool m_bEnabled;
-	VistaColor m_oColor;
+  virtual bool Do();
+  VistaColor   GetColor() const;
+  void         SetColor(const VistaColor& oColor);
+  /**
+   * G/SetOpacity retrieves/modifies only the alpha component of the color
+   */
+  float GetOpacity() const;
+  void  SetOpacity(const float nOpacity);
+
+ private:
+  bool       m_bEnabled;
+  VistaColor m_oColor;
 };
 
 #endif // _VISTAFADEOUTOVERLAY_H
-

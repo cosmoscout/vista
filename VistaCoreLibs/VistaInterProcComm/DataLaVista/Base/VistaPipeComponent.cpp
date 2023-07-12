@@ -21,12 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
-
 
 #include "VistaPipeComponent.h"
 
@@ -34,35 +31,27 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-IDLVistaPipeComponent::IDLVistaPipeComponent()
-{}
+IDLVistaPipeComponent::IDLVistaPipeComponent() {
+}
 
-IDLVistaPipeComponent::~IDLVistaPipeComponent()
-{}
+IDLVistaPipeComponent::~IDLVistaPipeComponent() {
+}
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-
-IDLVistaDataPacket *IDLVistaPipeComponent::ReturnPacket()
-{ 
-	// convinience... simply return de nada ;)
-	return 0; 
+IDLVistaDataPacket* IDLVistaPipeComponent::ReturnPacket() {
+  // convinience... simply return de nada ;)
+  return 0;
 }
 
-
-int IDLVistaPipeComponent::GetInputPacketType() const
-{
-	// default is: we are not connected.
-	return -1;
+int IDLVistaPipeComponent::GetInputPacketType() const {
+  // default is: we are not connected.
+  return -1;
 }
 
-
-int IDLVistaPipeComponent::GetOutputPacketType() const
-{
-	// default is: we are not connected.
-	return -1;
+int IDLVistaPipeComponent::GetOutputPacketType() const {
+  // default is: we are not connected.
+  return -1;
 }
-
-

@@ -21,14 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <cstdio>
 
 #include "VistaMsgChannel.h"
 
-#include <VistaInterProcComm/Connections/VistaConnection.h>
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaStreamUtils.h>
+#include <VistaInterProcComm/Connections/VistaConnection.h>
 
 #include <cstdio>
 #include <iostream>
@@ -43,23 +42,19 @@ using namespace std;
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 VistaMsgChannel::VistaMsgChannel()
-: IVistaObserveable()
-, m_rSer(4096)
-{
-	m_pConnection = NULL;
+    : IVistaObserveable()
+    , m_rSer(4096) {
+  m_pConnection = NULL;
 }
 
-VistaMsgChannel::~VistaMsgChannel()
-{
-	m_pConnection = NULL;
+VistaMsgChannel::~VistaMsgChannel() {
+  m_pConnection = NULL;
 }
 
-
-VistaMsgChannel::VistaMsgChannel(VistaMsgChannel&rOther)
-: IVistaObserveable()
-, m_rSer(0)
-{
-	m_pConnection = (VistaConnection*)0xDEADBEEF;
+VistaMsgChannel::VistaMsgChannel(VistaMsgChannel& rOther)
+    : IVistaObserveable()
+    , m_rSer(0) {
+  m_pConnection = (VistaConnection*)0xDEADBEEF;
 }
 
 /*============================================================================*/
@@ -69,148 +64,125 @@ VistaMsgChannel::VistaMsgChannel(VistaMsgChannel&rOther)
 // dummy vector
 const static std::vector<VistaType::byte> S_vecEmpty;
 
-static int s_iPacketCount=0;
+static int s_iPacketCount = 0;
 
-bool VistaMsgChannel::WriteGeneralMsg( VistaMsg &rMsg)
-{
-	try
-	{
-		if(!m_pConnection)
-			return false;
-		m_rSer.ClearBuffer();
-		rMsg.SetMsgAnswer(S_vecEmpty);
+bool VistaMsgChannel::WriteGeneralMsg(VistaMsg& rMsg) {
+  try {
+    if (!m_pConnection)
+      return false;
+    m_rSer.ClearBuffer();
+    rMsg.SetMsgAnswer(S_vecEmpty);
 
-		rMsg.Serialize(m_rSer);
-		m_rSer.WriteInt32(++s_iPacketCount);
-		m_pConnection->WriteInt32(m_rSer.GetBufferSize());
-		m_pConnection->WriteRawBuffer( m_rSer.GetBuffer(), m_rSer.GetBufferSize());
-		int iLength = 0;
-		m_pConnection->ReadInt32(iLength);
-		if( iLength )
-		{
-			std::vector<VistaType::byte> vecTmp( iLength );
+    rMsg.Serialize(m_rSer);
+    m_rSer.WriteInt32(++s_iPacketCount);
+    m_pConnection->WriteInt32(m_rSer.GetBufferSize());
+    m_pConnection->WriteRawBuffer(m_rSer.GetBuffer(), m_rSer.GetBufferSize());
+    int iLength = 0;
+    m_pConnection->ReadInt32(iLength);
+    if (iLength) {
+      std::vector<VistaType::byte> vecTmp(iLength);
 
-			m_pConnection->ReadRawBuffer( &vecTmp[0], iLength);
-			m_rDeSer.SetBuffer( &vecTmp[0], iLength );
+      m_pConnection->ReadRawBuffer(&vecTmp[0], iLength);
+      m_rDeSer.SetBuffer(&vecTmp[0], iLength);
 
-			rMsg.DeSerialize(m_rDeSer);
+      rMsg.DeSerialize(m_rDeSer);
 #if defined(DEBUG)
-			if(!rMsg.GetMsgSuccess())
-				printf("msg marked as not successful\n");
+      if (!rMsg.GetMsgSuccess())
+        printf("msg marked as not successful\n");
 #endif
-			return rMsg.GetMsgSuccess();
-		}
-		else
-			return false;
-	}
-	catch(VistaExceptionBase &x)
-	{
-		x.PrintException();
-		m_sLastError = x.GetPrintStatement();
-	}
-	return false;
+      return rMsg.GetMsgSuccess();
+    } else
+      return false;
+  } catch (VistaExceptionBase& x) {
+    x.PrintException();
+    m_sLastError = x.GetPrintStatement();
+  }
+  return false;
 }
 
-std::string VistaMsgChannel::GetLastErrorString() const
-{
-	return m_sLastError;
+std::string VistaMsgChannel::GetLastErrorString() const {
+  return m_sLastError;
 }
 
+bool VistaMsgChannel::WriteMsg(
+    int iMethodToken, const VistaPropertyList& rList, VistaMsg::MSG* pAnswer) {
+  VistaMsg oMsg;
 
-bool VistaMsgChannel::WriteMsg(int iMethodToken, const VistaPropertyList &rList, VistaMsg::MSG *pAnswer)
-{
-	VistaMsg oMsg;
-	
-	m_rSer.ClearBuffer();
+  m_rSer.ClearBuffer();
 
-	// the -3 is hardcoded here
-	// hmm... we should think of something here
-	// but then: the number depends on the enumeration present
-	// in vistakernel
-	oMsg.SetMsgType(-3);
+  // the -3 is hardcoded here
+  // hmm... we should think of something here
+  // but then: the number depends on the enumeration present
+  // in vistakernel
+  oMsg.SetMsgType(-3);
 
-	oMsg.GetThisMsgRef().resize(4096);
-	m_rSer.SetBuffer( &oMsg.GetThisMsgRef()[0], 4096);
+  oMsg.GetThisMsgRef().resize(4096);
+  m_rSer.SetBuffer(&oMsg.GetThisMsgRef()[0], 4096);
 
-	m_rSer.WriteInt32(iMethodToken);
-	m_rSer.WriteInt32(0);
+  m_rSer.WriteInt32(iMethodToken);
+  m_rSer.WriteInt32(0);
 
-	VistaPropertyList::SerializePropertyList(m_rSer, rList, "query");
+  VistaPropertyList::SerializePropertyList(m_rSer, rList, "query");
 
-	//m_rSer.GetBuffer(msg.GetThisMsgRef());
-	//msg.SetThisMsg(veMsg);
+  // m_rSer.GetBuffer(msg.GetThisMsgRef());
+  // msg.SetThisMsg(veMsg);
 
-	// RELINK OLD BUFFER!
-	m_rSer.SetBuffer(NULL, 4096);
+  // RELINK OLD BUFFER!
+  m_rSer.SetBuffer(NULL, 4096);
 
-	bool b=WriteGeneralMsg(oMsg);
-	if(b && pAnswer)
-	{
-		*pAnswer = oMsg.GetMsgAnswer();
-	}
+  bool b = WriteGeneralMsg(oMsg);
+  if (b && pAnswer) {
+    *pAnswer = oMsg.GetMsgAnswer();
+  }
 
-	return b;
+  return b;
 }
 
-bool VistaMsgChannel::WriteMsg(int iMethodToken, const VistaPropertyList &rList, VistaPropertyList &rAnswer)
-{
-	VistaMsg::MSG rMsg;
-	if(WriteMsg(iMethodToken, rList, &rMsg))
-	{
-		if(!rMsg.empty())
-		{
-			rAnswer.clear();
-			m_rDeSer.SetBuffer( &rMsg[0], (int)rMsg.size());
-			std::string sAnswer;
-			VistaPropertyList::DeSerializePropertyList(m_rDeSer, rAnswer, sAnswer);
-		}
-		//rAnswer.PrintPropertyList();
-		return true;
-	}
-	else
-		return false;
+bool VistaMsgChannel::WriteMsg(
+    int iMethodToken, const VistaPropertyList& rList, VistaPropertyList& rAnswer) {
+  VistaMsg::MSG rMsg;
+  if (WriteMsg(iMethodToken, rList, &rMsg)) {
+    if (!rMsg.empty()) {
+      rAnswer.clear();
+      m_rDeSer.SetBuffer(&rMsg[0], (int)rMsg.size());
+      std::string sAnswer;
+      VistaPropertyList::DeSerializePropertyList(m_rDeSer, rAnswer, sAnswer);
+    }
+    // rAnswer.PrintPropertyList();
+    return true;
+  } else
+    return false;
 }
 
+void VistaMsgChannel::SetConnection(VistaConnection* pConnection) {
+  if (m_pConnection != pConnection) {
+    m_pConnection = pConnection;
+    Notify(MSG_CONNECTIONCHANGED);
 
-void VistaMsgChannel::SetConnection(VistaConnection *pConnection)
-{
-	if(m_pConnection!=pConnection)
-	{
-		m_pConnection = pConnection;
-		Notify(MSG_CONNECTIONCHANGED);
-
-		if(GetIsOperational())
-			Notify(MSG_CONNECTED);
-	}
+    if (GetIsOperational())
+      Notify(MSG_CONNECTED);
+  }
 }
 
-VistaConnection *VistaMsgChannel::GetConnection() const
-{
-	return m_pConnection;
+VistaConnection* VistaMsgChannel::GetConnection() const {
+  return m_pConnection;
 }
 
-bool VistaMsgChannel::DisconnectL()
-{
-	if(m_pConnection && m_pConnection->GetIsOpen())
-	{
-		m_pConnection->WaitForSendFinish();
-		m_pConnection->Close();
-	}
-	else
-		return false; // can not close no connection
+bool VistaMsgChannel::DisconnectL() {
+  if (m_pConnection && m_pConnection->GetIsOpen()) {
+    m_pConnection->WaitForSendFinish();
+    m_pConnection->Close();
+  } else
+    return false; // can not close no connection
 
-	Notify(MSG_DISCONNECTED);
-	return true;
+  Notify(MSG_DISCONNECTED);
+  return true;
 }
 
-
-bool VistaMsgChannel::GetIsOperational() const
-{
-	return (m_pConnection && m_pConnection->GetIsFine());
+bool VistaMsgChannel::GetIsOperational() const {
+  return (m_pConnection && m_pConnection->GetIsFine());
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

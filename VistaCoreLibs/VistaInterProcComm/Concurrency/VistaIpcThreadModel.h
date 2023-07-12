@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAIPCTHREADMODEL_H
 #define _VISTAIPCTHREADMODEL_H
-
 
 // set threadmodel flags, default to posix/pthreads
 #if defined(WIN32)

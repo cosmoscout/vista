@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNGETELEMENTNODE_H
 #define _VDFNGETELEMENTNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -52,7 +50,7 @@
 /*============================================================================*/
 /**
  * The GetElementNode returns the element from a Container object (e.g. vector)
- * or an array-based object (like VistaVector3D), and returns 
+ * or an array-based object (like VistaVector3D), and returns
  *
  * @ingroup VdfnNodes
  * @inport{in,type container<T>,mandatory, container from which to retrieve the element}
@@ -61,138 +59,122 @@
  */
 
 // for containers
-template<class Container, class Type>
-class TVdfnGetElementNode : public IVdfnNode
-{
-	public:
-	TVdfnGetElementNode( const int iIndex )
-	: IVdfnNode()
-	, m_pOutPort( new TVdfnPort<Type> )
-	, m_pInPort( NULL )
-	, m_pIndexPort( NULL )
-	, m_nDefaultIndex( iIndex )
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<Container> > );
-		RegisterInPortPrototype( "index", new TVdfnPortTypeCompare<TVdfnPort<int> > );
-		RegisterOutPort( "out", m_pOutPort );
-	}
+template <class Container, class Type>
+class TVdfnGetElementNode : public IVdfnNode {
+ public:
+  TVdfnGetElementNode(const int iIndex)
+      : IVdfnNode()
+      , m_pOutPort(new TVdfnPort<Type>)
+      , m_pInPort(NULL)
+      , m_pIndexPort(NULL)
+      , m_nDefaultIndex(iIndex) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<Container>>);
+    RegisterInPortPrototype("index", new TVdfnPortTypeCompare<TVdfnPort<int>>);
+    RegisterOutPort("out", m_pOutPort);
+  }
 
-	~TVdfnGetElementNode()
-	{
-	}
+  ~TVdfnGetElementNode() {
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pInPort = VdfnUtil::GetInPortTyped<TVdfnPort<Container>*>( "in", this );
-		m_pIndexPort = VdfnUtil::GetInPortTyped<TVdfnPort<int>*>( "index", this );
-		return GetIsValid();
-	}
+  bool PrepareEvaluationRun() {
+    m_pInPort    = VdfnUtil::GetInPortTyped<TVdfnPort<Container>*>("in", this);
+    m_pIndexPort = VdfnUtil::GetInPortTyped<TVdfnPort<int>*>("index", this);
+    return GetIsValid();
+  }
 
-	bool GetIsValid() const
-	{
-		if( m_pInPort == NULL )
-			return false;
-		if( m_nDefaultIndex < 0 && m_pIndexPort == NULL )
-			return false;
-		return true;
-	}
-protected:
-	bool DoEvalNode()
-	{
-		int sIndex;
-		if( m_pIndexPort == NULL )
-			sIndex = m_nDefaultIndex;
-		else
-			sIndex = m_pIndexPort->GetValue();
+  bool GetIsValid() const {
+    if (m_pInPort == NULL)
+      return false;
+    if (m_nDefaultIndex < 0 && m_pIndexPort == NULL)
+      return false;
+    return true;
+  }
 
-		const Container& oContainer = m_pInPort->GetValueConstRef();
+ protected:
+  bool DoEvalNode() {
+    int sIndex;
+    if (m_pIndexPort == NULL)
+      sIndex = m_nDefaultIndex;
+    else
+      sIndex = m_pIndexPort->GetValue();
 
-		if( sIndex < 0 || sIndex >= (int)oContainer.size() )
-		{
-			vstr::errp() << "[TVdfnGetElementNode]: Index [" << sIndex << "] out of bounds"
-				<< std::endl;
-			return true;
-		}
+    const Container& oContainer = m_pInPort->GetValueConstRef();
 
-		m_pOutPort->SetValue( Type( oContainer[sIndex] ), GetUpdateTimeStamp() );
-		return true;
-	}
-private:
+    if (sIndex < 0 || sIndex >= (int)oContainer.size()) {
+      vstr::errp() << "[TVdfnGetElementNode]: Index [" << sIndex << "] out of bounds" << std::endl;
+      return true;
+    }
 
-	int				m_nDefaultIndex;
-	TVdfnPort<Type>*	m_pOutPort;
-	TVdfnPort<Container>*	m_pInPort;
-	TVdfnPort<int>*	m_pIndexPort;
+    m_pOutPort->SetValue(Type(oContainer[sIndex]), GetUpdateTimeStamp());
+    return true;
+  }
+
+ private:
+  int                   m_nDefaultIndex;
+  TVdfnPort<Type>*      m_pOutPort;
+  TVdfnPort<Container>* m_pInPort;
+  TVdfnPort<int>*       m_pIndexPort;
 };
 
-template<class Container, class Type, int Size>
-class TVdfnGetElementFromArrayNode : public IVdfnNode
-{
-	public:
-	TVdfnGetElementFromArrayNode( const int iIndex )
-	: IVdfnNode()
-	, m_pOutPort( new TVdfnPort<Type> )
-	, m_pInPort( NULL )
-	, m_pIndexPort( NULL)
-	, m_nDefaultIndex( iIndex )
-	{
-		RegisterInPortPrototype( "in", new TVdfnPortTypeCompare<TVdfnPort<Container> > );
-		RegisterInPortPrototype( "index", new TVdfnPortTypeCompare<TVdfnPort<int> > );
-		RegisterOutPort( "out", m_pOutPort );
-	}
+template <class Container, class Type, int Size>
+class TVdfnGetElementFromArrayNode : public IVdfnNode {
+ public:
+  TVdfnGetElementFromArrayNode(const int iIndex)
+      : IVdfnNode()
+      , m_pOutPort(new TVdfnPort<Type>)
+      , m_pInPort(NULL)
+      , m_pIndexPort(NULL)
+      , m_nDefaultIndex(iIndex) {
+    RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<Container>>);
+    RegisterInPortPrototype("index", new TVdfnPortTypeCompare<TVdfnPort<int>>);
+    RegisterOutPort("out", m_pOutPort);
+  }
 
-	~TVdfnGetElementFromArrayNode()
-	{
-	}
+  ~TVdfnGetElementFromArrayNode() {
+  }
 
-	bool PrepareEvaluationRun()
-	{
-		m_pInPort = VdfnUtil::GetInPortTyped<TVdfnPort<Container>*>( "in", this );
-		m_pIndexPort = VdfnUtil::GetInPortTyped<TVdfnPort<int>*>( "index", this );
-		return GetIsValid();
-	}
+  bool PrepareEvaluationRun() {
+    m_pInPort    = VdfnUtil::GetInPortTyped<TVdfnPort<Container>*>("in", this);
+    m_pIndexPort = VdfnUtil::GetInPortTyped<TVdfnPort<int>*>("index", this);
+    return GetIsValid();
+  }
 
-	bool GetIsValid() const
-	{
-		if( m_pInPort == NULL )
-			return false;
-		if( m_nDefaultIndex < 0 && m_pIndexPort == NULL )
-			return false;
-		return true;
-	}
-protected:
-	bool DoEvalNode()
-	{
-		int sIndex;
-		if( m_pIndexPort == NULL )
-			sIndex = m_nDefaultIndex;
-		else
-			sIndex = m_pIndexPort->GetValue();
+  bool GetIsValid() const {
+    if (m_pInPort == NULL)
+      return false;
+    if (m_nDefaultIndex < 0 && m_pIndexPort == NULL)
+      return false;
+    return true;
+  }
 
-		const Container& oContainer = m_pInPort->GetValueConstRef();
+ protected:
+  bool DoEvalNode() {
+    int sIndex;
+    if (m_pIndexPort == NULL)
+      sIndex = m_nDefaultIndex;
+    else
+      sIndex = m_pIndexPort->GetValue();
 
-		if( sIndex < 0 || sIndex >= Size )
-		{
-			vstr::errp() << "[TVdfnGetElementNode]: Index [" << sIndex << "] out of bounds"
-				<< std::endl;
-			return true;
-		}
+    const Container& oContainer = m_pInPort->GetValueConstRef();
 
-		m_pOutPort->SetValue( Type( oContainer[sIndex] ), GetUpdateTimeStamp() );
-		return true;
-	}
-private:
+    if (sIndex < 0 || sIndex >= Size) {
+      vstr::errp() << "[TVdfnGetElementNode]: Index [" << sIndex << "] out of bounds" << std::endl;
+      return true;
+    }
 
-	int				m_nDefaultIndex;
-	TVdfnPort<Type>*	m_pOutPort;
-	TVdfnPort<Container>*	m_pInPort;
-	TVdfnPort<int>*	m_pIndexPort;
+    m_pOutPort->SetValue(Type(oContainer[sIndex]), GetUpdateTimeStamp());
+    return true;
+  }
+
+ private:
+  int                   m_nDefaultIndex;
+  TVdfnPort<Type>*      m_pOutPort;
+  TVdfnPort<Container>* m_pInPort;
+  TVdfnPort<int>*       m_pIndexPort;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VDFNGETELEMENTNODE_H
-

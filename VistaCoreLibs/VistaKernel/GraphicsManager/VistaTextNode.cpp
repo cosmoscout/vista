@@ -21,10 +21,9 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaKernel/GraphicsManager/VistaTextNode.h"
-#include "VistaKernel/GraphicsManager/VistaGeometry.h"
 #include "VistaKernel/GraphicsManager/Vista3DText.h"
+#include "VistaKernel/GraphicsManager/VistaGeometry.h"
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -34,49 +33,37 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaTextNode::VistaTextNode(	VistaGroupNode*			pParent, 
-								IVista3DText*				pText, 
-								IVistaNodeBridge*			pBridge,
-								IVistaNodeData*				pData,
-								std::string strName)
-				:VistaLeafNode(pParent,pBridge,pData,strName)
-{
-	m_nType = VISTA_TEXTNODE;
-	m_pTextImp = pText;
+VistaTextNode::VistaTextNode(VistaGroupNode* pParent, IVista3DText* pText,
+    IVistaNodeBridge* pBridge, IVistaNodeData* pData, std::string strName)
+    : VistaLeafNode(pParent, pBridge, pData, strName) {
+  m_nType    = VISTA_TEXTNODE;
+  m_pTextImp = pText;
 }
 
-
-VistaTextNode::~VistaTextNode()
-{
-	delete m_pTextImp;
+VistaTextNode::~VistaTextNode() {
+  delete m_pTextImp;
 }
 
 // ============================================================================
 // ============================================================================
-bool VistaTextNode::CanHaveChildren() const
-{
-	return false;
+bool VistaTextNode::CanHaveChildren() const {
+  return false;
 }
 
-IVista3DText *VistaTextNode::GetTextImp() const
-{
-	return m_pTextImp;
+IVista3DText* VistaTextNode::GetTextImp() const {
+  return m_pTextImp;
 }
 
-void VistaTextNode::SetText(const std::string &sText)
-{
-	if(m_pTextImp)
-		m_pTextImp->SetText(sText);
+void VistaTextNode::SetText(const std::string& sText) {
+  if (m_pTextImp)
+    m_pTextImp->SetText(sText);
 }
 
-std::string VistaTextNode::GetText() const
-{
-	if(m_pTextImp)
-		return m_pTextImp->GetText();
-	return "<no-text-imp-no-fun>";
+std::string VistaTextNode::GetText() const {
+  if (m_pTextImp)
+    return m_pTextImp->GetText();
+  return "<no-text-imp-no-fun>";
 }
 
 // ============================================================================
 // ============================================================================
-
-

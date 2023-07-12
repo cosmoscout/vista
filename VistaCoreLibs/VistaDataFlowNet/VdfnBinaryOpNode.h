@@ -21,21 +21,19 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNBINARYOPNODE_H
 #define _VDFNBINARYOPNODE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VdfnConfig.h"
 
-#include "VdfnSerializer.h"
-#include "VdfnNode.h"
-#include "VdfnPort.h"
-#include "VdfnNodeFactory.h"
 #include "VdfnBinaryOps.h"
+#include "VdfnNode.h"
+#include "VdfnNodeFactory.h"
+#include "VdfnPort.h"
+#include "VdfnSerializer.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -63,105 +61,98 @@
  * @outport{out, type K, the return result of CBinOp(first\,second)}
  *
  */
-template<class T, class T2, class K>
-class TVdfnBinaryOpNode : public IVdfnNode
-{
-public:
-	/**
-	 * construct and determine the operation.
-	 */
-	TVdfnBinaryOpNode( VdfnBinaryOps::BinOp<T,T2,K> *pBinOp)
-	: IVdfnNode(), m_pBinOp(pBinOp),
-	  m_pFirst(NULL),
-	  m_pSecond(NULL),
-	  m_pOut( new TVdfnPort<K> )
-	  {
-		RegisterInPortPrototype( "first", new TVdfnPortTypeCompare<TVdfnPort<T> >);
-		RegisterInPortPrototype( "second", new TVdfnPortTypeCompare<TVdfnPort<T2> >);
-		RegisterOutPort("out", m_pOut);
-	  }
+template <class T, class T2, class K>
+class TVdfnBinaryOpNode : public IVdfnNode {
+ public:
+  /**
+   * construct and determine the operation.
+   */
+  TVdfnBinaryOpNode(VdfnBinaryOps::BinOp<T, T2, K>* pBinOp)
+      : IVdfnNode()
+      , m_pBinOp(pBinOp)
+      , m_pFirst(NULL)
+      , m_pSecond(NULL)
+      , m_pOut(new TVdfnPort<K>) {
+    RegisterInPortPrototype("first", new TVdfnPortTypeCompare<TVdfnPort<T>>);
+    RegisterInPortPrototype("second", new TVdfnPortTypeCompare<TVdfnPort<T2>>);
+    RegisterOutPort("out", m_pOut);
+  }
 
-	/**
-	 * @return true when a bin op was specified upon construction, and all inports
-	           are assigned.
-	 *
-	 */
-	bool GetIsValid() const
-	{
-		return m_pBinOp && (IVdfnNode::GetIsValid());
-	}
+  /**
+   * @return true when a bin op was specified upon construction, and all inports
+             are assigned.
+   *
+   */
+  bool GetIsValid() const {
+    return m_pBinOp && (IVdfnNode::GetIsValid());
+  }
 
-	/**
-	 * @return GetIsValid()
-	 */
-	bool PrepareEvaluationRun()
-	{
-		m_pFirst = dynamic_cast<TVdfnPort<T>*>(GetInPort("first"));
-		m_pSecond = dynamic_cast<TVdfnPort<T2>*>(GetInPort("second"));
+  /**
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun() {
+    m_pFirst  = dynamic_cast<TVdfnPort<T>*>(GetInPort("first"));
+    m_pSecond = dynamic_cast<TVdfnPort<T2>*>(GetInPort("second"));
 
-		return GetIsValid();
-	}
-protected:
+    return GetIsValid();
+  }
 
-	/**
-	 * sets the outport value determined on the calculation of CBinOp().
-	 * @return true
-	 */
-	bool DoEvalNode()
-	{
-		m_pOut->SetValue( (*m_pBinOp)( m_pFirst->GetValueConstRef(),
-				                       m_pSecond->GetValueConstRef() ),
-				          GetUpdateTimeStamp() );
+ protected:
+  /**
+   * sets the outport value determined on the calculation of CBinOp().
+   * @return true
+   */
+  bool DoEvalNode() {
+    m_pOut->SetValue((*m_pBinOp)(m_pFirst->GetValueConstRef(), m_pSecond->GetValueConstRef()),
+        GetUpdateTimeStamp());
 
-		return true;
-	}
-private:
-	TVdfnPort<T> *m_pFirst;
-	TVdfnPort<T2> *m_pSecond;
-    TVdfnPort<K> *m_pOut;
-	VdfnBinaryOps::BinOp<T,T2,K> *m_pBinOp;
+    return true;
+  }
+
+ private:
+  TVdfnPort<T>*                   m_pFirst;
+  TVdfnPort<T2>*                  m_pSecond;
+  TVdfnPort<K>*                   m_pOut;
+  VdfnBinaryOps::BinOp<T, T2, K>* m_pBinOp;
 };
-
 
 /**
  * creates a TBinaryOpNode for a given CBinOp instance.
  */
-template<class T, class T2, class K>
-class TVdfnBinOpCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	/**
-	 * defines the binary operation by the argument given.
-	 * @param pOp the binary operation. The memory of pOp belongs to the
-	          TVdfnBinOpCreate now and will be deleted upon destruction
-	 */
-	TVdfnBinOpCreate( typename VdfnBinaryOps::BinOp<T,T2,K> *pOp )
-	: VdfnNodeFactory::IVdfnNodeCreator(), m_pOp(pOp)
-	{
+template <class T, class T2, class K>
+class TVdfnBinOpCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  /**
+   * defines the binary operation by the argument given.
+   * @param pOp the binary operation. The memory of pOp belongs to the
+            TVdfnBinOpCreate now and will be deleted upon destruction
+   */
+  TVdfnBinOpCreate(typename VdfnBinaryOps::BinOp<T, T2, K>* pOp)
+      : VdfnNodeFactory::IVdfnNodeCreator()
+      , m_pOp(pOp) {
+  }
 
-	}
+  /**
+   * deletes the CBinOp instance.
+   */
+  ~TVdfnBinOpCreate() {
+    delete m_pOp;
+  }
 
-	/**
-	 * deletes the CBinOp instance.
-	 */
-	~TVdfnBinOpCreate() { delete m_pOp; }
+  /**
+   * simply creates TBinaryOpNode for the CBinOp as given during
+   * the construction of the creator.
+   */
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const {
+    return new TVdfnBinaryOpNode<T, T2, K>(m_pOp);
+  }
 
-	/**
-	 * simply creates TBinaryOpNode for the CBinOp as given during
-	 * the construction of the creator.
-	 */
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const
-	{
-		return new TVdfnBinaryOpNode<T,T2,K>(m_pOp);
-	}
-private:
-	typename VdfnBinaryOps::BinOp<T,T2,K> *m_pOp;
+ private:
+  typename VdfnBinaryOps::BinOp<T, T2, K>* m_pOp;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

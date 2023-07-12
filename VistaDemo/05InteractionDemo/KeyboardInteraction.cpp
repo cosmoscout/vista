@@ -21,41 +21,37 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 // STL stuff
 #include <iostream>
 
 // Vista stuff
-#include <VistaKernel/VistaSystem.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
+#include <VistaKernel/VistaSystem.h>
 
 #include "KeyboardInteraction.h"
 
-void KeyboardInteraction::RegisterSomeButtons( VistaSystem *pSystem )
-{
-	std::cout << "[KeyboardInteraction] SomeButtons are enabled" << std::endl;
+void KeyboardInteraction::RegisterSomeButtons(VistaSystem* pSystem) {
+  std::cout << "[KeyboardInteraction] SomeButtons are enabled" << std::endl;
 
-	// this class registers the key 'B' on an inner class inherited from IVistaExplicitCallbackInterface
-	// in the callback is only a counter incremented and printed to the commandline
+  // this class registers the key 'B' on an inner class inherited from
+  // IVistaExplicitCallbackInterface in the callback is only a counter incremented and printed to
+  // the commandline
 
-	// first get the keyboardsystemcontrol object
-	VistaKeyboardSystemControl *pCtrl = pSystem->GetKeyboardSystemControl();
+  // first get the keyboardsystemcontrol object
+  VistaKeyboardSystemControl* pCtrl = pSystem->GetKeyboardSystemControl();
 
-	// second register callback on a button
-	pCtrl->BindAction(
-						'B', // the button NOTE: it is case sensitive
-						new SomeButtonCallback(), // create a new instance of my callback
-						"its a counter" // descriptive text
-					 );
+  // second register callback on a button
+  pCtrl->BindAction('B',        // the button NOTE: it is case sensitive
+      new SomeButtonCallback(), // create a new instance of my callback
+      "its a counter"           // descriptive text
+  );
 }
 
 SomeButtonCallback::SomeButtonCallback()
-	:iCount( 0 )
-{
+    : iCount(0) {
 }
 
-bool SomeButtonCallback::Do()
-{
-	std::cout << "[SomeButtonCallback] " << ++iCount << std::endl;
-	return true;
+bool SomeButtonCallback::Do() {
+  std::cout << "[SomeButtonCallback] " << ++iCount << std::endl;
+  return true;
 }

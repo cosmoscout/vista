@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAVRPNRIVER_H
 #define __VISTAVRPNRIVER_H
 
@@ -36,7 +35,7 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-#if defined(WIN32) && !defined(VISTAVRPNDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTAVRPNDRIVER_STATIC)
 #ifdef VISTAVRPNDRIVER_EXPORTS
 #define VISTAVRPNDRIVERAPI __declspec(dllexport)
 #else
@@ -58,59 +57,51 @@ class vrpn_BaseClass;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAVRPNDRIVERAPI VistaVRPNDriver : public IVistaDeviceDriver
-{
-public:
-	class _cVRPN2SensorMap
-	{
-	public:
-		_cVRPN2SensorMap( VistaVRPNDriver *pDriver,
-				          vrpn_BaseClass *,
-				          unsigned int id,
-				          bool *bTick);
+class VISTAVRPNDRIVERAPI VistaVRPNDriver : public IVistaDeviceDriver {
+ public:
+  class _cVRPN2SensorMap {
+   public:
+    _cVRPN2SensorMap(VistaVRPNDriver* pDriver, vrpn_BaseClass*, unsigned int id, bool* bTick);
 
-		void Tick();
-		void Untick();
+    void Tick();
+    void Untick();
 
-		bool GetTick() const;
+    bool GetTick() const;
 
-		VistaVRPNDriver*	m_pDriver;
-		vrpn_BaseClass*		m_pVRPNHandle;
-		unsigned int		m_nSensorId;
-		VistaType::microtime			m_nUpdateTime;
+    VistaVRPNDriver*     m_pDriver;
+    vrpn_BaseClass*      m_pVRPNHandle;
+    unsigned int         m_nSensorId;
+    VistaType::microtime m_nUpdateTime;
 
-	private:
-		bool            *m_bNewData;
-	};
+   private:
+    bool* m_bNewData;
+  };
 
+  VistaVRPNDriver(IVistaDriverCreationMethod* crm);
+  ~VistaVRPNDriver();
 
-	VistaVRPNDriver(IVistaDriverCreationMethod *crm);
-	~VistaVRPNDriver();
+  bool  AddVRPNSensor(_cVRPN2SensorMap* mp);
+  bool& GetTick();
 
-	bool AddVRPNSensor( _cVRPN2SensorMap *mp );
-	bool &GetTick();
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime nTs);
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime nTs);
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+ private:
+  VistaDriverInfoAspect*          m_pInfo;
+  VistaDriverSensorMappingAspect* m_pMappingAspect;
 
-private:
-	VistaDriverInfoAspect             *m_pInfo;
-	VistaDriverSensorMappingAspect    *m_pMappingAspect;
+  std::vector<_cVRPN2SensorMap*> m_vecHandles;
 
-	std::vector<_cVRPN2SensorMap*>       m_vecHandles;
-
-	bool m_bNewData;
-	bool m_bConnected;
+  bool m_bNewData;
+  bool m_bConnected;
 };
 
-
-class VISTAVRPNDRIVERAPI VRPNDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VRPNDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
+class VISTAVRPNDRIVERAPI VRPNDriverCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VRPNDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/
@@ -122,4 +113,3 @@ public:
 /*============================================================================*/
 
 #endif //__VISTAVRPNDRIVER_H
-

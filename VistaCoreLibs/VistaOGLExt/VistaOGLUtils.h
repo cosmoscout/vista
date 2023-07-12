@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 #ifndef _VISTAOGLUTILS_H
 #define _VISTAOGLUTILS_H
 
@@ -55,109 +53,106 @@ class VistaTexture;
  * VistaOGLUtils some helper functions for graphics and (even remotely)
  * OpenGL related functionality.
  */
-namespace VistaOGLUtils
-{
-	/**
-	 * Compute the dimensions for a texture containing the given number
-	 * of data elements. The return value contains the total number of
-	 * elements in a texture of the given size.
-	 */
-	VISTAOGLEXTAPI int ComputeTextureDimensions(int iCount, int &iWidth, int &iHeight);
+namespace VistaOGLUtils {
+/**
+ * Compute the dimensions for a texture containing the given number
+ * of data elements. The return value contains the total number of
+ * elements in a texture of the given size.
+ */
+VISTAOGLEXTAPI int ComputeTextureDimensions(int iCount, int& iWidth, int& iHeight);
 
-	/**
-	 * Load an image from file. The filename extension is used to 
-	 * determine, which format the file should be in. For now, only TGA
-	 * files are supported.
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI unsigned char *LoadImageFromFile(const std::string &strFilename,
-		int &iWidth, int &iHeight, int &iChannels);
+/**
+ * Load an image from file. The filename extension is used to
+ * determine, which format the file should be in. For now, only TGA
+ * files are supported.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI unsigned char* LoadImageFromFile(
+    const std::string& strFilename, int& iWidth, int& iHeight, int& iChannels);
 
-	/**
-	 * Load a TGA image from file. 
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI unsigned char *LoadImageFromTga(const std::string &strFilename,
-		int &iWidth, int &iHeight, int &iChannels);
+/**
+ * Load a TGA image from file.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI unsigned char* LoadImageFromTga(
+    const std::string& strFilename, int& iWidth, int& iHeight, int& iChannels);
 
-	VISTAOGLEXTAPI VistaTexture* LoadTextureFromTga(const std::string &strFilename,
-		bool bGenerateMipMaps = true);
+VISTAOGLEXTAPI VistaTexture* LoadTextureFromTga(
+    const std::string& strFilename, bool bGenerateMipMaps = true);
 
-	/**
-	 * Create a floating point array to be used as texture data for a
-	 * fake illumination texture of a sphere. The resulting data is of 
-	 * format GL_LUMINANCE_ALPHA.
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI float *CreateSphereIlluminationTextureData(int iWidth, int iHeight);
+/**
+ * Create a floating point array to be used as texture data for a
+ * fake illumination texture of a sphere. The resulting data is of
+ * format GL_LUMINANCE_ALPHA.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI float* CreateSphereIlluminationTextureData(int iWidth, int iHeight);
 
-	/**
-	 * Create a floating point array to be used as texture data for a normal
-	 * map of a sphere. The resulting data is of format GL_RGBA.
-	 * Setting bRemap to true, remaps the texture values from [-1, 1] to [0, 1],
-	 * which is needed for using this data with non-floating point textures.
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI float *CreateSphereNormalsTextureData(int iWidth, int iHeight, bool bRemap);
+/**
+ * Create a floating point array to be used as texture data for a normal
+ * map of a sphere. The resulting data is of format GL_RGBA.
+ * Setting bRemap to true, remaps the texture values from [-1, 1] to [0, 1],
+ * which is needed for using this data with non-floating point textures.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI float* CreateSphereNormalsTextureData(int iWidth, int iHeight, bool bRemap);
 
-	/**
-	 * Create a floating point array to be used as texture data for a normal
-	 * map of a tube. The alpha channel still contains a circular mask.
-	 * The resulting data is of format GL_RGBA.
-	 * Setting bRemap to true, remaps the texture values from [-1, 1] to [0, 1],
-	 * which is needed for using this data with non-floating point textures.
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI float *CreateTubeNormalsTextureData(int iWidth, int iHeight, bool bRemap);
-	
-	/**
-	 * Create a floating point array to be used as texture data for a normal
-	 * map of a cone. The resulting data is of format GL_RGBA.
-	 * Setting bRemap to true, remaps the texture values from [-1, 1] to [0, 1],
-	 * which is needed for using this data with non-floating point textures.
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI float *CreateConeNormalsTextureData(int iWidth, int iHeight, bool bRemap);
+/**
+ * Create a floating point array to be used as texture data for a normal
+ * map of a tube. The alpha channel still contains a circular mask.
+ * The resulting data is of format GL_RGBA.
+ * Setting bRemap to true, remaps the texture values from [-1, 1] to [0, 1],
+ * which is needed for using this data with non-floating point textures.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI float* CreateTubeNormalsTextureData(int iWidth, int iHeight, bool bRemap);
 
-	VISTAOGLEXTAPI float *CreateConeDeapthTextureData(int iWidth, int iHeight);
-	
-	/**
-	 * Create a floating point array to be used as texture data for a
-	 * blending function based on the gaussian normal distribution, rescaled
-	 * to reach 1.0 at the center of the texture.
-	 * The resulting data is of format GL_ALPHA.
-	 * NOTE: Use Delete() to free the memory allocated by this method!
-	 */
-	VISTAOGLEXTAPI float *CreateGaussianBlendingTextureData(int iWidth, int iHeight);
+/**
+ * Create a floating point array to be used as texture data for a normal
+ * map of a cone. The resulting data is of format GL_RGBA.
+ * Setting bRemap to true, remaps the texture values from [-1, 1] to [0, 1],
+ * which is needed for using this data with non-floating point textures.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI float* CreateConeNormalsTextureData(int iWidth, int iHeight, bool bRemap);
 
-	/**
-	 * Free the given memory. This method is to be used in conjunction with
-	 * other methods of this class, which allocate memory.
-	 */
-	VISTAOGLEXTAPI void Delete(unsigned char *pData);
-	VISTAOGLEXTAPI void Delete(float *pData);
+VISTAOGLEXTAPI float* CreateConeDeapthTextureData(int iWidth, int iHeight);
 
-	VISTAOGLEXTAPI void BeginOrtho( double dLeft, double dRight,
-		double dBottom, double dTop, double dNear, double dFar );
-	VISTAOGLEXTAPI void BeginOrtho2D( double dLeft, double dRight,
-		double dBottom, double dTop );
-	VISTAOGLEXTAPI void EndOrtho();
+/**
+ * Create a floating point array to be used as texture data for a
+ * blending function based on the gaussian normal distribution, rescaled
+ * to reach 1.0 at the center of the texture.
+ * The resulting data is of format GL_ALPHA.
+ * NOTE: Use Delete() to free the memory allocated by this method!
+ */
+VISTAOGLEXTAPI float* CreateGaussianBlendingTextureData(int iWidth, int iHeight);
 
-	/**
-	 * Checks whether an OpenGL error occured and prints its error code and a
-	 * human-readable string to the ViSTA error stream.
-	 * NOTE: Calling this function consumes the last OpenGL error, so that
-	 *		 subsequent calls to glGetError() will yield a GL_NO_ERROR.
-	 *
-	 * @param strFilename Optional parameter to indicate the file in which
-	 *		  the check occured (empty string --> ignore filename).
-	 * @param nFileNumber Optional paramater to indicate the line number in
-	 *		  which the check occured (negative value --> ignore line #).
-	 * @return Returns true if an error occured, false if none occured.
-	 */
-	VISTAOGLEXTAPI bool CheckForOGLError( const std::string& strFilename = "",
-		int nLineNumber = -1 );
-};
+/**
+ * Free the given memory. This method is to be used in conjunction with
+ * other methods of this class, which allocate memory.
+ */
+VISTAOGLEXTAPI void Delete(unsigned char* pData);
+VISTAOGLEXTAPI void Delete(float* pData);
+
+VISTAOGLEXTAPI void BeginOrtho(
+    double dLeft, double dRight, double dBottom, double dTop, double dNear, double dFar);
+VISTAOGLEXTAPI void BeginOrtho2D(double dLeft, double dRight, double dBottom, double dTop);
+VISTAOGLEXTAPI void EndOrtho();
+
+/**
+ * Checks whether an OpenGL error occured and prints its error code and a
+ * human-readable string to the ViSTA error stream.
+ * NOTE: Calling this function consumes the last OpenGL error, so that
+ *		 subsequent calls to glGetError() will yield a GL_NO_ERROR.
+ *
+ * @param strFilename Optional parameter to indicate the file in which
+ *		  the check occured (empty string --> ignore filename).
+ * @param nFileNumber Optional paramater to indicate the line number in
+ *		  which the check occured (negative value --> ignore line #).
+ * @return Returns true if an error occured, false if none occured.
+ */
+VISTAOGLEXTAPI bool CheckForOGLError(const std::string& strFilename = "", int nLineNumber = -1);
+}; // namespace VistaOGLUtils
 
 /*============================================================================*/
 /* INLINED METHODS                                                            */
@@ -165,8 +160,12 @@ namespace VistaOGLUtils
 
 #ifndef _NDEBUG
 // check error and display where it came from...that's why we need it to be a macro :-(
-#define VistaOGLUtilsAssertGLOK() { const int line = __LINE__; const char* filename = __FILE__; \
-	assert(VistaOGLUtils::CheckGLOK(true, line, filename)); }
+#define VistaOGLUtilsAssertGLOK()                                                                  \
+  {                                                                                                \
+    const int   line     = __LINE__;                                                               \
+    const char* filename = __FILE__;                                                               \
+    assert(VistaOGLUtils::CheckGLOK(true, line, filename));                                        \
+  }
 #else
 // do nothing in release mode
 #define VistaOGLUtilsAssertGLOK()

@@ -21,17 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(_VISTAPROGRESSBAR_H)
 #define _VISTAPROGRESSBAR_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VistaToolsConfig.h"
-#include <string>
 #include <iostream>
+#include <string>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,73 +43,71 @@ class VistaTimer;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTATOOLSAPI VistaProgressBar
-{
-public:
-	// CONSTRUCTOR / DESTRUCTOR
-	VistaProgressBar( double fCountMax = 100.0,
-						double fCountInc = 1.0,
-						std::ostream* pStream = &std::cout );
-	virtual ~VistaProgressBar();
+class VISTATOOLSAPI VistaProgressBar {
+ public:
+  // CONSTRUCTOR / DESTRUCTOR
+  VistaProgressBar(
+      double fCountMax = 100.0, double fCountInc = 1.0, std::ostream* pStream = &std::cout);
+  virtual ~VistaProgressBar();
 
-	//IMPLEMENTATION
-	bool Start();
-	bool Increment();
-	bool Increment(double fIncrement);
-	bool SetCounter(double fCounter);
-	double GetCounter() const;
-	bool Finish(bool bComplete = true);
+  // IMPLEMENTATION
+  bool   Start();
+  bool   Increment();
+  bool   Increment(double fIncrement);
+  bool   SetCounter(double fCounter);
+  double GetCounter() const;
+  bool   Finish(bool bComplete = true);
 
-	bool GetRunning() const;
+  bool GetRunning() const;
 
-	bool Reset(double fCountMax, double fCountInc);
+  bool Reset(double fCountMax, double fCountInc);
 
-	// should we display this thing at all?
-	bool GetSilent() const;
-	void SetSilent(bool bSilent);
+  // should we display this thing at all?
+  bool GetSilent() const;
+  void SetSilent(bool bSilent);
 
-	// control various display options
-	std::string GetPrefixString() const;
-	bool SetPrefixString(std::string strPrefix);
+  // control various display options
+  std::string GetPrefixString() const;
+  bool        SetPrefixString(std::string strPrefix);
 
-	bool GetDisplayPrefix() const;
-	bool SetDisplayPrefix(bool bDisplayPrefix);
+  bool GetDisplayPrefix() const;
+  bool SetDisplayPrefix(bool bDisplayPrefix);
 
-	bool GetDisplayBar() const;
-	bool SetDisplayBar(bool bDisplayBar);
+  bool GetDisplayBar() const;
+  bool SetDisplayBar(bool bDisplayBar);
 
-	bool GetDisplayPercentage() const;
-	bool SetDisplayPercentage(bool bDisplayPercentage);
+  bool GetDisplayPercentage() const;
+  bool SetDisplayPercentage(bool bDisplayPercentage);
 
-	int GetBarTicks() const;
-	bool SetBarTicks(int iBarTicks);
+  int  GetBarTicks() const;
+  bool SetBarTicks(int iBarTicks);
 
-	void SetOutstream( std::ostream* pStream );
-	std::ostream* GetOutstream();
+  void          SetOutstream(std::ostream* pStream);
+  std::ostream* GetOutstream();
 
-protected:
-	void Draw();
+ protected:
+  void Draw();
 
-	std::ostream* m_pStream;
+  std::ostream* m_pStream;
 
-	bool m_bRunning;
-	bool m_bSilent;
+  bool m_bRunning;
+  bool m_bSilent;
 
-	// internal progress counting
-	double m_fCountCurrent, m_fCountMax, m_fCountIncrement;
+  // internal progress counting
+  double m_fCountCurrent, m_fCountMax, m_fCountIncrement;
 
-	// various display options
-	bool m_bDisplayPrefix, m_bDisplayBar, m_bDisplayPercentage;
-	std::string m_strPrefix;
-	int m_iBarTicks;
+  // various display options
+  bool        m_bDisplayPrefix, m_bDisplayBar, m_bDisplayPercentage;
+  std::string m_strPrefix;
+  int         m_iBarTicks;
 
-	// display progress
-	int m_iCurrentTicks;
-	int m_iCurrentPercentage;
+  // display progress
+  int m_iCurrentTicks;
+  int m_iCurrentPercentage;
 
-	// time measurement
-	VistaTimer *m_pTimer;
-	double m_fLastTime;
+  // time measurement
+  VistaTimer* m_pTimer;
+  double      m_fLastTime;
 };
 
 /*============================================================================*/
@@ -123,43 +119,39 @@ protected:
 /*  NAME      :   Get/SetCounter                                                  */
 /*                                                                            */
 /*============================================================================*/
-inline double VistaProgressBar::GetCounter() const
-{
-	return m_fCountCurrent;
+inline double VistaProgressBar::GetCounter() const {
+  return m_fCountCurrent;
 }
 
-inline bool VistaProgressBar::SetCounter(double fCounter)
-{
-	if (!m_bRunning)
-	{
+inline bool VistaProgressBar::SetCounter(double fCounter) {
+  if (!m_bRunning) {
 #ifdef DEBUG
-		if (!m_bSilent)
-			(*m_pStream) << " [VistaProgressBar] - WARNING!!! Unable to set count - bar is not running..." << std::endl;			
+    if (!m_bSilent)
+      (*m_pStream) << " [VistaProgressBar] - WARNING!!! Unable to set count - bar is not running..."
+                   << std::endl;
 #endif
-		return false;
-	}
+    return false;
+  }
 
-	if (fCounter < 0)
-		fCounter = 0;
+  if (fCounter < 0)
+    fCounter = 0;
 
-	if (fCounter > m_fCountMax)
-		fCounter = m_fCountMax;
+  if (fCounter > m_fCountMax)
+    fCounter = m_fCountMax;
 
-	m_fCountCurrent = fCounter;
+  m_fCountCurrent = fCounter;
 
-	int iTicks = (int) ((m_fCountCurrent / m_fCountMax) * m_iBarTicks);
-	int iPercentage = (int) ((m_fCountCurrent / m_fCountMax) * 100);
+  int iTicks      = (int)((m_fCountCurrent / m_fCountMax) * m_iBarTicks);
+  int iPercentage = (int)((m_fCountCurrent / m_fCountMax) * 100);
 
-	if (iTicks != m_iCurrentTicks
-		|| iPercentage != m_iCurrentPercentage)
-	{
-		m_iCurrentTicks = iTicks;
-		m_iCurrentPercentage = iPercentage;
+  if (iTicks != m_iCurrentTicks || iPercentage != m_iCurrentPercentage) {
+    m_iCurrentTicks      = iTicks;
+    m_iCurrentPercentage = iPercentage;
 
-		Draw();
-	}
+    Draw();
+  }
 
-	return true;
+  return true;
 }
 
 /*============================================================================*/
@@ -167,14 +159,12 @@ inline bool VistaProgressBar::SetCounter(double fCounter)
 /*  NAME      :   Increment                                                   */
 /*                                                                            */
 /*============================================================================*/
-inline bool VistaProgressBar::Increment(double fIncrement)
-{
-	return SetCounter(m_fCountCurrent + fIncrement);
+inline bool VistaProgressBar::Increment(double fIncrement) {
+  return SetCounter(m_fCountCurrent + fIncrement);
 }
 
-inline bool VistaProgressBar::Increment()
-{
-	return Increment(m_fCountIncrement);
+inline bool VistaProgressBar::Increment() {
+  return Increment(m_fCountIncrement);
 }
 
 /*============================================================================*/
@@ -182,9 +172,8 @@ inline bool VistaProgressBar::Increment()
 /*  NAME      :   GetRunning                                                  */
 /*                                                                            */
 /*============================================================================*/
-inline bool VistaProgressBar::GetRunning() const
-{
-	return m_bRunning;
+inline bool VistaProgressBar::GetRunning() const {
+  return m_bRunning;
 }
 
 /*============================================================================*/
@@ -192,9 +181,8 @@ inline bool VistaProgressBar::GetRunning() const
 /*  NAME      :   GetSilent                                                   */
 /*                                                                            */
 /*============================================================================*/
-inline bool VistaProgressBar::GetSilent() const
-{
-	return m_bSilent;
+inline bool VistaProgressBar::GetSilent() const {
+  return m_bSilent;
 }
 
 /*============================================================================*/
@@ -202,9 +190,8 @@ inline bool VistaProgressBar::GetSilent() const
 /*  NAME      :   GetPrefixString                                             */
 /*                                                                            */
 /*============================================================================*/
-inline std::string VistaProgressBar::GetPrefixString() const
-{
-	return m_strPrefix;
+inline std::string VistaProgressBar::GetPrefixString() const {
+  return m_strPrefix;
 }
 
 /*============================================================================*/
@@ -212,9 +199,8 @@ inline std::string VistaProgressBar::GetPrefixString() const
 /*  NAME      :   GetDisplayPrefix                                            */
 /*                                                                            */
 /*============================================================================*/
-inline bool VistaProgressBar::GetDisplayPrefix() const
-{
-	return m_bDisplayPrefix;
+inline bool VistaProgressBar::GetDisplayPrefix() const {
+  return m_bDisplayPrefix;
 }
 
 /*============================================================================*/
@@ -222,9 +208,8 @@ inline bool VistaProgressBar::GetDisplayPrefix() const
 /*  NAME      :   GetDisplayBar                                               */
 /*                                                                            */
 /*============================================================================*/
-inline bool VistaProgressBar::GetDisplayBar() const
-{
-	return m_bDisplayBar;
+inline bool VistaProgressBar::GetDisplayBar() const {
+  return m_bDisplayBar;
 }
 
 /*============================================================================*/
@@ -232,9 +217,8 @@ inline bool VistaProgressBar::GetDisplayBar() const
 /*  NAME      :   GetDisplayPercentage                                        */
 /*                                                                            */
 /*============================================================================*/
-inline bool VistaProgressBar::GetDisplayPercentage() const
-{
-	return m_bDisplayPercentage;
+inline bool VistaProgressBar::GetDisplayPercentage() const {
+  return m_bDisplayPercentage;
 }
 
 /*============================================================================*/
@@ -242,10 +226,8 @@ inline bool VistaProgressBar::GetDisplayPercentage() const
 /*  NAME      :   GetBarTicks                                                 */
 /*                                                                            */
 /*============================================================================*/
-inline int VistaProgressBar::GetBarTicks() const
-{
-	return m_iBarTicks;
+inline int VistaProgressBar::GetBarTicks() const {
+  return m_iBarTicks;
 }
 
 #endif //_VISTAPROGRESSBAR_H
-

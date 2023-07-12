@@ -21,12 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnGetTransformNode.h" 
+#include "VdfnGetTransformNode.h"
 #include <VistaAspects/VistaTransformable.h>
 
 #include "VdfnObjectRegistry.h"
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -35,111 +33,91 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnGetTransformNode::VdfnGetTransformNode(VdfnObjectRegistry *pReg,
-											 const std::string &strKey)
-: IVdfnNode(),
-  m_pTransform(NULL),
-  m_pOutMat( new TVdfnPort<VistaTransformMatrix> ),
-  m_pReg(pReg),
-  m_strKey(strKey),
-  m_eMode(TRANS_RELATIVE)
-{
-	SetEvaluationFlag(true); // unconditional update / eval
-	RegisterOutPort( "transform", m_pOutMat );
+VdfnGetTransformNode::VdfnGetTransformNode(VdfnObjectRegistry* pReg, const std::string& strKey)
+    : IVdfnNode()
+    , m_pTransform(NULL)
+    , m_pOutMat(new TVdfnPort<VistaTransformMatrix>)
+    , m_pReg(pReg)
+    , m_strKey(strKey)
+    , m_eMode(TRANS_RELATIVE) {
+  SetEvaluationFlag(true); // unconditional update / eval
+  RegisterOutPort("transform", m_pOutMat);
 }
-
 
 VdfnGetTransformNode::VdfnGetTransformNode()
-: IVdfnNode(),
-  m_pTransform(NULL),
-  m_pOutMat( new TVdfnPort<VistaTransformMatrix> ),
-  m_pReg(NULL),
-  m_eMode(TRANS_RELATIVE)
-{
-	SetEvaluationFlag(true); // unconditional update / eval
-	RegisterOutPort( "transform", m_pOutMat );
+    : IVdfnNode()
+    , m_pTransform(NULL)
+    , m_pOutMat(new TVdfnPort<VistaTransformMatrix>)
+    , m_pReg(NULL)
+    , m_eMode(TRANS_RELATIVE) {
+  SetEvaluationFlag(true); // unconditional update / eval
+  RegisterOutPort("transform", m_pOutMat);
 }
 
-VdfnGetTransformNode::VdfnGetTransformNode( IVistaTransformable *pTransform )
-	: IVdfnNode(),
-	  m_pTransform(pTransform),
-	  m_pOutMat( new TVdfnPort<VistaTransformMatrix> ),
-	  m_pReg(NULL),
-      m_eMode(TRANS_RELATIVE)
-{
-	SetEvaluationFlag(true); // unconditional update / eval
-	RegisterOutPort( "transform", m_pOutMat );
+VdfnGetTransformNode::VdfnGetTransformNode(IVistaTransformable* pTransform)
+    : IVdfnNode()
+    , m_pTransform(pTransform)
+    , m_pOutMat(new TVdfnPort<VistaTransformMatrix>)
+    , m_pReg(NULL)
+    , m_eMode(TRANS_RELATIVE) {
+  SetEvaluationFlag(true); // unconditional update / eval
+  RegisterOutPort("transform", m_pOutMat);
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VdfnGetTransformNode::eMode VdfnGetTransformNode::GetTransformGetMode() const
-{
-    return m_eMode;
+VdfnGetTransformNode::eMode VdfnGetTransformNode::GetTransformGetMode() const {
+  return m_eMode;
 }
 
-void VdfnGetTransformNode::SetTransformGetMode( VdfnGetTransformNode::eMode md )
-{
-    m_eMode = md;
+void VdfnGetTransformNode::SetTransformGetMode(VdfnGetTransformNode::eMode md) {
+  m_eMode = md;
 }
 
-bool VdfnGetTransformNode::PrepareEvaluationRun()
-{
-	if( (m_pTransform == NULL) && m_pReg && !m_strKey.empty() )
-	{
-		m_pTransform = m_pReg->GetObjectTransform( m_strKey );
-	}
-	return GetIsValid();
+bool VdfnGetTransformNode::PrepareEvaluationRun() {
+  if ((m_pTransform == NULL) && m_pReg && !m_strKey.empty()) {
+    m_pTransform = m_pReg->GetObjectTransform(m_strKey);
+  }
+  return GetIsValid();
 }
 
-
-bool VdfnGetTransformNode::GetIsValid() const
-{
-	return (m_pTransform != NULL);
+bool VdfnGetTransformNode::GetIsValid() const {
+  return (m_pTransform != NULL);
 }
 
-bool VdfnGetTransformNode::DoEvalNode()
-{
-	VistaTransformMatrix& matTransform = m_pOutMat->GetValueRef();
-    switch(m_eMode)
-    {
-    case TRANS_RELATIVE:
-        {
-			/** @todo think about returning false here!? */
-			if(m_pTransform->GetTransform( matTransform )==false)
-                return true; // did not work
-            break;
-        }
-    case TRANS_WORLD:
-        {
-			/** @todo think about returning false here!? */
-            if(m_pTransform->GetWorldTransform( matTransform ) == false)
-                return true; // did not work...
-            break;
-        }
-    }
+bool VdfnGetTransformNode::DoEvalNode() {
+  VistaTransformMatrix& matTransform = m_pOutMat->GetValueRef();
+  switch (m_eMode) {
+  case TRANS_RELATIVE: {
+    /** @todo think about returning false here!? */
+    if (m_pTransform->GetTransform(matTransform) == false)
+      return true; // did not work
+    break;
+  }
+  case TRANS_WORLD: {
+    /** @todo think about returning false here!? */
+    if (m_pTransform->GetWorldTransform(matTransform) == false)
+      return true; // did not work...
+    break;
+  }
+  }
 
-    m_pOutMat->SetUpdateTimeStamp(GetUpdateTimeStamp());
-    m_pOutMat->IncUpdateCounter();
+  m_pOutMat->SetUpdateTimeStamp(GetUpdateTimeStamp());
+  m_pOutMat->IncUpdateCounter();
 
-	return true;
+  return true;
 }
 
-IVistaTransformable *VdfnGetTransformNode::GetTransformable() const
-{
-	return m_pTransform;
+IVistaTransformable* VdfnGetTransformNode::GetTransformable() const {
+  return m_pTransform;
 }
 
-void VdfnGetTransformNode::SetTransformable( IVistaTransformable *pTrans )
-{
-	m_pTransform = pTrans;
+void VdfnGetTransformNode::SetTransformable(IVistaTransformable* pTrans) {
+  m_pTransform = pTrans;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPTITRACKDRIVER_H
 #define _VISTAOPTITRACKDRIVER_H
 
@@ -29,24 +28,24 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
+#include "NatNetTypes.h"
+#include "VistaDeviceDriversBase/DriverAspects/VistaDriverGenericParameterAspect.h"
 #include "VistaOptitrackCommonShare.h"
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
-#include "VistaDeviceDriversBase/DriverAspects/VistaDriverGenericParameterAspect.h"
-#include "NatNetTypes.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
-//Windows DLL build
-#if defined(WIN32) && !defined(VISTAOPTITRACKDRIVER_STATIC) 
-	#ifdef VISTAOPTITRACKDRIVER_EXPORTS
-		#define VISTAOPTITRACKDRIVERAPI __declspec(dllexport)
-	#else
-		#define VISTAOPTITRACKDRIVERAPI __declspec(dllimport)
-	#endif
+// Windows DLL build
+#if defined(WIN32) && !defined(VISTAOPTITRACKDRIVER_STATIC)
+#ifdef VISTAOPTITRACKDRIVER_EXPORTS
+#define VISTAOPTITRACKDRIVERAPI __declspec(dllexport)
+#else
+#define VISTAOPTITRACKDRIVERAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAOPTITRACKDRIVERAPI
+#define VISTAOPTITRACKDRIVERAPI
 #endif
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -62,54 +61,52 @@ class NatNetClient;
 /**
  * For the Optitrack Tracking System, using Optitrack's NatNetSDK
  */
-class VISTAOPTITRACKDRIVERAPI VistaOptitrackDriver : public IVistaDeviceDriver
-{
-public:
-	class VISTAOPTITRACKDRIVERAPI Parameters : public VistaDriverGenericParameterAspect::IParameterContainer
-	{
-		REFL_DECLARE
-	public:
-		Parameters( IVistaDeviceDriver* pDriver );
+class VISTAOPTITRACKDRIVERAPI VistaOptitrackDriver : public IVistaDeviceDriver {
+ public:
+  class VISTAOPTITRACKDRIVERAPI Parameters
+      : public VistaDriverGenericParameterAspect::IParameterContainer {
+    REFL_DECLARE
+   public:
+    Parameters(IVistaDeviceDriver* pDriver);
 
-		bool m_bReportMessages;
-		bool m_bServerUsesMulticast;
-		std::string m_sMulticastAddress;
-		std::string m_sOwnHostName;
-		std::string m_sServerHostName;
-		int m_nServerCommandPort;
-		int m_nServerDataPort;
-	};
-public:
-	VistaOptitrackDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaOptitrackDriver();
+    bool        m_bReportMessages;
+    bool        m_bServerUsesMulticast;
+    std::string m_sMulticastAddress;
+    std::string m_sOwnHostName;
+    std::string m_sServerHostName;
+    int         m_nServerCommandPort;
+    int         m_nServerDataPort;
+  };
 
-	void SetCurrentFrameData( sFrameOfMocapData* pValue );
+ public:
+  VistaOptitrackDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaOptitrackDriver();
 
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-	virtual bool PhysicalEnable(bool bEnable);
+  void SetCurrentFrameData(sFrameOfMocapData* pValue);
 
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool PhysicalEnable(bool bEnable);
 
-	const Parameters* GetParameters() const;
-	Parameters* GetParameters();
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-private:
-	VistaDriverSensorMappingAspect* m_pSensors;
-	VistaDriverGenericParameterAspect* m_pParamAspect;
-	NatNetClient* m_pClient;
-	sFrameOfMocapData* m_pCurrentFrameData;
+  const Parameters* GetParameters() const;
+  Parameters*       GetParameters();
+
+ private:
+  VistaDriverSensorMappingAspect*    m_pSensors;
+  VistaDriverGenericParameterAspect* m_pParamAspect;
+  NatNetClient*                      m_pClient;
+  sFrameOfMocapData*                 m_pCurrentFrameData;
 };
 
+// CREATION METHOD
 
-//CREATION METHOD
-
-class VISTAOPTITRACKDRIVERAPI VistaOptitrackCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaOptitrackCreationMethod( IVistaTranscoderFactoryFactory* PMetaFactory );
-	virtual IVistaDeviceDriver* CreateDriver();
+class VISTAOPTITRACKDRIVERAPI VistaOptitrackCreationMethod : public IVistaDriverCreationMethod {
+ public:
+  VistaOptitrackCreationMethod(IVistaTranscoderFactoryFactory* PMetaFactory);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/

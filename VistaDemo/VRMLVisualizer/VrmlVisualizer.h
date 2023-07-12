@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VRMLVISUALIZER_H
 #define _VRMLVISUALIZER_H
 
@@ -53,37 +52,37 @@ class VistaTransformNode;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VrmlVisualizer
-{
-public:
-	VrmlVisualizer( int argc = 0, char  *argv[] = NULL );
-	virtual ~VrmlVisualizer();
+class VrmlVisualizer {
+ public:
+  VrmlVisualizer(int argc = 0, char* argv[] = NULL);
+  virtual ~VrmlVisualizer();
 
-	void Run ();
-	void Update();
-	void NextStep();
-	void PrevStep();
-	void IncreaseStepSpeed();
-	void DecreaseStepSpeed();
-	void ParseParameters();
+  void Run();
+  void Update();
+  void NextStep();
+  void PrevStep();
+  void IncreaseStepSpeed();
+  void DecreaseStepSpeed();
+  void ParseParameters();
 
-	inline VistaPropertyList &GetPropertyList(){ return m_vrmlProps; }
+  inline VistaPropertyList& GetPropertyList() {
+    return m_vrmlProps;
+  }
 
-private:
+ private:
+  void PrintUsage();
+  bool AddByFilename(const std::string& strFilename);
+  bool LoadData();
 
-	void PrintUsage();
-	bool AddByFilename( const std::string& strFilename );
-	bool LoadData();
-
-	VistaSystem							m_vistaSystem;
-	VistaPropertyList					m_vrmlProps;
-	VistaTransformNode					*FirstNodeAsTransformNode( IVistaNode * );
-	std::vector<VistaTransformNode*>	m_loadedNodes;
-	int									m_iCurrentStep;
-	double								m_dLastTime;
-	double								m_dStepTime;
-	VrmlEventHandler					m_graphicsEventHandler;
-	std::vector<std::string>			m_vecArgs;
+  VistaSystem                      m_vistaSystem;
+  VistaPropertyList                m_vrmlProps;
+  VistaTransformNode*              FirstNodeAsTransformNode(IVistaNode*);
+  std::vector<VistaTransformNode*> m_loadedNodes;
+  int                              m_iCurrentStep;
+  double                           m_dLastTime;
+  double                           m_dStepTime;
+  VrmlEventHandler                 m_graphicsEventHandler;
+  std::vector<std::string>         m_vecArgs;
 };
 
 /*============================================================================*/

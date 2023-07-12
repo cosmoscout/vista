@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTADATAPACKET_H
 #define IDLVISTADATAPACKET_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,9 +31,9 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaDLVTypes.h"
 #include <VistaAspects/VistaSerializable.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <string>
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -48,62 +46,58 @@ class DLVistaTimeStamp;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IDLVistaDataPacket : public IVistaSerializable
-{
-private:
-	IDLVistaPipeComponent * m_pPacketSource;
+class VISTAINTERPROCCOMMAPI IDLVistaDataPacket : public IVistaSerializable {
+ private:
+  IDLVistaPipeComponent* m_pPacketSource;
 
-	DLVistaTimeStamp *m_pTimeStamp;
+  DLVistaTimeStamp* m_pTimeStamp;
 
-	int m_iPacketType;
+  int m_iPacketType;
 
-	bool m_bIsValid;
+  bool m_bIsValid;
 
-	bool m_bIsLocked;
-protected:
-	IDLVistaDataPacket(const IDLVistaDataPacket &);
-public:
+  bool m_bIsLocked;
 
-	IDLVistaDataPacket(IDLVistaPipeComponent * );
+ protected:
+  IDLVistaDataPacket(const IDLVistaDataPacket&);
 
+ public:
+  IDLVistaDataPacket(IDLVistaPipeComponent*);
 
-	virtual ~IDLVistaDataPacket();
+  virtual ~IDLVistaDataPacket();
 
-	DLVistaTimeStamp *GetTimeStamp() const;
+  DLVistaTimeStamp* GetTimeStamp() const;
 
-	virtual int GetPacketSize() const =0;
+  virtual int GetPacketSize() const = 0;
 
-	IDLVistaPipeComponent * GetDataSource() const;
+  IDLVistaPipeComponent* GetDataSource() const;
 
-	virtual void SetDataSize(int ) =0;
+  virtual void SetDataSize(int) = 0;
 
-	virtual int GetDataSize() const = 0;
+  virtual int GetDataSize() const = 0;
 
-	void Stamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp);
+  void Stamp(DLV_INT64 i64MicroStamp, DLV_INT32 i32MacroStamp);
 
-	int GetPacketType() const;
+  int GetPacketType() const;
 
-	void SetPacketType(int iPacketType);
+  void SetPacketType(int iPacketType);
 
-	virtual IDLVistaDataPacket* CreateInstance(IDLVistaPipeComponent*) const = 0;
-	virtual IDLVistaDataPacket * Clone() const;
+  virtual IDLVistaDataPacket* CreateInstance(IDLVistaPipeComponent*) const = 0;
+  virtual IDLVistaDataPacket* Clone() const;
 
-	bool IsValid() const;
+  bool IsValid() const;
 
-	void SetIsValid(bool bValid);
+  void SetIsValid(bool bValid);
 
-	bool IsLocked() const;
+  bool IsLocked() const;
 
-	void Lock();
+  void Lock();
 
-	bool Unlock();
+  bool Unlock();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //IDLVISTADATAPACKET_H
-
+#endif // IDLVISTADATAPACKET_H

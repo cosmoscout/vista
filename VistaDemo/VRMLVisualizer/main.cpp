@@ -22,9 +22,9 @@
 /*============================================================================*/
 
 #include "VrmlVisualizer.h"
-#include <iostream>
-#include <VistaKernel/VistaSystem.h>
 #include <VistaBase/VistaExceptionBase.h>
+#include <VistaKernel/VistaSystem.h>
+#include <iostream>
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -38,25 +38,17 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int	main (int argc, char *argv[])
-{
-	try
-	{
-		VrmlVisualizer vrmlVisualizer(argc, argv);
-	
-		// start universe as an endless loop
-		vrmlVisualizer.Run ();
-	}
-	catch ( VistaExceptionBase &e )
-	{
-		e.PrintException();
-	}
-	catch ( std::exception &e )
-	{
-		std::cerr << "Exception:" << e.what() << std::endl;
-	}
-	
-	return 0;
+int main(int argc, char* argv[]) {
+  try {
+    VrmlVisualizer vrmlVisualizer(argc, argv);
+
+    // start universe as an endless loop
+    vrmlVisualizer.Run();
+  } catch (VistaExceptionBase& e) { e.PrintException(); } catch (std::exception& e) {
+    std::cerr << "Exception:" << e.what() << std::endl;
+  }
+
+  return 0;
 }
 
 /*============================================================================*/

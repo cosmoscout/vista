@@ -21,209 +21,172 @@
 /*                                                                            */
 /*============================================================================*/
 
-
+#include "VistaDepthSenseDriver.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include "VistaDepthSenseDriver.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS                                  */
 /*============================================================================*/
-namespace
-{
-	const std::string g_sColorTranscoderName = "VistaDepthSenseColorTranscoder";
-	const std::string g_sDepthTranscoderName = "VistaDepthSenseDepthTranscoder";
-	const std::string g_sUVMapTranscoderName = "VistaDepthSenseUVMapTranscoder";
+namespace {
+const std::string g_sColorTranscoderName = "VistaDepthSenseColorTranscoder";
+const std::string g_sDepthTranscoderName = "VistaDepthSenseDepthTranscoder";
+const std::string g_sUVMapTranscoderName = "VistaDepthSenseUVMapTranscoder";
 
-	class VistaDepthSenseColorTranscoder : public IVistaMeasureTranscode
-	{
-		REFL_INLINEIMP(VistaDepthSenseColorTranscoder,
-					   IVistaMeasureTranscode);
-	public:
-		VistaDepthSenseColorTranscoder()
-		{
-			// inherited as protected member
-			m_nNumberOfScalars = 0;
-		}
+class VistaDepthSenseColorTranscoder : public IVistaMeasureTranscode {
+  REFL_INLINEIMP(VistaDepthSenseColorTranscoder, IVistaMeasureTranscode);
 
-		static std::string GetTypeString() { return g_sColorTranscoderName; }
-	};
+ public:
+  VistaDepthSenseColorTranscoder() {
+    // inherited as protected member
+    m_nNumberOfScalars = 0;
+  }
 
-	class VistaDepthSenseColorFrameGet :
-		public IVistaMeasureTranscode::TTranscodeValueGet<const unsigned char*>
-	{
-	public:
-		VistaDepthSenseColorFrameGet()
-			: IVistaMeasureTranscode::TTranscodeValueGet<const unsigned char*>(
-				"COLOR_FRAME",
-				g_sColorTranscoderName,
-				"Color frame, 320x240 RGB888")
-		{}
+  static std::string GetTypeString() {
+    return g_sColorTranscoderName;
+  }
+};
 
-		const unsigned char* GetValue(
-			const VistaSensorMeasure* pMeasure ) const
-		{
-			const unsigned char* pColorFrame;
-			GetValue( pMeasure, pColorFrame );
-			return pColorFrame;
-		};
+class VistaDepthSenseColorFrameGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<const unsigned char*> {
+ public:
+  VistaDepthSenseColorFrameGet()
+      : IVistaMeasureTranscode::TTranscodeValueGet<const unsigned char*>(
+            "COLOR_FRAME", g_sColorTranscoderName, "Color frame, 320x240 RGB888") {
+  }
 
-		bool GetValue( const VistaSensorMeasure* pMeasure,
-					   const unsigned char*& pColorFrame ) const {
+  const unsigned char* GetValue(const VistaSensorMeasure* pMeasure) const {
+    const unsigned char* pColorFrame;
+    GetValue(pMeasure, pColorFrame);
+    return pColorFrame;
+  };
 
-			const VistaDepthSenseDriver::ColorMeasure *pData =
-				pMeasure->getRead<VistaDepthSenseDriver::ColorMeasure>();
-			pColorFrame = pData->frame;
+  bool GetValue(const VistaSensorMeasure* pMeasure, const unsigned char*& pColorFrame) const {
 
-			return true;
-		}
-	};
+    const VistaDepthSenseDriver::ColorMeasure* pData =
+        pMeasure->getRead<VistaDepthSenseDriver::ColorMeasure>();
+    pColorFrame = pData->frame;
 
-	class VistaDepthSenseDepthTranscoder : public IVistaMeasureTranscode
-	{
-		REFL_INLINEIMP(VistaDepthSenseDepthTranscoder,
-					   IVistaMeasureTranscode);
-	public:
-		VistaDepthSenseDepthTranscoder()
-		{
-			// inherited as protected member
-			m_nNumberOfScalars = 0;
-		}
+    return true;
+  }
+};
 
-		static std::string GetTypeString() { return g_sDepthTranscoderName; }
-	};
+class VistaDepthSenseDepthTranscoder : public IVistaMeasureTranscode {
+  REFL_INLINEIMP(VistaDepthSenseDepthTranscoder, IVistaMeasureTranscode);
 
-	class VistaDepthSenseDepthFrameGet :
-		public IVistaMeasureTranscode::TTranscodeValueGet<const unsigned short*>
-	{
-	public:
-		VistaDepthSenseDepthFrameGet()
-			: IVistaMeasureTranscode::TTranscodeValueGet<const unsigned short*>(
-				"DEPTH_FRAME",
-				g_sDepthTranscoderName,
-				"Depth frame, 320x240 16bit")
-		{}
+ public:
+  VistaDepthSenseDepthTranscoder() {
+    // inherited as protected member
+    m_nNumberOfScalars = 0;
+  }
 
-		const unsigned short* GetValue(
-			const VistaSensorMeasure* pMeasure ) const
-		{
-			const unsigned short* pDepthFrame;
-			GetValue( pMeasure, pDepthFrame );
-			return pDepthFrame;
-		};
+  static std::string GetTypeString() {
+    return g_sDepthTranscoderName;
+  }
+};
 
-		bool GetValue( const VistaSensorMeasure* pMeasure,
-					   const unsigned short*& pDepthFrame ) const {
+class VistaDepthSenseDepthFrameGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<const unsigned short*> {
+ public:
+  VistaDepthSenseDepthFrameGet()
+      : IVistaMeasureTranscode::TTranscodeValueGet<const unsigned short*>(
+            "DEPTH_FRAME", g_sDepthTranscoderName, "Depth frame, 320x240 16bit") {
+  }
 
-			const VistaDepthSenseDriver::DepthMeasure *pData =
-				pMeasure->getRead<VistaDepthSenseDriver::DepthMeasure>();
-			pDepthFrame = pData->frame;
+  const unsigned short* GetValue(const VistaSensorMeasure* pMeasure) const {
+    const unsigned short* pDepthFrame;
+    GetValue(pMeasure, pDepthFrame);
+    return pDepthFrame;
+  };
 
-			return true;
-		}
-	};
+  bool GetValue(const VistaSensorMeasure* pMeasure, const unsigned short*& pDepthFrame) const {
 
-	class VistaDepthSenseUVMapTranscoder : public IVistaMeasureTranscode
-	{
-		REFL_INLINEIMP(VistaDepthSenseUVMapTranscoder,
-					   IVistaMeasureTranscode);
-	public:
-		VistaDepthSenseUVMapTranscoder()
-		{
-			// inherited as protected member
-			m_nNumberOfScalars = 0;
-		}
+    const VistaDepthSenseDriver::DepthMeasure* pData =
+        pMeasure->getRead<VistaDepthSenseDriver::DepthMeasure>();
+    pDepthFrame = pData->frame;
 
-		static std::string GetTypeString() { return g_sUVMapTranscoderName; }
-	};
-	
-	class VistaDepthSenseUVMapFrameGet :
-		public IVistaMeasureTranscode::TTranscodeValueGet<const float*>	{
-	public:
-		VistaDepthSenseUVMapFrameGet()
-			: IVistaMeasureTranscode::TTranscodeValueGet<const float*>(
-				"UVMAP_FRAME",
-				g_sUVMapTranscoderName,
-				"UV map frame, 320x240 normalized float u,v coordinates")
-		{}
+    return true;
+  }
+};
 
-		const float* GetValue(const VistaSensorMeasure* pMeasure) const {
-			const float* pUVMap;
-			GetValue( pMeasure, pUVMap );
-			return pUVMap;
-		};
+class VistaDepthSenseUVMapTranscoder : public IVistaMeasureTranscode {
+  REFL_INLINEIMP(VistaDepthSenseUVMapTranscoder, IVistaMeasureTranscode);
 
-		bool GetValue( const VistaSensorMeasure* pMeasure,
-					   const float*& pUVMap ) const {
+ public:
+  VistaDepthSenseUVMapTranscoder() {
+    // inherited as protected member
+    m_nNumberOfScalars = 0;
+  }
 
-			const VistaDepthSenseDriver::UVMapMeasure *pData =
-				pMeasure->getRead<VistaDepthSenseDriver::UVMapMeasure>();
-			pUVMap = pData->frame;
+  static std::string GetTypeString() {
+    return g_sUVMapTranscoderName;
+  }
+};
 
-			return true;
-		}
-	};
+class VistaDepthSenseUVMapFrameGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<const float*> {
+ public:
+  VistaDepthSenseUVMapFrameGet()
+      : IVistaMeasureTranscode::TTranscodeValueGet<const float*>("UVMAP_FRAME",
+            g_sUVMapTranscoderName, "UV map frame, 320x240 normalized float u,v coordinates") {
+  }
 
-	
-	static IVistaPropertyGetFunctor *SaGetter[] = {
-		new VistaDepthSenseColorFrameGet,
-		new VistaDepthSenseDepthFrameGet,
-		new VistaDepthSenseUVMapFrameGet,
-		NULL
-	};
+  const float* GetValue(const VistaSensorMeasure* pMeasure) const {
+    const float* pUVMap;
+    GetValue(pMeasure, pUVMap);
+    return pUVMap;
+  };
 
+  bool GetValue(const VistaSensorMeasure* pMeasure, const float*& pUVMap) const {
 
-	// #########################################################################
-	// FACTORYFACTORY
-	// #########################################################################
+    const VistaDepthSenseDriver::UVMapMeasure* pData =
+        pMeasure->getRead<VistaDepthSenseDriver::UVMapMeasure>();
+    pUVMap = pData->frame;
 
-	class VistaDepthSenseDriverTranscoderFactoryFactory :
-		public IVistaTranscoderFactoryFactory
-	{
-	public:
-		virtual IVistaMeasureTranscoderFactory *CreateFactoryForType(
-			const std::string &strTypeName )
-		{
-			if(VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(
-				   strTypeName, "COLOR" ) ) {
-				return new TDefaultTranscoderFactory<
-					VistaDepthSenseColorTranscoder>(
-						VistaDepthSenseColorTranscoder::GetTypeString() );
-			}
-			else if( VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(
-						 strTypeName, "DEPTH" ) ) {
-				return new TDefaultTranscoderFactory<
-					VistaDepthSenseDepthTranscoder>(
-						VistaDepthSenseDepthTranscoder::GetTypeString() );
-			}
-			else if(VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(
-						strTypeName, "UVMAP" ) ) {
-				return new TDefaultTranscoderFactory<
-					VistaDepthSenseUVMapTranscoder>(
-						VistaDepthSenseUVMapTranscoder::GetTypeString() );
-			}
-			else
-				return NULL;
-		}
+    return true;
+  }
+};
 
-		virtual void DestroyTranscoderFactory(
-			IVistaMeasureTranscoderFactory *fac ) {
-			delete fac;
-		}
+static IVistaPropertyGetFunctor* SaGetter[] = {new VistaDepthSenseColorFrameGet,
+    new VistaDepthSenseDepthFrameGet, new VistaDepthSenseUVMapFrameGet, NULL};
 
-		static void OnUnload() {
-			TDefaultTranscoderFactory<VistaDepthSenseColorTranscoder>
-				a( VistaDepthSenseColorTranscoder::GetTypeString() );
-			a.OnUnload();
-			TDefaultTranscoderFactory<VistaDepthSenseDepthTranscoder>
-				b( VistaDepthSenseDepthTranscoder::GetTypeString() );
-			b.OnUnload();
-			TDefaultTranscoderFactory<VistaDepthSenseUVMapTranscoder>
-				c( VistaDepthSenseUVMapTranscoder::GetTypeString() );
-			c.OnUnload();
-		}
-	};
-}
+// #########################################################################
+// FACTORYFACTORY
+// #########################################################################
+
+class VistaDepthSenseDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory {
+ public:
+  virtual IVistaMeasureTranscoderFactory* CreateFactoryForType(const std::string& strTypeName) {
+    if (VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(strTypeName, "COLOR")) {
+      return new TDefaultTranscoderFactory<VistaDepthSenseColorTranscoder>(
+          VistaDepthSenseColorTranscoder::GetTypeString());
+    } else if (VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(strTypeName, "DEPTH")) {
+      return new TDefaultTranscoderFactory<VistaDepthSenseDepthTranscoder>(
+          VistaDepthSenseDepthTranscoder::GetTypeString());
+    } else if (VistaAspectsComparisonStuff::StringCaseInsensitiveEquals(strTypeName, "UVMAP")) {
+      return new TDefaultTranscoderFactory<VistaDepthSenseUVMapTranscoder>(
+          VistaDepthSenseUVMapTranscoder::GetTypeString());
+    } else
+      return NULL;
+  }
+
+  virtual void DestroyTranscoderFactory(IVistaMeasureTranscoderFactory* fac) {
+    delete fac;
+  }
+
+  static void OnUnload() {
+    TDefaultTranscoderFactory<VistaDepthSenseColorTranscoder> a(
+        VistaDepthSenseColorTranscoder::GetTypeString());
+    a.OnUnload();
+    TDefaultTranscoderFactory<VistaDepthSenseDepthTranscoder> b(
+        VistaDepthSenseDepthTranscoder::GetTypeString());
+    b.OnUnload();
+    TDefaultTranscoderFactory<VistaDepthSenseUVMapTranscoder> c(
+        VistaDepthSenseUVMapTranscoder::GetTypeString());
+    c.OnUnload();
+  }
+};
+} // namespace
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -238,11 +201,9 @@ namespace
 /*============================================================================*/
 
 #ifdef VISTADEPTHSENSETRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS(
-	VistaDepthSenseDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(VistaDepthSenseDriverTranscoderFactoryFactory)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS(
-	VistaDepthSenseDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(VistaDepthSenseDriverTranscoderFactoryFactory)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;

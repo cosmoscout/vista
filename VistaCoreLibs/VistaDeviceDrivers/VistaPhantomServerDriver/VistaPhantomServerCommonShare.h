@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPHANTOMDRIVERCONFIG_H
 #define _VISTAPHANTOMDRIVERCONFIG_H
 
@@ -29,21 +28,13 @@
  * the memory layout of a phantom measure
  */
 
-namespace VistaPhantomServerMeasures
-{
-	struct sPhantomServerMeasure
-	{
+namespace VistaPhantomServerMeasures {
+struct sPhantomServerMeasure {
 
-		float m_afPosition[3],
-			m_afRotMatrix[9],
-			m_afPosSCP[3],
-			m_afVelocity[3],
-			m_afForce[3];
-		int   m_nButtonState;
-		float m_nUpdateRate,
-			m_afOverheatState[6];
-	};
-}
+  float m_afPosition[3], m_afRotMatrix[9], m_afPosSCP[3], m_afVelocity[3], m_afForce[3];
+  int   m_nButtonState;
+  float m_nUpdateRate, m_afOverheatState[6];
+};
+} // namespace VistaPhantomServerMeasures
 
 #endif //_VISTAPHANTOMDRIVERCONFIG_H
-

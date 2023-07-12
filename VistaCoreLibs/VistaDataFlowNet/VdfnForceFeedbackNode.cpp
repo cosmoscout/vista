@@ -21,14 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnForceFeedbackNode.h"
 
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverForceFeedbackAspect.h>
-#include <VistaDeviceDriversBase/VistaDriverMap.h>
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaAspects/VistaPropertyAwareable.h>
 #include <VistaBase/VistaExceptionBase.h>
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverForceFeedbackAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
+#include <VistaDeviceDriversBase/VistaDriverMap.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -37,106 +36,88 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnForceFeedbackNode::VdfnForceFeedbackNode( IVistaDriverForceFeedbackAspect *pAspect )
- : IVdfnNode(),
-   m_pAspect(pAspect),
-   m_pForceVec(NULL),
-   m_pTorque(NULL),
-   m_pEnabled(NULL)
-   {
-		RegisterInPortPrototype( "force", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
-		RegisterInPortPrototype( "torque", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
-		RegisterInPortPrototype( "enabled", new TVdfnPortTypeCompare<TVdfnPort<bool> >);
-   }
-
-bool VdfnForceFeedbackNode::GetIsValid() const
-{
-	return (m_pAspect != NULL);
+VdfnForceFeedbackNode::VdfnForceFeedbackNode(IVistaDriverForceFeedbackAspect* pAspect)
+    : IVdfnNode()
+    , m_pAspect(pAspect)
+    , m_pForceVec(NULL)
+    , m_pTorque(NULL)
+    , m_pEnabled(NULL) {
+  RegisterInPortPrototype("force", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype("torque", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype("enabled", new TVdfnPortTypeCompare<TVdfnPort<bool>>);
 }
 
-bool VdfnForceFeedbackNode::PrepareEvaluationRun()
-{
-	m_pForceVec = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("force"));
-	m_pTorque = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("torque"));
-	m_pEnabled = dynamic_cast<TVdfnPort<bool>*>(GetInPort("enabled"));
-
-	return GetIsValid();
+bool VdfnForceFeedbackNode::GetIsValid() const {
+  return (m_pAspect != NULL);
 }
 
-bool VdfnForceFeedbackNode::DoEvalNode()
-{
-	if(m_pEnabled)
-		m_pAspect->SetForcesEnabled(m_pEnabled->GetValue());
+bool VdfnForceFeedbackNode::PrepareEvaluationRun() {
+  m_pForceVec = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("force"));
+  m_pTorque   = dynamic_cast<TVdfnPort<VistaVector3D>*>(GetInPort("torque"));
+  m_pEnabled  = dynamic_cast<TVdfnPort<bool>*>(GetInPort("enabled"));
 
-    // check whether this is a simple control node
-	// in that case both (force and torque) are NULL
-    if(!m_pForceVec && !m_pTorque)
-        return true;
-
-	return m_pAspect->SetForce( (m_pForceVec ? m_pForceVec->GetValue() : VistaVector3D()),
-								(m_pTorque ? m_pTorque->GetValue() : VistaVector3D()) );
+  return GetIsValid();
 }
 
-void VdfnForceFeedbackNode::OnActivation( double dTs )
-{
-	if(m_pAspect)
-		m_pAspect->SetForcesEnabled(true);
+bool VdfnForceFeedbackNode::DoEvalNode() {
+  if (m_pEnabled)
+    m_pAspect->SetForcesEnabled(m_pEnabled->GetValue());
+
+  // check whether this is a simple control node
+  // in that case both (force and torque) are NULL
+  if (!m_pForceVec && !m_pTorque)
+    return true;
+
+  return m_pAspect->SetForce((m_pForceVec ? m_pForceVec->GetValue() : VistaVector3D()),
+      (m_pTorque ? m_pTorque->GetValue() : VistaVector3D()));
 }
 
-void VdfnForceFeedbackNode::OnDeactivation( double dTs )
-{
-	if(m_pAspect)
-		m_pAspect->SetForcesEnabled(false);
+void VdfnForceFeedbackNode::OnActivation(double dTs) {
+  if (m_pAspect)
+    m_pAspect->SetForcesEnabled(true);
+}
+
+void VdfnForceFeedbackNode::OnDeactivation(double dTs) {
+  if (m_pAspect)
+    m_pAspect->SetForcesEnabled(false);
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 // ############################################################################
 
+VdfnForceFeedbackNodeCreate::VdfnForceFeedbackNodeCreate(VistaDriverMap* pMap)
+    : VdfnNodeFactory::IVdfnNodeCreator()
+    , m_pMap(pMap) {
+}
 
-VdfnForceFeedbackNodeCreate::VdfnForceFeedbackNodeCreate( VistaDriverMap *pMap )
-: VdfnNodeFactory::IVdfnNodeCreator(),
-  m_pMap(pMap)
-  {
+IVdfnNode* VdfnForceFeedbackNodeCreate::CreateNode(const VistaPropertyList& oParams) const {
+  try {
+    const VistaPropertyList& subs = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
+    std::string              strDriverId = subs.GetValue<std::string>("device_id");
+    if (strDriverId.empty())
+      return NULL;
 
-  }
+    // try to claim driver
+    IVistaDeviceDriver* pDriver = m_pMap->GetDeviceDriver(strDriverId);
+    if (!pDriver)
+      return NULL;
 
-IVdfnNode *VdfnForceFeedbackNodeCreate::CreateNode( const VistaPropertyList &oParams ) const
-{
-	try
-	{
-		const VistaPropertyList &subs = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
-		std::string strDriverId = subs.GetValue<std::string>( "device_id" );
-		if(strDriverId.empty())
-			return NULL;
+    // ok, driver there, get force-feedback aspect
+    IVistaDriverForceFeedbackAspect* pAspect = dynamic_cast<IVistaDriverForceFeedbackAspect*>(
+        pDriver->GetAspectById(IVistaDriverForceFeedbackAspect::GetAspectId()));
+    if (!pAspect)
+      return NULL;
 
-		// try to claim driver
-		IVistaDeviceDriver *pDriver = m_pMap->GetDeviceDriver( strDriverId );
-		if(!pDriver)
-			return NULL;
+    // ok, force-feedback aspect there, create node and return it.
+    return new VdfnForceFeedbackNode(pAspect);
 
-		// ok, driver there, get force-feedback aspect
-		IVistaDriverForceFeedbackAspect *pAspect =
-			dynamic_cast<IVistaDriverForceFeedbackAspect*>(pDriver->GetAspectById( IVistaDriverForceFeedbackAspect::GetAspectId() ));
-		if(!pAspect)
-			return NULL;
-
-		// ok, force-feedback aspect there, create node and return it.
-		return new VdfnForceFeedbackNode( pAspect );
-
-	}
-	catch(VistaExceptionBase &x)
-	{
-		x.PrintException();
-	}
-	return NULL;
+  } catch (VistaExceptionBase& x) { x.PrintException(); }
+  return NULL;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

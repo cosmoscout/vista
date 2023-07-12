@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_POSIX)
 
 #ifndef _VISTAPOSIXSEMAPHOREIMP_H
@@ -46,32 +45,31 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaPosixSemaphoreImp : public IVistaSemaphoreImp
-{
-public:
-	VistaPosixSemaphoreImp(int nCount);
-	virtual ~VistaPosixSemaphoreImp();	
+class VistaPosixSemaphoreImp : public IVistaSemaphoreImp {
+ public:
+  VistaPosixSemaphoreImp(int nCount);
+  virtual ~VistaPosixSemaphoreImp();
 
-	/**
-	 * if semaphore value is > 0 then decrement it and carry on. If it's
-	 * already 0 then block.
-	 */
-	virtual void Wait    ();
+  /**
+   * if semaphore value is > 0 then decrement it and carry on. If it's
+   * already 0 then block.
+   */
+  virtual void Wait();
 
-	/**
-	 * if semaphore value is > 0 then decrement it and return true.
-	 * If it's already 0 then return false.
-	 */
-	virtual bool TryWait ();
+  /**
+   * if semaphore value is > 0 then decrement it and return true.
+   * If it's already 0 then return false.
+   */
+  virtual bool TryWait();
 
-	/**
-	 * if any threads are blocked in wait(), wake one of them up. Otherwise
-	 * increment the value of the semaphore.
-	 */
-	virtual void Post    ();
+  /**
+   * if any threads are blocked in wait(), wake one of them up. Otherwise
+   * increment the value of the semaphore.
+   */
+  virtual void Post();
 
-private:
-	sem_t *m_pSemaphore;
+ private:
+  sem_t* m_pSemaphore;
 };
 
 /*============================================================================*/
@@ -81,4 +79,3 @@ private:
 #endif //_VISTASYSTEM_H
 
 #endif // #if defined(VISTA_THREADING_POSIX)
-

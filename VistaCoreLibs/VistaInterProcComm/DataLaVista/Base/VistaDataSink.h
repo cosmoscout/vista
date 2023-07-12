@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTADATASINK_H
 #define DLVISTADATASINK_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,10 +31,9 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
+#include "VistaDataConsumer.h"
 #include "VistaDataProducer.h"
-#include "VistaDataConsumer.h"
-#include "VistaDataConsumer.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -48,69 +45,63 @@ class IDLVistaPipeComponent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaDataSink : public IDLVistaDataConsumer
-{
-public:
+class VISTAINTERPROCCOMMAPI DLVistaDataSink : public IDLVistaDataConsumer {
+ public:
+  virtual ~DLVistaDataSink();
 
-	virtual ~DLVistaDataSink();
+  virtual bool PullPacket(bool bBlock = true);
 
-	virtual bool PullPacket(bool bBlock = true);
+  /**
+   * A sink "consumes" an incoming packet, so this is to be the default: call "ConsumePacket"
+   * @param pPacket the packet to be consumed, should be a valid type for this specific sink
+   * @param pComp the component that is giving the incoming packet
+   * @param bBlock true iff the operation shall block until sucessfull (default)
+   * @return true iff the packet could be consumed
+   * @see ConsumePacket()
+   */
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock);
 
-	/**
-	 * A sink "consumes" an incoming packet, so this is to be the default: call "ConsumePacket"
-	 * @param pPacket the packet to be consumed, should be a valid type for this specific sink
-	 * @param pComp the component that is giving the incoming packet
-	 * @param bBlock true iff the operation shall block until sucessfull (default)
-	 * @return true iff the packet could be consumed
-	 * @see ConsumePacket()
-	 */
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock);
+  /**
+   * A sink does not produce packets, so it will not recycle any package, this method will return
+   * false as a default. Incoming parameters are ignored
+   * @return always false for sinks
+   */
+  virtual bool RecycleDataPacket(IDLVistaDataPacket*, IDLVistaPipeComponent* pComp, bool bBlock);
 
+  /**
+   * A sink does not produce packets, so it will refuse to give some. This method will always return
+   * 0. Incoming parameters are ignored
+   * @return NULL always
+   */
 
-	/**
-	 * A sink does not produce packets, so it will not recycle any package, this method will return
-	 * false as a default. Incoming parameters are ignored
-	 * @return always false for sinks
-	 */
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *, IDLVistaPipeComponent *pComp, bool bBlock);
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
 
+  /**
+   * A sink does not produce packets, so its does not need packet managment. This method will always
+   * return true, as setting up "nothing" will always succeed.
+   * @return true always
+   */
+  virtual bool InitPacketMgmt();
 
-	/**
-	 * A sink does not produce packets, so it will refuse to give some. This method will always return 0.
-	 * Incoming parameters are ignored
-	 * @return NULL always
-	 */
+  /**
+   * A sink does not create packets, so this will return NULL
+   * @return NULL always
+   */
+  virtual IDLVistaDataPacket* CreatePacket();
 
-	virtual IDLVistaDataPacket *GivePacket(bool bBlock);
+  /**
+   * A sink does not create packets, so as a consequence, it does not delete packets.
+   * All incoming arguments are ignored;
+   */
+  virtual void DeletePacket(IDLVistaDataPacket*);
 
-	/**
-	 * A sink does not produce packets, so its does not need packet managment. This method will always
-	 * return true, as setting up "nothing" will always succeed.
-	 * @return true always
-	 */
-	virtual bool InitPacketMgmt();
-
-
-	/**
-	 * A sink does not create packets, so this will return NULL
-	 * @return NULL always
-	 */
-	virtual IDLVistaDataPacket *CreatePacket();
-
-	/**
-	 * A sink does not create packets, so as a consequence, it does not delete packets.
-	 * All incoming arguments are ignored;
-	 */
-	virtual void DeletePacket(IDLVistaDataPacket *);
-
-protected:
-	DLVistaDataSink();
+ protected:
+  DLVistaDataSink();
 };
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTADATASINK_H
-
+#endif // DLVISTADATASINK_H

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAGSYNCSWAPBARRIER_H
 #define _VISTAGSYNCSWAPBARRIER_H
 
@@ -52,14 +51,12 @@ class VistaDisplayManager;
  * VistaGSyncSwapBarrier is not a specialization of IVistaClusterBarrier since
  * it can only be used to barrier-wait at glSwapBuffer-calls, not at any time.
  */
-namespace VistaGSyncSwapBarrier
-{
-	VISTAKERNELAPI bool JoinSwapBarrier( VistaDisplayManager* pDisplayManager );
-	VISTAKERNELAPI bool LeaveSwapBarrier( VistaDisplayManager* pDisplayManager );
-};
+namespace VistaGSyncSwapBarrier {
+VISTAKERNELAPI bool JoinSwapBarrier(VistaDisplayManager* pDisplayManager);
+VISTAKERNELAPI bool LeaveSwapBarrier(VistaDisplayManager* pDisplayManager);
+}; // namespace VistaGSyncSwapBarrier
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAGSYNCSWAPBARRIER_H
-

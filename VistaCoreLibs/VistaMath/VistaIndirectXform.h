@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINDIRECTXFORM_H
 #define _VISTAINDIRECTXFORM_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaBase/VistaVectorMath.h>
 #include "VistaMathConfig.h"
+#include <VistaBase/VistaVectorMath.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -42,46 +41,37 @@
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAMATHAPI VistaIndirectXform
-{
-public:
-	enum EnXformMode
-	{
-		XFORM_MODE_ATTACH,
-		XFORM_MODE_MIRROR
-	};
+class VISTAMATHAPI VistaIndirectXform {
+ public:
+  enum EnXformMode { XFORM_MODE_ATTACH, XFORM_MODE_MIRROR };
 
-public:
-	// CONSTRUCTORS / DESTRUCTOR
-	VistaIndirectXform(int iMode = XFORM_MODE_ATTACH);
-	virtual ~VistaIndirectXform();
+ public:
+  // CONSTRUCTORS / DESTRUCTOR
+  VistaIndirectXform(int iMode = XFORM_MODE_ATTACH);
+  virtual ~VistaIndirectXform();
 
-	// IMPLEMENTATION
-	// initialize xform object with parent and child data
-	virtual	bool	Init	(	const VistaVector3D   & vParentPosIn,
-								const VistaQuaternion & qParentOrientIn,
-								const VistaVector3D   & vChildPosIn,
-								const VistaQuaternion & qChildOrientIn	);
+  // IMPLEMENTATION
+  // initialize xform object with parent and child data
+  virtual bool Init(const VistaVector3D& vParentPosIn, const VistaQuaternion& qParentOrientIn,
+      const VistaVector3D& vChildPosIn, const VistaQuaternion& qChildOrientIn);
 
-	// compute child data according to updated parent data
-	virtual	bool	Update	(	const VistaVector3D   & vParentPosIn,
-								const VistaQuaternion & qParentOrientIn,
-									  VistaVector3D   & vChildPosOut,
-									  VistaQuaternion & qChildOrientOut	);
+  // compute child data according to updated parent data
+  virtual bool Update(const VistaVector3D& vParentPosIn, const VistaQuaternion& qParentOrientIn,
+      VistaVector3D& vChildPosOut, VistaQuaternion& qChildOrientOut);
 
-	// get/set attach/mirror state
-	virtual	EnXformMode	GetMode() const;
-	virtual	bool		SetMode(int iMode);
+  // get/set attach/mirror state
+  virtual EnXformMode GetMode() const;
+  virtual bool        SetMode(int iMode);
 
-	VistaVector3D GetInitialParentPos() const;
-	VistaQuaternion GetInitialParentOri() const;
+  VistaVector3D   GetInitialParentPos() const;
+  VistaQuaternion GetInitialParentOri() const;
 
-protected:
-	VistaVector3D		m_vInitParentPos;
-	VistaQuaternion	m_qInitParentInvOrient;
-	VistaVector3D		m_vInitChildPos;
-	VistaQuaternion	m_qInitChildOrient;
-	EnXformMode			m_enMode;
+ protected:
+  VistaVector3D   m_vInitParentPos;
+  VistaQuaternion m_qInitParentInvOrient;
+  VistaVector3D   m_vInitChildPos;
+  VistaQuaternion m_qInitChildOrient;
+  EnXformMode     m_enMode;
 };
 
 /*============================================================================*/

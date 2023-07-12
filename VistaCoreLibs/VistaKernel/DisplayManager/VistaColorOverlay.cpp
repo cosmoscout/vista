@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <GL/glew.h>
 
 #include "VistaColorOverlay.h"
@@ -42,103 +41,89 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-VistaColorOverlay::VistaColorOverlay( VistaViewport* pViewport )
-: IVistaSceneOverlay( pViewport )
-, m_bEnabled( true )
-, m_oColor( VistaColor::WHITE )
-{
+VistaColorOverlay::VistaColorOverlay(VistaViewport* pViewport)
+    : IVistaSceneOverlay(pViewport)
+    , m_bEnabled(true)
+    , m_oColor(VistaColor::WHITE) {
 }
 
-VistaColorOverlay::VistaColorOverlay( VistaDisplayManager* pDisplayManager, 
-									 const std::string& sViewportName )
-: IVistaSceneOverlay( pDisplayManager, sViewportName )
-, m_bEnabled( true )
-, m_oColor( VistaColor::WHITE )
-{
+VistaColorOverlay::VistaColorOverlay(
+    VistaDisplayManager* pDisplayManager, const std::string& sViewportName)
+    : IVistaSceneOverlay(pDisplayManager, sViewportName)
+    , m_bEnabled(true)
+    , m_oColor(VistaColor::WHITE) {
 }
 
-VistaColorOverlay::~VistaColorOverlay()
-{
-
+VistaColorOverlay::~VistaColorOverlay() {
 }
 
-float VistaColorOverlay::GetOpacity() const
-{
-	return m_oColor.GetAlpha();
+float VistaColorOverlay::GetOpacity() const {
+  return m_oColor.GetAlpha();
 }
 
-void VistaColorOverlay::SetColor( const VistaColor& oColor )
-{
-	m_oColor = oColor;
+void VistaColorOverlay::SetColor(const VistaColor& oColor) {
+  m_oColor = oColor;
 }
 
-VistaColor VistaColorOverlay::GetColor() const
-{
-	return m_oColor;
+VistaColor VistaColorOverlay::GetColor() const {
+  return m_oColor;
 }
 
-bool VistaColorOverlay::Do()
-{
-	if( m_bEnabled == false )
-		return false;
+bool VistaColorOverlay::Do() {
+  if (m_bEnabled == false)
+    return false;
 
-	if( m_oColor.GetAlpha() <= 0 )
-		return true;
+  if (m_oColor.GetAlpha() <= 0)
+    return true;
 
-	glPushAttrib( GL_ALL_ATTRIB_BITS );
-	glDisable(GL_LIGHTING);
-	glDisable(GL_DEPTH_TEST);
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glDisable( GL_CULL_FACE );
+  glDisable(GL_CULL_FACE);
 
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	// Note: y is inverted, so we start with (0,0) at the top left
-	gluOrtho2D( 0, 1, 0, 1 );
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  // Note: y is inverted, so we start with (0,0) at the top left
+  gluOrtho2D(0, 1, 0, 1);
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
 
-	glColor4fv( &m_oColor[0] );
-	glBegin( GL_QUADS );
-	glVertex3f( 0, 0, 0 );
-	glVertex3f( 1, 0, 0 );
-	glVertex3f( 1, 1, 0 );
-	glVertex3f( 0, 1, 0 );
-	glEnd();
+  glColor4fv(&m_oColor[0]);
+  glBegin(GL_QUADS);
+  glVertex3f(0, 0, 0);
+  glVertex3f(1, 0, 0);
+  glVertex3f(1, 1, 0);
+  glVertex3f(0, 1, 0);
+  glEnd();
 
-	glPopMatrix();
+  glPopMatrix();
 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
 
-	glMatrixMode(GL_MODELVIEW);
-	glPopAttrib();
+  glMatrixMode(GL_MODELVIEW);
+  glPopAttrib();
 
-	return true;
+  return true;
 }
 
-void VistaColorOverlay::UpdateOnViewportChange( int iWidth, int iHeight, int iPosX, int iPosY )
-{
-
+void VistaColorOverlay::UpdateOnViewportChange(int iWidth, int iHeight, int iPosX, int iPosY) {
 }
 
-void VistaColorOverlay::SetIsEnabled( bool bEnabled )
-{
-	m_bEnabled = bEnabled;
+void VistaColorOverlay::SetIsEnabled(bool bEnabled) {
+  m_bEnabled = bEnabled;
 }
 
-bool VistaColorOverlay::GetIsEnabled() const
-{
-	return m_bEnabled;
+bool VistaColorOverlay::GetIsEnabled() const {
+  return m_bEnabled;
 }
 
-void VistaColorOverlay::SetOpacity( const float nOpacity )
-{
-	m_oColor.SetAlpha( nOpacity );
+void VistaColorOverlay::SetOpacity(const float nOpacity) {
+  m_oColor.SetAlpha(nOpacity);
 }

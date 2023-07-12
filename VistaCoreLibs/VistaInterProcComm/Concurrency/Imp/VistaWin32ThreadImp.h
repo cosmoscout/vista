@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAWIN32THREADIMP_H
@@ -32,7 +31,6 @@
 /*============================================================================*/
 
 #include "VistaThreadImp.h"
-
 
 #if !defined(_WINDOWS_)
 #include <Windows.h>
@@ -52,63 +50,61 @@ class VistaThread;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI  VistaWin32ThreadImp : public IVistaThreadImp
-{
-public:
-	VistaWin32ThreadImp( const VistaThread& );
-	virtual ~VistaWin32ThreadImp();
+class VISTAINTERPROCCOMMAPI VistaWin32ThreadImp : public IVistaThreadImp {
+ public:
+  VistaWin32ThreadImp(const VistaThread&);
+  virtual ~VistaWin32ThreadImp();
 
-	virtual bool Run();
-	virtual bool Suspend();
-	virtual bool Resume();
-	virtual bool Join();
-	virtual bool Abort();
+  virtual bool Run();
+  virtual bool Suspend();
+  virtual bool Resume();
+  virtual bool Join();
+  virtual bool Abort();
 
-	virtual bool SetPriority( const VistaPriority & );
-	virtual void GetPriority(VistaPriority &) const;
+  virtual bool SetPriority(const VistaPriority&);
+  virtual void GetPriority(VistaPriority&) const;
 
-	static IVistaThreadImp *CreateThreadImp(const VistaThread &);
+  static IVistaThreadImp* CreateThreadImp(const VistaThread&);
 
-	/**
-	 * give the processor away temporarily
-	 */
-	void YieldThread();
+  /**
+   * give the processor away temporarily
+   */
+  void YieldThread();
 
-	void SetCancelAbility(const bool bOkToCancel);
-	bool CanBeCancelled() const;
+  void SetCancelAbility(const bool bOkToCancel);
+  bool CanBeCancelled() const;
 
-   /**
-	 * Method that is to be performed BEFORE departed fork starts execution
-	 * DO NOT CALL THIS METHOD AT ANY COST!
-	 */
-	virtual void PreRun() ;
+  /**
+   * Method that is to be performed BEFORE departed fork starts execution
+   * DO NOT CALL THIS METHOD AT ANY COST!
+   */
+  virtual void PreRun();
 
-	/**
-	 * Method that is to be performed AFTER forked work is done
-	 * DO NOT CALL THIS METHOD AT ANY COST!
-	 */
-	virtual void PostRun();
+  /**
+   * Method that is to be performed AFTER forked work is done
+   * DO NOT CALL THIS METHOD AT ANY COST!
+   */
+  virtual void PostRun();
 
-	virtual bool Equals(const IVistaThreadImp &oImp) const;
+  virtual bool Equals(const IVistaThreadImp& oImp) const;
 
-	virtual bool SetProcessorAffinity(int iProcessorNum);
+  virtual bool SetProcessorAffinity(int iProcessorNum);
 
-	virtual bool SetThreadName(const std::string &sName);
+  virtual bool SetThreadName(const std::string& sName);
 
-	virtual long GetThreadIdentity() const;
-	static long GetCallingThreadIdentity();
+  virtual long GetThreadIdentity() const;
+  static long  GetCallingThreadIdentity();
 
-	static bool SetCallingThreadPriority( const VistaPriority& oPrio );
-	static bool GetCallingThreadPriority( VistaPriority& oPrio );
+  static bool SetCallingThreadPriority(const VistaPriority& oPrio);
+  static bool GetCallingThreadPriority(VistaPriority& oPrio);
 
-
-protected:
-	HANDLE   m_oWin32Handle;
-	DWORD    m_nThreadId;
-	const VistaThread  &m_rThread; /**< @todo think about this */
-	bool     m_bIsRunning;
-	bool     m_bCanBeCancelled;
-	DWORD    m_dwAffinityMask;
+ protected:
+  HANDLE             m_oWin32Handle;
+  DWORD              m_nThreadId;
+  const VistaThread& m_rThread; /**< @todo think about this */
+  bool               m_bIsRunning;
+  bool               m_bCanBeCancelled;
+  DWORD              m_dwAffinityMask;
 };
 
 #endif // WIN32
@@ -118,4 +114,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTAWIN32THREADMP_H
-

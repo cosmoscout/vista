@@ -21,93 +21,76 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaProfilingFilter.h"
 #include <VistaInterProcComm/DataLaVista/Base/VistaDataPacket.h>
-#include <VistaInterProcComm/DataLaVista/Base/VistaTimeStamp.h>
 #include <VistaInterProcComm/DataLaVista/Base/VistaRTC.h>
+#include <VistaInterProcComm/DataLaVista/Base/VistaTimeStamp.h>
 
 #include <cstdio>
-
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-DLVistaProfilingFilter::DLVistaProfilingFilter()
-{
-	m_i64MicroMean = m_i64MicroMin = m_i64MicroMax = 0;
-	m_i32MacroMean = m_i32MacroMin = m_i32MacroMax = 0;
-	m_pTimer = IDLVistaRTC::GetRTCSingleton();
-	m_i32PacketCount = 0;
+DLVistaProfilingFilter::DLVistaProfilingFilter() {
+  m_i64MicroMean = m_i64MicroMin = m_i64MicroMax = 0;
+  m_i32MacroMean = m_i32MacroMin = m_i32MacroMax = 0;
+  m_pTimer                                       = IDLVistaRTC::GetRTCSingleton();
+  m_i32PacketCount                               = 0;
 }
 
-
-DLVistaProfilingFilter::~DLVistaProfilingFilter()
-{
+DLVistaProfilingFilter::~DLVistaProfilingFilter() {
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
+IDLVistaDataPacket* DLVistaProfilingFilter::FilterPacketL(IDLVistaDataPacket* pPacket) {
+  ++m_i32PacketCount;
 
-IDLVistaDataPacket *DLVistaProfilingFilter::FilterPacketL(IDLVistaDataPacket *pPacket)
-{
-	++m_i32PacketCount;
+  // DLV_INT64 i64Diff, i64now;
+  // DLV_INT32 i32Diff, i32now;
 
-	//DLV_INT64 i64Diff, i64now;
-	//DLV_INT32 i32Diff, i32now;
+  // i64now = (DLV_INT64)m_pTimer->GetTickCount();
+  // i32now = (DLV_INT32)m_pTimer->GetTimeStamp();
 
-	//i64now = (DLV_INT64)m_pTimer->GetTickCount();
-	//i32now = (DLV_INT32)m_pTimer->GetTimeStamp();
+  // i64Diff = i64now - pPacket->GetTimeStamp()->GetMicroStamp();
+  // i32Diff = i32now - pPacket->GetTimeStamp()->GetMacroStamp();
 
-	//i64Diff = i64now - pPacket->GetTimeStamp()->GetMicroStamp();
-	//i32Diff = i32now - pPacket->GetTimeStamp()->GetMacroStamp();
+  // printf("i64Diff=%I64u,i32Diff=%ld\n", i64Diff, i32Diff);
 
-	//printf("i64Diff=%I64u,i32Diff=%ld\n", i64Diff, i32Diff);
-
-	return pPacket; // any packet will go through
+  return pPacket; // any packet will go through
 }
 
-IDLVistaDataPacket *DLVistaProfilingFilter::GivePacket(bool)
-{
-	return NULL;
+IDLVistaDataPacket* DLVistaProfilingFilter::GivePacket(bool) {
+  return NULL;
 }
 
-IDLVistaDataPacket *DLVistaProfilingFilter::CreatePacket()
-{
-	return NULL;
+IDLVistaDataPacket* DLVistaProfilingFilter::CreatePacket() {
+  return NULL;
 }
 
-void DLVistaProfilingFilter::DeletePacket(IDLVistaDataPacket *)
-{
+void DLVistaProfilingFilter::DeletePacket(IDLVistaDataPacket*) {
 }
 
-bool DLVistaProfilingFilter::InitPacketMgmt()
-{
-	return true;
+bool DLVistaProfilingFilter::InitPacketMgmt() {
+  return true;
 }
 
-
-int DLVistaProfilingFilter::GetInputPacketType() const
-{
-	if(!m_pOutput) 
-		return IDLVistaInPlaceFilter::GetInputPacketType(); // we let the superclass decide
-	return m_pOutput->GetInputPacketType();
+int DLVistaProfilingFilter::GetInputPacketType() const {
+  if (!m_pOutput)
+    return IDLVistaInPlaceFilter::GetInputPacketType(); // we let the superclass decide
+  return m_pOutput->GetInputPacketType();
 }
 
-int DLVistaProfilingFilter::GetOutputPacketType() const
-{
-   if(!m_pInput) 
-		return IDLVistaInPlaceFilter::GetOutputPacketType(); // we let the superclass decides
+int DLVistaProfilingFilter::GetOutputPacketType() const {
+  if (!m_pInput)
+    return IDLVistaInPlaceFilter::GetOutputPacketType(); // we let the superclass decides
 
-	return m_pInput->GetOutputPacketType();
+  return m_pInput->GetOutputPacketType();
 }
-
-

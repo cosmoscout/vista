@@ -21,58 +21,56 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGGRAPHICSSTATSOVERLAY_H
 #define _VISTAOPENSGGRAPHICSSTATSOVERLAY_H
 
 #include "VistaKernelOpenSGExtConfig.h"
 
-#include <VistaKernel/EventManager/VistaEventHandler.h>
 #include "VistaBase/VistaBaseTypes.h"
 #include "VistaBase/VistaColor.h"
+#include <VistaKernel/EventManager/VistaEventHandler.h>
 #include <vector>
 
-namespace osg
-{
-	class StatCollector;
+namespace osg {
+class StatCollector;
 }
 class VistaDisplayManager;
 class VistaSimpleTextOverlay;
 class VistaEventManager;
 class VistaViewport;
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGGraphicsStatsOverlay : public VistaEventHandler
-{
-public:
-	VistaOpenSGGraphicsStatsOverlay( VistaDisplayManager* pManager, VistaEventManager* pEventManager, const bool bRegisterAllViewports = true );
-	~VistaOpenSGGraphicsStatsOverlay();
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGGraphicsStatsOverlay : public VistaEventHandler {
+ public:
+  VistaOpenSGGraphicsStatsOverlay(VistaDisplayManager* pManager, VistaEventManager* pEventManager,
+      const bool bRegisterAllViewports = true);
+  ~VistaOpenSGGraphicsStatsOverlay();
 
-	void SetIsEnabled( bool bSet );
-	virtual void HandleEvent( VistaEvent *pEvent );
+  void         SetIsEnabled(bool bSet);
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-	VistaColor GetTextColor() const;
-	void SetTextColor( const VistaColor& colText );
+  VistaColor GetTextColor() const;
+  void       SetTextColor(const VistaColor& colText);
 
-	int GetTextSize() const;
-	void SetTextSize( const int nTextSize );
+  int  GetTextSize() const;
+  void SetTextSize(const int nTextSize);
 
-	VistaType::microtime GetUpdateInterval() const;
-	void SetUpdateIntercal( const VistaType::microtime nInterval );
-	
-	virtual void AddViewport( VistaViewport* pViewport );
+  VistaType::microtime GetUpdateInterval() const;
+  void                 SetUpdateIntercal(const VistaType::microtime nInterval);
 
-private:
-	struct Line;
-	VistaDisplayManager* m_pDisplayManager;
-	VistaEventManager* m_pEventManager;
-	std::vector< VistaSimpleTextOverlay* > m_vecTextOverlays;
-	osg::StatCollector* m_pStatistics;
-	std::vector<Line*> m_vecLines;
-	bool m_bEnabled;
-	VistaType::microtime m_nUpdateCycle;
-	VistaType::systemtime m_nLastUpdate;
-	VistaColor m_oColor;
-	int m_nTextSize;
+  virtual void AddViewport(VistaViewport* pViewport);
+
+ private:
+  struct Line;
+  VistaDisplayManager*                 m_pDisplayManager;
+  VistaEventManager*                   m_pEventManager;
+  std::vector<VistaSimpleTextOverlay*> m_vecTextOverlays;
+  osg::StatCollector*                  m_pStatistics;
+  std::vector<Line*>                   m_vecLines;
+  bool                                 m_bEnabled;
+  VistaType::microtime                 m_nUpdateCycle;
+  VistaType::systemtime                m_nLastUpdate;
+  VistaColor                           m_oColor;
+  int                                  m_nTextSize;
 };
 
 #endif // _VISTAOPENSGGRAPHICSSTATSOVERLAY_H

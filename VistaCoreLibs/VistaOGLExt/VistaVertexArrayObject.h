@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VistaVertexArrayObject_h
 #define _VistaVertexArrayObject_h
 
@@ -46,74 +45,62 @@
 class VistaBufferObject;
 class VistaRenderToVertexArray;
 
-
 /*============================================================================*/
 /* CLASS DEFINITION                                                           */
 /*============================================================================*/
 /**
  * This class wraps OpenGL's vertex array objects (VAOs).
  */
-class VISTAOGLEXTAPI VistaVertexArrayObject
-{
-public:
-	VistaVertexArrayObject();
-	~VistaVertexArrayObject();
+class VISTAOGLEXTAPI VistaVertexArrayObject {
+ public:
+  VistaVertexArrayObject();
+  ~VistaVertexArrayObject();
 
-	void Bind();
-	void Release();
+  void Bind();
+  void Release();
 
-	void EnableAttributeArray( const GLuint uiIndex );
-	void DisableAttributeArray( const GLuint uiIndex );
-	bool GetIsAttributeArrayActive( const GLuint uiIndex ) const;
-	std::size_t GetMaxNumberOfAttributeArrays() const;
-	
-	void SpecifyAttributeArrayFloat( const GLuint uiIndex,
-		const GLint iNumComponents, const GLenum eDataType,
-		const GLboolean bNormalizeInteger,  const GLsizei nStride,
-		GLuint uiDataOffset, VistaBufferObject* pBufferObject );
-	void SpecifyAttributeArrayInteger( const GLuint uiIndex,
-		const GLint iNumComponents, const GLenum eDataType,
-		const GLsizei nStride, GLuint uiDataOffset,
-		VistaBufferObject* pBufferObject );
-	void SpecifyAttributeArrayDouble( const GLuint uiIndex,
-		const GLint iNumComponents, const GLenum eDataType,
-		const GLsizei nStride, GLuint uiDataOffset,
-		VistaBufferObject* pBufferObject );
+  void        EnableAttributeArray(const GLuint uiIndex);
+  void        DisableAttributeArray(const GLuint uiIndex);
+  bool        GetIsAttributeArrayActive(const GLuint uiIndex) const;
+  std::size_t GetMaxNumberOfAttributeArrays() const;
 
-	void SpecifyAttributeArrayFloat( const GLuint uiIndex,
-		const GLint iNumComponents,
-		const GLboolean bNormalizeInteger,  const GLsizei nStride,
-		GLuint uiDataOffset, VistaRenderToVertexArray* pBufferObject );
-	void SpecifyAttributeArrayInteger( const GLuint uiIndex,
-		const GLint iNumComponents,
-		const GLsizei nStride, GLuint uiDataOffset,
-		VistaRenderToVertexArray* pBufferObject );
-	void SpecifyAttributeArrayDouble( const GLuint uiIndex,
-		const GLint iNumComponents,
-		const GLsizei nStride, GLuint uiDataOffset,
-		VistaRenderToVertexArray* pBufferObject );
+  void SpecifyAttributeArrayFloat(const GLuint uiIndex, const GLint iNumComponents,
+      const GLenum eDataType, const GLboolean bNormalizeInteger, const GLsizei nStride,
+      GLuint uiDataOffset, VistaBufferObject* pBufferObject);
+  void SpecifyAttributeArrayInteger(const GLuint uiIndex, const GLint iNumComponents,
+      const GLenum eDataType, const GLsizei nStride, GLuint uiDataOffset,
+      VistaBufferObject* pBufferObject);
+  void SpecifyAttributeArrayDouble(const GLuint uiIndex, const GLint iNumComponents,
+      const GLenum eDataType, const GLsizei nStride, GLuint uiDataOffset,
+      VistaBufferObject* pBufferObject);
 
+  void SpecifyAttributeArrayFloat(const GLuint uiIndex, const GLint iNumComponents,
+      const GLboolean bNormalizeInteger, const GLsizei nStride, GLuint uiDataOffset,
+      VistaRenderToVertexArray* pBufferObject);
+  void SpecifyAttributeArrayInteger(const GLuint uiIndex, const GLint iNumComponents,
+      const GLsizei nStride, GLuint uiDataOffset, VistaRenderToVertexArray* pBufferObject);
+  void SpecifyAttributeArrayDouble(const GLuint uiIndex, const GLint iNumComponents,
+      const GLsizei nStride, GLuint uiDataOffset, VistaRenderToVertexArray* pBufferObject);
 
-	void SpecifyIndexBufferObject( 
-		VistaBufferObject* pIndexBufferObject, 
-		GLenum eType = GL_UNSIGNED_INT );
+  void SpecifyIndexBufferObject(
+      VistaBufferObject* pIndexBufferObject, GLenum eType = GL_UNSIGNED_INT);
 
-	bool GetIsIndexBufferObjectSpecifed() const;
-	GLenum GetIndexBufferObjectType() const;
+  bool   GetIsIndexBufferObjectSpecifed() const;
+  GLenum GetIndexBufferObjectType() const;
 
-private:
-	// If FastBind() is used, FastRelease() needs to be called before control
-	// returns to user code (or VAO bind state might become corrupt).
-	void FastBind();
-	void FastRelease();
+ private:
+  // If FastBind() is used, FastRelease() needs to be called before control
+  // returns to user code (or VAO bind state might become corrupt).
+  void FastBind();
+  void FastRelease();
 
-	GLuint				m_uiObjectId;
-	static GLuint		s_uiCurrentlyBoundVAO;
-	
-	std::vector<bool>	m_AttribEnableState;
+  GLuint        m_uiObjectId;
+  static GLuint s_uiCurrentlyBoundVAO;
 
-	bool	m_bIsIndexBufferObjectSpecifed;
-	GLenum	m_eIndexBufferObjectType;
+  std::vector<bool> m_AttribEnableState;
+
+  bool   m_bIsIndexBufferObjectSpecifed;
+  GLenum m_eIndexBufferObjectType;
 };
 
 #endif

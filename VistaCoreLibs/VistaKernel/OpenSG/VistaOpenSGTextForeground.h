@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTA_OPENSG_TEXTFOREGROUND_H_
 #define _VISTA_OPENSG_TEXTFOREGROUND_H_
 
@@ -34,10 +33,10 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -48,89 +47,77 @@
 #pragma warning(pop)
 #endif
 
-
-
-
 OSG_BEGIN_NAMESPACE
 
 class TextTXFFace;
 
-class VISTAKERNELAPI VistaOpenSGTextForeground : public VistaOpenSGTextForegroundBase
-{
-  private:
+class VISTAKERNELAPI VistaOpenSGTextForeground : public VistaOpenSGTextForegroundBase {
+ private:
+  typedef VistaOpenSGTextForegroundBase Inherited;
 
-	typedef VistaOpenSGTextForegroundBase Inherited;
+  /*==========================  PUBLIC  =================================*/
+ public:
+  /*---------------------------------------------------------------------*/
+  /*                             Sync                                    */
+  /*---------------------------------------------------------------------*/
 
-	/*==========================  PUBLIC  =================================*/
-  public:
+  virtual void changed(BitVector whichField, UInt32 origin);
 
-	/*---------------------------------------------------------------------*/
-	/*                             Sync                                    */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                            Output                                   */
+  /*---------------------------------------------------------------------*/
 
-	virtual void changed(BitVector whichField,
-						 UInt32    origin    );
+  virtual void dump(UInt32 uiIndent = 0, const BitVector bvFlags = 0) const;
 
-	/*---------------------------------------------------------------------*/
-	/*                            Output                                   */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                             Draw                                    */
+  /*---------------------------------------------------------------------*/
 
-	virtual void dump(      UInt32     uiIndent = 0,
-					  const BitVector  bvFlags  = 0) const;
+  virtual void draw(DrawActionBase* action, Viewport* port);
 
-	/*---------------------------------------------------------------------*/
-	/*                             Draw                                    */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                      Convenience Functions                          */
+  /*---------------------------------------------------------------------*/
 
-	virtual void draw( DrawActionBase * action, Viewport * port );
+  /*=========================  PROTECTED  ===============================*/
+ protected:
+  // Variables should all be in TextForegroundBase.
 
-	/*---------------------------------------------------------------------*/
-	/*                      Convenience Functions                          */
-	/*---------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------*/
+  /*                         Constructors                                */
+  /*---------------------------------------------------------------------*/
 
-	/*=========================  PROTECTED  ===============================*/
-  protected:
+  VistaOpenSGTextForeground(void);
+  VistaOpenSGTextForeground(const VistaOpenSGTextForeground& source);
 
-	// Variables should all be in TextForegroundBase.
+  /*---------------------------------------------------------------------*/
+  /*                          Destructors                                */
+  /*---------------------------------------------------------------------*/
 
-	/*---------------------------------------------------------------------*/
-	/*                         Constructors                                */
-	/*---------------------------------------------------------------------*/
+  virtual ~VistaOpenSGTextForeground(void);
 
-	VistaOpenSGTextForeground(void);
-	VistaOpenSGTextForeground(const VistaOpenSGTextForeground &source);
+  /*==========================  PRIVATE  ================================*/
+ private:
+  _COSGFaceHlp* initTextFace(UInt32 nFaceType, UInt32 size);
+  _COSGFaceHlp* getOrGetAndInitTexChunk(UInt32 nFaceType, UInt32 size);
 
-	/*---------------------------------------------------------------------*/
-	/*                          Destructors                                */
-	/*---------------------------------------------------------------------*/
+  friend class FieldContainer;
+  friend class VistaOpenSGTextForegroundBase;
 
-	virtual ~VistaOpenSGTextForeground(void);
+  static void initMethod(void);
 
+  //    static void initText(void);
 
-	/*==========================  PRIVATE  ================================*/
-  private:
+  // prohibit default functions (move to 'public' if you need one)
 
-
-	_COSGFaceHlp *initTextFace(UInt32 nFaceType, UInt32 size);
-	_COSGFaceHlp *getOrGetAndInitTexChunk(UInt32 nFaceType, UInt32 size);
-
-	friend class FieldContainer;
-	friend class VistaOpenSGTextForegroundBase;
-
-	static void initMethod(void);
-
-//    static void initText(void);
-
-	// prohibit default functions (move to 'public' if you need one)
-
-	void operator =(const VistaOpenSGTextForeground &source);
+  void operator=(const VistaOpenSGTextForeground& source);
 };
 
-typedef VistaOpenSGTextForeground *VistaOpenSGTextForegroundP;
+typedef VistaOpenSGTextForeground* VistaOpenSGTextForegroundP;
 
 OSG_END_NAMESPACE
 
-#include "VistaOpenSGTextForegroundBase.inl"
 #include "VistaOpenSGTextForeground.inl"
+#include "VistaOpenSGTextForegroundBase.inl"
 
 #endif

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaZeroMQCommon.h"
 #include <zmq.hpp>
 
@@ -29,31 +28,26 @@
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
-namespace
-{
-	unsigned int S_nUserCount = 0;
-	zmq::context_t* S_pContext = NULL;
+namespace {
+unsigned int    S_nUserCount = 0;
+zmq::context_t* S_pContext   = NULL;
+} // namespace
+
+void VistaZeroMQCommon::RegisterZeroMQUser() {
+  if (S_nUserCount == 0)
+    S_pContext = new zmq::context_t(1);
+
+  ++S_nUserCount;
 }
 
-void VistaZeroMQCommon::RegisterZeroMQUser()
-{
-	if( S_nUserCount == 0 )
-		S_pContext = new zmq::context_t( 1 );
-
-	++S_nUserCount;
+void VistaZeroMQCommon::UnregisterZeroMQUser() {
+  if (--S_nUserCount == 0) {
+    zmq_term(S_pContext);
+    S_pContext = 0; // reset variable
+  }
 }
 
-void VistaZeroMQCommon::UnregisterZeroMQUser()
-{
-	if( --S_nUserCount == 0 )
-	{
-		zmq_term( S_pContext );
-		S_pContext = 0; // reset variable
-	}
-}
-
-zmq::context_t& VistaZeroMQCommon::GetContext()
-{
-	assert( S_pContext );
-	return *S_pContext;
+zmq::context_t& VistaZeroMQCommon::GetContext() {
+  assert(S_pContext);
+  return *S_pContext;
 }

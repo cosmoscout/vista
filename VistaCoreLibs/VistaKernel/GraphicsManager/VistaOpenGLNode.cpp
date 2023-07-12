@@ -21,13 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaOpenGLNode.h"
 #include "VistaNodeBridge.h"
 #include "VistaOpenGLDraw.h"
 
 #include <VistaMath/VistaBoundingBox.h>
-
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
@@ -37,55 +35,43 @@
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaOpenGLNode::VistaOpenGLNode( VistaGroupNode*				pParent, 
-						IVistaOpenGLDraw*					pDI, 
-						IVistaNodeBridge*				pBridge,
-						IVistaNodeData*					pData,
-						const std::string &strName)
-: VistaExtensionNode(pParent, pDI, pBridge, pData, strName)
-{
-	m_nType = VISTA_OPENGLNODE;
+VistaOpenGLNode::VistaOpenGLNode(VistaGroupNode* pParent, IVistaOpenGLDraw* pDI,
+    IVistaNodeBridge* pBridge, IVistaNodeData* pData, const std::string& strName)
+    : VistaExtensionNode(pParent, pDI, pBridge, pData, strName) {
+  m_nType = VISTA_OPENGLNODE;
 }
 
-VistaOpenGLNode::~VistaOpenGLNode()
-{
+VistaOpenGLNode::~VistaOpenGLNode() {
 }
 
 // ============================================================================
 // ============================================================================
 
-bool VistaOpenGLNode::Init()
-{
-	//init only once 
-	if(!m_bValid)
-		m_bValid = m_pBridge->InitOpenGLNode(m_pData, this);
+bool VistaOpenGLNode::Init() {
+  // init only once
+  if (!m_bValid)
+    m_bValid = m_pBridge->InitOpenGLNode(m_pData, this);
 
-	return m_bValid;
+  return m_bValid;
 }
 
-bool VistaOpenGLNode::GetBoundingBox(VistaVector3D &pMin, VistaVector3D &pMax) const
-{
-	if(dynamic_cast<IVistaOpenGLDraw*>(m_pExtension))
-	{
-		VistaBoundingBox bb;
-		bool bRet = static_cast<IVistaOpenGLDraw*>(m_pExtension)->GetBoundingBox(bb);
-		bb.GetBounds(&pMin[0], &pMax[0]);		
-		return bRet;
-	}
-	else
-	{
-		return false;
-	}
+bool VistaOpenGLNode::GetBoundingBox(VistaVector3D& pMin, VistaVector3D& pMax) const {
+  if (dynamic_cast<IVistaOpenGLDraw*>(m_pExtension)) {
+    VistaBoundingBox bb;
+    bool             bRet = static_cast<IVistaOpenGLDraw*>(m_pExtension)->GetBoundingBox(bb);
+    bb.GetBounds(&pMin[0], &pMax[0]);
+    return bRet;
+  } else {
+    return false;
+  }
 }
 
-bool VistaOpenGLNode::GetBoundingBox( VistaBoundingBox& oBox ) const
-{
-	return GetBoundingBox( oBox.m_v3Min, oBox.m_v3Max );
+bool VistaOpenGLNode::GetBoundingBox(VistaBoundingBox& oBox) const {
+  return GetBoundingBox(oBox.m_v3Min, oBox.m_v3Max);
 }
 
-VistaBoundingBox VistaOpenGLNode::GetBoundingBox() const
-{
-	VistaBoundingBox oBox;
-	GetBoundingBox( oBox );
-	return oBox;
+VistaBoundingBox VistaOpenGLNode::GetBoundingBox() const {
+  VistaBoundingBox oBox;
+  GetBoundingBox(oBox);
+  return oBox;
 }

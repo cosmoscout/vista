@@ -21,25 +21,23 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "TimeObserver.h"
 #include "DemoEvent.h"
-#include <VistaKernel/EventManager/VistaSystemEvent.h>
-#include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaBase/VistaStreamUtils.h>
 #include <VistaBase/VistaUtilityMacros.h>
+#include <VistaKernel/EventManager/VistaEventManager.h>
+#include <VistaKernel/EventManager/VistaSystemEvent.h>
 
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-TimeObserver::TimeObserver(VistaEventManager *pEventManager, int iEventType)
-{
-	vstr::outi() << "[TimeObserver] I will listen to predraw graphics events" << std::endl;
-	vstr::outi() << "               and fire a demo event every 2 sec." << std::endl;
-	m_dNextTime = 0;
-	m_pEventManager = pEventManager;
-	m_iEventType = iEventType;
+TimeObserver::TimeObserver(VistaEventManager* pEventManager, int iEventType) {
+  vstr::outi() << "[TimeObserver] I will listen to predraw graphics events" << std::endl;
+  vstr::outi() << "               and fire a demo event every 2 sec." << std::endl;
+  m_dNextTime     = 0;
+  m_pEventManager = pEventManager;
+  m_iEventType    = iEventType;
 }
 
 /*============================================================================*/
@@ -51,23 +49,18 @@ TimeObserver::TimeObserver(VistaEventManager *pEventManager, int iEventType)
 /*  NAME      :   Notify                                                      */
 /*                                                                            */
 /*============================================================================*/
-void TimeObserver::Notify(const VistaEvent *pEvent)
-{
-	if (pEvent->GetType() == VistaSystemEvent::GetTypeId())
-	{
-		const VistaSystemEvent* pSysEvent = Vista::assert_cast< const VistaSystemEvent* >( pEvent );
-		if ( pSysEvent->GetId() == VistaSystemEvent::VSE_PREGRAPHICS )
-		{
-			if (pEvent->GetTime() > m_dNextTime)
-			{
-				vstr::outi() << "[TimeObserver] Got notified";
-				DemoEvent oEvent;
-				m_pEventManager->ProcessEvent(&oEvent);
+void TimeObserver::Notify(const VistaEvent* pEvent) {
+  if (pEvent->GetType() == VistaSystemEvent::GetTypeId()) {
+    const VistaSystemEvent* pSysEvent = Vista::assert_cast<const VistaSystemEvent*>(pEvent);
+    if (pSysEvent->GetId() == VistaSystemEvent::VSE_PREGRAPHICS) {
+      if (pEvent->GetTime() > m_dNextTime) {
+        vstr::outi() << "[TimeObserver] Got notified";
+        DemoEvent oEvent;
+        m_pEventManager->ProcessEvent(&oEvent);
 
-				m_dNextTime = pEvent->GetTime() + 2.0;
-				vstr::outi() << " - Year" << std::endl;
-			}
-		}
-	}
+        m_dNextTime = pEvent->GetTime() + 2.0;
+        vstr::outi() << " - Year" << std::endl;
+      }
+    }
+  }
 }
-

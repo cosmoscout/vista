@@ -21,29 +21,25 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAPHANTOMDRIVERCONFIG_H
 #define _VISTAPHANTOMDRIVERCONFIG_H
 
-namespace VistaPhantomMeasures
-{
-	struct sPhantomMeasure
-	{
-		float m_afPosition[3],        /**< in mm */
-			m_afRotMatrix[16],      /**< column major */
-			m_afVelocity[3],        /**< in mm/s */
-			m_afForce[3],           /**< in N */
-			m_afAngularVelocity[3], /**< the gimbal's, in rad/s */
-			m_afJointAngles[3],     /**< radians */
-			m_afGimbalAngles[3],    /**< radians */
-			m_afTorque[3],          /**< in Nm */
-			m_nUpdateRate,          /**< in Hz */
-			m_afOverheatState[6];   /**< degrees Celsius? */
-		long  m_nEncoderValues[6];    /**< raw values */
-		int   m_nButtonState;         /**< button mask */
-		bool  m_bInkwellSwitch;
-	};
-}
+namespace VistaPhantomMeasures {
+struct sPhantomMeasure {
+  float m_afPosition[3],      /**< in mm */
+      m_afRotMatrix[16],      /**< column major */
+      m_afVelocity[3],        /**< in mm/s */
+      m_afForce[3],           /**< in N */
+      m_afAngularVelocity[3], /**< the gimbal's, in rad/s */
+      m_afJointAngles[3],     /**< radians */
+      m_afGimbalAngles[3],    /**< radians */
+      m_afTorque[3],          /**< in Nm */
+      m_nUpdateRate,          /**< in Hz */
+      m_afOverheatState[6];   /**< degrees Celsius? */
+  long m_nEncoderValues[6];   /**< raw values */
+  int  m_nButtonState;        /**< button mask */
+  bool m_bInkwellSwitch;
+};
+} // namespace VistaPhantomMeasures
 
 #endif //_VISTAPHANTOMDRIVERCONFIG_H
-

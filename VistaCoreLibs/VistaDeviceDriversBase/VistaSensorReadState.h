@@ -21,17 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASENSORSTATE_H_
 #define _VISTASENSORSTATE_H_
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include "VistaDeviceDriversConfig.h"
-#include <VistaBase/VistaBaseTypes.h>
 #include <VistaAspects/VistaSerializable.h>
+#include <VistaBase/VistaBaseTypes.h>
 #include <cstddef>
 #include <map>
 
@@ -59,92 +57,86 @@ class VistaMeasureHistory;
  * of the data, including the history (also important for clustering/distribution).
  * Each ReadState should be accessed from one thread only.
  */
-class VISTADEVICEDRIVERSAPI VistaSensorReadState : public IVistaSerializable
-{
-public:
-	VistaSensorReadState( VistaDeviceSensor* pSensor,
-								bool bUseIncrementalSerialization,
-								bool bUseOwnHistoryForDeSerialization = true );
-	virtual ~VistaSensorReadState();
+class VISTADEVICEDRIVERSAPI VistaSensorReadState : public IVistaSerializable {
+ public:
+  VistaSensorReadState(VistaDeviceSensor* pSensor, bool bUseIncrementalSerialization,
+      bool bUseOwnHistoryForDeSerialization = true);
+  virtual ~VistaSensorReadState();
 
-	bool GetIsValid() const;
-	VistaType::uint32 GetNewAvailableMeasureCount( VistaType::uint32& nLastRead ) const;
-	VistaType::uint32 GetMeasureCount() const;
-	VistaType::uint32 GetActivationCount() const;
-	VistaType::microtime GetUpdateTimeStamp() const;
+  bool                 GetIsValid() const;
+  VistaType::uint32    GetNewAvailableMeasureCount(VistaType::uint32& nLastRead) const;
+  VistaType::uint32    GetMeasureCount() const;
+  VistaType::uint32    GetActivationCount() const;
+  VistaType::microtime GetUpdateTimeStamp() const;
 
-	const VistaSensorMeasure* GetCurrentMeasure() const;
-	const VistaSensorMeasure* GetPastMeasure( int nStepBack ) const;
+  const VistaSensorMeasure* GetCurrentMeasure() const;
+  const VistaSensorMeasure* GetPastMeasure(int nStepBack) const;
 
-	const VistaMeasureHistory* GetHistory() const;
+  const VistaMeasureHistory* GetHistory() const;
 
-	VistaDeviceSensor* GetSensor() const;
+  VistaDeviceSensor* GetSensor() const;
 
-	/**
-	 * Set's this ReadState's head to the current history's head. Thus, from
-	 * now on all Measures retrieved via this ReadState will use the updated value.
-	 * Note: a ReadState should only be either using this function plus serialization,
-	 * or deserialization, but not deserialization and sample updating.
-	 */
-	bool SetToLatestSample();
+  /**
+   * Set's this ReadState's head to the current history's head. Thus, from
+   * now on all Measures retrieved via this ReadState will use the updated value.
+   * Note: a ReadState should only be either using this function plus serialization,
+   * or deserialization, but not deserialization and sample updating.
+   */
+  bool SetToLatestSample();
 
-	// Serializable Implementation
-	virtual int Serialize( IVistaSerializer & ) const;
-	virtual int DeSerialize( IVistaDeSerializer & );
-	virtual std::string GetSignature() const;
+  // Serializable Implementation
+  virtual int         Serialize(IVistaSerializer&) const;
+  virtual int         DeSerialize(IVistaDeSerializer&);
+  virtual std::string GetSignature() const;
 
-	/**
-	 * Determines whether the serialization always sends the full history,
-	 * or uses incremental history transmission where only new samples since
-	 * the last (de)serialization are transmitted. While incremental transmission
-	 * is faster, it only works for a 1:n relation of serialized and deserialized ReadStates,
-	 * i.e. you can serialize a ReadState multiple times with different serializers for 
-	 * different target readstate, but you can only deserialize a ReadState from a single
-	 * serializer. The incremental number of nodes to send is stored for each serializer, so
-	 * only use this if you use the same serializer the whole time.
-	 */
-	bool GetUseIncrementalSerialization() const;
-	void SetUseIncrementalSerialization( bool bSet );
+  /**
+   * Determines whether the serialization always sends the full history,
+   * or uses incremental history transmission where only new samples since
+   * the last (de)serialization are transmitted. While incremental transmission
+   * is faster, it only works for a 1:n relation of serialized and deserialized ReadStates,
+   * i.e. you can serialize a ReadState multiple times with different serializers for
+   * different target readstate, but you can only deserialize a ReadState from a single
+   * serializer. The incremental number of nodes to send is stored for each serializer, so
+   * only use this if you use the same serializer the whole time.
+   */
+  bool GetUseIncrementalSerialization() const;
+  void SetUseIncrementalSerialization(bool bSet);
 
-	/**
-	 * When deserializing data into the sensor's original history, different ReadStates
-	 * on this sensor may conflict, leading to an inconsistent history state. Instead, each
-	 * ReadState can create a dummy history to serialize into, which is only accessible via
-	 * this very ReadState, ensuring consistent data.
-	 */
-	bool GetUseOwnHistoryForDeSerialization() const;
-	void SetUseOwnHistoryForDeSerialization( bool bSet );
+  /**
+   * When deserializing data into the sensor's original history, different ReadStates
+   * on this sensor may conflict, leading to an inconsistent history state. Instead, each
+   * ReadState can create a dummy history to serialize into, which is only accessible via
+   * this very ReadState, ensuring consistent data.
+   */
+  bool GetUseOwnHistoryForDeSerialization() const;
+  void SetUseOwnHistoryForDeSerialization(bool bSet);
 
-	static VistaType::uint32 InvalidState;
+  static VistaType::uint32 InvalidState;
 
-private:
-	VistaType::uint32 m_nSnapshotReadHead, /**< index of the starting position for all
-	                                           readers that use this state for reading.
-	                                           Is fixed at the time of read on the read state.
-	                                           Initial value / invalid state: ~0 */
-	                  m_nActivationCount, /**< number of swaps/activations called for this state,
-	                                          typically used for debugging or statistics. */
-					  m_nCurrentMeasureCount; /**< the number of measures available in this
-	                                           state. */
-	VistaType::microtime m_nLastUpdateTs; /**< the timestamp records the moment in time this
-	                                          state was filled up last. */
-		
-	VistaDeviceSensor* m_pSensor;
-	VistaMeasureHistory* m_pHistory;
-	bool m_bOwnHistory; /** this determines if we use an own history (i.e. as created when deserializing
-						 * readstate, or if we use the sensor's original history) */
-	bool m_bUseOwnHistoryForDeSerialization;
-	bool m_bUseIncrementalSerialization;
-	mutable std::map<IVistaSerializer*, int> m_mapLastSerializeMeasureCounts;
-	mutable VistaType::uint32 m_nLastDeSerializeMeasureCount;
+ private:
+  VistaType::uint32 m_nSnapshotReadHead, /**< index of the starting position for all
+                                             readers that use this state for reading.
+                                             Is fixed at the time of read on the read state.
+                                             Initial value / invalid state: ~0 */
+      m_nActivationCount,                /**< number of swaps/activations called for this state,
+                                             typically used for debugging or statistics. */
+      m_nCurrentMeasureCount;            /**< the number of measures available in this
+                          state. */
+  VistaType::microtime m_nLastUpdateTs;  /**< the timestamp records the moment in time this
+                                             state was filled up last. */
 
+  VistaDeviceSensor*   m_pSensor;
+  VistaMeasureHistory* m_pHistory;
+  bool m_bOwnHistory; /** this determines if we use an own history (i.e. as created when
+                       * deserializing readstate, or if we use the sensor's original history) */
+  bool                                     m_bUseOwnHistoryForDeSerialization;
+  bool                                     m_bUseIncrementalSerialization;
+  mutable std::map<IVistaSerializer*, int> m_mapLastSerializeMeasureCounts;
+  mutable VistaType::uint32                m_nLastDeSerializeMeasureCount;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif // _VISTASENSORSTATE_H_
-
-

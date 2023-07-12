@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAGLUTTEXTENTITY_H
 #define _VISTAGLUTTEXTENTITY_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/DisplayManager/VistaTextEntity.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -46,45 +45,42 @@
  * GLUT implementation of IVistaTextEntity. See VistaTextEntity.h for
  * documentation. Default value is Helvetice 18.
  */
-class VISTAKERNELAPI VistaGlutTextEntity : public IVistaTextEntity
-{
-public:
-	VistaGlutTextEntity();
-	virtual ~VistaGlutTextEntity();
+class VISTAKERNELAPI VistaGlutTextEntity : public IVistaTextEntity {
+ public:
+  VistaGlutTextEntity();
+  virtual ~VistaGlutTextEntity();
 
-	/**
-	 * GLUT does not support any combination of font size and fontfamily.
-	 * The given paramters are fitted to an avaliable fontsize / -family pair.
-	 * First try is to match the nearest fontsize. If the font size is in the
-	 * correct range the algorithm looks at the fontfamily.
-	 * \param fontfamily
-	 * \param fontsize
-	 */
-	void SetFont( const std::string& sFamily, int iFontSize );
-	/**
-	 * This method returns the *real* fontsize. This must not be the same
-	 * as given in SetFont, because of the bestfit algorithm.
-	 * \return fontsize
-	 */
-	int GetFontSize() const;
-	/**
-	 * This method returns the *real* fontfmaily. This must not be the same
-	 * as given in SetFont, because of the bestfit algorithm.
-	 * \return fontfamily
-	 */
-	std::string GetFontFamily() const;
+  /**
+   * GLUT does not support any combination of font size and fontfamily.
+   * The given paramters are fitted to an avaliable fontsize / -family pair.
+   * First try is to match the nearest fontsize. If the font size is in the
+   * correct range the algorithm looks at the fontfamily.
+   * \param fontfamily
+   * \param fontsize
+   */
+  void SetFont(const std::string& sFamily, int iFontSize);
+  /**
+   * This method returns the *real* fontsize. This must not be the same
+   * as given in SetFont, because of the bestfit algorithm.
+   * \return fontsize
+   */
+  int GetFontSize() const;
+  /**
+   * This method returns the *real* fontfmaily. This must not be the same
+   * as given in SetFont, because of the bestfit algorithm.
+   * \return fontfamily
+   */
+  std::string GetFontFamily() const;
 
-	void DrawCharacters();
+  void DrawCharacters();
 
-	/**
-	 * Gives the native GLUT font pointer.
-	 */
-	void* GetFontType();
+  /**
+   * Gives the native GLUT font pointer.
+   */
+  void* GetFontType();
 
-private:
-
-	void* m_pFontType;
-
+ private:
+  void* m_pFontType;
 };
 
 /*============================================================================*/

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAADAPTIVEVSYNCCONTROL_H
 #define _VISTAADAPTIVEVSYNCCONTROL_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -58,46 +56,43 @@ class VistaWindow;
  * the vsync mode is switched accordingly.
  * This class automatically registers and unregisters itself in ctor/dtor
  */
-class VISTAKERNELAPI VistaAdaptiveVSyncControl : public VistaEventHandler
-{
-public:
-	VistaAdaptiveVSyncControl( VistaDisplayManager* pDisplayManager,
-							VistaEventManager* pEventManager );
-	VistaAdaptiveVSyncControl( VistaWindow* pWindow,
-							VistaEventManager* pEventManager );
-	VistaAdaptiveVSyncControl( const std::vector<VistaWindow*>& vecWindows,
-							VistaEventManager* pEventManager );
-	virtual ~VistaAdaptiveVSyncControl();
+class VISTAKERNELAPI VistaAdaptiveVSyncControl : public VistaEventHandler {
+ public:
+  VistaAdaptiveVSyncControl(VistaDisplayManager* pDisplayManager, VistaEventManager* pEventManager);
+  VistaAdaptiveVSyncControl(VistaWindow* pWindow, VistaEventManager* pEventManager);
+  VistaAdaptiveVSyncControl(
+      const std::vector<VistaWindow*>& vecWindows, VistaEventManager* pEventManager);
+  virtual ~VistaAdaptiveVSyncControl();
 
-	virtual void HandleEvent( VistaEvent* pEvent );
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-	float GetSwitchAtFramerate() const;
-	void SetSwitchAtFramerate( const float& oValue );
+  float GetSwitchAtFramerate() const;
+  void  SetSwitchAtFramerate(const float& oValue);
 
-	float GetFramerateTolerance() const;
-	void SetFramerateTolerance( const float& oValue );
-	
-	int GetFrameCountToDisable() const;
-	void SetFrameCountToDisable( const int& oValue );
+  float GetFramerateTolerance() const;
+  void  SetFramerateTolerance(const float& oValue);
 
-	int GetFrameCountToEnable() const;
-	void SetFrameCountToEnable( const int& oValue );
+  int  GetFrameCountToDisable() const;
+  void SetFrameCountToDisable(const int& oValue);
 
-	virtual void SetIsEnabled( bool bSet );
-private:
-	VistaEventManager* m_pEventManager;
-	std::vector<VistaWindow*> m_vecWindows;
+  int  GetFrameCountToEnable() const;
+  void SetFrameCountToEnable(const int& oValue);
 
-	float m_nSwitchAtFramerate;
-	float m_nFramerateTolerance;
-	int m_nFrameCountToDisable;
-	int m_nFrameCountToEnable;
-	VistaType::systemtime m_nLastUpdate;
+  virtual void SetIsEnabled(bool bSet);
 
-	bool m_bPrintStatusOnChange;
+ private:
+  VistaEventManager*        m_pEventManager;
+  std::vector<VistaWindow*> m_vecWindows;
 
-	int m_nFramesExceedingLimit;
+  float                 m_nSwitchAtFramerate;
+  float                 m_nFramerateTolerance;
+  int                   m_nFrameCountToDisable;
+  int                   m_nFrameCountToEnable;
+  VistaType::systemtime m_nLastUpdate;
+
+  bool m_bPrintStatusOnChange;
+
+  int m_nFramesExceedingLimit;
 };
 
 #endif //_VISTAADAPTIVEVSYNCCONTROL_H
-

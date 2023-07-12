@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTANULLERROR_H
 #define IDLVISTANULLERROR_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -36,7 +34,6 @@
 #include "VistaCheckError.h"
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
@@ -45,22 +42,17 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI DLVistaNullError : public DLVistaCheckError
-{
-public:
-	DLVistaNullError();
-	/**
-	 * Pure virtual destructor. Does nothing.
-	 */
-	virtual ~DLVistaNullError();
+class VISTAINTERPROCCOMMAPI DLVistaNullError : public DLVistaCheckError {
+ public:
+  DLVistaNullError();
+  /**
+   * Pure virtual destructor. Does nothing.
+   */
+  virtual ~DLVistaNullError();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //DLVISTAACTIVECOMPONENT_H
-
-
+#endif // DLVISTAACTIVECOMPONENT_H

@@ -21,23 +21,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAGLUTMOUSEDRIVER_H
 #define _VISTAGLUTMOUSEDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
+#include <VistaKernel/VistaKernelConfig.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTAGLUTMOUSEDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTAGLUTMOUSEDRIVER_STATIC)
 #ifdef VISTAGLUTMOUSEDRIVER_EXPORTS
 #define VISTAGLUTMOUSEDRIVERAPI __declspec(dllexport)
 #else
@@ -58,84 +56,69 @@ class VistaDriverAbstractWindowAspect;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAGLUTMOUSEDRIVERAPI VistaGlutMouseDriver : public IVistaMouseDriver
-{
-public:
-	VistaGlutMouseDriver(IVistaDriverCreationMethod *crm);
-	virtual ~VistaGlutMouseDriver();
+class VISTAGLUTMOUSEDRIVERAPI VistaGlutMouseDriver : public IVistaMouseDriver {
+ public:
+  VistaGlutMouseDriver(IVistaDriverCreationMethod* crm);
+  virtual ~VistaGlutMouseDriver();
 
-	static void MouseFunction ( int iButton, int iState, int iX, int iY);
-	static void MotionFunction( int iX, int iY );
-	static void MouseWheelFunction( int nWheelNumber, int nDirection, int nX, int nY);
-	
-	bool GetMouseWarpPending() const;
-	void SetMouseWarpPending( const bool& oValue );
-	bool GetGrabCursorChanged() const;
-	void SetGrabCursorChanged( const bool& oValue );
+  static void MouseFunction(int iButton, int iState, int iX, int iY);
+  static void MotionFunction(int iX, int iY);
+  static void MouseWheelFunction(int nWheelNumber, int nDirection, int nX, int nY);
 
-protected:
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
-private:
+  bool GetMouseWarpPending() const;
+  void SetMouseWarpPending(const bool& oValue);
+  bool GetGrabCursorChanged() const;
+  void SetGrabCursorChanged(const bool& oValue);
 
-	struct _state
-	{
-		_state(int nGlutWinId,
-			   int nX = 0,
-			   int nY = 0,
-			   int Bs0 = 0,
-			   int Bs1 = 0,
-			   int Bs2 = 0,
-			   int nWheelNumber = -1,
-			   int nWheelDirection = 0)
-			: m_nWinId(nGlutWinId),
-			  m_nX(nX),
-			  m_nY(nY),
-			  m_nWheelNumber(nWheelNumber),
-			  m_nWheelDirection(nWheelDirection)
-		{
-			m_nButtonStates[0] = Bs0;
-			m_nButtonStates[1] = Bs1;
-			m_nButtonStates[2] = Bs2;
-		}
+ protected:
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-		int m_nButtonStates[3];
-		int m_nX, m_nY;
-		int m_nWheelNumber,
-			m_nWheelDirection,
-			m_nWinId;
-	};
+ private:
+  struct _state {
+    _state(int nGlutWinId, int nX = 0, int nY = 0, int Bs0 = 0, int Bs1 = 0, int Bs2 = 0,
+        int nWheelNumber = -1, int nWheelDirection = 0)
+        : m_nWinId(nGlutWinId)
+        , m_nX(nX)
+        , m_nY(nY)
+        , m_nWheelNumber(nWheelNumber)
+        , m_nWheelDirection(nWheelDirection) {
+      m_nButtonStates[0] = Bs0;
+      m_nButtonStates[1] = Bs1;
+      m_nButtonStates[2] = Bs2;
+    }
 
-	void Receive( const _state &s );
+    int m_nButtonStates[3];
+    int m_nX, m_nY;
+    int m_nWheelNumber, m_nWheelDirection, m_nWinId;
+  };
 
+  void Receive(const _state& s);
 
-	std::vector<_state> m_vecUpdates;
-	int m_nButtonStates[3];
-	int m_nWheelState,
-		m_nWheelDirState;
-	VistaDriverAbstractWindowAspect *m_pWindowAspect;
+  std::vector<_state>              m_vecUpdates;
+  int                              m_nButtonStates[3];
+  int                              m_nWheelState, m_nWheelDirState;
+  VistaDriverAbstractWindowAspect* m_pWindowAspect;
 
-	bool m_bMouseWarpPending;
-	// @TODO: set this if the grab mode is switched during runtime
-	bool m_bGrabCursorChanged;
-	
+  bool m_bMouseWarpPending;
+  // @TODO: set this if the grab mode is switched during runtime
+  bool m_bGrabCursorChanged;
 
-	bool m_bConnected;
+  bool m_bConnected;
 
-	VistaMutex m_update_vec_mutex;	
+  VistaMutex m_update_vec_mutex;
 };
 
+class VISTAGLUTMOUSEDRIVERAPI VistaGlutMouseDriverCreationMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  VistaGlutMouseDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 
-class VISTAGLUTMOUSEDRIVERAPI VistaGlutMouseDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaGlutMouseDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
-protected:
-private:
+ protected:
+ private:
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

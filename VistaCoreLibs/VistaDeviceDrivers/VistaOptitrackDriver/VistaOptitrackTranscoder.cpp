@@ -21,125 +21,106 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaOptitrackCommonShare.h"
 
-#include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaTimeUtils.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
+#include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
-
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 
 #include <string>
 
-namespace
-{
-	class VistaOptitrackRigidBodyTranscoder : public IVistaMeasureTranscode
-	{
-	public:
-		VistaOptitrackRigidBodyTranscoder() : IVistaMeasureTranscode() {}
-		static std::string GetTypeString() { return "VistaOptitrackRigidBodyTranscoder"; }
-		REFL_INLINEIMP( VistaOptitrackRigidBodyTranscoder, IVistaMeasureTranscode );
-	};
-	IVistaPropertyGetFunctor* s_aRigidBodyGetter[] =
-	{
-		new IVistaMeasureTranscode::TTranscodeMemberGet< VistaOptitrackMeasures::RigidBodyMeasure, int >(
-											"RIGID_BODY_ID",
-											"VistaOptitrackRigidBodyTranscoder",
-											"optitrack's ID of the rigid body",
-											&VistaOptitrackMeasures::RigidBodyMeasure::m_nIndex ),
-		new IVistaMeasureTranscode::TTranscodeMemberGet< VistaOptitrackMeasures::RigidBodyMeasure, float >(
-											"MEAN_ERROR",
-											"VistaOptitrackRigidBodyTranscoder",
-											"mean error of the rigid body matching",
-											&VistaOptitrackMeasures::RigidBodyMeasure::m_fMeanError ),
-		new IVistaMeasureTranscode::TTranscodeMemberGet< VistaOptitrackMeasures::RigidBodyMeasure, VistaVector3D >(
-											"POSITION",
-											"VistaOptitrackRigidBodyTranscoder",
-											"position of the rigid body",
-											&VistaOptitrackMeasures::RigidBodyMeasure::m_v3Position ),
-		new IVistaMeasureTranscode::TTranscodeMemberGet< VistaOptitrackMeasures::RigidBodyMeasure, VistaQuaternion >(
-											"ORIENTATION",
-											"VistaOptitrackRigidBodyTranscoder",
-											"orientation of the rigid body",
-											&VistaOptitrackMeasures::RigidBodyMeasure::m_qOrientation ),
-	};
+namespace {
+class VistaOptitrackRigidBodyTranscoder : public IVistaMeasureTranscode {
+ public:
+  VistaOptitrackRigidBodyTranscoder()
+      : IVistaMeasureTranscode() {
+  }
+  static std::string GetTypeString() {
+    return "VistaOptitrackRigidBodyTranscoder";
+  }
+  REFL_INLINEIMP(VistaOptitrackRigidBodyTranscoder, IVistaMeasureTranscode);
+};
+IVistaPropertyGetFunctor* s_aRigidBodyGetter[] = {
+    new IVistaMeasureTranscode::TTranscodeMemberGet<VistaOptitrackMeasures::RigidBodyMeasure, int>(
+        "RIGID_BODY_ID", "VistaOptitrackRigidBodyTranscoder", "optitrack's ID of the rigid body",
+        &VistaOptitrackMeasures::RigidBodyMeasure::m_nIndex),
+    new IVistaMeasureTranscode::TTranscodeMemberGet<VistaOptitrackMeasures::RigidBodyMeasure,
+        float>("MEAN_ERROR", "VistaOptitrackRigidBodyTranscoder",
+        "mean error of the rigid body matching",
+        &VistaOptitrackMeasures::RigidBodyMeasure::m_fMeanError),
+    new IVistaMeasureTranscode::TTranscodeMemberGet<VistaOptitrackMeasures::RigidBodyMeasure,
+        VistaVector3D>("POSITION", "VistaOptitrackRigidBodyTranscoder",
+        "position of the rigid body", &VistaOptitrackMeasures::RigidBodyMeasure::m_v3Position),
+    new IVistaMeasureTranscode::TTranscodeMemberGet<VistaOptitrackMeasures::RigidBodyMeasure,
+        VistaQuaternion>("ORIENTATION", "VistaOptitrackRigidBodyTranscoder",
+        "orientation of the rigid body", &VistaOptitrackMeasures::RigidBodyMeasure::m_qOrientation),
+};
 
-	
-	class VistaOptitrackDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory
-	{
-	public:
-		typedef std::map<std::string,ICreateTranscoder*> CreatorsMap;
+class VistaOptitrackDriverTranscoderFactoryFactory : public IVistaTranscoderFactoryFactory {
+ public:
+  typedef std::map<std::string, ICreateTranscoder*> CreatorsMap;
 
-		VistaOptitrackDriverTranscoderFactoryFactory()
-		{
-			CreateCreators( m_mapCreators );
-		}
+  VistaOptitrackDriverTranscoderFactoryFactory() {
+    CreateCreators(m_mapCreators);
+  }
 
-		~VistaOptitrackDriverTranscoderFactoryFactory()
-		{
-			CleanupCreators( m_mapCreators );
-		}		
+  ~VistaOptitrackDriverTranscoderFactoryFactory() {
+    CleanupCreators(m_mapCreators);
+  }
 
-		static void CreateCreators( CreatorsMap& m_mapCreators )
-		{
-			m_mapCreators[ "RIGID_BODY" ]  = new TCreateTranscoder< VistaOptitrackRigidBodyTranscoder >();
-		}
+  static void CreateCreators(CreatorsMap& m_mapCreators) {
+    m_mapCreators["RIGID_BODY"] = new TCreateTranscoder<VistaOptitrackRigidBodyTranscoder>();
+  }
 
-		static void CleanupCreators( CreatorsMap& m_mapCreators )
-		{
-			for( CreatorsMap::iterator it = m_mapCreators.begin(); it != m_mapCreators.end(); ++it )
-				delete (*it).second;
+  static void CleanupCreators(CreatorsMap& m_mapCreators) {
+    for (CreatorsMap::iterator it = m_mapCreators.begin(); it != m_mapCreators.end(); ++it)
+      delete (*it).second;
 
-			m_mapCreators.clear();
-		}
+    m_mapCreators.clear();
+  }
 
-		virtual IVistaMeasureTranscoderFactory* CreateFactoryForType( const std::string& strTypeName )
-		{
-			CreatorsMap::const_iterator it = m_mapCreators.find( strTypeName );
-			if( it == m_mapCreators.end() )
-				return NULL;
-			return (*it).second->Create();
-		}
+  virtual IVistaMeasureTranscoderFactory* CreateFactoryForType(const std::string& strTypeName) {
+    CreatorsMap::const_iterator it = m_mapCreators.find(strTypeName);
+    if (it == m_mapCreators.end())
+      return NULL;
+    return (*it).second->Create();
+  }
 
+  virtual void DestroyTranscoderFactory(IVistaMeasureTranscoderFactory* pFactory) {
+    delete pFactory;
+  }
 
-		virtual void DestroyTranscoderFactory( IVistaMeasureTranscoderFactory* pFactory )
-		{
-			delete pFactory;
-		}
+  static void OnUnload() {
+    CreatorsMap mapCreators;
+    CreateCreators(mapCreators);
+    for (CreatorsMap::iterator itCreator = mapCreators.begin(); itCreator != mapCreators.end();
+         ++itCreator)
+      (*itCreator).second->OnUnload();
+    CleanupCreators(mapCreators);
+  }
 
-		static void OnUnload()
-		{
-			CreatorsMap mapCreators;
-			CreateCreators( mapCreators );
-			for( CreatorsMap::iterator itCreator = mapCreators.begin(); itCreator != mapCreators.end(); ++itCreator )
-				(*itCreator).second->OnUnload();
-			CleanupCreators( mapCreators );
-		}
-	private:
-		CreatorsMap m_mapCreators;
-
-	};
-}
-
+ private:
+  CreatorsMap m_mapCreators;
+};
+} // namespace
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
 #ifdef VISTAOPTITRACKTRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS( VistaOptitrackDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(VistaOptitrackDriverTranscoderFactoryFactory)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS( VistaOptitrackDriverTranscoderFactoryFactory )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(VistaOptitrackDriverTranscoderFactoryFactory)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
-IMPTRANSCODERPLUG_CLEANUP( VistaOptitrackDriverTranscoderFactoryFactory )
+IMPTRANSCODERPLUG_CLEANUP(VistaOptitrackDriverTranscoderFactoryFactory)
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

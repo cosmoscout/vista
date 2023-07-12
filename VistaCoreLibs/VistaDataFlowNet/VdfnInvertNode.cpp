@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VdfnInvertNode.h"
 #include <VistaBase/VistaVectorMath.h>
 /*============================================================================*/
@@ -35,44 +34,37 @@
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-template<> VISTADFNAPI
-bool TVdfnInvertNode<float>::DoEvalNode()
-{
-	m_pOut->SetValue( 1.0f / m_pIn->GetValue(), GetUpdateTimeStamp() );
-	return true;
+template <>
+VISTADFNAPI bool TVdfnInvertNode<float>::DoEvalNode() {
+  m_pOut->SetValue(1.0f / m_pIn->GetValue(), GetUpdateTimeStamp());
+  return true;
 }
 
-template<> VISTADFNAPI
-bool TVdfnInvertNode<double>::DoEvalNode()
-{
-	m_pOut->SetValue( 1.0 / m_pIn->GetValue(), GetUpdateTimeStamp() );
-	return true;
+template <>
+VISTADFNAPI bool TVdfnInvertNode<double>::DoEvalNode() {
+  m_pOut->SetValue(1.0 / m_pIn->GetValue(), GetUpdateTimeStamp());
+  return true;
 }
 
-template<> VISTADFNAPI
-bool TVdfnInvertNode<VistaQuaternion>::DoEvalNode()
-{
-	m_pOut->SetValue( m_pIn->GetValue().GetInverted(), GetUpdateTimeStamp() );
-	return true;
+template <>
+VISTADFNAPI bool TVdfnInvertNode<VistaQuaternion>::DoEvalNode() {
+  m_pOut->SetValue(m_pIn->GetValue().GetInverted(), GetUpdateTimeStamp());
+  return true;
 }
 
-template<> VISTADFNAPI
-bool TVdfnInvertNode<VistaTransformMatrix>::DoEvalNode()
-{
-	VistaTransformMatrix m;
-	m_pIn->GetValueConstRef().GetInverted(m);
-	m_pOut->SetValue(m, GetUpdateTimeStamp() );
-	return true;
+template <>
+VISTADFNAPI bool TVdfnInvertNode<VistaTransformMatrix>::DoEvalNode() {
+  VistaTransformMatrix m;
+  m_pIn->GetValueConstRef().GetInverted(m);
+  m_pOut->SetValue(m, GetUpdateTimeStamp());
+  return true;
 }
 
-template<> VISTADFNAPI
-bool TVdfnInvertNode<bool>::DoEvalNode()
-{
-	m_pOut->SetValue( !m_pIn->GetValue(), GetUpdateTimeStamp() );
-	return true;
+template <>
+VISTADFNAPI bool TVdfnInvertNode<bool>::DoEvalNode() {
+  m_pOut->SetValue(!m_pIn->GetValue(), GetUpdateTimeStamp());
+  return true;
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

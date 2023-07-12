@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAKERNELDFNNODECREATORSS_H
 #define _VISTAKERNELDFNNODECREATORSS_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -53,314 +51,276 @@ class VistaSceneGraph;
 /* UTILITY                                                                    */
 /*============================================================================*/
 
-namespace VistaKernelDfnNodeCreators
-{
-	bool VISTAKERNELAPI RegisterNodeCreates( VistaSystem* pVistaSystem );
+namespace VistaKernelDfnNodeCreators {
+bool VISTAKERNELAPI RegisterNodeCreates(VistaSystem* pVistaSystem);
 }
 
 /*============================================================================*/
 /* NODE CREATES                                                               */
 /*============================================================================*/
 
-class VISTAKERNELAPI Vista3DMouseTransformNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	Vista3DMouseTransformNodeCreate(VistaDisplayManager *pSys);
+class VISTAKERNELAPI Vista3DMouseTransformNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  Vista3DMouseTransformNodeCreate(VistaDisplayManager* pSys);
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-	VistaDisplayManager *m_pMgr;
+  VistaDisplayManager* m_pMgr;
 };
 
-
-class VISTAKERNELAPI VdfnClusterNodeInfoNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VdfnClusterNodeInfoNodeCreate( VistaClusterMode *pDm );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-	VistaClusterMode *m_pClusterMode;
+class VISTAKERNELAPI VdfnClusterNodeInfoNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VdfnClusterNodeInfoNodeCreate(VistaClusterMode* pDm);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+  VistaClusterMode*  m_pClusterMode;
 };
 
-class VISTAKERNELAPI VistaDfnDeviceDebugNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnDeviceDebugNodeCreate( VistaDisplayManager* pDisplayManager );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-	VistaDisplayManager* m_pDisplayManager;
+class VISTAKERNELAPI VistaDfnDeviceDebugNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnDeviceDebugNodeCreate(VistaDisplayManager* pDisplayManager);
+  virtual IVdfnNode*   CreateNode(const VistaPropertyList& oParams) const;
+  VistaDisplayManager* m_pDisplayManager;
 };
 
-class VISTAKERNELAPI VdfnDumpHistoryNodeClusterCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VdfnDumpHistoryNodeClusterCreate( VistaClusterMode *pClusterMode );
-	IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-	VistaClusterMode *m_pClusterMode;
+class VISTAKERNELAPI VdfnDumpHistoryNodeClusterCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VdfnDumpHistoryNodeClusterCreate(VistaClusterMode* pClusterMode);
+  IVdfnNode*        CreateNode(const VistaPropertyList& oParams) const;
+  VistaClusterMode* m_pClusterMode;
 };
 
-class VISTAKERNELAPI VistaDfnEventSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnEventSourceNodeCreate( VistaEventManager *pEvMgr,
-								VistaInteractionManager *pInMa );
+class VISTAKERNELAPI VistaDfnEventSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnEventSourceNodeCreate(VistaEventManager* pEvMgr, VistaInteractionManager* pInMa);
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-private:
-	VistaEventManager          *m_pEvMgr;
-	VistaInteractionManager *m_pInMa;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaEventManager*       m_pEvMgr;
+  VistaInteractionManager* m_pInMa;
 };
 
-class VISTAKERNELAPI VistaDfnNavigationNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-private:
+class VISTAKERNELAPI VistaDfnNavigationNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
 };
 
-class VISTAKERNELAPI VistaDfnWindowSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnWindowSourceNodeCreate( VistaDisplayManager *pMgr );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+class VISTAKERNELAPI VistaDfnWindowSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnWindowSourceNodeCreate(VistaDisplayManager* pMgr);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-private:
-	VistaDisplayManager *m_pMgr;
+ private:
+  VistaDisplayManager* m_pMgr;
 };
 
-class VISTAKERNELAPI VistaDfnViewportSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnViewportSourceNodeCreate( VistaDisplayManager *pMgr );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+class VISTAKERNELAPI VistaDfnViewportSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnViewportSourceNodeCreate(VistaDisplayManager* pMgr);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-private:
-	VistaDisplayManager *m_pMgr;
+ private:
+  VistaDisplayManager* m_pMgr;
 };
 
+class VISTAKERNELAPI VistaDfnViewerSinkNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnViewerSinkNodeCreate(VistaDisplayManager* pMgr);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-class VISTAKERNELAPI VistaDfnViewerSinkNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnViewerSinkNodeCreate( VistaDisplayManager *pMgr );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-
-private:
-	VistaDisplayManager *m_pMgr;
+ private:
+  VistaDisplayManager* m_pMgr;
 };
 
-class VISTAKERNELAPI VistaDfnTrackballNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnTrackballNodeCreate();
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
+class VISTAKERNELAPI VistaDfnTrackballNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnTrackballNodeCreate();
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 };
 
+template <class T>
+class VISTAKERNELAPI VistaDfnTextOverlayNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnTextOverlayNodeCreate(VistaDisplayManager* pDm)
+      : m_pDm(pDm) {
+  }
 
-template<class T>
-class VISTAKERNELAPI VistaDfnTextOverlayNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnTextOverlayNodeCreate( VistaDisplayManager *pDm )
-	: m_pDm(pDm)
-	{
-	}
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const {
+    try {
+      const VistaPropertyList& oSubs =
+          oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const
-	{
-		try
-		{
-			const VistaPropertyList &oSubs = oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
+      float nX = oSubs.GetValueOrDefault<float>("x_pos", 0.1f);
+      float nY = oSubs.GetValueOrDefault<float>("y_pos", 0.1f);
 
-			float nX = oSubs.GetValueOrDefault<float>( "x_pos", 0.1f );
-			float nY = oSubs.GetValueOrDefault<float>( "y_pos", 0.1f );
+      float nR = oSubs.GetValueOrDefault<float>("red", 1.0f);
+      float nG = oSubs.GetValueOrDefault<float>("green", 1.0f);
+      float nB = oSubs.GetValueOrDefault<float>("blue", 0.0f);
 
-			float nR = oSubs.GetValueOrDefault<float>( "red", 1.0f );
-			float nG = oSubs.GetValueOrDefault<float>( "green", 1.0f );
-			float nB = oSubs.GetValueOrDefault<float>( "blue", 0.0f );
+      int nSize = oSubs.GetValueOrDefault<int>("size", 20);
 
-			int nSize = oSubs.GetValueOrDefault<int>( "size", 20 );
+      std::string sIniText;
+      oSubs.GetValue("value", sIniText);
 
-			std::string sIniText;
-			oSubs.GetValue( "value", sIniText );
+      Vista2DText::Vista2DTextFontFamily eFamily = Vista2DText::SANS;
 
+      std::string strFont;
+      if (oSubs.GetValue("font", strFont)) {
+        if (strFont.compare("TYPEWRITER") == 0)
+          eFamily = Vista2DText::TYPEWRITER;
+        else if (strFont.compare("SERIF") == 0)
+          eFamily = Vista2DText::SERIF;
+      }
 
-			Vista2DText::Vista2DTextFontFamily eFamily = Vista2DText::SANS;
+      std::string  sViewport = oSubs.GetValueOrDefault<std::string>("viewport", "");
+      Vista2DText* pText     = m_pDm->New2DText(sViewport);
+      if (pText) {
+        pText->Init(sIniText, nX, nY, int(255 * nR), int(255 * nG), int(255 * nB), nSize, eFamily);
 
-			std::string strFont;
-			if( oSubs.GetValue( "font", strFont ) )
-			{
-				if( strFont.compare("TYPEWRITER") == 0 )
-					eFamily = Vista2DText::TYPEWRITER;
-				else if( strFont.compare("SERIF") == 0 )
-					eFamily = Vista2DText::SERIF;
-			}
+        VistaDfnTextOverlayNode<T>* pSink = new VistaDfnTextOverlayNode<T>(pText);
 
-			std::string sViewport =	oSubs.GetValueOrDefault<std::string>( "viewport", "" );
-			Vista2DText *pText = m_pDm->New2DText( sViewport );
-			if(pText)
-			{
-				pText->Init( sIniText, nX, nY,
-							int( 255 * nR ), int( 255 * nG ), int( 255 * nB ),
-							nSize, eFamily );
+        std::string sPostfix = oSubs.GetValueOrDefault<std::string>("postfix", "");
+        std::string sPrefix  = oSubs.GetValueOrDefault<std::string>("prefix", "");
 
-				VistaDfnTextOverlayNode<T> *pSink
-					= new VistaDfnTextOverlayNode<T>( pText );
+        pSink->SetPostfix(sPostfix);
+        pSink->SetPrefix(sPrefix);
 
-				std::string sPostfix = oSubs.GetValueOrDefault<std::string>( "postfix", "" );
-				std::string sPrefix = oSubs.GetValueOrDefault<std::string>( "prefix", "" );
+        return pSink;
+      }
+    } catch (VistaExceptionBase& x) { x.PrintException(); }
 
-				pSink->SetPostfix(sPostfix);
-				pSink->SetPrefix(sPrefix);
+    return NULL;
+  }
 
-				return pSink;
-			}
-		}
-		catch(VistaExceptionBase &x)
-		{
-			x.PrintException();
-		}
-
-		return NULL;
-	}
-private:
-	VistaDisplayManager *m_pDm;
+ private:
+  VistaDisplayManager* m_pDm;
 };
 
-class VISTAKERNELAPI VistaDfnSystemTriggerControlNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnSystemTriggerControlNodeCreate( VistaKeyboardSystemControl *pCtrl );
+class VISTAKERNELAPI VistaDfnSystemTriggerControlNodeCreate
+    : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnSystemTriggerControlNodeCreate(VistaKeyboardSystemControl* pCtrl);
 
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-private:
-	VistaKeyboardSystemControl *m_pCtrl;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaKeyboardSystemControl* m_pCtrl;
 };
 
 class VISTAKERNELAPI VistaDfnReferenceFrameTransformNodeCreate
-								: public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnReferenceFrameTransformNodeCreate( VistaDisplayManager* pDisplayManager );
+    : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnReferenceFrameTransformNodeCreate(VistaDisplayManager* pDisplayManager);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-private:
-	VistaDisplayManager* m_pDisplayManager;
+ private:
+  VistaDisplayManager* m_pDisplayManager;
 };
 
+class VISTAKERNELAPI VistaDfnProjectionSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnProjectionSourceNodeCreate(VistaDisplayManager* pMgr);
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-class VISTAKERNELAPI VistaDfnProjectionSourceNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnProjectionSourceNodeCreate( VistaDisplayManager *pMgr );
-	virtual IVdfnNode *CreateNode( const VistaPropertyList &oParams ) const;
-
-private:
-	VistaDisplayManager *m_pMgr;
+ private:
+  VistaDisplayManager* m_pMgr;
 };
 
-class VistaDfnFrameclockNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	class TimerNodeFrameclockGet;
+class VistaDfnFrameclockNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  class TimerNodeFrameclockGet;
 
-	VistaDfnFrameclockNodeCreate( VistaClusterMode* pClusterAux );
+  VistaDfnFrameclockNodeCreate(VistaClusterMode* pClusterAux);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaClusterMode* m_pClusterAux;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaClusterMode* m_pClusterAux;
 };
 
-class VistaDfnCropViewportNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnCropViewportNodeCreate( VistaDisplayManager* pDisplayManager );
+class VistaDfnCropViewportNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnCropViewportNodeCreate(VistaDisplayManager* pDisplayManager);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaDisplayManager* m_pDisplayManager;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaDisplayManager* m_pDisplayManager;
 };
 
-class VistaDfnKeyCallbackNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnKeyCallbackNodeCreate( VistaKeyboardSystemControl* pKeyboard );
+class VistaDfnKeyCallbackNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnKeyCallbackNodeCreate(VistaKeyboardSystemControl* pKeyboard);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaKeyboardSystemControl* m_pKeyboard;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaKeyboardSystemControl* m_pKeyboard;
 };
 
-class VistaDfnKeyStateNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnKeyStateNodeCreate( VistaKeyboardSystemControl* pKeyboard );
+class VistaDfnKeyStateNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnKeyStateNodeCreate(VistaKeyboardSystemControl* pKeyboard);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
 
-private:
-	VistaKeyboardSystemControl* m_pKeyboard;
+ private:
+  VistaKeyboardSystemControl* m_pKeyboard;
 };
 
-class VistaDfnProximityWarningNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnProximityWarningNodeCreate( VistaSystem* pVistaSystem );
+class VistaDfnProximityWarningNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnProximityWarningNodeCreate(VistaSystem* pVistaSystem);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaSystem* m_pVistaSystem;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaSystem* m_pVistaSystem;
 };
 
-class VistaDfnFadeoutNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnFadeoutNodeCreate( VistaClusterMode* pClusterMode,
-										VistaDisplayManager* pDisplayManager );
+class VistaDfnFadeoutNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnFadeoutNodeCreate(VistaClusterMode* pClusterMode, VistaDisplayManager* pDisplayManager);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaClusterMode* m_pClusterMode;
-	VistaDisplayManager* m_pDisplayManager;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaClusterMode*    m_pClusterMode;
+  VistaDisplayManager* m_pDisplayManager;
 };
 
-class VistaDfnSimpleTextNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnSimpleTextNodeCreate( VistaDisplayManager* pDisplayManager );
+class VistaDfnSimpleTextNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnSimpleTextNodeCreate(VistaDisplayManager* pDisplayManager);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaDisplayManager* m_pDisplayManager;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaDisplayManager* m_pDisplayManager;
 };
 
-class VistaDfnGeometryNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnGeometryNodeCreate( VistaSceneGraph* pSceneGraph );
+class VistaDfnGeometryNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnGeometryNodeCreate(VistaSceneGraph* pSceneGraph);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaSceneGraph* m_pSceneGraph;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaSceneGraph* m_pSceneGraph;
 };
 
-class VistaDfnPointingRayGeometryNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator
-{
-public:
-	VistaDfnPointingRayGeometryNodeCreate( VistaSceneGraph* pSceneGraph );
+class VistaDfnPointingRayGeometryNodeCreate : public VdfnNodeFactory::IVdfnNodeCreator {
+ public:
+  VistaDfnPointingRayGeometryNodeCreate(VistaSceneGraph* pSceneGraph);
 
-	virtual IVdfnNode* CreateNode( const VistaPropertyList &oParams ) const;
-	
-private:
-	VistaSceneGraph* m_pSceneGraph;
+  virtual IVdfnNode* CreateNode(const VistaPropertyList& oParams) const;
+
+ private:
+  VistaSceneGraph* m_pSceneGraph;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

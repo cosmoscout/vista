@@ -21,13 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
 
 // project includes
 
 #include "VistaProcessEventImp.h"
-
 
 #if !defined(NULL)
 #define NULL 0
@@ -39,7 +37,6 @@
 #include "VistaPosixProcessEventImp.h"
 #endif
 
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -47,65 +44,56 @@
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
-IVistaProcessEventImp::IVistaProcessEventImp( const std::string& sEventName )
-: m_sEventName( sEventName )
-, m_bIsSignaller( true )
-{
+IVistaProcessEventImp::IVistaProcessEventImp(const std::string& sEventName)
+    : m_sEventName(sEventName)
+    , m_bIsSignaller(true) {
 }
 
-IVistaProcessEventImp::IVistaProcessEventImp( const std::string& sEventName,
-											  const int nMaxWaitForSignaller )
-: m_sEventName( sEventName )
-, m_bIsSignaller( false )
-{
+IVistaProcessEventImp::IVistaProcessEventImp(
+    const std::string& sEventName, const int nMaxWaitForSignaller)
+    : m_sEventName(sEventName)
+    , m_bIsSignaller(false) {
 }
 
-IVistaProcessEventImp::~IVistaProcessEventImp()
-{
+IVistaProcessEventImp::~IVistaProcessEventImp() {
 }
 
-
-std::string IVistaProcessEventImp::GetEventName() const
-{
-	return m_sEventName;
+std::string IVistaProcessEventImp::GetEventName() const {
+  return m_sEventName;
 }
 
-bool IVistaProcessEventImp::GetIsSignaller() const
-{
-	return m_bIsSignaller;
+bool IVistaProcessEventImp::GetIsSignaller() const {
+  return m_bIsSignaller;
 }
 
-IVistaProcessEventImp *IVistaProcessEventImp::CreateProcessEventSignallerImp( 
-														const std::string& sEventName )
-{
+IVistaProcessEventImp* IVistaProcessEventImp::CreateProcessEventSignallerImp(
+    const std::string& sEventName) {
 #if defined(VISTA_THREADING_WIN32)
-	return new VistaWin32ProcessEventImp( sEventName );
-	
+  return new VistaWin32ProcessEventImp(sEventName);
+
 #elif defined(VISTA_THREADING_POSIX)
-	return new VistaPosixProcessEventImp( sEventName );
+  return new VistaPosixProcessEventImp(sEventName);
 #elif defined(VISTA_THREADING_SPROC)
-	return new VistaPosixProcessEventImp( sEventName );
+  return new VistaPosixProcessEventImp(sEventName);
 #else
-	printf("WARNING: NO PROCESS-EVENT-IMP!\n");
-	return NULL;
+  printf("WARNING: NO PROCESS-EVENT-IMP!\n");
+  return NULL;
 #endif
 }
 
-IVistaProcessEventImp *IVistaProcessEventImp::CreateProcessEventReceiverImp( 
-						const std::string& sEventName, const int nMaxWaitForSignaller )
-{
+IVistaProcessEventImp* IVistaProcessEventImp::CreateProcessEventReceiverImp(
+    const std::string& sEventName, const int nMaxWaitForSignaller) {
 #if defined(VISTA_THREADING_WIN32)
-	return new VistaWin32ProcessEventImp( sEventName, nMaxWaitForSignaller );
-	
+  return new VistaWin32ProcessEventImp(sEventName, nMaxWaitForSignaller);
+
 #elif defined(VISTA_THREADING_POSIX)
-	return new VistaPosixProcessEventImp( sEventName, nMaxWaitForSignaller );
+  return new VistaPosixProcessEventImp(sEventName, nMaxWaitForSignaller);
 #elif defined(VISTA_THREADING_SPROC)
-	return new VistaPosixProcessEventImp( sEventName, nMaxWaitForSignaller );
+  return new VistaPosixProcessEventImp(sEventName, nMaxWaitForSignaller);
 #else
-	printf("WARNING: NO PROCESS-EVENT-IMP!\n");
-	return NULL;
+  printf("WARNING: NO PROCESS-EVENT-IMP!\n");
+  return NULL;
 #endif
 }
-
 
 // ============================================================================

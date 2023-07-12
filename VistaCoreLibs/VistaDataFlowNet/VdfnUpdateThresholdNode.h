@@ -21,11 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNUPDATETHRESHOLDNODE_H
 #define _VDFNUPDATETHRESHOLDNODE_H
-
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -49,24 +46,22 @@
  *
  * @ingroup VdfnNodes
  */
-class VISTADFNAPI VdfnUpdateThresholdNode : public IVdfnNode
-{
-public:
-	VdfnUpdateThresholdNode( double dThreshold );
-	virtual ~VdfnUpdateThresholdNode();
+class VISTADFNAPI VdfnUpdateThresholdNode : public IVdfnNode {
+ public:
+  VdfnUpdateThresholdNode(double dThreshold);
+  virtual ~VdfnUpdateThresholdNode();
 
-	bool PrepareEvaluationRun();
+  bool PrepareEvaluationRun();
 
-protected:
-	virtual bool DoEvalNode();
+ protected:
+  virtual bool DoEvalNode();
 
-private:
+ private:
+  double m_dSum;
+  double m_dThreshold;
 
-	double m_dSum;
-	double m_dThreshold;
-
-	TVdfnPort<double> *m_pIn;
-	TVdfnPort<double> *m_pOut;
+  TVdfnPort<double>* m_pIn;
+  TVdfnPort<double>* m_pOut;
 };
 
 /*============================================================================*/

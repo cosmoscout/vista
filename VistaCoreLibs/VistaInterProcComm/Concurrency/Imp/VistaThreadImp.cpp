@@ -21,14 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaThreadImp.h"
 
-#include <VistaInterProcComm/Concurrency/VistaThread.h>
 #include <VistaInterProcComm/Concurrency/VistaIpcThreadModel.h>
+#include <VistaInterProcComm/Concurrency/VistaThread.h>
 
 #include <VistaBase/VistaStreamUtils.h>
-
 
 #if defined(VISTA_THREADING_WIN32)
 #include "VistaWin32ThreadImp.h"
@@ -45,162 +43,131 @@
 /*============================================================================*/
 
 // initialize with NULL
-IVistaThreadImp::IVistaThreadImpFactory *
-				 IVistaThreadImp::m_pSImpFactory = NULL;
+IVistaThreadImp::IVistaThreadImpFactory* IVistaThreadImp::m_pSImpFactory = NULL;
 
-IVistaThreadImp::IVistaThreadImpFactory::IVistaThreadImpFactory()
-{
+IVistaThreadImp::IVistaThreadImpFactory::IVistaThreadImpFactory() {
 }
 
-IVistaThreadImp::IVistaThreadImpFactory::~IVistaThreadImpFactory()
-{
+IVistaThreadImp::IVistaThreadImpFactory::~IVistaThreadImpFactory() {
 }
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-IVistaThreadImp::IVistaThreadImp()
-{
+IVistaThreadImp::IVistaThreadImp() {
 }
 
-IVistaThreadImp::~IVistaThreadImp()
-{
+IVistaThreadImp::~IVistaThreadImp() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-IVistaThreadImp *IVistaThreadImp::CreateThreadImp(const VistaThread &thread)
-{
-	if(m_pSImpFactory)
-	{
-		return m_pSImpFactory->CreateThread(thread);
-	}
-	else
-	{
-	// factory method
-	#if defined(VISTA_THREADING_WIN32)
-		return new VistaWin32ThreadImp(thread);
-	#elif defined(VISTA_THREADING_POSIX)
-		return new VistaPthreadThreadImp(thread);
-	#else
-		return NULL;
-	#endif
-	}
+IVistaThreadImp* IVistaThreadImp::CreateThreadImp(const VistaThread& thread) {
+  if (m_pSImpFactory) {
+    return m_pSImpFactory->CreateThread(thread);
+  } else {
+// factory method
+#if defined(VISTA_THREADING_WIN32)
+    return new VistaWin32ThreadImp(thread);
+#elif defined(VISTA_THREADING_POSIX)
+    return new VistaPthreadThreadImp(thread);
+#else
+    return NULL;
+#endif
+  }
 }
 
-void IVistaThreadImp::RegisterThreadImpFactory(IVistaThreadImpFactory *pFactory)
-{
-	if(m_pSImpFactory)
-		vstr::errp() << "IVistaThreadImp::RegisterThreadImpFactory() -- "
-				<< "Factory already registered - overwriting previous one" << std::endl;
+void IVistaThreadImp::RegisterThreadImpFactory(IVistaThreadImpFactory* pFactory) {
+  if (m_pSImpFactory)
+    vstr::errp() << "IVistaThreadImp::RegisterThreadImpFactory() -- "
+                 << "Factory already registered - overwriting previous one" << std::endl;
 
-	m_pSImpFactory = pFactory;
+  m_pSImpFactory = pFactory;
 }
 
-IVistaThreadImp::IVistaThreadImpFactory *IVistaThreadImp::GetThreadImpFactory()
-{
-	return m_pSImpFactory;
+IVistaThreadImp::IVistaThreadImpFactory* IVistaThreadImp::GetThreadImpFactory() {
+  return m_pSImpFactory;
 }
 
-bool IVistaThreadImp::Equals(const IVistaThreadImp &oImp) const
-{
-	return false; /** @todo define me in subclasses */
+bool IVistaThreadImp::Equals(const IVistaThreadImp& oImp) const {
+  return false; /** @todo define me in subclasses */
 }
 
-bool IVistaThreadImp::SetProcessorAffinity(int iProcessorNum)
-{
-	return false; /** @todo define me in subclasses */
+bool IVistaThreadImp::SetProcessorAffinity(int iProcessorNum) {
+  return false; /** @todo define me in subclasses */
 }
 
-int  IVistaThreadImp::GetCpu() const
-{
-	return -1; // define me in subclass
+int IVistaThreadImp::GetCpu() const {
+  return -1; // define me in subclass
 }
 
-bool IVistaThreadImp::SetThreadName(const std::string &sName)
-{
-	DoSetThreadName(sName);
-	return true;
+bool IVistaThreadImp::SetThreadName(const std::string& sName) {
+  DoSetThreadName(sName);
+  return true;
 }
 
-std::string IVistaThreadImp::GetThreadName() const
-{
-	return m_sThreadName;
+std::string IVistaThreadImp::GetThreadName() const {
+  return m_sThreadName;
 }
 
-void IVistaThreadImp::DoSetThreadName(const std::string &sName)
-{
-	m_sThreadName = sName;
+void IVistaThreadImp::DoSetThreadName(const std::string& sName) {
+  m_sThreadName = sName;
 }
 
-long IVistaThreadImp::GetCallingThreadIdentity( bool bBypassFactory )
-{
-	if( m_pSImpFactory && !bBypassFactory )
-	{
-		return m_pSImpFactory->GetCallingThreadIdentity();
-	}
-	else
-	{
-	// factory method
-	#if defined(VISTA_THREADING_WIN32)
-		return VistaWin32ThreadImp::GetCallingThreadIdentity();
-	#elif defined(VISTA_THREADING_POSIX)
-		return VistaPthreadThreadImp::GetCallingThreadIdentity();
-	#else
-		VISTA_THROW_NOT_IMPLEMENTED;
-	#endif
-	}
+long IVistaThreadImp::GetCallingThreadIdentity(bool bBypassFactory) {
+  if (m_pSImpFactory && !bBypassFactory) {
+    return m_pSImpFactory->GetCallingThreadIdentity();
+  } else {
+// factory method
+#if defined(VISTA_THREADING_WIN32)
+    return VistaWin32ThreadImp::GetCallingThreadIdentity();
+#elif defined(VISTA_THREADING_POSIX)
+    return VistaPthreadThreadImp::GetCallingThreadIdentity();
+#else
+    VISTA_THROW_NOT_IMPLEMENTED;
+#endif
+  }
 }
 
-void IVistaThreadImp::DeleteThreadImpFactory()
-{
-	delete m_pSImpFactory;
-	m_pSImpFactory = NULL;
+void IVistaThreadImp::DeleteThreadImpFactory() {
+  delete m_pSImpFactory;
+  m_pSImpFactory = NULL;
 }
 
-bool IVistaThreadImp::SetCallingThreadPriority( const VistaPriority& oPrio, bool bBypassFactory /*= false */ )
-{
-	if( m_pSImpFactory && !bBypassFactory )
-	{
-		return m_pSImpFactory->SetCallingThreadPriority( oPrio );
-	}
-	else
-	{
-	// factory method
-	#if defined(VISTA_THREADING_WIN32)
-		return VistaWin32ThreadImp::SetCallingThreadPriority( oPrio );
-	#elif defined(VISTA_THREADING_POSIX)
-		return VistaPthreadThreadImp::SetCallingThreadPriority( oPrio );
-	#else
-		VISTA_THROW_NOT_IMPLEMENTED;
-	#endif
-	}
+bool IVistaThreadImp::SetCallingThreadPriority(
+    const VistaPriority& oPrio, bool bBypassFactory /*= false */) {
+  if (m_pSImpFactory && !bBypassFactory) {
+    return m_pSImpFactory->SetCallingThreadPriority(oPrio);
+  } else {
+// factory method
+#if defined(VISTA_THREADING_WIN32)
+    return VistaWin32ThreadImp::SetCallingThreadPriority(oPrio);
+#elif defined(VISTA_THREADING_POSIX)
+    return VistaPthreadThreadImp::SetCallingThreadPriority(oPrio);
+#else
+    VISTA_THROW_NOT_IMPLEMENTED;
+#endif
+  }
 }
 
-bool IVistaThreadImp::GetCallingThreadPriority( VistaPriority& oPrio, bool bBypassFactory /*= false */ )
-{
-	if( m_pSImpFactory && !bBypassFactory )
-	{
-		return m_pSImpFactory->GetCallingThreadPriority( oPrio );
-	}
-	else
-	{
-	// factory method
-	#if defined(VISTA_THREADING_WIN32)
-		return VistaWin32ThreadImp::GetCallingThreadPriority( oPrio );
-	#elif defined(VISTA_THREADING_POSIX)
-		return VistaPthreadThreadImp::GetCallingThreadPriority( oPrio );
-	#else
-		VISTA_THROW_NOT_IMPLEMENTED;
-	#endif
-	}
+bool IVistaThreadImp::GetCallingThreadPriority(
+    VistaPriority& oPrio, bool bBypassFactory /*= false */) {
+  if (m_pSImpFactory && !bBypassFactory) {
+    return m_pSImpFactory->GetCallingThreadPriority(oPrio);
+  } else {
+// factory method
+#if defined(VISTA_THREADING_WIN32)
+    return VistaWin32ThreadImp::GetCallingThreadPriority(oPrio);
+#elif defined(VISTA_THREADING_POSIX)
+    return VistaPthreadThreadImp::GetCallingThreadPriority(oPrio);
+#else
+    VISTA_THROW_NOT_IMPLEMENTED;
+#endif
+  }
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

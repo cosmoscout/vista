@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaKernel/GraphicsManager/VistaExtensionNode.h"
 #include "VistaKernel/GraphicsManager/VistaNodeBridge.h"
 #include <VistaAspects/VistaExplicitCallbackInterface.h>
@@ -33,66 +32,54 @@
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
-VistaExtensionNode::VistaExtensionNode()
-{
-	m_nType = VISTA_EXTENSIONNODE;
-	m_pExtension = NULL;
+VistaExtensionNode::VistaExtensionNode() {
+  m_nType      = VISTA_EXTENSIONNODE;
+  m_pExtension = NULL;
 }
 
-VistaExtensionNode::VistaExtensionNode(	VistaGroupNode*				pParent, 
-											IVistaExplicitCallbackInterface*	pExtension, 
-											IVistaNodeBridge*				pBridge,
-											IVistaNodeData*					pData,
-											const std::string &name)
-					:	VistaLeafNode(pParent, pBridge, pData, name),
-					m_pExtension(pExtension)
-{
-	m_nType = VISTA_EXTENSIONNODE;
-	m_bValid = false;
+VistaExtensionNode::VistaExtensionNode(VistaGroupNode* pParent,
+    IVistaExplicitCallbackInterface* pExtension, IVistaNodeBridge* pBridge, IVistaNodeData* pData,
+    const std::string& name)
+    : VistaLeafNode(pParent, pBridge, pData, name)
+    , m_pExtension(pExtension) {
+  m_nType  = VISTA_EXTENSIONNODE;
+  m_bValid = false;
 }
 
-
-VistaExtensionNode::~VistaExtensionNode()
-{
-	m_pExtension = NULL;
+VistaExtensionNode::~VistaExtensionNode() {
+  m_pExtension = NULL;
 }
 
 // ============================================================================
 // ============================================================================
 
-bool VistaExtensionNode::Update()
-{
-	if(m_bValid && m_pExtension)
-		return m_pExtension->Do();
-	return false;
+bool VistaExtensionNode::Update() {
+  if (m_bValid && m_pExtension)
+    return m_pExtension->Do();
+  return false;
 }
 
 // ============================================================================
 // ============================================================================
-bool VistaExtensionNode::CanHaveChildren() const
-{
-	return false;
+bool VistaExtensionNode::CanHaveChildren() const {
+  return false;
 }
 
-bool VistaExtensionNode::Init()
-{
-	//init only once 
-	if(!m_bValid)
-		m_bValid = m_pBridge->InitExtensionNode(this, m_pData);
-	return m_bValid;
+bool VistaExtensionNode::Init() {
+  // init only once
+  if (!m_bValid)
+    m_bValid = m_pBridge->InitExtensionNode(this, m_pData);
+  return m_bValid;
 }
 
-IVistaExplicitCallbackInterface *VistaExtensionNode::GetExtension() const
-{
-	return m_pExtension;
+IVistaExplicitCallbackInterface* VistaExtensionNode::GetExtension() const {
+  return m_pExtension;
 }
 
-bool VistaExtensionNode::SetExtension(IVistaExplicitCallbackInterface *pExt)
-{
-	m_pExtension = pExt;
-	return true;
+bool VistaExtensionNode::SetExtension(IVistaExplicitCallbackInterface* pExt) {
+  m_pExtension = pExt;
+  return true;
 }
 
 // ============================================================================
 // ============================================================================
-

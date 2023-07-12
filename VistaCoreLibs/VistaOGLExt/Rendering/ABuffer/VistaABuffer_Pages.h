@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef VISTA_A_BUFFER_PAGES_H
 #define VISTA_A_BUFFER_PAGES_H
 /*============================================================================*/
@@ -33,54 +32,53 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 /**
- * This implementation of the A-Buffer is a mix between the implementation 
+ * This implementation of the A-Buffer is a mix between the implementation
  * with arrays and the implementation with linked lists.
- * There for each pixel a list of pages is stored. Each page contains an array 
+ * There for each pixel a list of pages is stored. Each page contains an array
  * of fragments.
  */
-class VISTAOGLEXTAPI VistaABufferPages : public IVistaABuffer
-{
-public: 
-	/**************************************************************************/
-	/* CONSTRUCTORS / DESTRUCTOR                                              */
-	/**************************************************************************/
-	VistaABufferPages( unsigned int nPageSize );
-	virtual ~VistaABufferPages();
+class VISTAOGLEXTAPI VistaABufferPages : public IVistaABuffer {
+ public:
+  /**************************************************************************/
+  /* CONSTRUCTORS / DESTRUCTOR                                              */
+  /**************************************************************************/
+  VistaABufferPages(unsigned int nPageSize);
+  virtual ~VistaABufferPages();
 
-	/**************************************************************************/
-	/* PUBLIC INTERFACE                                                       */
-	/**************************************************************************/
-	virtual bool ClearABuffer();
+  /**************************************************************************/
+  /* PUBLIC INTERFACE                                                       */
+  /**************************************************************************/
+  virtual bool ClearABuffer();
 
-	virtual bool SetABufferSize( unsigned int uiWidth, unsigned int uiHeight );
-	virtual bool SetFragmenstPerPixel( unsigned int uiFragmenstPerPixel );
+  virtual bool SetABufferSize(unsigned int uiWidth, unsigned int uiHeight);
+  virtual bool SetFragmenstPerPixel(unsigned int uiFragmenstPerPixel);
 
-	virtual VistaGLSLShader* CreateShaderPrototype() const;
+  virtual VistaGLSLShader* CreateShaderPrototype() const;
 
-protected:
-	virtual bool InitShader();
-	virtual bool InitBuffer();
-	virtual void ResizePerPixelBuffer();
+ protected:
+  virtual bool InitShader();
+  virtual bool InitBuffer();
+  virtual void ResizePerPixelBuffer();
 
-	virtual void AssignUniforms( VistaGLSLShader* pShader );
+  virtual void AssignUniforms(VistaGLSLShader* pShader);
 
-	void CreateAtomicCounter();
-	void ResetAtomicCounter();
+  void CreateAtomicCounter();
+  void ResetAtomicCounter();
 
-private:
-	GLuint			m_uiPagePointerBuffer;
-	GLuint			m_uiNextPointerBuffer;
-	GLuint			m_uiSemaphoreBuffer;
-	GLuint			m_uiFragCountBuffer;
-	GLuint64EXT		m_addrPagePointerBuffer;
-	GLuint64EXT		m_addrNextPointerBuffer;
-	GLuint64EXT		m_addrSemaphoreBuffer;
-	GLuint64EXT		m_addrFragCountBuffer;
+ private:
+  GLuint      m_uiPagePointerBuffer;
+  GLuint      m_uiNextPointerBuffer;
+  GLuint      m_uiSemaphoreBuffer;
+  GLuint      m_uiFragCountBuffer;
+  GLuint64EXT m_addrPagePointerBuffer;
+  GLuint64EXT m_addrNextPointerBuffer;
+  GLuint64EXT m_addrSemaphoreBuffer;
+  GLuint64EXT m_addrFragCountBuffer;
 
-	GLuint			m_uiAtomicPageCounter;
+  GLuint m_uiAtomicPageCounter;
 
-	unsigned int	m_nPageSize;
-	unsigned int	m_nNumPages;
+  unsigned int m_nPageSize;
+  unsigned int m_nNumPages;
 };
 #endif // Include guard.
 /*============================================================================*/

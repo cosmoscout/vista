@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTABYTEBUFFERDESERIALIZER_H
 #define _VISTABYTEBUFFERDESERIALIZER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaAspects/VistaDeSerializer.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <deque>
 #include <string>
@@ -48,88 +47,87 @@ class VistaConnectionIP;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAINTERPROCCOMMAPI VistaByteBufferDeSerializer : public IVistaDeSerializer
-{
-public:
-	VistaByteBufferDeSerializer();
-	virtual ~VistaByteBufferDeSerializer();
+class VISTAINTERPROCCOMMAPI VistaByteBufferDeSerializer : public IVistaDeSerializer {
+ public:
+  VistaByteBufferDeSerializer();
+  virtual ~VistaByteBufferDeSerializer();
 
-	/**
-	 * Returns whether this connctions cares for byte-order of the sent-data or not.
-	 * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
-	 * and even more.
-	 * @return true iff this connection cares for the byte-order of the sent or received data
-	 * @see SetByteorderSwapFlag()
-	 */
-	VistaSerializingToolset::ByteOrderSwapBehavior GetByteorderSwapFlag() const;
+  /**
+   * Returns whether this connctions cares for byte-order of the sent-data or not.
+   * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
+   * and even more.
+   * @return true iff this connection cares for the byte-order of the sent or received data
+   * @see SetByteorderSwapFlag()
+   */
+  VistaSerializingToolset::ByteOrderSwapBehavior GetByteorderSwapFlag() const;
 
-	/**
-	 * Sets whether this connection cares for byte-order or not.
-	 * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
-	 * and even more.
-	 * @see GetByteorderSwapFlag()
-	 * @param bDoesIt true iff byte-order is significant for this class, false else
-	 */
-	void SetByteorderSwapFlag( VistaSerializingToolset::ByteOrderSwapBehavior bDoesIt );
+  /**
+   * Sets whether this connection cares for byte-order or not.
+   * Note that enabling this feature might have impact on the runtime-behaviour, efficiency
+   * and even more.
+   * @see GetByteorderSwapFlag()
+   * @param bDoesIt true iff byte-order is significant for this class, false else
+   */
+  void SetByteorderSwapFlag(VistaSerializingToolset::ByteOrderSwapBehavior bDoesIt);
 
-	virtual int ReadShort16( VistaType::ushort16 &us16Val);
+  virtual int ReadShort16(VistaType::ushort16& us16Val);
 
-	virtual int ReadInt32( VistaType::sint32 &si32Val);
-	virtual int ReadInt32( VistaType::uint32 &si32Val);
+  virtual int ReadInt32(VistaType::sint32& si32Val);
+  virtual int ReadInt32(VistaType::uint32& si32Val);
 
-	virtual int ReadInt64( VistaType::sint64 &si64Val);
-	virtual int ReadUInt64( VistaType::uint64 &ui64Val);
+  virtual int ReadInt64(VistaType::sint64& si64Val);
+  virtual int ReadUInt64(VistaType::uint64& ui64Val);
 
-	virtual int ReadFloat32( VistaType::float32 &fVal);
-	virtual int ReadFloat64( VistaType::float64 &f64Val);
+  virtual int ReadFloat32(VistaType::float32& fVal);
+  virtual int ReadFloat64(VistaType::float64& f64Val);
 
-	virtual int ReadDouble( double &dDoubleVal);
+  virtual int ReadDouble(double& dDoubleVal);
 
-	virtual int ReadRawBuffer(void *pBuffer, int iLen);
+  virtual int ReadRawBuffer(void* pBuffer, int iLen);
 
-	virtual int ReadBool(bool &bVal) ;
+  virtual int ReadBool(bool& bVal);
 
-	virtual int ReadString(std::string &sIn, const int iMaxLen) ;
-	virtual int ReadDelimitedString(std::string &, char cDelim = '\0');
-	virtual int ReadEncodedString(std::string &);
+  virtual int ReadString(std::string& sIn, const int iMaxLen);
+  virtual int ReadDelimitedString(std::string&, char cDelim = '\0');
+  virtual int ReadEncodedString(std::string&);
 
-	virtual int ReadSerializable(IVistaSerializable &obj) ;
+  virtual int ReadSerializable(IVistaSerializable& obj);
 
+  /**
+   *  FillBuffer() _copies_ iLength bytes of the VistaType::byte vector given in pcBuff to its
+   * internal buffer. Any external associated buffer will be deleted (if stated by the user upon
+   *  assigning the external buffer with SetBuffer()).
+   */
+  bool FillBuffer(const VistaType::byte* pBuff, int iLength);
 
-	/**
-	 *  FillBuffer() _copies_ iLength bytes of the VistaType::byte vector given in pcBuff to its internal
-	 *  buffer. Any external associated buffer will be deleted (if stated by the user upon
-	 *  assigning the external buffer with SetBuffer()).
-	 */
-	bool FillBuffer( const VistaType::byte* pBuff, int iLength );
+  /**
+   * Set the buffer to a given memory location. This will save the costly copy operation
+   * at the expense of reduced "safety". The bDeleteAfterUse-Flag indicates
+   * wheter ownership of the given memory area is passed to the deserializer
+   * i.e. iff the deserializer will delete the given memory when the buffer is no longer
+   * needed.
+   */
+  bool SetBuffer(const VistaType::byte* pBuff, int iLength, bool bDeleteAfterUse = false);
+  const VistaType::byte* GetBuffer() const;
+  const VistaType::byte* GetReadHead() const;
 
-	/**
-	* Set the buffer to a given memory location. This will save the costly copy operation
-	* at the expense of reduced "safety". The bDeleteAfterUse-Flag indicates
-	* wheter ownership of the given memory area is passed to the deserializer
-	* i.e. iff the deserializer will delete the given memory when the buffer is no longer
-	* needed.
-	*/
-	bool SetBuffer( const VistaType::byte* pBuff, int iLength, bool bDeleteAfterUse = false );
-	const VistaType::byte* GetBuffer() const;
-	const VistaType::byte* GetReadHead() const;
+  void ClearBuffer();
 
-	void ClearBuffer();
+  unsigned int GetTailSize() const;
 
-	unsigned int GetTailSize() const;
+ private:
+  bool DoRead(VistaType::byte* pBuf, int iSize, bool bSwap = true);
 
-private:
-	bool DoRead( VistaType::byte* pBuf, int iSize, bool bSwap = true );
-private:
-	VistaSerializingToolset::ByteOrderSwapBehavior m_bDoSwap;
+ private:
+  VistaSerializingToolset::ByteOrderSwapBehavior m_bDoSwap;
 
-	//members for externally set buffer space...
-	const VistaType::byte* m_pExternalBuffer;
-	int m_iExternalSize;
-	int m_iCurrentBufferPos;
-	bool m_bDeleteAfterUsage;
+  // members for externally set buffer space...
+  const VistaType::byte* m_pExternalBuffer;
+  int                    m_iExternalSize;
+  int                    m_iCurrentBufferPos;
+  bool                   m_bDeleteAfterUsage;
 
-	std::deque<VistaType::byte> m_vecBuffer;
+  std::deque<VistaType::byte> m_vecBuffer;
 };
 
 /*============================================================================*/
@@ -137,4 +135,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTABYTEBUFFERDESERIALIZER_H
-

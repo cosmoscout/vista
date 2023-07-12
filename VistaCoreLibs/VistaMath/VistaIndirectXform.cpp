@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaIndirectXform.h"
 
 /*============================================================================*/
@@ -34,20 +33,15 @@ using namespace std;
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
-VistaIndirectXform::VistaIndirectXform(int iMode /*= XFORM_MODE_ATTACH */ )
-{
-	if (iMode == XFORM_MODE_MIRROR)
-	{
-		m_enMode = XFORM_MODE_MIRROR;
-	}
-	else
-	{
-		m_enMode = XFORM_MODE_ATTACH;
-	}
+VistaIndirectXform::VistaIndirectXform(int iMode /*= XFORM_MODE_ATTACH */) {
+  if (iMode == XFORM_MODE_MIRROR) {
+    m_enMode = XFORM_MODE_MIRROR;
+  } else {
+    m_enMode = XFORM_MODE_ATTACH;
+  }
 }
 
-VistaIndirectXform::~VistaIndirectXform()
-{
+VistaIndirectXform::~VistaIndirectXform() {
 }
 
 /*============================================================================*/
@@ -59,17 +53,15 @@ VistaIndirectXform::~VistaIndirectXform()
 /*  NAME      :   Init                                                        */
 /*                                                                            */
 /*============================================================================*/
-bool VistaIndirectXform::Init(const VistaVector3D &vParentPosIn,
-							   const VistaQuaternion &qParentOrientIn,
-							   const VistaVector3D &vChildPosIn,
-							   const VistaQuaternion &qChildOrientIn)
-{
-	m_vInitParentPos		=	vParentPosIn;
-	m_qInitParentInvOrient	=	qParentOrientIn.GetComplexConjugated();
-	m_vInitChildPos			=	vChildPosIn;
-	m_qInitChildOrient		=	qChildOrientIn;
+bool VistaIndirectXform::Init(const VistaVector3D& vParentPosIn,
+    const VistaQuaternion& qParentOrientIn, const VistaVector3D& vChildPosIn,
+    const VistaQuaternion& qChildOrientIn) {
+  m_vInitParentPos       = vParentPosIn;
+  m_qInitParentInvOrient = qParentOrientIn.GetComplexConjugated();
+  m_vInitChildPos        = vChildPosIn;
+  m_qInitChildOrient     = qChildOrientIn;
 
-	return true;
+  return true;
 }
 
 /*============================================================================*/
@@ -77,28 +69,23 @@ bool VistaIndirectXform::Init(const VistaVector3D &vParentPosIn,
 /*  NAME      :   Update                                                      */
 /*                                                                            */
 /*============================================================================*/
-bool VistaIndirectXform::Update(const VistaVector3D &vParentPosIn,
-								 const VistaQuaternion &qParentOrientIn,
-								 VistaVector3D &vChildPosOut,
-								 VistaQuaternion &qChildOrientOut)
-{
-	// first: compute the new orientation of the child
-	// i.e. modify child's orientation by undoing parent's initial orientation
-	// and applying parent's current rotation
-	VistaQuaternion qParentRotation = qParentOrientIn * m_qInitParentInvOrient;
-	qChildOrientOut = qParentRotation * m_qInitChildOrient;
+bool VistaIndirectXform::Update(const VistaVector3D& vParentPosIn,
+    const VistaQuaternion& qParentOrientIn, VistaVector3D& vChildPosOut,
+    VistaQuaternion& qChildOrientOut) {
+  // first: compute the new orientation of the child
+  // i.e. modify child's orientation by undoing parent's initial orientation
+  // and applying parent's current rotation
+  VistaQuaternion qParentRotation = qParentOrientIn * m_qInitParentInvOrient;
+  qChildOrientOut                 = qParentRotation * m_qInitChildOrient;
 
-	// make this stuff a little more efficient:
-	if (m_enMode == XFORM_MODE_ATTACH)
-	{
-		vChildPosOut = qParentRotation.Rotate(m_vInitChildPos-m_vInitParentPos)+vParentPosIn;
-	}
-	else
-	{
-		vChildPosOut = m_vInitChildPos + vParentPosIn - m_vInitParentPos;
-	}
+  // make this stuff a little more efficient:
+  if (m_enMode == XFORM_MODE_ATTACH) {
+    vChildPosOut = qParentRotation.Rotate(m_vInitChildPos - m_vInitParentPos) + vParentPosIn;
+  } else {
+    vChildPosOut = m_vInitChildPos + vParentPosIn - m_vInitParentPos;
+  }
 
-	return true;
+  return true;
 }
 
 /*============================================================================*/
@@ -106,36 +93,29 @@ bool VistaIndirectXform::Update(const VistaVector3D &vParentPosIn,
 /*  NAME      :   Get/SetMode                                                 */
 /*                                                                            */
 /*============================================================================*/
-VistaIndirectXform::EnXformMode VistaIndirectXform::GetMode() const
-{
-	return m_enMode;
+VistaIndirectXform::EnXformMode VistaIndirectXform::GetMode() const {
+  return m_enMode;
 }
 
-bool VistaIndirectXform::SetMode(int iMode)
-{
-	switch (iMode)
-	{
-	case XFORM_MODE_ATTACH:
-		m_enMode = XFORM_MODE_ATTACH;
-		break;
-	case XFORM_MODE_MIRROR:
-		m_enMode = XFORM_MODE_MIRROR;
-		break;
-	default:
-		return false;
-	}
+bool VistaIndirectXform::SetMode(int iMode) {
+  switch (iMode) {
+  case XFORM_MODE_ATTACH:
+    m_enMode = XFORM_MODE_ATTACH;
+    break;
+  case XFORM_MODE_MIRROR:
+    m_enMode = XFORM_MODE_MIRROR;
+    break;
+  default:
+    return false;
+  }
 
-	return true;
+  return true;
 }
 
-
-VistaVector3D VistaIndirectXform::GetInitialParentPos() const
-{
-	return m_vInitParentPos;
+VistaVector3D VistaIndirectXform::GetInitialParentPos() const {
+  return m_vInitParentPos;
 }
 
-VistaQuaternion VistaIndirectXform::GetInitialParentOri() const
-{
-	return m_qInitParentInvOrient.GetComplexConjugated();
+VistaQuaternion VistaIndirectXform::GetInitialParentOri() const {
+  return m_qInitParentInvOrient.GetComplexConjugated();
 }
-

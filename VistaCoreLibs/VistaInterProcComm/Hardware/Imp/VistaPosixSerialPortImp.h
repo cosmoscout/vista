@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(LINUX) || defined(IRIX) || defined(HPUX) || defined(SUNOS) || defined(DARWIN)
 #ifndef _VISTAPOSIXSERIALPORTIMP_H
 #define _VISTAPOSIXSERIALPORTIMP_H
@@ -31,7 +30,6 @@
 /*============================================================================*/
 
 #include "VistaSerialPortImp.h"
-
 
 #ifdef IRIX
 #include <termio.h>
@@ -57,79 +55,74 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VistaPosixSerialPortImp : public VistaSerialPortImp
-{
-public:
+class VistaPosixSerialPortImp : public VistaSerialPortImp {
+ public:
+  VistaPosixSerialPortImp();
 
-	VistaPosixSerialPortImp();
+  virtual ~VistaPosixSerialPortImp();
 
-	virtual ~VistaPosixSerialPortImp();
+  virtual bool OpenSerialPort();
 
+  virtual bool CloseSerialPort();
 
-	virtual bool          OpenSerialPort() ;
+  virtual int Receive(void* buffer, const int length, int iTimeout = 0);
 
-	virtual bool          CloseSerialPort();
+  virtual int Send(const void* buffer, const int length);
 
-	virtual int           Receive(void *buffer, const int length, int iTimeout = 0) ;
+  virtual bool SetBlockingMode(
+      unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant);
 
-	virtual int           Send(const void *buffer, const int length) ;
+  virtual unsigned long WaitForIncomingData(int timeout = 0);
 
-	virtual bool          SetBlockingMode ( unsigned long inReadInterval, unsigned long inReadMultiplyer, unsigned long inReadConstant );
+  virtual unsigned long PendingDataSize() const;
+  virtual void          SetIsBlocking(bool bBlocking);
 
-	virtual unsigned long WaitForIncomingData(int timeout=0);
+  virtual HANDLE GetDescriptor() const;
 
-	virtual unsigned long PendingDataSize() const;
-	virtual void          SetIsBlocking(bool bBlocking);
+ protected:
+  /**
+   * tries to set the hardware as presented by the internals of this instance. If setting of this
+   * values fails, it is tried to gain the current state of the hardware by a call to
+   * GetHardwareState().
+   * @todo create a copy of the hardware structure and set this on failure
+   * @return false iff the hardware-state could not be set (e.g. when the port is not opened)
+   */
+  bool SetHardwareState();
 
-	virtual HANDLE GetDescriptor() const;
+  /**
+   * Tries to gain the current set state from the hardware in order to create a valid state of this
+   * serialport representation.
+   * @true iff the hardwarestate could be set, false if the serialport is not open, yet
+   */
+  bool GetHardwareState();
 
-protected:
-	/**
-	 * tries to set the hardware as presented by the internals of this instance. If setting of this
-	 * values fails, it is tried to gain the current state of the hardware by a call to GetHardwareState().
-	 * @todo create a copy of the hardware structure and set this on failure
-	 * @return false iff the hardware-state could not be set (e.g. when the port is not opened)
-	 */
-	bool SetHardwareState();
+  /**
+   * Serialport-hardware is special (old stuff, you know...), so delays are useful when talking to
+   * the serial hardware. This method implements a delay in terms of millisecs without binding
+   * this module to the VistaTools-package
+   */
+  void Delay(int iMsecs) const;
 
-	/**
-	 * Tries to gain the current set state from the hardware in order to create a valid state of this
-	 * serialport representation.
-	 * @true iff the hardwarestate could be set, false if the serialport is not open, yet
-	 */
-	bool GetHardwareState();
+ private:
+  /**
+   * stores the filehandle for this implementation, -1 indicates an unallocated filehandle
+   * (state closed)
+   */
+  int m_iFileHandle;
 
-	/**
-	 * Serialport-hardware is special (old stuff, you know...), so delays are useful when talking to
-	 * the serial hardware. This method implements a delay in terms of millisecs without binding
-	 * this module to the VistaTools-package
-	 */
-	void Delay(int iMsecs) const;
+  /**
+   * is used during getting/setting information from/to the hardware
+   */
+  struct termios m_sTermConf;
 
-private:
-
-	/**
-	 * stores the filehandle for this implementation, -1 indicates an unallocated filehandle
-	 * (state closed)
-	 */
-	int             m_iFileHandle;
-
-	/**
-	 * is used during getting/setting information from/to the hardware
-	 */
-	struct termios  m_sTermConf;
-
-	char            m_cVMIN, /**< defaults to 0 */
-					m_cVTIME; /**< defaults to 20 */
+  char m_cVMIN, /**< defaults to 0 */
+      m_cVTIME; /**< defaults to 20 */
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
 #endif //_VISTACONNECTIONSERIALWIN32
 
 #endif // LINUX || IRIX || HPUX || SUNOS
-

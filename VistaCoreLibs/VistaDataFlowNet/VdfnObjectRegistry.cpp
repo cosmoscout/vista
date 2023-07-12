@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnObjectRegistry.h" 
+#include "VdfnObjectRegistry.h"
 #include <VistaAspects/VistaNameable.h>
 
 #include <VistaBase/VistaStreamUtils.h>
@@ -36,107 +35,83 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnObjectRegistry::VdfnObjectRegistry()
-{
+VdfnObjectRegistry::VdfnObjectRegistry() {
 }
 
-VdfnObjectRegistry::~VdfnObjectRegistry()
-{
+VdfnObjectRegistry::~VdfnObjectRegistry() {
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-IVistaTransformable *VdfnObjectRegistry::GetObjectTransform( const std::string &strName ) const
-{
-	IVistaNameable *pNameable;
-	IVistaTransformable *pTrans = NULL;
-	GetObject(strName, pNameable, pTrans);
-	return pTrans;
+IVistaTransformable* VdfnObjectRegistry::GetObjectTransform(const std::string& strName) const {
+  IVistaNameable*      pNameable;
+  IVistaTransformable* pTrans = NULL;
+  GetObject(strName, pNameable, pTrans);
+  return pTrans;
 }
 
-
-IVistaNameable      *VdfnObjectRegistry::GetObject( const std::string &strName ) const
-{
-	IVistaNameable *pNameable = NULL;
-	IVistaTransformable *pTrans;
-	GetObject(strName, pNameable, pTrans);
-	return pNameable;
+IVistaNameable* VdfnObjectRegistry::GetObject(const std::string& strName) const {
+  IVistaNameable*      pNameable = NULL;
+  IVistaTransformable* pTrans;
+  GetObject(strName, pNameable, pTrans);
+  return pNameable;
 }
 
+bool VdfnObjectRegistry::GetObject(
+    const std::string& strName, IVistaNameable*& pObj, IVistaTransformable*& pTrans) const {
+  OBJMAP::const_iterator cit = m_mpObjects.find(strName);
 
-bool VdfnObjectRegistry::GetObject( const std::string &strName,
-				IVistaNameable *&pObj,
-				IVistaTransformable *&pTrans ) const
-{
-	OBJMAP::const_iterator cit = m_mpObjects.find(strName);
+  pObj = RetrieveNameable(strName);
+  if (cit == m_mpObjects.end())
+    pTrans = NULL;
+  else
+    pTrans = (*cit).second;
 
-	pObj   = RetrieveNameable( strName );
-	if (cit == m_mpObjects.end() )
-		pTrans = NULL;
-	else
-		pTrans = (*cit).second;
-
-	return (pObj || pTrans);
+  return (pObj || pTrans);
 }
 
-bool VdfnObjectRegistry::HasObject( const std::string &strName ) const
-{
-	if( m_mpObjects.find( strName ) == m_mpObjects.end() )
-	{
-		return HasNameable( strName );
-	}
-	return true;
+bool VdfnObjectRegistry::HasObject(const std::string& strName) const {
+  if (m_mpObjects.find(strName) == m_mpObjects.end()) {
+    return HasNameable(strName);
+  }
+  return true;
 }
 
+bool VdfnObjectRegistry::SetObject(
+    const std::string& strName, IVistaNameable* pObj, IVistaTransformable* pTrans) {
 
-bool VdfnObjectRegistry::SetObject( const std::string &strName, 
-				IVistaNameable *pObj, 
-				IVistaTransformable *pTrans )
-{
+  if (pObj) {
+    if (pObj->GetNameForNameable().empty()) {
+      vstr::outi() << "[VdfnObjectRegistry]: Registering <unnamed> as [" << strName << "]"
+                   << std::endl;
+      pObj->SetNameForNameable(strName);
+    } else {
+      vstr::outi() << "[VdfnObjectRegistry]: Registering [" << pObj->GetNameForNameable()
+                   << "] as [" << strName << "]" << std::endl;
+    }
 
-	if( pObj )
-	{
-		if( pObj->GetNameForNameable().empty() )
-		{
-			vstr::outi() << "[VdfnObjectRegistry]: Registering <unnamed> as ["
-						<< strName << "]" << std::endl;
-			pObj->SetNameForNameable( strName );
-		}
-		else
-		{
-			vstr::outi() << "[VdfnObjectRegistry]: Registering [" 
-						<< pObj->GetNameForNameable() << "] as [" 
-						<< strName << "]" << std::endl;
-		}
+    RegisterNameable(pObj);
+  }
 
-		RegisterNameable( pObj );
-	}
+  if (pTrans)
+    m_mpObjects[strName] = pTrans;
 
-	if( pTrans )
-		m_mpObjects[strName] = pTrans;
-
-	return true;
+  return true;
 }
 
+bool VdfnObjectRegistry::RemObject(const std::string& strName) {
+  if (RetrieveNameable(strName))
+    UnregisterNameable(strName);
 
-bool VdfnObjectRegistry::RemObject( const std::string &strName )
-{
-	if( RetrieveNameable( strName ) )
-		UnregisterNameable( strName );
+  OBJMAP::iterator it = m_mpObjects.find(strName);
+  if (it != m_mpObjects.end())
+    m_mpObjects.erase(it);
 
-	OBJMAP::iterator it = m_mpObjects.find(strName);
-	if(it != m_mpObjects.end() )
-		m_mpObjects.erase(it);
-
-	return true;
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

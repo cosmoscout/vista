@@ -21,24 +21,21 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VistaReplaySlave_H
 #define _VistaReplaySlave_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/Cluster/VistaClusterMode.h>
-#include <VistaKernel/Cluster/Utils/VistaMasterSlaveUtils.h>
 #include <VistaBase/VistaBaseTypes.h>
+#include <VistaKernel/Cluster/Utils/VistaMasterSlaveUtils.h>
+#include <VistaKernel/Cluster/VistaClusterMode.h>
+#include <VistaKernel/VistaKernelConfig.h>
 
-
-
-#include <string>
 #include <list>
-#include <vector>
 #include <ostream>
+#include <string>
+#include <vector>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -57,60 +54,57 @@ class VistaInteractionEvent;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaReplaySlave : public VistaClusterMode
-{
-public:
-	VistaReplaySlave( VistaSystem* pVistaSystem,
-							const std::string& sReplayFolder );
-	~VistaReplaySlave();
+class VISTAKERNELAPI VistaReplaySlave : public VistaClusterMode {
+ public:
+  VistaReplaySlave(VistaSystem* pVistaSystem, const std::string& sReplayFolder);
+  ~VistaReplaySlave();
 
-	virtual bool Init( const std::string& sClusterSection,
-						const VistaPropertyList& oConfig );
-	virtual bool PostInit();
+  virtual bool Init(const std::string& sClusterSection, const VistaPropertyList& oConfig);
+  virtual bool PostInit();
 
-	virtual int GetClusterMode() const;
-	virtual std::string GetClusterModeName() const;
-	
-	virtual int GetNodeType() const;
-	virtual std::string GetNodeTypeName() const;
-	virtual std::string GetNodeName() const;
-	virtual std::string GetConfigSectionName() const;
-	virtual int GetNodeID() const;
+  virtual int         GetClusterMode() const;
+  virtual std::string GetClusterModeName() const;
 
-	virtual bool GetIsLeader() const;
-	virtual bool GetIsFollower() const;	
+  virtual int         GetNodeType() const;
+  virtual std::string GetNodeTypeName() const;
+  virtual std::string GetNodeName() const;
+  virtual std::string GetConfigSectionName() const;
+  virtual int         GetNodeID() const;
 
-	virtual bool StartFrame();
-	virtual bool ProcessFrame();
-	virtual bool EndFrame();
+  virtual bool GetIsLeader() const;
+  virtual bool GetIsFollower() const;
 
-	virtual void SwapSync();
-	bool CreateDefaultSyncs();
+  virtual bool StartFrame();
+  virtual bool ProcessFrame();
+  virtual bool EndFrame();
 
-	virtual bool CreateConnections( std::vector<VistaConnectionIP*>& vecConnections );
-	virtual bool CreateNamedConnections( std::vector<std::pair<VistaConnectionIP*, std::string> >&
-															vecConnections );
-	virtual IVistaDataTunnel* CreateDataTunnel( IDLVistaDataPacket* pPacketProto );
-	virtual IVistaClusterDataSync* CreateDataSync();
-	virtual IVistaClusterDataSync* GetDefaultDataSync();
-	virtual IVistaClusterBarrier* CreateBarrier();
-	virtual IVistaClusterBarrier* GetDefaultBarrier();
-	virtual IVistaClusterDataCollect* CreateDataCollect();
+  virtual void SwapSync();
+  bool         CreateDefaultSyncs();
 
-	virtual void Debug( std::ostream& oStream ) const;		
+  virtual bool CreateConnections(std::vector<VistaConnectionIP*>& vecConnections);
+  virtual bool CreateNamedConnections(
+      std::vector<std::pair<VistaConnectionIP*, std::string>>& vecConnections);
+  virtual IVistaDataTunnel*         CreateDataTunnel(IDLVistaDataPacket* pPacketProto);
+  virtual IVistaClusterDataSync*    CreateDataSync();
+  virtual IVistaClusterDataSync*    GetDefaultDataSync();
+  virtual IVistaClusterBarrier*     CreateBarrier();
+  virtual IVistaClusterBarrier*     GetDefaultBarrier();
+  virtual IVistaClusterDataCollect* CreateDataCollect();
 
-private:
-	VistaSystem*				m_pVistaSystem;
+  virtual void Debug(std::ostream& oStream) const;
 
-	std::string					m_sReplayDataFolder;
-	int							m_nReplaySyncCounter;
+ private:
+  VistaSystem* m_pVistaSystem;
 
-	VistaMasterSlave::Message	m_oClusterMessage;
+  std::string m_sReplayDataFolder;
+  int         m_nReplaySyncCounter;
 
-	VistaSystemEvent*			m_pSystemEvent;
-	VistaExternalMsgEvent*		m_pExternalMsgEvent;
-	VistaMsg*					m_pMsg;
-	VistaInteractionEvent*		m_pInteractionEvent;
+  VistaMasterSlave::Message m_oClusterMessage;
+
+  VistaSystemEvent*      m_pSystemEvent;
+  VistaExternalMsgEvent* m_pExternalMsgEvent;
+  VistaMsg*              m_pMsg;
+  VistaInteractionEvent* m_pInteractionEvent;
 };
 
 /*============================================================================*/

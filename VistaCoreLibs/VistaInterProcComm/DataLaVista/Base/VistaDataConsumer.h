@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTADATACONSUMER_H
 #define IDLVISTADATACONSUMER_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -33,8 +31,8 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaPipeComponent.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -46,57 +44,57 @@ class IDLVistaDataPacket;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IDLVistaDataConsumer : public IDLVistaPipeComponent
-{
-private:
-protected:
-	IDLVistaPipeComponent * m_pDataInput;
+class VISTAINTERPROCCOMMAPI IDLVistaDataConsumer : public IDLVistaPipeComponent {
+ private:
+ protected:
+  IDLVistaPipeComponent* m_pDataInput;
 
-	IDLVistaDataConsumer();
-public:
+  IDLVistaDataConsumer();
 
-	virtual ~IDLVistaDataConsumer() = 0;
+ public:
+  virtual ~IDLVistaDataConsumer() = 0;
 
-	virtual bool ConsumePacket(IDLVistaDataPacket *) =0;
+  virtual bool ConsumePacket(IDLVistaDataPacket*) = 0;
 
-	virtual bool PullPacket(bool bBlock = true) =0;
+  virtual bool PullPacket(bool bBlock = true) = 0;
 
-	virtual bool IsDataProducer() const { return false;}
+  virtual bool IsDataProducer() const {
+    return false;
+  }
 
-	virtual bool IsDataConsumer() const { return true; }
+  virtual bool IsDataConsumer() const {
+    return true;
+  }
 
-	virtual bool IsOutputComponent(IDLVistaPipeComponent *pComp) const { return false; /* we do not have no output */ };
+  virtual bool IsOutputComponent(IDLVistaPipeComponent* pComp) const {
+    return false; /* we do not have no output */
+  };
 
-	virtual bool IsInputComponent(IDLVistaPipeComponent *pComp) const;
+  virtual bool IsInputComponent(IDLVistaPipeComponent* pComp) const;
 
-	virtual bool AttachInputComponent(IDLVistaPipeComponent *pComp);
+  virtual bool AttachInputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool AttachOutputComponent(IDLVistaPipeComponent *pComp);
+  virtual bool AttachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool DetachInputComponent(IDLVistaPipeComponent *pComp);
+  virtual bool DetachInputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool DetachOutputComponent(IDLVistaPipeComponent *pComp);
+  virtual bool DetachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual IDLVistaPipeComponent *GetOutboundByIndex(int iIndex) const;
+  virtual IDLVistaPipeComponent* GetOutboundByIndex(int iIndex) const;
 
-	virtual IDLVistaPipeComponent *GetInboundByIndex(int iIndex) const;
+  virtual IDLVistaPipeComponent* GetInboundByIndex(int iIndex) const;
 
-	virtual int GetNumberOfOutbounds() const;
+  virtual int GetNumberOfOutbounds() const;
 
-	virtual int GetNumberOfInbounds() const;
+  virtual int GetNumberOfInbounds() const;
 
+  virtual std::list<IDLVistaPipeComponent*> GetInputComponents() const;
 
-	virtual std::list<IDLVistaPipeComponent *> GetInputComponents() const;
-
-	virtual std::list<IDLVistaPipeComponent *> GetOutputComponents() const;
-
+  virtual std::list<IDLVistaPipeComponent*> GetOutputComponents() const;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //IDLVISTADATACONSUMER_H
-
+#endif // IDLVISTADATACONSUMER_H

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAINTERPROCCLUSTERBARRIER_H
 #define _VISTAINTERPROCCLUSTERBARRIER_H
 
@@ -32,8 +31,8 @@
 
 #include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,53 +43,51 @@ class VistaProcessEventReceiver;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaInterProcClusterLeaderBarrier : public IVistaClusterBarrier
-{
-public:
-	VistaInterProcClusterLeaderBarrier( IVistaClusterBarrier* pDependentBarrier,
-										const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaInterProcClusterLeaderBarrier : public IVistaClusterBarrier {
+ public:
+  VistaInterProcClusterLeaderBarrier(
+      IVistaClusterBarrier* pDependentBarrier, const bool bVerbose = true);
 
-	virtual ~VistaInterProcClusterLeaderBarrier();
+  virtual ~VistaInterProcClusterLeaderBarrier();
 
-	bool AddInterProc( const std::string& sInterProcName );
+  bool AddInterProc(const std::string& sInterProcName);
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-private:
-	std::vector<std::pair<VistaProcessEventReceiver*, int> > m_vecReadyEvents;
-	std::vector<VistaProcessEventSignaller*> m_vecGoEvents;
-	
-	IVistaClusterBarrier*		m_pDependentBarrier;
+ private:
+  std::vector<std::pair<VistaProcessEventReceiver*, int>> m_vecReadyEvents;
+  std::vector<VistaProcessEventSignaller*>                m_vecGoEvents;
+
+  IVistaClusterBarrier* m_pDependentBarrier;
 };
 
-class VISTAINTERPROCCOMMAPI VistaInterProcClusterFollowerBarrier : public IVistaClusterBarrier
-{
-public:
-	VistaInterProcClusterFollowerBarrier( const std::string& sInterProcName,
-										const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaInterProcClusterFollowerBarrier : public IVistaClusterBarrier {
+ public:
+  VistaInterProcClusterFollowerBarrier(
+      const std::string& sInterProcName, const bool bVerbose = true);
 
-	virtual ~VistaInterProcClusterFollowerBarrier();
+  virtual ~VistaInterProcClusterFollowerBarrier();
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 
-private:
-	VistaProcessEventSignaller* m_pReadyEvent;
-	int m_nTimeoutCount;
-	VistaProcessEventReceiver* m_pGoEvent;
+ private:
+  VistaProcessEventSignaller* m_pReadyEvent;
+  int                         m_nTimeoutCount;
+  VistaProcessEventReceiver*  m_pGoEvent;
 };
 
 /*============================================================================*/

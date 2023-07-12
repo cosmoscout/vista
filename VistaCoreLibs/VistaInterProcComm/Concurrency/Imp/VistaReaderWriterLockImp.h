@@ -21,12 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAREADERWRITERLOCKIMP_H
 #define _VISTAREADERWRITERLOCKIMP_H
 
 #include <string>
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -45,20 +43,20 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IVistaReaderWriterLockImp
-{
-public:
-	virtual ~IVistaReaderWriterLockImp();
-	virtual bool ReaderLock() = 0;
-	virtual bool WriterLock() = 0;
-	virtual bool ReaderUnlock() = 0;
-	virtual bool WriterUnlock() = 0;
+class VISTAINTERPROCCOMMAPI IVistaReaderWriterLockImp {
+ public:
+  virtual ~IVistaReaderWriterLockImp();
+  virtual bool ReaderLock()   = 0;
+  virtual bool WriterLock()   = 0;
+  virtual bool ReaderUnlock() = 0;
+  virtual bool WriterUnlock() = 0;
 
-	static IVistaReaderWriterLockImp *CreateReaderWriterLock();
-protected:
-	IVistaReaderWriterLockImp();
-private:
+  static IVistaReaderWriterLockImp* CreateReaderWriterLock();
 
+ protected:
+  IVistaReaderWriterLockImp();
+
+ private:
 };
 
 /*============================================================================*/
@@ -66,4 +64,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAREADERWRITERLOCKIMP_H
-

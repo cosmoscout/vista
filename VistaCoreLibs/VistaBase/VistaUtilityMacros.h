@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAUTILITYMACROS_H
 #define _VISTAUTILITYMACROS_H
 
@@ -30,40 +29,44 @@
 #include <cassert>
 
 /**
- * Helper macros: calling VISTA_MACRO_TOSTRING allows using non-string values (e.g. __FILE__ or __LINE__) as
- * strings in macros
- * VISTA_GCC_PRAGME allows calling gcc pragmas from within macros, without havind to quote the parameter
+ * Helper macros: calling VISTA_MACRO_TOSTRING allows using non-string values (e.g. __FILE__ or
+ * __LINE__) as strings in macros VISTA_GCC_PRAGME allows calling gcc pragmas from within macros,
+ * without havind to quote the parameter
  */
-#define VISTA_MACRO_STRINGIFY( arg ) #arg
-#define VISTA_MACRO_TOSTRING( arg ) VISTA_MACRO_STRINGIFY(arg)
-#define VISTA_GCC_PRAGMA_MACRO( call ) _Pragma( #call )
+#define VISTA_MACRO_STRINGIFY(arg) #arg
+#define VISTA_MACRO_TOSTRING(arg) VISTA_MACRO_STRINGIFY(arg)
+#define VISTA_GCC_PRAGMA_MACRO(call) _Pragma(#call)
 
 /**
  * VISTA_CHECK executes the passed Statement, and checks that the returned
  * value is equal to the expected value. If not, an Exception is thrown
  * The statement is always evaluated
  */
-#define VISTA_CHECK_MSG( Statement, ExpectedValue, sMessage ) \
-	if( ( Statement ) != ExpectedValue ) \
-	{ \
-		VISTA_THROW( "VistaCheck failed at " VISTA_MACRO_TOSTRING(__FILE__) "(" VISTA_MACRO_TOSTRING(__LINE__) ") : " sMessage, -1 ); \
-	}
-#define VISTA_CHECK( Statement, ExpectedValue ) VISTA_CHECK_MSG( Statement, ExpectedValue, #Statement" != "#ExpectedValue )
+#define VISTA_CHECK_MSG(Statement, ExpectedValue, sMessage)                                        \
+  if ((Statement) != ExpectedValue) {                                                              \
+    VISTA_THROW("VistaCheck failed at " VISTA_MACRO_TOSTRING(__FILE__) "(" VISTA_MACRO_TOSTRING(   \
+                    __LINE__) ") : " sMessage,                                                     \
+        -1);                                                                                       \
+  }
+#define VISTA_CHECK(Statement, ExpectedValue)                                                      \
+  VISTA_CHECK_MSG(Statement, ExpectedValue, #Statement " != " #ExpectedValue)
 
 /**
  * VISTA_VERIFY is similar to VISTA_CHECK, but only checks and throws in debug mode
  * similar to an assert. However, the statement will always be evaluated
  */
 #ifdef DEBUG
-	#define VISTA_VERIFY_MSG( Statement, ExpectedValue, sMessage ) \
-		if( ( Statement ) != ExpectedValue ) \
-		{ \
-			VISTA_THROW( "VistaVerify failed at " VISTA_MACRO_TOSTRING(__FILE__) "(" VISTA_MACRO_TOSTRING(__LINE__) ") : " sMessage, -1 ); \
-		}
-	#define VISTA_VERIFY( Statement, ExpectedValue ) VISTA_VERIFY_MSG( Statement, ExpectedValue, #Statement" != "#ExpectedValue )
+#define VISTA_VERIFY_MSG(Statement, ExpectedValue, sMessage)                                       \
+  if ((Statement) != ExpectedValue) {                                                              \
+    VISTA_THROW("VistaVerify failed at " VISTA_MACRO_TOSTRING(__FILE__) "(" VISTA_MACRO_TOSTRING(  \
+                    __LINE__) ") : " sMessage,                                                     \
+        -1);                                                                                       \
+  }
+#define VISTA_VERIFY(Statement, ExpectedValue)                                                     \
+  VISTA_VERIFY_MSG(Statement, ExpectedValue, #Statement " != " #ExpectedValue)
 #else
-	#define VISTA_VERIFY( Statement, ExpectedValue ) ( Statement )
-	#define VISTA_VERIFY_MSG( Statement, ExpectedValue, sMessage ) ( Statement )
+#define VISTA_VERIFY(Statement, ExpectedValue) (Statement)
+#define VISTA_VERIFY_MSG(Statement, ExpectedValue, sMessage) (Statement)
 #endif
 
 /**
@@ -71,37 +74,38 @@
  * The statement will ONLY be evaluated in release mode
  */
 #ifdef DEBUG
-	#define VISTA_ASSERT_MSG( Statement, ExpectedValue, sMessage ) \
-		if( ( Statement ) != ExpectedValue ) \
-		{ \
-			VISTA_THROW( "VistaAssert failed at " VISTA_MACRO_TOSTRING(__FILE__) "(" VISTA_MACRO_TOSTRING(__LINE__) ") : " sMessage, -1 ); \
-		}
-	#define VISTA_ASSERT( Statement, ExpectedValue ) VISTA_ASSERT_MSG( Statement, ExpectedValue, #Statement" != "#ExpectedValue )
+#define VISTA_ASSERT_MSG(Statement, ExpectedValue, sMessage)                                       \
+  if ((Statement) != ExpectedValue) {                                                              \
+    VISTA_THROW("VistaAssert failed at " VISTA_MACRO_TOSTRING(__FILE__) "(" VISTA_MACRO_TOSTRING(  \
+                    __LINE__) ") : " sMessage,                                                     \
+        -1);                                                                                       \
+  }
+#define VISTA_ASSERT(Statement, ExpectedValue)                                                     \
+  VISTA_ASSERT_MSG(Statement, ExpectedValue, #Statement " != " #ExpectedValue)
 #else
-	// defining it as (void)0 also does nothing, but gives a compiler error when missing the ; at the end
-	#define VISTA_ASSERT( Statement, ExpectedValue ) (void)0
-	#define VISTA_ASSERT_MSG( Statement, ExpectedValue, sMessage ) (void)0
+// defining it as (void)0 also does nothing, but gives a compiler error when missing the ; at the
+// end
+#define VISTA_ASSERT(Statement, ExpectedValue) (void)0
+#define VISTA_ASSERT_MSG(Statement, ExpectedValue, sMessage) (void)0
 #endif
 
-namespace Vista
-{
-	/**
-	 * Vista::checked_cast works like a static_cast in release mode, but
-	 * in Debug mode, a dynamic_cast is performed and the cast pointer is
-	 * checked to be non-NULL
-	 */
-	template< typename Target, typename Source >
-	Target assert_cast( Source* pPointer )
-	{
+namespace Vista {
+/**
+ * Vista::checked_cast works like a static_cast in release mode, but
+ * in Debug mode, a dynamic_cast is performed and the cast pointer is
+ * checked to be non-NULL
+ */
+template <typename Target, typename Source>
+Target assert_cast(Source* pPointer) {
 #ifdef DEBUG
-		Target pResult = dynamic_cast<Target>( pPointer );
-		assert( pResult );
-		return pResult;
+  Target pResult = dynamic_cast<Target>(pPointer);
+  assert(pResult);
+  return pResult;
 #else
-		return static_cast<Target>( pPointer );
+  return static_cast<Target>(pPointer);
 #endif
-	}
 }
+} // namespace Vista
 
 /**
  * VISTA_DEPRECATED marks a class as deprecated (if the compiler supports it)
@@ -110,9 +114,9 @@ namespace Vista
  * itself is compiled
  */
 #if defined _MSC_VER
-#define VISTA_DEPRECATED __declspec( deprecated )
+#define VISTA_DEPRECATED __declspec(deprecated)
 #elif defined __GNUC__
-#define VISTA_DEPRECATED __attribute__ ((deprecated))
+#define VISTA_DEPRECATED __attribute__((deprecated))
 #else
 #define VISTA_DEPRECATED
 #endif
@@ -123,18 +127,17 @@ namespace Vista
  *                                      prefixing "FILE(LINE) : VISTA_COMPILATION_WARNING"
  */
 #if defined _MSC_VER
-#define VISTA_COMPILATION_MESSAGE( sMessage ) __pragma( message( sMessage ) )
+#define VISTA_COMPILATION_MESSAGE(sMessage) __pragma(message(sMessage))
 #elif defined __GNUC__
-#define VISTA_COMPILATION_MESSAGE( sMessage ) VISTA_GCC_PRAGMA_MACRO( message sMessage )
+#define VISTA_COMPILATION_MESSAGE(sMessage) VISTA_GCC_PRAGMA_MACRO(message sMessage)
 #else
-#define VISTA_COMPILATION_MESSAGE( sMessage ) 
+#define VISTA_COMPILATION_MESSAGE(sMessage)
 #endif
-#define VISTA_COMPILATION_WARNING( sMessage ) \
-	VISTA_COMPILATION_MESSAGE( __FILE__ "(" VISTA_MACRO_TOSTRING( __LINE__ ) ") : warning: " sMessage )
+#define VISTA_COMPILATION_WARNING(sMessage)                                                        \
+  VISTA_COMPILATION_MESSAGE(__FILE__ "(" VISTA_MACRO_TOSTRING(__LINE__) ") : warning: " sMessage)
 
-#define VISTA_FUNCTION_NOT_IMPLEMENTED( FunctionName )			\
-	VISTA_COMPILATION_WARNING( "Function "#FunctionName" not implemented" );	\
-	VISTA_THROW( "Function "#FunctionName" not implemented", -1 );
-
+#define VISTA_FUNCTION_NOT_IMPLEMENTED(FunctionName)                                               \
+  VISTA_COMPILATION_WARNING("Function " #FunctionName " not implemented");                         \
+  VISTA_THROW("Function " #FunctionName " not implemented", -1);
 
 #endif // _VISTAUTILITYMACROS_H

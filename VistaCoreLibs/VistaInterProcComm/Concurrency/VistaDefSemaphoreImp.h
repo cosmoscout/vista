@@ -21,16 +21,15 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADEFSEMAPHOREIMP_H
 #define _VISTADEFSEMAPHOREIMP_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
+#include "Imp/VistaSemaphoreImp.h"
 #include "VistaIpcThreadModel.h"
 #include "VistaMutex.h"
-#include "Imp/VistaSemaphoreImp.h"
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -44,39 +43,36 @@ class VistaSemaphoreImp;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaDefSemaphoreImp : public IVistaSemaphoreImp
-{
-public:
-	VistaDefSemaphoreImp( unsigned int initial = 1 );
-	virtual ~VistaDefSemaphoreImp() {};	
+class VISTAINTERPROCCOMMAPI VistaDefSemaphoreImp : public IVistaSemaphoreImp {
+ public:
+  VistaDefSemaphoreImp(unsigned int initial = 1);
+  virtual ~VistaDefSemaphoreImp(){};
 
-	/**
-	 * if semaphore value is > 0 then decrement it and carry on. If it's
-	 * already 0 then block.
-	 */
-	void Wait    ();	
+  /**
+   * if semaphore value is > 0 then decrement it and carry on. If it's
+   * already 0 then block.
+   */
+  void Wait();
 
-	/**
-	 * if semaphore value is > 0 then decrement it and return true.
-	 * If it's already 0 then return false.
-	 */
-	bool TryWait ();	
+  /**
+   * if semaphore value is > 0 then decrement it and return true.
+   * If it's already 0 then return false.
+   */
+  bool TryWait();
 
-	/**
-	 * if any threads are blocked in wait(), wake one of them up. Otherwise
-	 * increment the value of the semaphore.
-	 */
-	void Post    ();
+  /**
+   * if any threads are blocked in wait(), wake one of them up. Otherwise
+   * increment the value of the semaphore.
+   */
+  void Post();
 
-private:
-	VistaDefSemaphoreImp ( const VistaDefSemaphoreImp & );
-	VistaDefSemaphoreImp & operator=       ( const VistaDefSemaphoreImp & );
+ private:
+  VistaDefSemaphoreImp(const VistaDefSemaphoreImp&);
+  VistaDefSemaphoreImp& operator=(const VistaDefSemaphoreImp&);
 
-	VistaMutex		counterAccess, wait;
-	int				counter;
-
+  VistaMutex counterAccess, wait;
+  int        counter;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

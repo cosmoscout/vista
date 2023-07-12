@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32)
 #include <winsock2.h>
 typedef int socklen_t;
@@ -29,30 +28,30 @@ typedef int socklen_t;
 
 #endif
 
-#if defined (LINUX) || defined(DARWIN)
-	#include <unistd.h>
-	#include <netdb.h>
-	#include <sys/socket.h>
-	#include <sys/ioctl.h>
-	#include <arpa/inet.h>
-	#include <netinet/tcp.h>
-    #include <cerrno>
-#elif defined (SUNOS) || defined (IRIX)
-	#include <unistd.h>
-	#include <netdb.h>
-	#include <sys/filio.h>
-	#include <arpa/inet.h>
-	#include <netinet/tcp.h>
-#elif defined (HPUX)
-	#include <unistd.h>          // ioctl(), FIONREAD
-	#include <netdb.h>           // getprotoent() libc-Version!,gethostbyname()
-	#include <sys/socket.h>      // socket(),gethostbyname(),connect()
-	#include <arpa/inet.h>
-	#include <netinet/tcp.h>
+#if defined(LINUX) || defined(DARWIN)
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#include <cerrno>
+#elif defined(SUNOS) || defined(IRIX)
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/filio.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#elif defined(HPUX)
+#include <unistd.h>     // ioctl(), FIONREAD
+#include <netdb.h>      // getprotoent() libc-Version!,gethostbyname()
+#include <sys/socket.h> // socket(),gethostbyname(),connect()
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
 #endif
 
-#include "VistaTCPServerSocket.h"
 #include "VistaSocketAddress.h"
+#include "VistaTCPServerSocket.h"
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -62,64 +61,57 @@ typedef int socklen_t;
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-
 VistaTCPServerSocket::VistaTCPServerSocket()
-: VistaTCPSocket()
-{
+    : VistaTCPSocket() {
 }
 
-
-VistaTCPServerSocket::~VistaTCPServerSocket()
-{
+VistaTCPServerSocket::~VistaTCPServerSocket() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaTCPSocket *VistaTCPServerSocket::Accept() const
-{
-	VistaSocketAddress remote;
-#if defined (WIN32)
-	SOCKET iNewSockAddr=INVALID_SOCKET;
+VistaTCPSocket* VistaTCPServerSocket::Accept() const {
+  VistaSocketAddress remote;
+#if defined(WIN32)
+  SOCKET iNewSockAddr = INVALID_SOCKET;
 #else
-	SOCKET iNewSockAddr=-1;
+  SOCKET iNewSockAddr = -1;
 #endif
-	int iNewSockAddrLength=remote.GetINAddressLength();
+  int iNewSockAddrLength = remote.GetINAddressLength();
 
-	//printf("sockid = %d\n", GetSocketID());
+  // printf("sockid = %d\n", GetSocketID());
 
 #if defined(HPUX)
-	if((iNewSockAddr = accept(GetSocketID(), (sockaddr*)remote.GetINAddress(), &iNewSockAddrLength))<0)
-#elif defined (WIN32)
-	if((iNewSockAddr = accept(SOCKET(GetSocketID()), (sockaddr*)remote.GetINAddress(), (socklen_t*)&iNewSockAddrLength))==INVALID_SOCKET)
+  if ((iNewSockAddr =
+              accept(GetSocketID(), (sockaddr*)remote.GetINAddress(), &iNewSockAddrLength)) < 0)
+#elif defined(WIN32)
+  if ((iNewSockAddr = accept(SOCKET(GetSocketID()), (sockaddr*)remote.GetINAddress(),
+           (socklen_t*)&iNewSockAddrLength)) == INVALID_SOCKET)
 #else
-	if((iNewSockAddr = TEMP_FAILURE_RETRY( accept(SOCKET(GetSocketID()), (sockaddr*)remote.GetINAddress(), (socklen_t*)&iNewSockAddrLength)))<0)
+  if ((iNewSockAddr = TEMP_FAILURE_RETRY(accept(SOCKET(GetSocketID()),
+           (sockaddr*)remote.GetINAddress(), (socklen_t*)&iNewSockAddrLength))) < 0)
 #endif
-	{
-		// error!!
-		PrintErrorMessage("VistaTCPSocket::Accept()");
-		return NULL;
-	}
+  {
+    // error!!
+    PrintErrorMessage("VistaTCPSocket::Accept()");
+    return NULL;
+  }
 
-	//printf("new sockid = %d\n", iNewSockAddr);
-	VistaTCPSocket *pSock = new VistaTCPSocket(HANDLE(iNewSockAddr));
-	pSock->SetIsConnected(true);
-	return pSock;
+  // printf("new sockid = %d\n", iNewSockAddr);
+  VistaTCPSocket* pSock = new VistaTCPSocket(HANDLE(iNewSockAddr));
+  pSock->SetIsConnected(true);
+  return pSock;
 }
 
-
-bool VistaTCPServerSocket::Listen(int iBacklog)
-{
-	if(listen(SOCKET(GetSocketID()), iBacklog) < 0)
-	{
-		return false;
-	}
-	return true;
+bool VistaTCPServerSocket::Listen(int iBacklog) {
+  if (listen(SOCKET(GetSocketID()), iBacklog) < 0) {
+    return false;
+  }
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

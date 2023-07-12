@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnPort.h" 
+#include "VdfnPort.h"
 
 #include <string>
 
@@ -35,103 +34,85 @@
 /*============================================================================*/
 
 IVdfnPort::IVdfnPort()
-: m_nLastUpdate(0),
-  m_nUpdateCounter(0),
-  m_pAdapter(NULL)
-{
+    : m_nLastUpdate(0)
+    , m_nUpdateCounter(0)
+    , m_pAdapter(NULL) {
 }
 
-IVdfnPort::~IVdfnPort()
-{
-	delete m_pAdapter;
+IVdfnPort::~IVdfnPort() {
+  delete m_pAdapter;
 }
 
-
-IVdfnPortTypeCompare::IVdfnPortTypeCompare()
-{
+IVdfnPortTypeCompare::IVdfnPortTypeCompare() {
 }
 
-IVdfnPortTypeCompare::IVdfnPortTypeCompare(const IVdfnPortTypeCompare &)
-{
+IVdfnPortTypeCompare::IVdfnPortTypeCompare(const IVdfnPortTypeCompare&) {
 }
 
-IVdfnPortTypeCompare& IVdfnPortTypeCompare::operator=(const IVdfnPortTypeCompare &)
-{
-	return *this;
+IVdfnPortTypeCompare& IVdfnPortTypeCompare::operator=(const IVdfnPortTypeCompare&) {
+  return *this;
 }
 
-double IVdfnPort::GetLastUpdate() const
-{
-	return m_nLastUpdate;
+double IVdfnPort::GetLastUpdate() const {
+  return m_nLastUpdate;
 }
 
-void IVdfnPort::SetUpdateTimeStamp(double nTs)
-{
-	m_nLastUpdate = nTs;
+void IVdfnPort::SetUpdateTimeStamp(double nTs) {
+  m_nLastUpdate = nTs;
 }
 
-double IVdfnPort::GetUpdateTimeStamp() const
-{
-    return m_nLastUpdate;
+double IVdfnPort::GetUpdateTimeStamp() const {
+  return m_nLastUpdate;
 }
 
-void IVdfnPort::IncUpdateCounter()
-{
-	++m_nUpdateCounter;
+void IVdfnPort::IncUpdateCounter() {
+  ++m_nUpdateCounter;
 }
 
-unsigned int IVdfnPort::GetUpdateCounter() const
-{
-	return m_nUpdateCounter;
+unsigned int IVdfnPort::GetUpdateCounter() const {
+  return m_nUpdateCounter;
 }
 
-VdfnPortSerializeAdapter *IVdfnPort::GetSerializeAdapter()
-{
-	return m_pAdapter;
+VdfnPortSerializeAdapter* IVdfnPort::GetSerializeAdapter() {
+  return m_pAdapter;
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-VdfnPortSerializeAdapter::VdfnPortSerializeAdapter(IVdfnPort *pPort)
-: m_pPort(pPort)
-{
+VdfnPortSerializeAdapter::VdfnPortSerializeAdapter(IVdfnPort* pPort)
+    : m_pPort(pPort) {
 }
 
-VdfnPortSerializeAdapter::~VdfnPortSerializeAdapter()
-{
+VdfnPortSerializeAdapter::~VdfnPortSerializeAdapter() {
 }
 
-int VdfnPortSerializeAdapter::Serialize(IVistaSerializer &oSer) const
-{
-	if(m_pPort == NULL)
-		return 0;
+int VdfnPortSerializeAdapter::Serialize(IVistaSerializer& oSer) const {
+  if (m_pPort == NULL)
+    return 0;
 
-	int nRet = 0;
-	nRet += oSer.WriteDouble( (*m_pPort).m_nLastUpdate );
-	nRet += oSer.WriteInt32( (VistaType::sint32)(*m_pPort).m_nUpdateCounter );
-	return nRet;
+  int nRet = 0;
+  nRet += oSer.WriteDouble((*m_pPort).m_nLastUpdate);
+  nRet += oSer.WriteInt32((VistaType::sint32)(*m_pPort).m_nUpdateCounter);
+  return nRet;
 }
 
-int VdfnPortSerializeAdapter::DeSerialize(IVistaDeSerializer &oDeSer)
-{
-	if(m_pPort == NULL)
-		return 0;
+int VdfnPortSerializeAdapter::DeSerialize(IVistaDeSerializer& oDeSer) {
+  if (m_pPort == NULL)
+    return 0;
 
-	int nRet = 0;
+  int nRet = 0;
 
-	VistaType::sint32 updCnt=0;
-	nRet += oDeSer.ReadDouble( (*m_pPort).m_nLastUpdate );
-	nRet += oDeSer.ReadInt32( updCnt );
+  VistaType::sint32 updCnt = 0;
+  nRet += oDeSer.ReadDouble((*m_pPort).m_nLastUpdate);
+  nRet += oDeSer.ReadInt32(updCnt);
 
-	(*m_pPort).m_nUpdateCounter = updCnt;
+  (*m_pPort).m_nUpdateCounter = updCnt;
 
-	return nRet;
+  return nRet;
 }
 
-std::string VdfnPortSerializeAdapter::GetSignature() const
-{
-	return "IVdfnPort";
+std::string VdfnPortSerializeAdapter::GetSignature() const {
+  return "IVdfnPort";
 }
-
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
@@ -140,5 +121,3 @@ std::string VdfnPortSerializeAdapter::GetSignature() const
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

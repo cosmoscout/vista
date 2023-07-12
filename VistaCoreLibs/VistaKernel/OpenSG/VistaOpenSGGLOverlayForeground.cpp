@@ -21,24 +21,23 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 //---------------------------------------------------------------------------
 //  Includes
 //---------------------------------------------------------------------------
 
 #include "VistaOpenSGGLOverlayForeground.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef WIN32
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4244)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -54,49 +53,40 @@
 OSG_USING_NAMESPACE
 
 /*----------------------- constructors & destructors ----------------------*/
-VistaOpenSGGLOverlayForeground::VistaOpenSGGLOverlayForeground(void) :
-	Inherited()
-{
-
-
+VistaOpenSGGLOverlayForeground::VistaOpenSGGLOverlayForeground(void)
+    : Inherited() {
 }
 
 /* */
-VistaOpenSGGLOverlayForeground::VistaOpenSGGLOverlayForeground(const VistaOpenSGGLOverlayForeground &source) :
-	Inherited(source)
-{
+VistaOpenSGGLOverlayForeground::VistaOpenSGGLOverlayForeground(
+    const VistaOpenSGGLOverlayForeground& source)
+    : Inherited(source) {
 }
 
 /* */
-VistaOpenSGGLOverlayForeground::~VistaOpenSGGLOverlayForeground(void)
-{
+VistaOpenSGGLOverlayForeground::~VistaOpenSGGLOverlayForeground(void) {
 }
 
 /*----------------------------- class specific ----------------------------*/
-void VistaOpenSGGLOverlayForeground::initMethod(void)
-{
+void VistaOpenSGGLOverlayForeground::initMethod(void) {
 }
 
 /* */
-void VistaOpenSGGLOverlayForeground::changed(BitVector whichField, UInt32 origin)
-{
-	Inherited::changed(whichField, origin);
+void VistaOpenSGGLOverlayForeground::changed(BitVector whichField, UInt32 origin) {
+  Inherited::changed(whichField, origin);
 }
 
 /* */
-void VistaOpenSGGLOverlayForeground::dump(UInt32, const BitVector) const
-{
-	SLOG << "Dump VistaOpenSGGLOverlayForeground NI" << std::endl;
+void VistaOpenSGGLOverlayForeground::dump(UInt32, const BitVector) const {
+  SLOG << "Dump VistaOpenSGGLOverlayForeground NI" << std::endl;
 }
 
-void VistaOpenSGGLOverlayForeground::draw(DrawActionBase *action, Viewport *port)
-{
-	int count = m_mfGLOverlays.size() ;
-	for( int i = 0 ; i < count ; ++i )
-	{
-		IVistaOpenGLDraw* pOpenGLDraw = static_cast<IVistaOpenGLDraw*>(m_mfGLOverlays[i]);
-		pOpenGLDraw->Do();
-	}
+void VistaOpenSGGLOverlayForeground::draw(DrawActionBase* action, Viewport* port) {
+  int count = m_mfGLOverlays.size();
+  for (int i = 0; i < count; ++i) {
+    IVistaOpenGLDraw* pOpenGLDraw = static_cast<IVistaOpenGLDraw*>(m_mfGLOverlays[i]);
+    pOpenGLDraw->Do();
+  }
 }
 
 /*-------------------------------------------------------------------------*/

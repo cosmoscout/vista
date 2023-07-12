@@ -21,9 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include "VistaIRManDriver.h"
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 /*============================================================================*/
@@ -33,96 +32,83 @@
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-namespace
-{
+namespace {
 
-	class VistaIRManTranscode : public IVistaMeasureTranscode
-	{
-	public:
-		VistaIRManTranscode()
-		{
-			m_nNumberOfScalars = 6;
-		}
+class VistaIRManTranscode : public IVistaMeasureTranscode {
+ public:
+  VistaIRManTranscode() {
+    m_nNumberOfScalars = 6;
+  }
 
-		static std::string GetTypeString() { return "VistaIRManTranscode"; }
-		REFL_INLINEIMP(VistaIRManTranscode, IVistaMeasureTranscode);
+  static std::string GetTypeString() {
+    return "VistaIRManTranscode";
+  }
+  REFL_INLINEIMP(VistaIRManTranscode, IVistaMeasureTranscode);
+};
 
-	};
+class VistaIRManKeyCodeGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<VistaIRManDriver::_sIRManSample> {
+ public:
+  VistaIRManKeyCodeGet(
+      const std::string& sPropName, const std::string& sClassName, const std::string& sDescription)
+      : IVistaMeasureTranscode::TTranscodeValueGet<VistaIRManDriver::_sIRManSample>(
+            sPropName, sClassName, sDescription) {
+  }
 
+  virtual VistaIRManDriver::_sIRManSample GetValue(const VistaSensorMeasure* m) const {
+    const VistaIRManDriver::_sIRManSample* s = (*m).getRead<VistaIRManDriver::_sIRManSample>();
+    return *s;
+  }
 
-	class VistaIRManKeyCodeGet : public IVistaMeasureTranscode::TTranscodeValueGet<VistaIRManDriver::_sIRManSample>
-	{
-	public:
-		VistaIRManKeyCodeGet( const std::string &sPropName,
-			const std::string &sClassName,
-			const std::string &sDescription)
-			: IVistaMeasureTranscode::TTranscodeValueGet<VistaIRManDriver::_sIRManSample>(sPropName, sClassName, sDescription)
-		{}
+  virtual bool GetValue(const VistaSensorMeasure* m, VistaIRManDriver::_sIRManSample& out) const {
+    out = GetValue(m);
+    return true;
+  }
+};
 
-		virtual VistaIRManDriver::_sIRManSample GetValue(const VistaSensorMeasure *m)    const
-		{
-			const VistaIRManDriver::_sIRManSample *s = (*m).getRead< VistaIRManDriver::_sIRManSample >();
-			return *s;
-		}
+class VistaIRManKeyCodeIntGet
+    : public IVistaMeasureTranscode::TTranscodeValueGet<VistaType::uint64> {
+ public:
+  VistaIRManKeyCodeIntGet(
+      const std::string& sPropName, const std::string& sClassName, const std::string& sDescription)
+      : IVistaMeasureTranscode::TTranscodeValueGet<VistaType::uint64>(
+            sPropName, sClassName, sDescription) {
+  }
 
-		virtual bool GetValue(const VistaSensorMeasure *m, VistaIRManDriver::_sIRManSample &out) const
-		{
-			out = GetValue(m);
-			return true;
-		}
-	};
+  virtual VistaType::uint64 GetValue(const VistaSensorMeasure* m) const {
+    const VistaIRManDriver::_sIRManSample* s = (*m).getRead<VistaIRManDriver::_sIRManSample>();
 
-	class VistaIRManKeyCodeIntGet : public IVistaMeasureTranscode::TTranscodeValueGet<VistaType::uint64>
-	{
-	public:
-		VistaIRManKeyCodeIntGet( const std::string &sPropName,
-			const std::string &sClassName,
-			const std::string &sDescription)
-			: IVistaMeasureTranscode::TTranscodeValueGet<VistaType::uint64>(sPropName, sClassName, sDescription)
-		{}
+    VistaType::uint64 n = 0;
 
-		virtual VistaType::uint64 GetValue(const VistaSensorMeasure *m)    const
-		{
-			const VistaIRManDriver::_sIRManSample *s = (*m).getRead<VistaIRManDriver::_sIRManSample>();
+    unsigned char* c = (unsigned char*)&n;
+    for (int i = 2; i < 8; ++i)
+      c[i] = s->m_acKeyCode[i - 2];
 
-			VistaType::uint64 n = 0;
+    return n;
+  }
 
-			unsigned char *c = (unsigned char*)&n;
-			for(int i=2; i < 8; ++i)
-				c[i] = s->m_acKeyCode[i-2];
+  virtual bool GetValue(const VistaSensorMeasure* m, VistaType::uint64& out) const {
+    out = GetValue(m);
+    return true;
+  }
+};
 
-			return n;
-		}
+namespace {
+IVistaPropertyGetFunctor* SaGetter[] = {
+    new VistaIRManKeyCodeGet(
+        "KEYCODE", VistaIRManTranscode::GetTypeString(), "a 6-byte key code from the IR"),
+    new VistaIRManKeyCodeIntGet(
+        "KEY", VistaIRManTranscode::GetTypeString(), "the 6-byte keycode as int64"),
+    NULL};
+}
 
-		virtual bool GetValue(const VistaSensorMeasure *m, VistaType::uint64 &out) const
-		{
-			out = GetValue(m);
-			return true;
-		}
-	};
-
-	namespace
-	{
-		IVistaPropertyGetFunctor *SaGetter[] =
-		{
-			new VistaIRManKeyCodeGet("KEYCODE",
-									  VistaIRManTranscode::GetTypeString(),
-									  "a 6-byte key code from the IR"),
-			new VistaIRManKeyCodeIntGet("KEY",
-									VistaIRManTranscode::GetTypeString(),
-									"the 6-byte keycode as int64"),
-			NULL
-		};
-	}
-
-
-	// FACTORY
-	class VistaIRManDriverTranscoderFactory : public TDefaultTranscoderFactory<VistaIRManTranscode>
-	{
-	public:
-		VistaIRManDriverTranscoderFactory()
-		: TDefaultTranscoderFactory<VistaIRManTranscode>(VistaIRManTranscode::GetTypeString()) {}
-	};
+// FACTORY
+class VistaIRManDriverTranscoderFactory : public TDefaultTranscoderFactory<VistaIRManTranscode> {
+ public:
+  VistaIRManDriverTranscoderFactory()
+      : TDefaultTranscoderFactory<VistaIRManTranscode>(VistaIRManTranscode::GetTypeString()) {
+  }
+};
 
 } // namespace
 
@@ -134,11 +120,10 @@ namespace
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
 #ifdef VISTAIRMANTRANSCODER_EXPORTS
-	DEFTRANSCODERPLUG_FUNC_EXPORTS( TSimpleTranscoderFactoryFactory<VistaIRManDriverTranscoderFactory> )
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaIRManDriverTranscoderFactory>)
 #else
-	DEFTRANSCODERPLUG_FUNC_IMPORTS( TSimpleTranscoderFactoryFactory<VistaIRManDriverTranscoderFactory> )
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaIRManDriverTranscoderFactory>)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;

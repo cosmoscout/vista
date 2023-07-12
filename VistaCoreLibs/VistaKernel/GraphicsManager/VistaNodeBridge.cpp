@@ -21,14 +21,13 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaNodeBridge.h" 
+#include "VistaNodeBridge.h"
+#include "VistaExtensionNode.h"
 #include "VistaGeomNode.h"
 #include "VistaGroupNode.h"
 #include "VistaLODNode.h"
 #include "VistaOpenGLNode.h"
 #include "VistaSwitchNode.h"
-#include "VistaExtensionNode.h"
 #include "VistaTransformNode.h"
 
 /*============================================================================*/
@@ -38,85 +37,71 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-IVistaNodeData::~IVistaNodeData()
-{
+IVistaNodeData::~IVistaNodeData() {
 }
 
-IVistaNodeBridge::IVistaNodeBridge()
-{
-	m_pSceneGraph = NULL;
+IVistaNodeBridge::IVistaNodeBridge() {
+  m_pSceneGraph = NULL;
 }
 
-
-IVistaNodeBridge::~IVistaNodeBridge()
-{
-	//// dump georefs (should be empty now if all went ok)
-	//REFMAP::iterator it = m_mpGeomRefs.begin();
-	//while(it != m_mpGeomRefs.end())
-	//{
-	//	std::cerr << it->first << ": " << it->second << std::endl;
-	//	++it;
-	//}
-	//std::cerr << "DONE" << std::endl;
+IVistaNodeBridge::~IVistaNodeBridge() {
+  //// dump georefs (should be empty now if all went ok)
+  // REFMAP::iterator it = m_mpGeomRefs.begin();
+  // while(it != m_mpGeomRefs.end())
+  //{
+  //	std::cerr << it->first << ": " << it->second << std::endl;
+  //	++it;
+  //}
+  // std::cerr << "DONE" << std::endl;
 }
 
-VistaSceneGraph    *IVistaNodeBridge::GetVistaSceneGraph() const
-{
-	return m_pSceneGraph;
+VistaSceneGraph* IVistaNodeBridge::GetVistaSceneGraph() const {
+  return m_pSceneGraph;
 }
 
+bool IVistaNodeBridge::Init(VistaSceneGraph* pSG) {
+  if (m_pSceneGraph)
+    return false;
 
-bool IVistaNodeBridge::Init(VistaSceneGraph* pSG)
-{ 
-	if(m_pSceneGraph)
-		return false;
-
-	m_pSceneGraph = pSG; 
-	return true; 
+  m_pSceneGraph = pSG;
+  return true;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int IVistaNodeBridge::RegisterGeometry(VistaGeometry *pGeom)
-{
-	GeomRefMap::iterator it = m_mpGeomRefs.find(pGeom);
-	
-	if(it != m_mpGeomRefs.end())
-	{
-		// ok, we have some
-		(*it).second = (*it).second+1; // increase counter
-		return (*it).second;
-	}
+int IVistaNodeBridge::RegisterGeometry(VistaGeometry* pGeom) {
+  GeomRefMap::iterator it = m_mpGeomRefs.find(pGeom);
 
-	m_mpGeomRefs.insert(GeomRefMap::value_type(pGeom, 1)); // register
-	return 1;
+  if (it != m_mpGeomRefs.end()) {
+    // ok, we have some
+    (*it).second = (*it).second + 1; // increase counter
+    return (*it).second;
+  }
+
+  m_mpGeomRefs.insert(GeomRefMap::value_type(pGeom, 1)); // register
+  return 1;
 }
 
-bool IVistaNodeBridge::UnregisterGeometry(VistaGeometry *pGeom)
-{
-	GeomRefMap::iterator it = m_mpGeomRefs.find(pGeom);
-	
-	if(it != m_mpGeomRefs.end())
-	{
-		// ok, we have some
-		if(it->second-1 == 0)
-		{
-			// we were the last to reference this one...kick it...
-			// calls ObservableDelete (should, at least)
-			delete pGeom;
-			// remove from reference-counting list
-			m_mpGeomRefs.erase(it);
-			return true;
-		}
-		else
-		{
-			// decrease refcount		
-			--(it->second);
-		}
-	}
-	return false;
+bool IVistaNodeBridge::UnregisterGeometry(VistaGeometry* pGeom) {
+  GeomRefMap::iterator it = m_mpGeomRefs.find(pGeom);
+
+  if (it != m_mpGeomRefs.end()) {
+    // ok, we have some
+    if (it->second - 1 == 0) {
+      // we were the last to reference this one...kick it...
+      // calls ObservableDelete (should, at least)
+      delete pGeom;
+      // remove from reference-counting list
+      m_mpGeomRefs.erase(it);
+      return true;
+    } else {
+      // decrease refcount
+      --(it->second);
+    }
+  }
+  return false;
 }
 
 #if 0
@@ -149,115 +134,85 @@ bool IVistaNodeBridge::UnregisterGeometry(VistaGeometry *pGeom, VistaGeomNode *p
 }
 #endif
 
-VistaNode* IVistaNodeBridge::NewNode(VistaGroupNode* pParent, 
-									IVistaNodeData* pData, 
-									const std::string &strName)
-{
-	return new VistaNode(pParent, this, pData, strName);
+VistaNode* IVistaNodeBridge::NewNode(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaNode(pParent, this, pData, strName);
 }
 
 // ============================================================================
 
-VistaGroupNode* IVistaNodeBridge::NewGroupNode(VistaGroupNode* pParent, 
-												IVistaNodeData* pData, 
-												const std::string &strName)
-{
-	return new VistaGroupNode(pParent, this, pData, strName);
+VistaGroupNode* IVistaNodeBridge::NewGroupNode(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaGroupNode(pParent, this, pData, strName);
 }
 // ============================================================================
 // ============================================================================
-VistaSwitchNode* IVistaNodeBridge::NewSwitchNode(VistaGroupNode* pParent, 
-												  IVistaNodeData* pData, 
-												  const std::string &strName)
-{
-	return new VistaSwitchNode(pParent, this, pData, strName);
+VistaSwitchNode* IVistaNodeBridge::NewSwitchNode(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaSwitchNode(pParent, this, pData, strName);
 }
 
 // ============================================================================
 // ============================================================================
-VistaLODNode* IVistaNodeBridge::NewLODNode(VistaGroupNode* pParent, 
-											IVistaNodeData* pData, 
-											const std::string &strName)
-{
-	return new VistaLODNode(pParent, this, pData, strName);
+VistaLODNode* IVistaNodeBridge::NewLODNode(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaLODNode(pParent, this, pData, strName);
 }
 // ============================================================================
 // ============================================================================
-VistaGeomNode* IVistaNodeBridge::NewGeomNode(VistaGroupNode* pParent, 
-											  VistaGeometry* pGeom, 
-											  IVistaNodeData* pData, 
-											  const std::string &strName)
-{
-	return new VistaGeomNode(pParent, pGeom, this, pData, strName);
+VistaGeomNode* IVistaNodeBridge::NewGeomNode(VistaGroupNode* pParent, VistaGeometry* pGeom,
+    IVistaNodeData* pData, const std::string& strName) {
+  return new VistaGeomNode(pParent, pGeom, this, pData, strName);
 }
 // ============================================================================
 
 // ============================================================================
-VistaAmbientLight* IVistaNodeBridge::NewAmbientLight(VistaGroupNode* pParent, 
-													  IVistaNodeData* pData, 
-													  const std::string &strName)
-{
-	return new VistaAmbientLight(pParent, this, pData, strName);
+VistaAmbientLight* IVistaNodeBridge::NewAmbientLight(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaAmbientLight(pParent, this, pData, strName);
 }
 // ============================================================================
 // ============================================================================
-VistaDirectionalLight* IVistaNodeBridge::NewDirectionalLight(VistaGroupNode* pParent, 
-															  IVistaNodeData* pData, 
-															  const std::string &strName)
-{
-	return new VistaDirectionalLight(pParent, this, pData, strName);
+VistaDirectionalLight* IVistaNodeBridge::NewDirectionalLight(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaDirectionalLight(pParent, this, pData, strName);
 }
 // ============================================================================
 // ============================================================================
-VistaPointLight* IVistaNodeBridge::NewPointLight(VistaGroupNode* pParent, 
-												  IVistaNodeData* pData, 
-												  const std::string &strName)
-{
-	return new VistaPointLight(pParent, this, pData, strName);
+VistaPointLight* IVistaNodeBridge::NewPointLight(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaPointLight(pParent, this, pData, strName);
 }
 // ============================================================================
 // ============================================================================
-VistaSpotLight* IVistaNodeBridge::NewSpotLight(VistaGroupNode* pParent, 
-												IVistaNodeData* pData, 
-												const std::string &strName)
-{
-	return new VistaSpotLight(pParent, this, pData, strName);
+VistaSpotLight* IVistaNodeBridge::NewSpotLight(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& strName) {
+  return new VistaSpotLight(pParent, this, pData, strName);
 }
 // ============================================================================
 // ============================================================================
 
-VistaOpenGLNode* IVistaNodeBridge::NewOpenGLNode(VistaGroupNode* pParent, 
-												  IVistaOpenGLDraw* pDI, 
-												  IVistaNodeData* pData, const 
-												  std::string &strName)
-{
-	return new VistaOpenGLNode(pParent, pDI, this, pData, strName);
+VistaOpenGLNode* IVistaNodeBridge::NewOpenGLNode(VistaGroupNode* pParent, IVistaOpenGLDraw* pDI,
+    IVistaNodeData* pData, const std::string& strName) {
+  return new VistaOpenGLNode(pParent, pDI, this, pData, strName);
 }
 
 // ============================================================================
 // ============================================================================
-void IVistaNodeBridge::DeleteNode(IVistaNode* pNode)
-{
-	delete pNode;
+void IVistaNodeBridge::DeleteNode(IVistaNode* pNode) {
+  delete pNode;
 }
 
-VistaExtensionNode *IVistaNodeBridge::NewExtensionNode(VistaGroupNode *pParent, 
-									  IVistaExplicitCallbackInterface *pExtension, 
-									  IVistaNodeData *pData, 
-									  const std::string &sName)
-{
-	return new VistaExtensionNode(pParent, pExtension, this, pData, sName);
+VistaExtensionNode* IVistaNodeBridge::NewExtensionNode(VistaGroupNode* pParent,
+    IVistaExplicitCallbackInterface* pExtension, IVistaNodeData* pData, const std::string& sName) {
+  return new VistaExtensionNode(pParent, pExtension, this, pData, sName);
 }
 
-VistaTransformNode* IVistaNodeBridge::NewTransformNode     (VistaGroupNode* pParent, 
-										 IVistaNodeData* pData, 
-										 const std::string &sName)
-{
-	return new VistaTransformNode(pParent, this, pData, sName);
+VistaTransformNode* IVistaNodeBridge::NewTransformNode(
+    VistaGroupNode* pParent, IVistaNodeData* pData, const std::string& sName) {
+  return new VistaTransformNode(pParent, this, pData, sName);
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

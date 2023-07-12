@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTACONNECTIONFILE_H
 #define _VISTACONNECTIONFILE_H
 
@@ -46,73 +45,62 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaConnectionFile : public VistaConnection
-{
-public:
-	VistaConnectionFile( const std::string& sFilename, int iMode ) ;
-	virtual ~VistaConnectionFile();
+class VISTAINTERPROCCOMMAPI VistaConnectionFile : public VistaConnection {
+ public:
+  VistaConnectionFile(const std::string& sFilename, int iMode);
+  virtual ~VistaConnectionFile();
 
-	bool Open();
-	void Close() ;
+  bool Open();
+  void Close();
 
-	/**
-	 * Receive shall read some information from the connection
-	 *
-	 * @param   length   maximum length of bytes to be received
-	 * @param  buffer   the received information
-	 *
-	 * @return  number of received bytes
-	 */
-	int Receive ( void * buffer, const int length, int iTimeout = 0 );
+  /**
+   * Receive shall read some information from the connection
+   *
+   * @param   length   maximum length of bytes to be received
+   * @param  buffer   the received information
+   *
+   * @return  number of received bytes
+   */
+  int Receive(void* buffer, const int length, int iTimeout = 0);
 
-	/**
-	 * Send shall write some information to the connection
-	 *
-	 * @param   buffer   the information which shall be sent
-	 *          length   the length of the information to send
-	 *
-	 * @return  1   if data was completely sent
-	 *          0   otherwise
-	 */
-	int Send    ( const void * buffer, const int length );
+  /**
+   * Send shall write some information to the connection
+   *
+   * @param   buffer   the information which shall be sent
+   *          length   the length of the information to send
+   *
+   * @return  1   if data was completely sent
+   *          0   otherwise
+   */
+  int Send(const void* buffer, const int length);
 
-	bool Flush();
+  bool Flush();
 
-	HANDLE GetConnectionDescriptor() const;
-	HANDLE GetConnectionWaitForDescriptor();
+  HANDLE GetConnectionDescriptor() const;
+  HANDLE GetConnectionWaitForDescriptor();
 
-	unsigned long PendingDataSize() const ;
-	bool HasPendingData() const ;
+  unsigned long PendingDataSize() const;
+  bool          HasPendingData() const;
 
-	VistaType::uint64 GetFileSize () const;
+  VistaType::uint64 GetFileSize() const;
 
-	enum MODES {
-		READ,
-		WRITE,
-		READWRITE,
-		APPEND
-	};
-	
-	virtual bool GetIsBuffering() const;
-	virtual void SetIsBuffering( bool bBuffering );
+  enum MODES { READ, WRITE, READWRITE, APPEND };
 
-private:
-	std::string  m_sFilename;
-	int          m_iMode;
-	FILE        *m_sStream;
-	bool		 m_bBuffering;
+  virtual bool GetIsBuffering() const;
+  virtual void SetIsBuffering(bool bBuffering);
 
-protected:
+ private:
+  std::string m_sFilename;
+  int         m_iMode;
+  FILE*       m_sStream;
+  bool        m_bBuffering;
 
-	VistaConnectionFile();
-
-
+ protected:
+  VistaConnectionFile();
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif
-

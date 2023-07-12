@@ -21,18 +21,16 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDfnViewerSinkNode.h" 
+#include "VistaDfnViewerSinkNode.h"
 #include <VistaDataFlowNet/VdfnPort.h>
 
-#include <VistaKernel/DisplayManager/VistaDisplayManager.h>
-#include <VistaKernel/DisplayManager/VistaDisplaySystem.h>
-#include <VistaBase/VistaExceptionBase.h>
 #include <VistaAspects/VistaObserver.h>
 #include <VistaAspects/VistaPropertyAwareable.h>
+#include <VistaBase/VistaExceptionBase.h>
+#include <VistaKernel/DisplayManager/VistaDisplayManager.h>
+#include <VistaKernel/DisplayManager/VistaDisplaySystem.h>
 
 #include <VistaDataFlowNet/VdfnUtil.h>
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -41,80 +39,67 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaDfnViewerSinkNode::VistaDfnViewerSinkNode( VistaDisplaySystem *pSys )
-										  : IVdfnNode(),
-											m_pPosition(NULL),
-											m_pOrientation(NULL),
-											m_pLeftEye(NULL),
-											m_pRightEye(NULL),
-											m_pSystem(pSys)
-{
-	RegisterInPortPrototype( "position", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> > );
-	RegisterInPortPrototype( "orientation", new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion> >);
-	RegisterInPortPrototype( "left_eye", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
-	RegisterInPortPrototype( "right_eye", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D> >);
+VistaDfnViewerSinkNode::VistaDfnViewerSinkNode(VistaDisplaySystem* pSys)
+    : IVdfnNode()
+    , m_pPosition(NULL)
+    , m_pOrientation(NULL)
+    , m_pLeftEye(NULL)
+    , m_pRightEye(NULL)
+    , m_pSystem(pSys) {
+  RegisterInPortPrototype("position", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype("orientation", new TVdfnPortTypeCompare<TVdfnPort<VistaQuaternion>>);
+  RegisterInPortPrototype("left_eye", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
+  RegisterInPortPrototype("right_eye", new TVdfnPortTypeCompare<TVdfnPort<VistaVector3D>>);
 }
 
-
-VistaDfnViewerSinkNode::~VistaDfnViewerSinkNode()
-{
+VistaDfnViewerSinkNode::~VistaDfnViewerSinkNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaDisplaySystem *VistaDfnViewerSinkNode::GetDisplaySystem() const
-{
-	return m_pSystem;
+VistaDisplaySystem* VistaDfnViewerSinkNode::GetDisplaySystem() const {
+  return m_pSystem;
 }
 
-void VistaDfnViewerSinkNode::SetDisplaySystem(VistaDisplaySystem *pSys)
-{
-	m_pSystem = pSys;
+void VistaDfnViewerSinkNode::SetDisplaySystem(VistaDisplaySystem* pSys) {
+  m_pSystem = pSys;
 }
 
-bool VistaDfnViewerSinkNode::GetIsValid() const 
-{ 
-	return (m_pSystem && ( m_pPosition || m_pOrientation )); // others are optional
+bool VistaDfnViewerSinkNode::GetIsValid() const {
+  return (m_pSystem && (m_pPosition || m_pOrientation)); // others are optional
 }
 
-bool VistaDfnViewerSinkNode::PrepareEvaluationRun()
-{
-	m_pPosition = VdfnUtil::GetInPortTyped<TVdfnPort<VistaVector3D>*>( "position", this );
-	m_pOrientation = VdfnUtil::GetInPortTyped<TVdfnPort<VistaQuaternion>*>( "orientation", this );
-	m_pLeftEye = VdfnUtil::GetInPortTyped<TVdfnPort<VistaVector3D>*>( "left_eye", this );
-	m_pRightEye = VdfnUtil::GetInPortTyped<TVdfnPort<VistaVector3D>*>( "right_eye", this );
+bool VistaDfnViewerSinkNode::PrepareEvaluationRun() {
+  m_pPosition    = VdfnUtil::GetInPortTyped<TVdfnPort<VistaVector3D>*>("position", this);
+  m_pOrientation = VdfnUtil::GetInPortTyped<TVdfnPort<VistaQuaternion>*>("orientation", this);
+  m_pLeftEye     = VdfnUtil::GetInPortTyped<TVdfnPort<VistaVector3D>*>("left_eye", this);
+  m_pRightEye    = VdfnUtil::GetInPortTyped<TVdfnPort<VistaVector3D>*>("right_eye", this);
 
-
-	return GetIsValid();
+  return GetIsValid();
 }
 
+bool VistaDfnViewerSinkNode::DoEvalNode() {
+  if (m_pPosition)
+    m_pSystem->GetDisplaySystemProperties()->SetViewerPosition(m_pPosition->GetValueConstRef());
+  if (m_pOrientation)
+    m_pSystem->GetDisplaySystemProperties()->SetViewerOrientation(
+        m_pOrientation->GetValueConstRef());
 
-bool   VistaDfnViewerSinkNode::DoEvalNode()
-{
-	if(m_pPosition)
-		m_pSystem->GetDisplaySystemProperties()->SetViewerPosition( m_pPosition->GetValueConstRef() );
-	if(m_pOrientation)
-		m_pSystem->GetDisplaySystemProperties()->SetViewerOrientation( m_pOrientation->GetValueConstRef() );
+  if (m_pLeftEye) {
+    const VistaVector3D& vL = m_pLeftEye->GetValueConstRef();
+    m_pSystem->GetDisplaySystemProperties()->SetLeftEyeOffset(vL[0], vL[1], vL[2]);
+  }
 
-	if(m_pLeftEye)
-	{
-		const VistaVector3D &vL = m_pLeftEye->GetValueConstRef();
-		m_pSystem->GetDisplaySystemProperties()->SetLeftEyeOffset( vL[0], vL[1], vL[2] );
-	}
+  if (m_pRightEye) {
+    const VistaVector3D& vR = m_pRightEye->GetValueConstRef();
+    m_pSystem->GetDisplaySystemProperties()->SetRightEyeOffset(vR[0], vR[1], vR[2]);
+  }
 
-	if(m_pRightEye)
-	{
-		const VistaVector3D &vR = m_pRightEye->GetValueConstRef();
-		m_pSystem->GetDisplaySystemProperties()->SetRightEyeOffset(vR[0],vR[1],vR[2]);
-	}
-
-	return true;
+  return true;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

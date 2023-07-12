@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaTCPClientSocket.h"
 #include "VistaSocketAddress.h"
 
@@ -36,33 +35,26 @@ using std::string;
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-
 VistaTCPClientSocket::VistaTCPClientSocket()
-: VistaTCPSocket()
-{
+    : VistaTCPSocket() {
 }
 
-
-VistaTCPClientSocket::~VistaTCPClientSocket()
-{
+VistaTCPClientSocket::~VistaTCPClientSocket() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
-bool VistaTCPClientSocket::ConnectToServer(const string &sServerHostName, int iServerPort)
-{
-	if(!GetIsOpen()) // check whether this socket is "open"
-		if(!OpenSocket()) // no, try to open it
-			return false; // it failed, return false
+bool VistaTCPClientSocket::ConnectToServer(const string& sServerHostName, int iServerPort) {
+  if (!GetIsOpen())    // check whether this socket is "open"
+    if (!OpenSocket()) // no, try to open it
+      return false;    // it failed, return false
 
-	VistaSocketAddress ipad(sServerHostName, iServerPort); // open worked, so try to connect to server @ the given name+port
-	return ConnectToAddress(ipad);
+  VistaSocketAddress ipad(sServerHostName,
+      iServerPort); // open worked, so try to connect to server @ the given name+port
+  return ConnectToAddress(ipad);
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

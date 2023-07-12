@@ -21,52 +21,47 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTASIXENSECOMMONSHARE_H
 #define _VISTASIXENSECOMMONSHARE_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
 #include <VistaBase/VistaBaseTypes.h>
 
-namespace VistaSixenseMeasures
-{
-	/**
-	 * memory layout of the global type sensor
-	 */
-	struct Measure
-	{
-		float m_a3fPosition[3];
-		float m_a3x3fRotationMatrix[3][3];
-		float m_nJoystickX;
-		float m_nJoystickY;
-		float m_nTrigger;
-		unsigned int m_nButtons;
-		unsigned char m_nSequenceNumber;
-		float a4fRotationQuaternion[4];
-		unsigned short m_nFirmwareVersion;
-		unsigned short m_nHardwareRevision;
-		unsigned short m_nPacketType;
-		unsigned short m_nMagneticFrequency;
-		int m_nEnabled;
-		int m_nControllerIndex;
-		unsigned char m_cIsDocked;
-		unsigned char m_cWhichHand;
-		unsigned char m_cHemisphereTrackingEnabled;
-	};
+namespace VistaSixenseMeasures {
+/**
+ * memory layout of the global type sensor
+ */
+struct Measure {
+  float          m_a3fPosition[3];
+  float          m_a3x3fRotationMatrix[3][3];
+  float          m_nJoystickX;
+  float          m_nJoystickY;
+  float          m_nTrigger;
+  unsigned int   m_nButtons;
+  unsigned char  m_nSequenceNumber;
+  float          a4fRotationQuaternion[4];
+  unsigned short m_nFirmwareVersion;
+  unsigned short m_nHardwareRevision;
+  unsigned short m_nPacketType;
+  unsigned short m_nMagneticFrequency;
+  int            m_nEnabled;
+  int            m_nControllerIndex;
+  unsigned char  m_cIsDocked;
+  unsigned char  m_cWhichHand;
+  unsigned char  m_cHemisphereTrackingEnabled;
+};
 
-	// button mask definitions
-	static const int g_nButton1Mask = (0x01<<5);
-	static const int g_nButton2Mask = (0x01<<6);
-	static const int g_nButton3Mask = (0x01<<3);
-	static const int g_nButton4Mask = (0x01<<4);
-	static const int g_nButtonBumperMask = (0x01<<7);
-	static const int g_nButtonJoystickMask = (0x01<<8);
-	static const int g_nButtonStartMask = (0x01<<0);
-}
-
+// button mask definitions
+static const int g_nButton1Mask        = (0x01 << 5);
+static const int g_nButton2Mask        = (0x01 << 6);
+static const int g_nButton3Mask        = (0x01 << 3);
+static const int g_nButton4Mask        = (0x01 << 4);
+static const int g_nButtonBumperMask   = (0x01 << 7);
+static const int g_nButtonJoystickMask = (0x01 << 8);
+static const int g_nButtonStartMask    = (0x01 << 0);
+} // namespace VistaSixenseMeasures
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

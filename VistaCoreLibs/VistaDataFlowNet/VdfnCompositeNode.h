@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VDFNCOMPOSITENODE_H__
 #define _VDFNCOMPOSITENODE_H__
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -36,12 +34,10 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 class VdfnGraph;
-
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -66,86 +62,80 @@ class VdfnGraph;
  *
  * @ingroup VdfnNodes
  */
-class VISTADFNAPI VdfnCompositeNode : public IVdfnNode
-{
-public:
-	/**
-	 * provide a VdfnGraph with proper exports.
-	 * - direction in exports will get inports
-	 * - direction out exports will get outports
-	 * @param pGraph a non NULL pointer to a graph to use for evaluation
-	 */
-	VdfnCompositeNode( VdfnGraph *pGraph );
+class VISTADFNAPI VdfnCompositeNode : public IVdfnNode {
+ public:
+  /**
+   * provide a VdfnGraph with proper exports.
+   * - direction in exports will get inports
+   * - direction out exports will get outports
+   * @param pGraph a non NULL pointer to a graph to use for evaluation
+   */
+  VdfnCompositeNode(VdfnGraph* pGraph);
 
-	~VdfnCompositeNode();
+  ~VdfnCompositeNode();
 
+  /**
+   * forwards event to graph
+   * @param dTs the current timestamp
+   */
+  virtual void OnActivation(double dTs);
 
-	/**
-	 * forwards event to graph
-	 * @param dTs the current timestamp
-	 */
-	virtual void OnActivation( double dTs );
+  /**
+   * forwards event to graph
+   * @param dTs the current timestamp
+   */
+  virtual void OnDeactivation(double dTs);
 
-	/**
-	 * forwards event to graph
-	 * @param dTs the current timestamp
-	 */
-	virtual void OnDeactivation( double dTs );
+  /**
+   * overrides the default implementation, checks whether it can find
+   * sName as an inport (is determined by the direction-in ports of the
+   * graph's export declaration and the there given mapping), if one is found,
+   * it will forward the port to the co-responding graph node and set the
+   * port directly with that node.
+   * @param sName the name of the port to set
+   * @param pPort a pointer to the port to set (not-NULL)
+   */
+  virtual bool SetInPort(const std::string& sName, IVdfnPort* pPort);
 
-	/**
-	 * overrides the default implementation, checks whether it can find
-	 * sName as an inport (is determined by the direction-in ports of the
-	 * graph's export declaration and the there given mapping), if one is found,
-	 * it will forward the port to the co-responding graph node and set the
-	 * port directly with that node.
-	 * @param sName the name of the port to set
-	 * @param pPort a pointer to the port to set (not-NULL)
-	 */
-	virtual bool SetInPort(const std::string &sName, IVdfnPort *pPort);
+  /**
+   * @return this node is valid when the graph is set during construction
+   */
+  bool GetIsValid() const;
 
-	/**
-	 * @return this node is valid when the graph is set during construction
-	 */
-	bool GetIsValid() const;
+  /**
+   * calls Evaluate(0) on the graph
+   * @return GetIsValid()
+   */
+  bool PrepareEvaluationRun();
 
-	/**
-	 * calls Evaluate(0) on the graph
-	 * @return GetIsValid()
-	 */
-	bool PrepareEvaluationRun();
+  /**
+   * the value of this property is evaluated upon a call to CreatePorts()
+   * which in turn is called upon creation.
+   * @return true when any of the OUTPORTS is connected to a master-sim node
+   */
+  virtual bool GetIsMasterSim() const;
 
+  const VdfnGraph* GetGraph() const;
 
-	/**
-	 * the value of this property is evaluated upon a call to CreatePorts()
-	 * which in turn is called upon creation.
-	 * @return true when any of the OUTPORTS is connected to a master-sim node
-	 */
-	virtual bool GetIsMasterSim() const;
+ protected:
+  /**
+   * forwards to VdfnGraph::EvaluateGraph()
+   * @return the return value VdfnGraph::EvaluateGraph() for the composite's graph
+   */
+  bool DoEvalNode();
 
-	const VdfnGraph *GetGraph() const;
+ private:
+  virtual bool CreatePorts();
+  VdfnGraph*   m_pGraph;
 
-protected:
-	/**
-	 * forwards to VdfnGraph::EvaluateGraph()
-	 * @return the return value VdfnGraph::EvaluateGraph() for the composite's graph
-	 */
-	bool DoEvalNode();
-
-private:
-	virtual bool CreatePorts();
-	VdfnGraph *m_pGraph;
-
-	std::list<VdfnGraph::ExportData> m_liExports;
-	typedef std::map<std::string,VdfnGraph::ExportData> NAMEMAP;
-	NAMEMAP m_InportMap;
-	bool m_bContainsMasterSim;
-
+  std::list<VdfnGraph::ExportData>                     m_liExports;
+  typedef std::map<std::string, VdfnGraph::ExportData> NAMEMAP;
+  NAMEMAP                                              m_InportMap;
+  bool                                                 m_bContainsMasterSim;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
 
 #endif

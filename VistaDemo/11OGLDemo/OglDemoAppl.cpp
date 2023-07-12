@@ -21,18 +21,17 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "OglDemoAppl.h"
 #include "OglDrawObject.h"
 
 #include <VistaKernel/GraphicsManager/VistaGraphicsManager.h>
+#include <VistaKernel/GraphicsManager/VistaOpenGLNode.h>
 #include <VistaKernel/GraphicsManager/VistaSceneGraph.h>
 #include <VistaKernel/GraphicsManager/VistaTransformNode.h>
-#include <VistaKernel/GraphicsManager/VistaOpenGLNode.h>
 
+#include <VistaBase/VistaExceptionBase.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
-#include <VistaBase/VistaExceptionBase.h>
 
 #include <cassert>
 
@@ -41,36 +40,34 @@ using namespace std;
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
-OglDemoAppl::OglDemoAppl( int argc, char * argv[] ) : m_vistaSystem( VistaSystem() )
-{
+OglDemoAppl::OglDemoAppl(int argc, char* argv[])
+    : m_vistaSystem(VistaSystem()) {
 
-	std::list<std::string> liSearchPaths;
-	liSearchPaths.push_back( "../configfiles/" );
-	m_vistaSystem.SetIniSearchPaths( liSearchPaths );
-	
-	m_vistaSystem.IntroMsg ();
+  std::list<std::string> liSearchPaths;
+  liSearchPaths.push_back("../configfiles/");
+  m_vistaSystem.SetIniSearchPaths(liSearchPaths);
 
-	// init system (the above created handler is now known by the system)
-	bool initOK = m_vistaSystem.Init ( argc, argv );
-	
-	if( initOK )
-		CreateScene();
+  m_vistaSystem.IntroMsg();
 
-	assert(initOK && m_vistaSystem.GetKeyboardSystemControl());
+  // init system (the above created handler is now known by the system)
+  bool initOK = m_vistaSystem.Init(argc, argv);
 
-	if(m_vistaSystem.GetDisplayManager()->GetDisplaySystem(0)== 0 )
-		VISTA_THROW( "No DisplaySystem found" , 1);
+  if (initOK)
+    CreateScene();
 
-	std::map<std::string,VistaWindow*> wmap=m_vistaSystem.GetDisplayManager()->GetWindows();
-	if (wmap.empty())
-		VISTA_THROW( "No Window found" , 1);
+  assert(initOK && m_vistaSystem.GetKeyboardSystemControl());
 
-	(*wmap.begin()).second->GetWindowProperties()->SetTitle(argv[0]);
+  if (m_vistaSystem.GetDisplayManager()->GetDisplaySystem(0) == 0)
+    VISTA_THROW("No DisplaySystem found", 1);
+
+  std::map<std::string, VistaWindow*> wmap = m_vistaSystem.GetDisplayManager()->GetWindows();
+  if (wmap.empty())
+    VISTA_THROW("No Window found", 1);
+
+  (*wmap.begin()).second->GetWindowProperties()->SetTitle(argv[0]);
 }
 
-OglDemoAppl::~OglDemoAppl()
-{
-
+OglDemoAppl::~OglDemoAppl() {
 }
 
 /*============================================================================*/
@@ -82,10 +79,9 @@ OglDemoAppl::~OglDemoAppl()
 /*  NAME      :   Run                                                         */
 /*                                                                            */
 /*============================================================================*/
-void OglDemoAppl::Run ()
-{
-	// Start Universe
-	m_vistaSystem.Run();
+void OglDemoAppl::Run() {
+  // Start Universe
+  m_vistaSystem.Run();
 }
 
 /*============================================================================*/
@@ -93,21 +89,19 @@ void OglDemoAppl::Run ()
 /*  NAME      :   CreateScene                                                 */
 /*                                                                            */
 /*============================================================================*/
-void OglDemoAppl::CreateScene ()
-{
-	VistaGraphicsManager* pGraphicsManager = m_vistaSystem.GetGraphicsManager();
-	
-	assert(pGraphicsManager && "You have to have a graphics manager here!");
+void OglDemoAppl::CreateScene() {
+  VistaGraphicsManager* pGraphicsManager = m_vistaSystem.GetGraphicsManager();
 
-	VistaSceneGraph* pSG = pGraphicsManager->GetSceneGraph();
+  assert(pGraphicsManager && "You have to have a graphics manager here!");
 
-	pSG->GetRoot()->SetName("ViSTA-ROOT");
-	
-	// an OGL draw object
-	m_pOglDrawObj = new OglDrawObject;
+  VistaSceneGraph* pSG = pGraphicsManager->GetSceneGraph();
 
-	// ask SG to generate an OGL node
-	m_pOglRootNode = pSG->NewOpenGLNode(pSG->GetRoot(), m_pOglDrawObj);
-    m_pOglRootNode->SetName("OpenGL demo node");
+  pSG->GetRoot()->SetName("ViSTA-ROOT");
+
+  // an OGL draw object
+  m_pOglDrawObj = new OglDrawObject;
+
+  // ask SG to generate an OGL node
+  m_pOglRootNode = pSG->NewOpenGLNode(pSG->GetRoot(), m_pOglDrawObj);
+  m_pOglRootNode->SetName("OpenGL demo node");
 }
-

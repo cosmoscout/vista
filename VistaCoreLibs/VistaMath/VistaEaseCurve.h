@@ -71,69 +71,66 @@
  * - circular
  */
 
-class VISTAMATHAPI VistaEaseCurve
-{
-public:
-	enum eEaseCurveType
-	{
-		LINEAR,
-		QUADRATIC_IN,
-		QUADRATIC_OUT,
-		QUADRATIC_IN_OUT,
-		QUADRATIC_OUT_IN,
-		CUBIC_IN,
-		CUBIC_OUT,
-		CUBIC_IN_OUT,
-		CUBIC_OUT_IN,
-		SIN_IN,
-		SIN_OUT,
-		SIN_IN_OUT,
-		SIN_OUT_IN,
-		CIRC_IN,
-		CIRC_OUT,
-		CIRC_IN_OUT,
-		CIRC_OUT_IN
-	};
+class VISTAMATHAPI VistaEaseCurve {
+ public:
+  enum eEaseCurveType {
+    LINEAR,
+    QUADRATIC_IN,
+    QUADRATIC_OUT,
+    QUADRATIC_IN_OUT,
+    QUADRATIC_OUT_IN,
+    CUBIC_IN,
+    CUBIC_OUT,
+    CUBIC_IN_OUT,
+    CUBIC_OUT_IN,
+    SIN_IN,
+    SIN_OUT,
+    SIN_IN_OUT,
+    SIN_OUT_IN,
+    CIRC_IN,
+    CIRC_OUT,
+    CIRC_IN_OUT,
+    CIRC_OUT_IN
+  };
 
-	VistaEaseCurve();
+  VistaEaseCurve();
 
-	virtual ~VistaEaseCurve();
+  virtual ~VistaEaseCurve();
 
-	/**
-	 * Returns a transformed value in the range of [0..1] for a given value that
-	 * also lies in the range of [0..1]. The function used to transform the
-	 * value is chosen based on the ease curve type, specified by SetType(...)
-	 * @return	double
-	 * @param	double t
-	 */
-	virtual double GetValue(double t) const;
+  /**
+   * Returns a transformed value in the range of [0..1] for a given value that
+   * also lies in the range of [0..1]. The function used to transform the
+   * value is chosen based on the ease curve type, specified by SetType(...)
+   * @return	double
+   * @param	double t
+   */
+  virtual double GetValue(double t) const;
 
-	void SetType(VistaEaseCurve::eEaseCurveType val);
+  void SetType(VistaEaseCurve::eEaseCurveType val);
 
-	VistaEaseCurve::eEaseCurveType GetType() const;
+  VistaEaseCurve::eEaseCurveType GetType() const;
 
-protected:
-	typedef double(*ValueFn)(double);
+ protected:
+  typedef double (*ValueFn)(double);
 
-	static inline double GetInValue(double t, ValueFn pValueFn);
+  static inline double GetInValue(double t, ValueFn pValueFn);
 
-	static inline double GetOutValue(double t, ValueFn pValueFn);
+  static inline double GetOutValue(double t, ValueFn pValueFn);
 
-	static inline double GetInOutValue(double t, ValueFn pValueFn);
+  static inline double GetInOutValue(double t, ValueFn pValueFn);
 
-	static inline double GetOutInValue(double t, ValueFn pValueFn);
+  static inline double GetOutInValue(double t, ValueFn pValueFn);
 
-	static inline double GetQuadraticValue(double t);
+  static inline double GetQuadraticValue(double t);
 
-	static inline double GetCubicValue(double t);
+  static inline double GetCubicValue(double t);
 
-	static inline double GetSinValue(double t);
+  static inline double GetSinValue(double t);
 
-	static inline double GetCircValue(double t);
+  static inline double GetCircValue(double t);
 
-private:
-	eEaseCurveType	m_eType;
+ private:
+  eEaseCurveType m_eType;
 };
-
 
 #endif // _VFL_EASE_CURVE_H_201109121643

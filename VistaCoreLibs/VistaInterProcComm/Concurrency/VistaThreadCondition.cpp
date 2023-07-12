@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaThreadCondition.h"
 #include "Imp/VistaThreadConditionImp.h"
 #include "VistaMutex.h"
@@ -32,42 +31,34 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaThreadCondition::VistaThreadCondition()
-{
-	m_pConditionImp = IVistaThreadConditionImp::CreateThreadConditionImp();    
+VistaThreadCondition::VistaThreadCondition() {
+  m_pConditionImp = IVistaThreadConditionImp::CreateThreadConditionImp();
 }
 
-VistaThreadCondition::~VistaThreadCondition()
-{
-	delete m_pConditionImp;
+VistaThreadCondition::~VistaThreadCondition() {
+  delete m_pConditionImp;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int VistaThreadCondition::SignalCondition()
-{
-	return m_pConditionImp->SignalCondition();
+int VistaThreadCondition::SignalCondition() {
+  return m_pConditionImp->SignalCondition();
 }
 
-int VistaThreadCondition::BroadcastCondition()
-{
-	return m_pConditionImp->BroadcastCondition();
+int VistaThreadCondition::BroadcastCondition() {
+  return m_pConditionImp->BroadcastCondition();
 }
 
-int VistaThreadCondition::WaitForCondition(VistaMutex &pMutex)
-{
-	return m_pConditionImp->WaitForCondition(pMutex.GetImplementation());
+int VistaThreadCondition::WaitForCondition(VistaMutex& pMutex) {
+  return m_pConditionImp->WaitForCondition(pMutex.GetImplementation());
 }
 
-int VistaThreadCondition::WaitForConditionWithTimeout(VistaMutex &pMutex, int iMsecs)
-{
-	return m_pConditionImp->WaitForConditionWithTimeout(pMutex.GetImplementation(), iMsecs);
+int VistaThreadCondition::WaitForConditionWithTimeout(VistaMutex& pMutex, int iMsecs) {
+  return m_pConditionImp->WaitForConditionWithTimeout(pMutex.GetImplementation(), iMsecs);
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

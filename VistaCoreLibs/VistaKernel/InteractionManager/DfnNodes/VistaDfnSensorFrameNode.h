@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADFNSENSORFRAMENODE_H
 #define _VISTADFNSENSORFRAMENODE_H
 
@@ -31,13 +30,12 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <map>
-#include <VistaDataFlowNet/VdfnSerializer.h>
-#include <VistaDataFlowNet/VdfnNode.h>
-#include <VistaDataFlowNet/VdfnPort.h>
-#include <VistaDataFlowNet/VdfnNodeFactory.h>
 #include <VistaBase/VistaVectorMath.h>
-
+#include <VistaDataFlowNet/VdfnNode.h>
+#include <VistaDataFlowNet/VdfnNodeFactory.h>
+#include <VistaDataFlowNet/VdfnPort.h>
+#include <VistaDataFlowNet/VdfnSerializer.h>
+#include <map>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -53,7 +51,7 @@
 /**
  * Transforms an object's position and rotation by other the input values
  * (translate, rotate, scale).
- * 
+ *
  * @ingroup VdfnNodes
  * @inport{pos_in, VistaVector3D, mandatory, position of an object}
  * @inport{ori_in, VistaQuaternion, mandatory, orientation of an object}
@@ -62,44 +60,37 @@
  * @inport{scale, float, mandatory, scale to apply}
  * @inport{lc_ori, VistaQuaternion, optional, local orientation to apply}
  *
- * @outport{position, VistaVector3D, the far extent of the projection}  
- * @outport{orientation, VistaQuaternion, the far extent of the projection}  
+ * @outport{position, VistaVector3D, the far extent of the projection}
+ * @outport{orientation, VistaQuaternion, the far extent of the projection}
  */
-class VISTAKERNELAPI VistaDfnSensorFrameNode : public IVdfnNode
-{
-public:
-	/** @todo no kernel dependencies -> move to DFN (or separate node lib) */
-	VistaDfnSensorFrameNode();
-	~VistaDfnSensorFrameNode();
+class VISTAKERNELAPI VistaDfnSensorFrameNode : public IVdfnNode {
+ public:
+  /** @todo no kernel dependencies -> move to DFN (or separate node lib) */
+  VistaDfnSensorFrameNode();
+  ~VistaDfnSensorFrameNode();
 
-	virtual bool GetIsValid() const;
-	virtual bool PrepareEvaluationRun();
+  virtual bool GetIsValid() const;
+  virtual bool PrepareEvaluationRun();
 
-protected:
-	virtual bool   DoEvalNode();
-	virtual unsigned int    CalcUpdateNeededScore() const;
+ protected:
+  virtual bool         DoEvalNode();
+  virtual unsigned int CalcUpdateNeededScore() const;
 
-private:
-	TVdfnPort<VistaVector3D>   *m_pPosIn,
-								*m_pTranslation,
-								*m_pTransPosOut;
-	TVdfnPort<float>            *m_pScale;
-	TVdfnPort<VistaQuaternion> *m_pOriIn,
-								*m_pOrientation,
-								*m_pLocalOri,
-								*m_pTransOriOut;
+ private:
+  TVdfnPort<VistaVector3D>*  m_pPosIn, *m_pTranslation, *m_pTransPosOut;
+  TVdfnPort<float>*          m_pScale;
+  TVdfnPort<VistaQuaternion>*m_pOriIn, *m_pOrientation, *m_pLocalOri, *m_pTransOriOut;
 
-	typedef std::map<IVdfnPort*,unsigned int> REFMAP;
-	struct _sUpdate
-	{
-		_sUpdate()
-			: m_nScore(0) {}
+  typedef std::map<IVdfnPort*, unsigned int> REFMAP;
+  struct _sUpdate {
+    _sUpdate()
+        : m_nScore(0) {
+    }
 
-	   unsigned int                       m_nScore;
-	   VistaTransformMatrix              m_mtPosTrans;
-	   REFMAP m_mpRevision;
-	} *m_pUpd;
-
+    unsigned int         m_nScore;
+    VistaTransformMatrix m_mtPosTrans;
+    REFMAP               m_mpRevision;
+  } * m_pUpd;
 };
 
 /*============================================================================*/
@@ -107,4 +98,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTADFNSENSORFRAMENODE_H
-

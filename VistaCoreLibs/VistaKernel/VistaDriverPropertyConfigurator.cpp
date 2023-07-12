@@ -21,12 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VistaDriverPropertyConfigurator.h" 
+#include "VistaDriverPropertyConfigurator.h"
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 
-#include <set>
 #include <list>
+#include <set>
 #include <string>
 using namespace std;
 
@@ -35,85 +34,71 @@ using namespace std;
 /*============================================================================*/
 
 VistaDriverPropertyConfigurator::IConfigurator::IConfigurator()
-: m_pDriver(NULL)
-{}
+    : m_pDriver(NULL) {
+}
 
-VistaDriverPropertyConfigurator::IConfigurator::~IConfigurator() 
-{}
+VistaDriverPropertyConfigurator::IConfigurator::~IConfigurator() {
+}
 
-bool VistaDriverPropertyConfigurator::IConfigurator::Configure( IVistaDeviceDriver* pDriver,
-															const VistaPropertyList& oDriverSection,
-															const VistaPropertyList& oConfig )
-{
-	m_pDriver = pDriver;
-	SetPropertiesByList( oDriverSection );
-	m_pDriver = NULL;
-	return true;
-}	
+bool VistaDriverPropertyConfigurator::IConfigurator::Configure(IVistaDeviceDriver* pDriver,
+    const VistaPropertyList& oDriverSection, const VistaPropertyList& oConfig) {
+  m_pDriver = pDriver;
+  SetPropertiesByList(oDriverSection);
+  m_pDriver = NULL;
+  return true;
+}
 
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaDriverPropertyConfigurator::VistaDriverPropertyConfigurator()
-{
+VistaDriverPropertyConfigurator::VistaDriverPropertyConfigurator() {
 }
 
-VistaDriverPropertyConfigurator::~VistaDriverPropertyConfigurator()
-{
-	std::set<IConfigurator*> st;
+VistaDriverPropertyConfigurator::~VistaDriverPropertyConfigurator() {
+  std::set<IConfigurator*> st;
 
-	for(CONFIGMAP::iterator it = m_mpConfigurators.begin();
-		it != m_mpConfigurators.end(); ++it)
-		st.insert( (*it).second.m_pConf );
+  for (CONFIGMAP::iterator it = m_mpConfigurators.begin(); it != m_mpConfigurators.end(); ++it)
+    st.insert((*it).second.m_pConf);
 
-
-	for(std::set<IConfigurator*>::iterator sit = st.begin();
-		sit != st.end(); ++sit)
-			delete (*sit);
+  for (std::set<IConfigurator*>::iterator sit = st.begin(); sit != st.end(); ++sit)
+    delete (*sit);
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-
-void VistaDriverPropertyConfigurator::RegisterConfigurator(const std::string &sTriggerKey, 
-															IConfigurator *pConf,
-															const std::list<std::string> &liDepends,
-															int nPrio)
-{
-	m_mpConfigurators[sTriggerKey] = _sHlp(pConf, nPrio, liDepends);
+void VistaDriverPropertyConfigurator::RegisterConfigurator(const std::string& sTriggerKey,
+    IConfigurator* pConf, const std::list<std::string>& liDepends, int nPrio) {
+  m_mpConfigurators[sTriggerKey] = _sHlp(pConf, nPrio, liDepends);
 }
 
+VistaDriverPropertyConfigurator::IConfigurator*
+VistaDriverPropertyConfigurator::RetrieveConfigurator(const std::string& sTriggerKey) const {
+  CONFIGMAP::const_iterator cit = m_mpConfigurators.find(sTriggerKey);
+  if (cit == m_mpConfigurators.end())
+    return NULL;
 
-VistaDriverPropertyConfigurator::IConfigurator *VistaDriverPropertyConfigurator::RetrieveConfigurator(const std::string &sTriggerKey) const
-{
-	CONFIGMAP::const_iterator cit = m_mpConfigurators.find(sTriggerKey);
-	if( cit == m_mpConfigurators.end())
-		return NULL;
-
-	return (*cit).second.m_pConf;
+  return (*cit).second.m_pConf;
 }
 
-int VistaDriverPropertyConfigurator::GetPrioForTrigger(const std::string &sTriggerKey) const
-{
-	CONFIGMAP::const_iterator cit = m_mpConfigurators.find(sTriggerKey);
-	if( cit == m_mpConfigurators.end())
-		return -1;
+int VistaDriverPropertyConfigurator::GetPrioForTrigger(const std::string& sTriggerKey) const {
+  CONFIGMAP::const_iterator cit = m_mpConfigurators.find(sTriggerKey);
+  if (cit == m_mpConfigurators.end())
+    return -1;
 
-	return (*cit).second.m_nPrio;
+  return (*cit).second.m_nPrio;
 }
 
-std::list<std::string> VistaDriverPropertyConfigurator::GetDependsForTrigger(const std::string &sTrigger) const
-{
-	CONFIGMAP::const_iterator cit = m_mpConfigurators.find(sTrigger);
-	if( cit == m_mpConfigurators.end())
-		return std::list<std::string>();
+std::list<std::string> VistaDriverPropertyConfigurator::GetDependsForTrigger(
+    const std::string& sTrigger) const {
+  CONFIGMAP::const_iterator cit = m_mpConfigurators.find(sTrigger);
+  if (cit == m_mpConfigurators.end())
+    return std::list<std::string>();
 
-	return (*cit).second.m_liDependsOn;
+  return (*cit).second.m_liDependsOn;
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

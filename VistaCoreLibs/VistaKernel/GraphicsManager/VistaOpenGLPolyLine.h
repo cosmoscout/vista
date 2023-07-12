@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENGLPOLYLINE_H
 #define _VISTAOPENGLPOLYLINE_H
 
@@ -29,9 +28,9 @@
 /* INCLUDES                                                                   */
 /*============================================================================*/
 
-#include <VistaKernel/VistaKernelConfig.h>
-#include <VistaKernel/GraphicsManager/VistaOpenGLDraw.h>
 #include <VistaKernel/GraphicsManager/VistaGeometry.h>
+#include <VistaKernel/GraphicsManager/VistaOpenGLDraw.h>
+#include <VistaKernel/VistaKernelConfig.h>
 #include <VistaMath/VistaBoundingBox.h>
 
 /*============================================================================*/
@@ -49,71 +48,65 @@ class IVistaNode;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaOpenGLPolyLine
-{
-public:
-	class VISTAKERNELAPI COpenGLPolyLineDraw : public IVistaOpenGLDraw
-	{
-	public:
-		COpenGLPolyLineDraw();
-		virtual ~COpenGLPolyLineDraw();
+class VISTAKERNELAPI VistaOpenGLPolyLine {
+ public:
+  class VISTAKERNELAPI COpenGLPolyLineDraw : public IVistaOpenGLDraw {
+   public:
+    COpenGLPolyLineDraw();
+    virtual ~COpenGLPolyLineDraw();
 
-		// IVistaOpenGLDraw interface
-		virtual bool Do();
-		virtual bool GetBoundingBox(VistaBoundingBox &bb);
+    // IVistaOpenGLDraw interface
+    virtual bool Do();
+    virtual bool GetBoundingBox(VistaBoundingBox& bb);
 
-		void SetLinePoints(const std::vector<float> &vecPoints);
-		bool GetLinePoints(std::vector<float> &vecPoints) const;
+    void SetLinePoints(const std::vector<float>& vecPoints);
+    bool GetLinePoints(std::vector<float>& vecPoints) const;
 
-		enum eMode
-		{
-			LINE_OPEN=0,
-			LINE_CLOSED
-		};
+    enum eMode { LINE_OPEN = 0, LINE_CLOSED };
 
-		eMode GetLineMode() const;
-		void  SetLineMode(eMode eMd);
+    eMode GetLineMode() const;
+    void  SetLineMode(eMode eMd);
 
-		VistaMaterial GetMaterial() const;
-		void           SetMaterial(const VistaMaterial &mat);
+    VistaMaterial GetMaterial() const;
+    void          SetMaterial(const VistaMaterial& mat);
 
-	protected:
-		bool UpdateDisplayList();
-	private:
-		int m_iDispId;
-		bool m_bDlistDirty;
+   protected:
+    bool UpdateDisplayList();
 
-		std::vector<float> m_vecPoints;
-		VistaBoundingBox   m_oBBox;
-		eMode m_eMode;
-		VistaMaterial     m_oMat;
-	};
-public:
+   private:
+    int  m_iDispId;
+    bool m_bDlistDirty;
 
-	VistaOpenGLPolyLine(VistaSceneGraph* pVistaSceneGraph, VistaGroupNode* pParent);
+    std::vector<float> m_vecPoints;
+    VistaBoundingBox   m_oBBox;
+    eMode              m_eMode;
+    VistaMaterial      m_oMat;
+  };
 
-	virtual ~VistaOpenGLPolyLine();
+ public:
+  VistaOpenGLPolyLine(VistaSceneGraph* pVistaSceneGraph, VistaGroupNode* pParent);
 
-	IVistaNode* GetVistaNode() const;
+  virtual ~VistaOpenGLPolyLine();
 
-	void SetLinePoints(const std::vector<float> &vecPoints);
-	bool GetLinePoints(std::vector<float> &vecPoints) const;
+  IVistaNode* GetVistaNode() const;
 
-	bool GetRemoveFromSGOnDelete() const;
-	void SetRemoveFromSGOnDelete(bool bRemove);
+  void SetLinePoints(const std::vector<float>& vecPoints);
+  bool GetLinePoints(std::vector<float>& vecPoints) const;
 
-	bool GetIsClosedLine() const;
-	void SetIsClosedLine(bool bLineClosed);
+  bool GetRemoveFromSGOnDelete() const;
+  void SetRemoveFromSGOnDelete(bool bRemove);
 
-	bool SetMaterial(const VistaMaterial &oMat) const;
-	bool SetColor (const VistaColor  & color);
+  bool GetIsClosedLine() const;
+  void SetIsClosedLine(bool bLineClosed);
 
-private:
-	VistaOpenGLNode		*m_pOglNode;
-	COpenGLPolyLineDraw		*m_pDrawInterface;
-	/** default is true */
-	bool					m_bRemoveFromSGOnDelete;
+  bool SetMaterial(const VistaMaterial& oMat) const;
+  bool SetColor(const VistaColor& color);
 
+ private:
+  VistaOpenGLNode*     m_pOglNode;
+  COpenGLPolyLineDraw* m_pDrawInterface;
+  /** default is true */
+  bool m_bRemoveFromSGOnDelete;
 };
 
 /*============================================================================*/

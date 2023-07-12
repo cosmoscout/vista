@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATRANSFORMNODE_H
 #define _VISTATRANSFORMNODE_H
 
@@ -35,11 +34,11 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 #ifdef WIN32
-	// this warning says that we use multiple inheritance and have a diamond
-	// we know this, and constructed it to work correctly. This warning just
-	// tells us that everything works as expected, so we deactivate it locally
-	#pragma warning(push)
-	#pragma warning(disable: 4250)
+// this warning says that we use multiple inheritance and have a diamond
+// we know this, and constructed it to work correctly. This warning just
+// tells us that everything works as expected, so we deactivate it locally
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
@@ -49,78 +48,75 @@
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELAPI VistaTransformNode : public VistaGroupNode, public IVistaTransformable
-{
-	friend class VistaSceneGraph;
-	friend class IVistaNodeBridge;
-public:
-	virtual ~VistaTransformNode();
+class VISTAKERNELAPI VistaTransformNode : public VistaGroupNode, public IVistaTransformable {
+  friend class VistaSceneGraph;
+  friend class IVistaNodeBridge;
 
-	// Transformable implementation
-	virtual bool SetTranslation( const VistaVector3D& v3Translation );
-	virtual bool SetTranslation( const float fX, const float fY, const float fZ );
-	virtual bool SetTranslation( const float a3fTranslation[3] );
-	virtual bool SetTranslation( const double a3dTranslation[3] );
-	
-	virtual bool Translate( const VistaVector3D& v3Translation );
-	virtual bool Translate( const float fX, const float fY, const float fZ );
-	virtual bool Translate( const float a3fTranslation[3] );
-	virtual bool Translate( const double a3dTranslation[3] );
-	
-	virtual bool SetRotation( const VistaQuaternion& qRotation );
-	virtual bool SetRotation( const float fX, const float fY, const float fZ, const float fW );
-	virtual bool SetRotation( const float a4fRotation[4] );
-	virtual bool SetRotation( const double a4dRotation[4] );
-	
-	virtual bool Rotate( const VistaQuaternion& qRotation );
-	virtual bool Rotate( const float fX, const float fY, const float fZ, const float fW );
-	virtual bool Rotate( const float a4fRotation[4] );
-	virtual bool Rotate( const double a4dRotation[4] );
+ public:
+  virtual ~VistaTransformNode();
 
-	virtual bool SetScale( const VistaVector3D& v3Scale );
-	virtual bool SetScale( const float fX, const float fY, const float fZ );
-	virtual bool SetScale( const float a3fScale[3] );
-	virtual bool SetScale( const double a3dScale[3] );
+  // Transformable implementation
+  virtual bool SetTranslation(const VistaVector3D& v3Translation);
+  virtual bool SetTranslation(const float fX, const float fY, const float fZ);
+  virtual bool SetTranslation(const float a3fTranslation[3]);
+  virtual bool SetTranslation(const double a3dTranslation[3]);
 
-	virtual bool Scale( const VistaVector3D& v3Scale );
-	virtual bool Scale( const float fX, const float fY, const float fZ );
-	virtual bool Scale( const float a3fScale[3] );
-	virtual bool Scale( const double a3dScale[3] );
+  virtual bool Translate(const VistaVector3D& v3Translation);
+  virtual bool Translate(const float fX, const float fY, const float fZ);
+  virtual bool Translate(const float a3fTranslation[3]);
+  virtual bool Translate(const double a3dTranslation[3]);
 
-	virtual bool SetTransform( const VistaTransformMatrix& matTransform );
-	virtual bool SetTransform( const float a16fTransform[16], const bool bColumnMajor = false );
-	virtual bool SetTransform( const double a16dTransform[16], const bool bColumnMajor = false );
+  virtual bool SetRotation(const VistaQuaternion& qRotation);
+  virtual bool SetRotation(const float fX, const float fY, const float fZ, const float fW);
+  virtual bool SetRotation(const float a4fRotation[4]);
+  virtual bool SetRotation(const double a4dRotation[4]);
 
-	virtual bool Transform( const VistaTransformMatrix& matTransform );
-	virtual bool Transform( const float a16fTransform[16], const bool bColumnMajor = false );
-	virtual bool Transform( const double a16dTransform[16], const bool bColumnMajor = false );
+  virtual bool Rotate(const VistaQuaternion& qRotation);
+  virtual bool Rotate(const float fX, const float fY, const float fZ, const float fW);
+  virtual bool Rotate(const float a4fRotation[4]);
+  virtual bool Rotate(const double a4dRotation[4]);
 
-	//we need to re-implement the bathing (mathtype) locatable api
-	virtual bool GetTranslation( VistaVector3D& v3Translation ) const;
-	virtual bool GetRotation( VistaQuaternion& qRotation ) const;
-	virtual bool GetTransform( VistaTransformMatrix& matTransform ) const;
-	//since the re-implementation hides the other types, we have to specify them
-	using VistaNode::GetTranslation;
-	using VistaNode::GetRotation;
-	using VistaNode::GetTransform;
+  virtual bool SetScale(const VistaVector3D& v3Scale);
+  virtual bool SetScale(const float fX, const float fY, const float fZ);
+  virtual bool SetScale(const float a3fScale[3]);
+  virtual bool SetScale(const double a3dScale[3]);
 
-	// convenience interface
-	VistaVector3D GetTranslation() const;
-	VistaQuaternion GetRotation() const;
-	VistaTransformMatrix GetTransform() const;
-	
+  virtual bool Scale(const VistaVector3D& v3Scale);
+  virtual bool Scale(const float fX, const float fY, const float fZ);
+  virtual bool Scale(const float a3fScale[3]);
+  virtual bool Scale(const double a3dScale[3]);
 
-protected:
-	VistaTransformNode();
-	VistaTransformNode(VistaGroupNode* pParent,
-						IVistaNodeBridge* pBridge,
-						IVistaNodeData* pData,
-						std::string	 strName = "");
+  virtual bool SetTransform(const VistaTransformMatrix& matTransform);
+  virtual bool SetTransform(const float a16fTransform[16], const bool bColumnMajor = false);
+  virtual bool SetTransform(const double a16dTransform[16], const bool bColumnMajor = false);
+
+  virtual bool Transform(const VistaTransformMatrix& matTransform);
+  virtual bool Transform(const float a16fTransform[16], const bool bColumnMajor = false);
+  virtual bool Transform(const double a16dTransform[16], const bool bColumnMajor = false);
+
+  // we need to re-implement the bathing (mathtype) locatable api
+  virtual bool GetTranslation(VistaVector3D& v3Translation) const;
+  virtual bool GetRotation(VistaQuaternion& qRotation) const;
+  virtual bool GetTransform(VistaTransformMatrix& matTransform) const;
+  // since the re-implementation hides the other types, we have to specify them
+  using VistaNode::GetRotation;
+  using VistaNode::GetTransform;
+  using VistaNode::GetTranslation;
+
+  // convenience interface
+  VistaVector3D        GetTranslation() const;
+  VistaQuaternion      GetRotation() const;
+  VistaTransformMatrix GetTransform() const;
+
+ protected:
+  VistaTransformNode();
+  VistaTransformNode(VistaGroupNode* pParent, IVistaNodeBridge* pBridge, IVistaNodeData* pData,
+      std::string strName = "");
 };
 
 #ifdef WIN32
-	#pragma warning(pop)
-	#pragma warning(disable: 4250)
+#pragma warning(pop)
+#pragma warning(disable : 4250)
 #endif
 
 /*============================================================================*/
@@ -128,4 +124,3 @@ protected:
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

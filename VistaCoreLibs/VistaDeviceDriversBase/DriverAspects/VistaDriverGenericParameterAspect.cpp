@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDriverGenericParameterAspect.h"
 #include "VistaDeviceDriverAspectRegistry.h"
 
@@ -29,88 +28,74 @@
 #include <list>
 using std::list;
 
+REFL_IMPLEMENT(VistaDriverGenericParameterAspect::IParameterContainer, IVistaReflectionable);
 
-REFL_IMPLEMENT( VistaDriverGenericParameterAspect::IParameterContainer,
-		        IVistaReflectionable );
-
-VistaDriverGenericParameterAspect::IParameterContainer::IParameterContainer()
-{
-
+VistaDriverGenericParameterAspect::IParameterContainer::IParameterContainer() {
 }
 
-VistaDriverGenericParameterAspect::IParameterContainer::~IParameterContainer()
-{
-
+VistaDriverGenericParameterAspect::IParameterContainer::~IParameterContainer() {
 }
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
 
-int VistaDriverGenericParameterAspect::m_nAspectId  = -1;
+int VistaDriverGenericParameterAspect::m_nAspectId = -1;
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VistaDriverGenericParameterAspect::VistaDriverGenericParameterAspect(IContainerCreate *pCreate)
-	: IVistaDeviceDriver::IVistaDeviceDriverAspect(false),
-	m_pCreate(pCreate),
-	m_pParams(NULL)
+VistaDriverGenericParameterAspect::VistaDriverGenericParameterAspect(IContainerCreate* pCreate)
+    : IVistaDeviceDriver::IVistaDeviceDriverAspect(false)
+    , m_pCreate(pCreate)
+    , m_pParams(NULL)
 
 {
-	if(VistaDriverGenericParameterAspect::GetAspectId() == -1) // unregistered
-		VistaDriverGenericParameterAspect::SetAspectId(
-		VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("PARAMETER"));
+  if (VistaDriverGenericParameterAspect::GetAspectId() == -1) // unregistered
+    VistaDriverGenericParameterAspect::SetAspectId(
+        VistaDeviceDriverAspectRegistry::GetSingleton()->RegisterAspect("PARAMETER"));
 
-	SetId(VistaDriverGenericParameterAspect::GetAspectId());
+  SetId(VistaDriverGenericParameterAspect::GetAspectId());
 }
 
-VistaDriverGenericParameterAspect::~VistaDriverGenericParameterAspect()
-{
-	m_pCreate->DeleteContainer(m_pParams);
-	delete m_pCreate;
+VistaDriverGenericParameterAspect::~VistaDriverGenericParameterAspect() {
+  m_pCreate->DeleteContainer(m_pParams);
+  delete m_pCreate;
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaDriverGenericParameterAspect::IParameterContainer *
-                    VistaDriverGenericParameterAspect::GetParameterContainer() const
-{
-	if(m_pParams == NULL)
-		m_pParams = m_pCreate->CreateContainer();
-	return m_pParams;
+VistaDriverGenericParameterAspect::IParameterContainer*
+VistaDriverGenericParameterAspect::GetParameterContainer() const {
+  if (m_pParams == NULL)
+    m_pParams = m_pCreate->CreateContainer();
+  return m_pParams;
 }
 
 // #########################################
 // OVERWRITE IN SUBCLASSES
 // #########################################
-int  VistaDriverGenericParameterAspect::GetAspectId()
-{
-	return VistaDriverGenericParameterAspect::m_nAspectId;
+int VistaDriverGenericParameterAspect::GetAspectId() {
+  return VistaDriverGenericParameterAspect::m_nAspectId;
 }
 
-void VistaDriverGenericParameterAspect::SetAspectId(int nId)
-{
-	assert(m_nAspectId == -1);
-	m_nAspectId = nId;
+void VistaDriverGenericParameterAspect::SetAspectId(int nId) {
+  assert(m_nAspectId == -1);
+  m_nAspectId = nId;
 }
 
-void VistaDriverGenericParameterAspect::Print( std::ostream &out ) const
-{
-	 IVistaDeviceDriver::IVistaDeviceDriverAspect::Print(out);
-	 out << "This aspect represents to following properties:" << std::endl;
+void VistaDriverGenericParameterAspect::Print(std::ostream& out) const {
+  IVistaDeviceDriver::IVistaDeviceDriverAspect::Print(out);
+  out << "This aspect represents to following properties:" << std::endl;
 
-	 VistaDriverGenericParameterAspect::IParameterContainer *c = GetParameterContainer();
-	 if(c)
-	 {
-		 VistaPropertyList list;
-		 c->GetPropertiesByList(list);
-		 list.Print( out, 1 );
-	 }
-	 else
-	 {
-		 out << "Could not create container?" << std::endl;
-	 }
+  VistaDriverGenericParameterAspect::IParameterContainer* c = GetParameterContainer();
+  if (c) {
+    VistaPropertyList list;
+    c->GetPropertiesByList(list);
+    list.Print(out, 1);
+  } else {
+    out << "Could not create container?" << std::endl;
+  }
 }
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

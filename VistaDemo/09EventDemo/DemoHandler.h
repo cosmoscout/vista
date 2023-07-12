@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _DEMOHANDLER_H
 #define _DEMOHANDLER_H
 
@@ -36,14 +35,12 @@
 /**
  * DemoHandler - an example for an application-defined event handler
  */
-class DemoHandler : public VistaEventHandler
-{
-public:
-	DemoHandler();
-	virtual ~DemoHandler(){};
+class DemoHandler : public VistaEventHandler {
+ public:
+  DemoHandler();
+  virtual ~DemoHandler(){};
 
-	void HandleEvent(VistaEvent *pEvent);
+  void HandleEvent(VistaEvent* pEvent);
 };
-
 
 #endif // _DEMOHANDLER_H

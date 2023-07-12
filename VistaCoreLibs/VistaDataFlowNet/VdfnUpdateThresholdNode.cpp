@@ -21,8 +21,7 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-#include "VdfnUpdateThresholdNode.h" 
+#include "VdfnUpdateThresholdNode.h"
 #include "VdfnUtil.h"
 
 #include <iostream>
@@ -34,49 +33,39 @@
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
-VdfnUpdateThresholdNode::VdfnUpdateThresholdNode( double dThreshold ) :
-	m_dThreshold(dThreshold),
-	m_dSum(0.0),
-	m_pIn(NULL),
-	m_pOut(new TVdfnPort<double>)
-{
-	RegisterInPortPrototype( "in", 
-							 new TVdfnPortTypeCompare<TVdfnPort<double> > );
+VdfnUpdateThresholdNode::VdfnUpdateThresholdNode(double dThreshold)
+    : m_dThreshold(dThreshold)
+    , m_dSum(0.0)
+    , m_pIn(NULL)
+    , m_pOut(new TVdfnPort<double>) {
+  RegisterInPortPrototype("in", new TVdfnPortTypeCompare<TVdfnPort<double>>);
 
-	RegisterOutPort( "out", m_pOut );
+  RegisterOutPort("out", m_pOut);
 }
 
-  
-VdfnUpdateThresholdNode::~VdfnUpdateThresholdNode()
-{
+VdfnUpdateThresholdNode::~VdfnUpdateThresholdNode() {
 }
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool VdfnUpdateThresholdNode::PrepareEvaluationRun()
-{
-	m_pIn = dynamic_cast<TVdfnPort<double>*>(GetInPort("in"));
-	return GetIsValid();
+bool VdfnUpdateThresholdNode::PrepareEvaluationRun() {
+  m_pIn = dynamic_cast<TVdfnPort<double>*>(GetInPort("in"));
+  return GetIsValid();
 }
 
+bool VdfnUpdateThresholdNode::DoEvalNode() {
+  m_dSum += m_pIn->GetValue();
 
-bool VdfnUpdateThresholdNode::DoEvalNode()
-{
-	m_dSum += m_pIn->GetValue();
+  if (m_dSum > m_dThreshold) {
+    m_pOut->SetValue(m_dSum, GetUpdateTimeStamp());
+    m_dSum = 0.0;
+  }
 
-	if( m_dSum > m_dThreshold )
-	{
-		m_pOut->SetValue( m_dSum, GetUpdateTimeStamp() );
-		m_dSum = 0.0;
-	}
-
-	return true;
+  return true;
 }
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-

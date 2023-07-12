@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _PHANTOMWORKSPACEHANDLER_H
 #define _PHANTOMWORKSPACEHANDLER_H
 
@@ -29,17 +28,16 @@
 
 class IVistaTransformable;
 
-class PhantomWorkspaceHandler: public VistaEventHandler
-{
-public:
-	PhantomWorkspaceHandler( VdfnObjectRegistry*, IVistaTransformable * );
-	virtual ~PhantomWorkspaceHandler();
+class PhantomWorkspaceHandler : public VistaEventHandler {
+ public:
+  PhantomWorkspaceHandler(VdfnObjectRegistry*, IVistaTransformable*);
+  virtual ~PhantomWorkspaceHandler();
 
-	virtual void HandleEvent(VistaEvent *pEvent);
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-private:
-	VdfnObjectRegistry *m_pDFNRegistry;
-	IVistaTransformable *m_pTransformable;
+ private:
+  VdfnObjectRegistry*  m_pDFNRegistry;
+  IVistaTransformable* m_pTransformable;
 };
 
 #endif /* _PHANTOMWORKSPACEHANDLER_H */

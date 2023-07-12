@@ -21,12 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaIPComm.h"
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 
 #include <VistaBase/VistaStreamUtils.h>
-
 
 #if !defined(HOST_NAME_MAX)
 #define HOST_NAME_MAX 255
@@ -45,17 +43,15 @@
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-namespace
-{
-	VistaSigned32Atomic& GetRefCounter()
-	{
-		static VistaSigned32Atomic  s_RefCount;
-		return s_RefCount;
-	}
-	// we create a static instance of the IPComm so that VistaIPComm::UseIPComm
-	// does not have to be called explicitely
-	static VistaIPComm s_oIPCommInstance;
+namespace {
+VistaSigned32Atomic& GetRefCounter() {
+  static VistaSigned32Atomic s_RefCount;
+  return s_RefCount;
 }
+// we create a static instance of the IPComm so that VistaIPComm::UseIPComm
+// does not have to be called explicitely
+static VistaIPComm s_oIPCommInstance;
+} // namespace
 /*============================================================================*/
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
@@ -64,55 +60,45 @@ namespace
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-VistaIPComm::VistaIPComm()
-{
-	UseIPComm();
+VistaIPComm::VistaIPComm() {
+  UseIPComm();
 }
 
-VistaIPComm::~VistaIPComm()
-{
-	CloseIPComm();
+VistaIPComm::~VistaIPComm() {
+  CloseIPComm();
 }
 
-int VistaIPComm::UseIPComm()
-{
+int VistaIPComm::UseIPComm() {
 #ifdef WIN32
-	if ( GetRefCounter().ExchangeAndAdd(1) == 0 ) // test prior value
-	{
-		WSADATA dummyWsaData; // not needed
+  if (GetRefCounter().ExchangeAndAdd(1) == 0) // test prior value
+  {
+    WSADATA dummyWsaData; // not needed
 
-		if ( WSAStartup ( MAKEWORD (1, 1), &dummyWsaData ) != 0 )
-		{
-			vstr::errp() << "VistaIPComm::WSAstart() couldn't initialize WinSock." << std::endl;
-			--GetRefCounter();
-		}
-	}
+    if (WSAStartup(MAKEWORD(1, 1), &dummyWsaData) != 0) {
+      vstr::errp() << "VistaIPComm::WSAstart() couldn't initialize WinSock." << std::endl;
+      --GetRefCounter();
+    }
+  }
 #endif
-	return GetRefCounter();
+  return GetRefCounter();
 }
 
-int VistaIPComm::CloseIPComm()
-{
+int VistaIPComm::CloseIPComm() {
 #if defined(WIN32)
-	if( GetRefCounter().DecAndTestNull() )
-	{
-		WSACleanup();
-	}
+  if (GetRefCounter().DecAndTestNull()) {
+    WSACleanup();
+  }
 #endif
-	return GetRefCounter();
+  return GetRefCounter();
 }
 
-
-std::string VistaIPComm::GetHostname()
-{
-	char buffer[HOST_NAME_MAX+1];
-	if(gethostname(buffer, HOST_NAME_MAX+1) < 0)
-		vstr::errp() << "VistaIPComm::GetHostname() -- ERROR! errno = " << errno << std::endl;
-	return std::string(buffer);
+std::string VistaIPComm::GetHostname() {
+  char buffer[HOST_NAME_MAX + 1];
+  if (gethostname(buffer, HOST_NAME_MAX + 1) < 0)
+    vstr::errp() << "VistaIPComm::GetHostname() -- ERROR! errno = " << errno << std::endl;
+  return std::string(buffer);
 }
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

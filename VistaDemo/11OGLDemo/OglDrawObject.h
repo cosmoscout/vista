@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _OGLDRAWOBJECT_H
 #define _OGLDRAWOBJECT_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -45,35 +43,33 @@
 /**
  * In this class you can put your OpenGL rendering lines which will be called
  * in each frame.
- * 
- */    
-class OglDrawObject : public IVistaOpenGLDraw
-{
-public:
+ *
+ */
+class OglDrawObject : public IVistaOpenGLDraw {
+ public:
+  OglDrawObject();
+  virtual ~OglDrawObject();
 
-    OglDrawObject ();
-    virtual ~OglDrawObject ();
+  // ---------------------------------------
+  // INTERFACE IMPLEMENTATION OFIVistaOpenGLDraw
+  // ---------------------------------------
 
-	// ---------------------------------------
-    // INTERFACE IMPLEMENTATION OFIVistaOpenGLDraw
-	// ---------------------------------------
+  virtual bool Init();
 
-    virtual bool Init ();
+  /**
+   * The method Do() gets the callback from scene graph during the rendering
+   * process.
+   */
+  virtual bool Do();
 
-	/**
-	 * The method Do() gets the callback from scene graph during the rendering
-	 * process.
-	 */
-	virtual bool Do();
+  /**
+   * This method should return the bounding box of the openGL object you draw
+   * in the method Do().
+   *
+   */
+  virtual bool GetBoundingBox(VistaBoundingBox& bb);
 
-	/**
-	 * This method should return the bounding box of the openGL object you draw
-	 * in the method Do().
-	 * 
-	 */
-	virtual bool GetBoundingBox(VistaBoundingBox &bb);
-
-protected:
+ protected:
 };
 
 #endif // _OGLDRAWOBJECT_H

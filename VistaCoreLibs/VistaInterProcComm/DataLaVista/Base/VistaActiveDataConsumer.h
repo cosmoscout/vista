@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef DLVISTAACTIVEDATACONSUMER_H
 #define DLVISTAACTIVEDATACONSUMER_H
 
@@ -32,9 +31,9 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaActiveComponent.h"
 #include "VistaDataConsumer.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 #include <string>
 
@@ -48,143 +47,138 @@ class VistaThreadLoop;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
+class VISTAINTERPROCCOMMAPI DLVistaActiveDataConsumer : public IDLVistaDataConsumer,
+                                                        public IDLVistaActiveComponent {
+ public:
+  /**
+   * Pass a pointer to the consumer that is supposed to come alive.
+   * The component will show its activeness by looping over the PullPacket() method.
+   * @param pComp a pointer to the consumer that should constantly suck for new packets :)
+   */
+  DLVistaActiveDataConsumer(IDLVistaDataConsumer* pComp);
+  /**
+   * Destructor. If called it will delete the thread-instance WITHOUT stopping it. You have to do
+   * that.
+   */
+  ~DLVistaActiveDataConsumer();
 
-class VISTAINTERPROCCOMMAPI DLVistaActiveDataConsumer : public IDLVistaDataConsumer, public IDLVistaActiveComponent
-{
-public:
+  bool StartComponent();
 
-	/**
-	 * Pass a pointer to the consumer that is supposed to come alive.
-	 * The component will show its activeness by looping over the PullPacket() method.
-	 * @param pComp a pointer to the consumer that should constantly suck for new packets :)
-	 */
-	DLVistaActiveDataConsumer(IDLVistaDataConsumer *pComp );
-	/**
-	 * Destructor. If called it will delete the thread-instance WITHOUT stopping it. You have to do that.
-	 */
-	~DLVistaActiveDataConsumer();
+  bool IsComponentRunning() const;
 
-	bool StartComponent();
+  bool IsComponentPausing() const;
 
-	bool IsComponentRunning() const;
+  bool StopComponentGently(bool bJoin);
 
-	bool IsComponentPausing() const;
+  bool PauseComponent(bool bJoin);
 
-	bool StopComponentGently(bool bJoin);
+  bool UnPauseComponent(bool bJoin);
 
-	bool PauseComponent(bool bJoin);
+  bool StopComponent(bool bJoin);
 
-	bool UnPauseComponent(bool bJoin);
+  bool HaltComponent();
 
-	bool StopComponent(bool bJoin);
+  void SetThreadName(const std::string& strName);
 
-	bool HaltComponent();
+  std::string GetThreadName() const;
 
-	void SetThreadName(const std::string& strName);
+  /**
+   * tell the component that active sucking is about to be stopped.
+   * Use this to indicate termination whenever the component may
+   * be in a blocking wait internally.
+   */
+  void IndicateConsumptionEnd();
 
-	std::string GetThreadName() const;
+  virtual int SetComponentPriority(const VistaPriority& pPrio);
 
-	/**
-	 * tell the component that active sucking is about to be stopped.
-	 * Use this to indicate termination whenever the component may
-	 * be in a blocking wait internally.
-	 */
-	void IndicateConsumptionEnd();
+  /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   */
 
+  /**
+   * The ActiveConsumer is a decorator pattern, so this is a simple forwarder to
+   * the active component's method.
+   * @param pPacket the packet to be consumed by the active consumer.
+   */
+  virtual bool ConsumePacket(IDLVistaDataPacket* pPacket);
 
-	virtual int  SetComponentPriority(const VistaPriority &pPrio);
+  /**
+   * The ActiveConsumer is a decorator pattern, so this is a simple forwarder to
+   * the active component's method.
+   * @param bBlock true iff the consumer should be blocked until a new packet was delivered by the
+   * pipe
+   * @return true iff a packet could be delivered and was scheduled by this consumer.
+   */
+  virtual bool PullPacket(bool bBlock = true);
 
+  /**
+   * A call to this method will activate the consumer component. Technically speaking:
+   * it will start the thread which will loop over PullPacket().
+   * @return true iff the component was started successfully.
+   */
 
-	/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	 */
+  virtual bool AcceptDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
+  virtual bool RecycleDataPacket(
+      IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pSender, bool bBlock = false);
 
-	/**
-	 * The ActiveConsumer is a decorator pattern, so this is a simple forwarder to
-	 * the active component's method.
-	 * @param pPacket the packet to be consumed by the active consumer.
-	 */
-	virtual bool ConsumePacket(IDLVistaDataPacket *pPacket);
+  virtual bool IsDataProducer() const;
 
-	/**
-	 * The ActiveConsumer is a decorator pattern, so this is a simple forwarder to
-	 * the active component's method.
-	 * @param bBlock true iff the consumer should be blocked until a new packet was delivered by the pipe
-	 * @return true iff a packet could be delivered and was scheduled by this consumer.
-	 */
-	virtual bool PullPacket(bool bBlock = true);
+  virtual bool IsDataConsumer() const;
 
-	/**
-	 * A call to this method will activate the consumer component. Technically speaking:
-	 * it will start the thread which will loop over PullPacket().
-	 * @return true iff the component was started successfully.
-	 */
+  virtual IDLVistaDataPacket* GivePacket(bool bBlock);
+  virtual bool                InitPacketMgmt();
 
-	virtual bool AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false) ;
-	virtual bool RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pSender, bool bBlock=false) ;
+  /**
+   * Creates a proper outbound packet for this component and can be used to
+   * deliver the right packages in subclasses.
+   * @todo work over this
+   */
+  virtual IDLVistaDataPacket* CreatePacket();
 
-	virtual bool IsDataProducer() const;
+  /**
+   * Deletes a packet that was produced by this component. This is a legacy method
+   * and will most likely be put out of function.
+   * @param pPacket the packet to destroy and give free.
+   */
+  virtual void DeletePacket(IDLVistaDataPacket* pPacket);
 
-	virtual bool IsDataConsumer() const;
+  virtual bool IsOutputComponent(IDLVistaPipeComponent* pComp) const;
 
+  virtual bool IsInputComponent(IDLVistaPipeComponent* pComp) const;
 
-	virtual IDLVistaDataPacket *GivePacket(bool bBlock) ;
-	virtual bool InitPacketMgmt();
+  virtual bool AttachInputComponent(IDLVistaPipeComponent* pComp);
 
-	/**
-	 * Creates a proper outbound packet for this component and can be used to
-	 * deliver the right packages in subclasses.
-	 * @todo work over this
-	 */
-	virtual IDLVistaDataPacket *CreatePacket();
+  virtual bool AttachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	/**
-	 * Deletes a packet that was produced by this component. This is a legacy method
-	 * and will most likely be put out of function.
-	 * @param pPacket the packet to destroy and give free.
-	 */
-	virtual void DeletePacket(IDLVistaDataPacket *pPacket);
+  virtual bool DetachInputComponent(IDLVistaPipeComponent* pComp);
 
+  virtual bool DetachOutputComponent(IDLVistaPipeComponent* pComp);
 
-	virtual bool IsOutputComponent(IDLVistaPipeComponent *pComp) const;
+  virtual IDLVistaPipeComponent* GetOutboundByIndex(int iIndex) const;
 
-	virtual bool IsInputComponent(IDLVistaPipeComponent *pComp) const;
+  virtual IDLVistaPipeComponent* GetInboundByIndex(int iIndex) const;
 
-	virtual bool AttachInputComponent(IDLVistaPipeComponent *pComp);
+  virtual int GetNumberOfOutbounds() const;
 
-	virtual bool AttachOutputComponent(IDLVistaPipeComponent *pComp);
+  virtual int GetNumberOfInbounds() const;
 
-	virtual bool DetachInputComponent(IDLVistaPipeComponent *pComp);
+  virtual int GetInputPacketType() const;
+  virtual int GetOutputPacketType() const;
 
-	virtual bool DetachOutputComponent(IDLVistaPipeComponent *pComp);
+  virtual std::list<IDLVistaPipeComponent*> GetInputComponents() const;
+  virtual std::list<IDLVistaPipeComponent*> GetOutputComponents() const;
 
-	virtual IDLVistaPipeComponent *GetOutboundByIndex(int iIndex) const;
+ private:
+  /**
+   * An instance of a thread that defines the pulse for this component.
+   */
+  VistaThreadLoop* m_pThreadLoop;
 
-	virtual IDLVistaPipeComponent *GetInboundByIndex(int iIndex) const;
-
-	virtual int GetNumberOfOutbounds() const;
-
-	virtual int GetNumberOfInbounds() const;
-
-
-	virtual int GetInputPacketType() const;
-	virtual int GetOutputPacketType() const;
-
-	virtual std::list<IDLVistaPipeComponent *> GetInputComponents() const;
-	virtual std::list<IDLVistaPipeComponent *> GetOutputComponents() const;
-
-private:
-	/**
-	 * An instance of a thread that defines the pulse for this component.
-	 */
-	VistaThreadLoop *m_pThreadLoop;
-
-	IDLVistaDataConsumer *m_pRealConsumer;
+  IDLVistaDataConsumer* m_pRealConsumer;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-#endif //DLVISTAACTIVECONSUMER_H
-
+#endif // DLVISTAACTIVECONSUMER_H

@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGSKYBOX_H
 #define _VISTAOPENSGSKYBOX_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -32,18 +30,18 @@
 
 #if defined(WIN32)
 #pragma once
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4312)
-#pragma warning(disable: 4267)
-#pragma warning(disable: 4251)
-#pragma warning(disable: 4275)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4312)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4275)
 #endif
 
 #include "VistaKernelOpenSGExtConfig.h"
 
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -58,31 +56,25 @@ class VistaColor;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAKERNELOPENSGEXTAPI VistaOpenSGSkybox
-{
-public:
+class VISTAKERNELOPENSGEXTAPI VistaOpenSGSkybox {
+ public:
+  VistaOpenSGSkybox(const std::string& strTop, const std::string& strBottom,
+      const std::string& strLeft, const std::string& strRight, const std::string& strFront,
+      const std::string& strBack);
 
-	VistaOpenSGSkybox(
-		const std::string &strTop,
-		const std::string &strBottom,
-		const std::string &strLeft,
-		const std::string &strRight,
-		const std::string &strFront,
-		const std::string &strBack
-		);
+  ~VistaOpenSGSkybox();
 
-	~VistaOpenSGSkybox();
+  bool       AttachToViewport(VistaViewport* pViewport);
+  bool       DetachFromViewport(VistaViewport* pViewport);
+  bool       GetIsAttachedToViewport(VistaViewport* pViewport);
+  bool       SetColor(float fR, float fG, float fB, float fA);
+  bool       SetColor(const VistaColor& oColor);
+  bool       GetColor(float& fR, float& fG, float& fB, float& fA) const;
+  VistaColor GetColor() const;
 
-	bool AttachToViewport       (VistaViewport *pViewport);
-	bool DetachFromViewport     (VistaViewport *pViewport);
-	bool GetIsAttachedToViewport(VistaViewport *pViewport);
-	bool SetColor( float fR, float fG, float fB, float fA );
-	bool SetColor( const VistaColor& oColor );
-	bool GetColor( float& fR, float& fG, float& fB, float& fA ) const;
-	VistaColor GetColor() const;
-protected:
-private:
-	SkyboxData *m_pData;
+ protected:
+ private:
+  SkyboxData* m_pData;
 };
 
 /*============================================================================*/
@@ -90,4 +82,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTAOPENSGSKYBOX_H
-

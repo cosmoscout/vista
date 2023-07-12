@@ -21,94 +21,80 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include <GL/glew.h>
 
-#include "VistaTransformableTexture.h"
 #include "VistaOGLUtils.h"
+#include "VistaTransformableTexture.h"
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
 
 #if defined(DARWIN)
-	#include <OpenGL/gl.h>
+#include <OpenGL/gl.h>
 #else
-	#include <GL/gl.h>
+#include <GL/gl.h>
 #endif
-#include <cmath>
 #include <cassert>
+#include <cmath>
 #include <cstring>
 
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
 
-VistaTransformableTexture::VistaTransformableTexture( GLenum eTarget )
-: VistaTexture(eTarget)
-{
-	SetToIdentitiy();
+VistaTransformableTexture::VistaTransformableTexture(GLenum eTarget)
+    : VistaTexture(eTarget) {
+  SetToIdentitiy();
 }
 
-VistaTransformableTexture::VistaTransformableTexture( GLenum eTarget, GLuint iId, bool bManaged )
-: VistaTexture(eTarget, iId, bManaged)
-{
-	SetToIdentitiy();
+VistaTransformableTexture::VistaTransformableTexture(GLenum eTarget, GLuint iId, bool bManaged)
+    : VistaTexture(eTarget, iId, bManaged) {
+  SetToIdentitiy();
 }
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
-void VistaTransformableTexture::Bind()
-{
-	VistaTexture::Bind();
-	GLint matrixmode;
-	glGetIntegerv(GL_MATRIX_MODE, &matrixmode);
-	glMatrixMode(GL_TEXTURE);
-	glPushMatrix();
-	glMultMatrixf(m_oglMatrix);
-	glMatrixMode(matrixmode);
+void VistaTransformableTexture::Bind() {
+  VistaTexture::Bind();
+  GLint matrixmode;
+  glGetIntegerv(GL_MATRIX_MODE, &matrixmode);
+  glMatrixMode(GL_TEXTURE);
+  glPushMatrix();
+  glMultMatrixf(m_oglMatrix);
+  glMatrixMode(matrixmode);
 }
 
-void VistaTransformableTexture::Unbind()
-{
-	GLint matrixmode;
-	glGetIntegerv(GL_MATRIX_MODE, &matrixmode);
-	glMatrixMode(GL_TEXTURE);
-	glPopMatrix();
-	glMatrixMode(matrixmode);
-	VistaTexture::Unbind();
+void VistaTransformableTexture::Unbind() {
+  GLint matrixmode;
+  glGetIntegerv(GL_MATRIX_MODE, &matrixmode);
+  glMatrixMode(GL_TEXTURE);
+  glPopMatrix();
+  glMatrixMode(matrixmode);
+  VistaTexture::Unbind();
 }
 
-
-void VistaTransformableTexture::SetToRotZ(const float &degrees)
-{
-	const float d2r = 0.0174532925199433f;
-	// transform texture coordinates CCW -> results in CW rotated image.
-	SetToIdentitiy();
-	m_oglMatrix[0] = cos(degrees * d2r); 	m_oglMatrix[4] = -sin(degrees * d2r);
-	m_oglMatrix[1] = sin(degrees * d2r);	m_oglMatrix[5] =  cos(degrees * d2r);
+void VistaTransformableTexture::SetToRotZ(const float& degrees) {
+  const float d2r = 0.0174532925199433f;
+  // transform texture coordinates CCW -> results in CW rotated image.
+  SetToIdentitiy();
+  m_oglMatrix[0] = cos(degrees * d2r);
+  m_oglMatrix[4] = -sin(degrees * d2r);
+  m_oglMatrix[1] = sin(degrees * d2r);
+  m_oglMatrix[5] = cos(degrees * d2r);
 }
 
-
-void VistaTransformableTexture::SetMatrix( const float m_gl[16] )
-{
-	memcpy(m_oglMatrix, m_gl, sizeof(float) * 16);
+void VistaTransformableTexture::SetMatrix(const float m_gl[16]) {
+  memcpy(m_oglMatrix, m_gl, sizeof(float) * 16);
 }
 
-void VistaTransformableTexture::SetToIdentitiy()
-{
-	for(int i = 0; i < 4; ++i)
-		for(int j = 0; j < 4; ++j)
-			m_oglMatrix[i+j*4] = (i==j) ? 1.0f : 0.0f;
+void VistaTransformableTexture::SetToIdentitiy() {
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      m_oglMatrix[i + j * 4] = (i == j) ? 1.0f : 0.0f;
 }
-
-
-
-
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
@@ -29,8 +28,7 @@
 #include "VistaPhantomCommonShare.h"
 #include "VistaPhantomDriver.h"
 
-
-#if defined(WIN32) && !defined(VISTAPHANTOMDRIVERPLUGIN_STATIC) 
+#if defined(WIN32) && !defined(VISTAPHANTOMDRIVERPLUGIN_STATIC)
 #ifdef VISTAPHANTOMPLUGIN_EXPORTS
 #define VISTAPHANTOMPLUGINAPI __declspec(dllexport)
 #else
@@ -40,77 +38,64 @@
 #define VISTAPHANTOMPLUGINAPI
 #endif
 
-
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule, 
-					   DWORD  ul_reason_for_call, 
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAPHANTOMDRIVERCONFIG_H
 
-namespace
-{
-	
+namespace {
 
-	VistaPhantomDriverFactory *SpFactory = NULL;
+VistaPhantomDriverFactory* SpFactory = NULL;
 
-	/*
+/*
 IVistaDriverCreationMethod *VistaPhantomDriver::GetDriverFactoryMethod()
 {
-	if(SpFactory == NULL)
-	{
-		SpFactory = new VistaPhantomDriverFactory;
-		SpFactory->RegisterSensorType( "", sizeof(VistaPhantomDriverHelper::_sPhantomMeasure), 1000,
-			new VistaPhantomTranscoderFactory,
-			VistaPhantomDriverMeasureTranscode::GetTypeString() );
-	}
-	return SpFactory;
+if(SpFactory == NULL)
+{
+        SpFactory = new VistaPhantomDriverFactory;
+        SpFactory->RegisterSensorType( "", sizeof(VistaPhantomDriverHelper::_sPhantomMeasure), 1000,
+                new VistaPhantomTranscoderFactory,
+                VistaPhantomDriverMeasureTranscode::GetTypeString() );
+}
+return SpFactory;
 }
 */
+} // namespace
+
+extern "C" VISTAPHANTOMPLUGINAPI IVistaDeviceDriver* CreateDevice(IVistaDriverCreationMethod* crm) {
+  return new VistaPhantomDriver(crm);
 }
 
-extern "C" VISTAPHANTOMPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaPhantomDriver(crm);
+extern "C" VISTAPHANTOMPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaPhantomDriverFactory(fac);
+
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAPHANTOMPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaPhantomDriverFactory(fac);
-
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+extern "C" VISTAPHANTOMPLUGINAPI const char* GetDeviceClassName() {
+  return "PHANTOM";
 }
 
-extern "C" VISTAPHANTOMPLUGINAPI const char *GetDeviceClassName()
-{
-	return "PHANTOM";
-}
-
-
-extern "C" VISTAPHANTOMPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTAPHANTOMPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
 /*============================================================================*/
@@ -120,5 +105,3 @@ extern "C" VISTAPHANTOMPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationM
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
-
-

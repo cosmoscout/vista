@@ -21,19 +21,18 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTATHREADPOOL_H
 #define _VISTATHREADPOOL_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaPriority.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <vector>
 #include <deque>
 #include <map>
+#include <vector>
 
 #include "VistaThreadTask.h"
 
@@ -54,144 +53,145 @@ class VistaSemaphore;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IVistaThreadPoolWorkInstance : public IVistaThreadedTask
-{
-	friend class VistaThreadPoolThread;
-	friend class VistaThreadPool;
-public:
-	virtual ~IVistaThreadPoolWorkInstance();
+class VISTAINTERPROCCOMMAPI IVistaThreadPoolWorkInstance : public IVistaThreadedTask {
+  friend class VistaThreadPoolThread;
+  friend class VistaThreadPool;
 
-	/**
-	 * @return -1 for not scheduled, yet, >= 0 else
-	 */
-	int GetJobId() const { return m_nJobId; };
+ public:
+  virtual ~IVistaThreadPoolWorkInstance();
 
-	void SetJobPriority(const VistaPriority &);
-	void GetJobPriority(VistaPriority &) const;
+  /**
+   * @return -1 for not scheduled, yet, >= 0 else
+   */
+  int GetJobId() const {
+    return m_nJobId;
+  };
 
-	//bool WaitForJobFinish();
+  void SetJobPriority(const VistaPriority&);
+  void GetJobPriority(VistaPriority&) const;
 
-	//! @return 0 for NONE, else the cpu of desire to run on
-	int GetCpuAffinity() const;
+  // bool WaitForJobFinish();
 
-	//! @brief sets the desired cpu to run on
-	//! This call does not check for validity of the cpu (existence),
-	//! also it is assumed that the set call happened <b>before</b> the task is executed, not while it is executed.
-	void SetCpuAffinity( int cpu_index );
+  //! @return 0 for NONE, else the cpu of desire to run on
+  int GetCpuAffinity() const;
 
+  //! @brief sets the desired cpu to run on
+  //! This call does not check for validity of the cpu (existence),
+  //! also it is assumed that the set call happened <b>before</b> the task is executed, not while it
+  //! is executed.
+  void SetCpuAffinity(int cpu_index);
 
-	bool GetReenqueueTask () const;
-	void SetReenqueueTask (bool reenqueue);
+  bool GetReenqueueTask() const;
+  void SetReenqueueTask(bool reenqueue);
 
-	void SetAutoRemoveDoneJob(bool bDoAutoremove);
-	bool GetAutoRemoveDoneJob() const;
+  void SetAutoRemoveDoneJob(bool bDoAutoremove);
+  bool GetAutoRemoveDoneJob() const;
 
-	virtual bool DoneHandshake();
+  virtual bool DoneHandshake();
 
-protected:
-	IVistaThreadPoolWorkInstance();
-private:
-	int  m_nJobId;
-	int  m_cpu_affinity;
-	VistaPriority m_oPrio;
-	VistaThreadPoolThread *m_pProcessingThread;
+ protected:
+  IVistaThreadPoolWorkInstance();
 
-	VistaSemaphore *m_pAccess;
-	VistaMutex *m_pFinishMutex;
+ private:
+  int                    m_nJobId;
+  int                    m_cpu_affinity;
+  VistaPriority          m_oPrio;
+  VistaThreadPoolThread* m_pProcessingThread;
 
-	VistaThreadCondition *m_pFinishCondition;
+  VistaSemaphore* m_pAccess;
+  VistaMutex*     m_pFinishMutex;
 
-	bool                    m_bReenqueueTask,
-							m_bRemoveDoneJob;
-	VistaMutex             *m_pReenqueueMutex;
+  VistaThreadCondition* m_pFinishCondition;
+
+  bool        m_bReenqueueTask, m_bRemoveDoneJob;
+  VistaMutex* m_pReenqueueMutex;
 };
 
-class VISTAINTERPROCCOMMAPI VistaThreadPool
-{
-	friend class VistaThreadPoolThread;
-public:
-	/**
-	 * @param iNumMaxTasks 0 means "no limit"
-	 */
-	VistaThreadPool(int iNumMaxThreads, int iNumMaxTasks = 0,
-					 const std::string &sThreadNamePrefix = "tp_");
-	virtual ~VistaThreadPool();
+class VISTAINTERPROCCOMMAPI VistaThreadPool {
+  friend class VistaThreadPoolThread;
 
-	int AddWork(IVistaThreadPoolWorkInstance *);
-	bool RemoveWork(IVistaThreadPoolWorkInstance *);
-	IVistaThreadPoolWorkInstance *GetWorkByIndex(int) const;
-	int GetNumberOfJobs() const;
+ public:
+  /**
+   * @param iNumMaxTasks 0 means "no limit"
+   */
+  VistaThreadPool(
+      int iNumMaxThreads, int iNumMaxTasks = 0, const std::string& sThreadNamePrefix = "tp_");
+  virtual ~VistaThreadPool();
 
-	int GetNumberOfThreads() const;
+  int                           AddWork(IVistaThreadPoolWorkInstance*);
+  bool                          RemoveWork(IVistaThreadPoolWorkInstance*);
+  IVistaThreadPoolWorkInstance* GetWorkByIndex(int) const;
+  int                           GetNumberOfJobs() const;
 
-	// resize the maximal number of threads
-	// you can only make the pool bigger, never smaller
-	// returns the new maximal number of threads (equals old, if not successful)
-	int ResizeMaxThreads (int iNumMaxThreads);
+  int GetNumberOfThreads() const;
 
-	/**
-	 * currently not working!!
-	 */
-	//bool WaitForJob(int iIndex) const;
-	//bool WaitForJob(IVistaThreadPoolWorkInstance *) const;
+  // resize the maximal number of threads
+  // you can only make the pool bigger, never smaller
+  // returns the new maximal number of threads (equals old, if not successful)
+  int ResizeMaxThreads(int iNumMaxThreads);
 
+  /**
+   * currently not working!!
+   */
+  // bool WaitForJob(int iIndex) const;
+  // bool WaitForJob(IVistaThreadPoolWorkInstance *) const;
 
-	bool StartPoolWork();
-	bool StopPoolWork();
+  bool StartPoolWork();
+  bool StopPoolWork();
 
-	bool GetIsPoolRunning() const;
+  bool GetIsPoolRunning() const;
 
-	bool IsShutdownFlagSet() const;
-	bool IsPoolClosed() const;
-	bool AreThereStillJobsProcessed() const;
-	bool WaitForWorkQueueEmpty() const;
+  bool IsShutdownFlagSet() const;
+  bool IsPoolClosed() const;
+  bool AreThereStillJobsProcessed() const;
+  bool WaitForWorkQueueEmpty() const;
 
-	//! @returns true in case all jobs are done, no error, false else
-	bool WaitForAllJobsDone() const;
+  //! @returns true in case all jobs are done, no error, false else
+  bool WaitForAllJobsDone() const;
 
-	int GetNumberOfPendingDoneJobs() const;
-	int GetNumberOfTotalWork() const;
-	int GetNumberOfTotalDoneWork() const;
-	int GetNumberOfCurrentlyProcessedJobs() const;
+  int GetNumberOfPendingDoneJobs() const;
+  int GetNumberOfTotalWork() const;
+  int GetNumberOfTotalDoneWork() const;
+  int GetNumberOfCurrentlyProcessedJobs() const;
 
-	IVistaThreadPoolWorkInstance *RemoveDoneJob(int iJobId);
-	IVistaThreadPoolWorkInstance *ReadDoneJob(int iJobId);
+  IVistaThreadPoolWorkInstance* RemoveDoneJob(int iJobId);
+  IVistaThreadPoolWorkInstance* ReadDoneJob(int iJobId);
 
-	IVistaThreadPoolWorkInstance *RemoveNextDoneJob();
-	IVistaThreadPoolWorkInstance *ReadNextDoneJob();
+  IVistaThreadPoolWorkInstance* RemoveNextDoneJob();
+  IVistaThreadPoolWorkInstance* ReadNextDoneJob();
 
-	IVistaThreadPoolWorkInstance *GetJobById(int iJobId) const;
+  IVistaThreadPoolWorkInstance* GetJobById(int iJobId) const;
 
-protected:
-private:
-	/// @todo give typedefs nonuppercase names to ease evolution to classes 
-	/// (refer to the PropertyList "problem" we are facing currently...)
-	typedef std::map<int, IVistaThreadPoolWorkInstance*> DONEMAP;
+ protected:
+ private:
+  /// @todo give typedefs nonuppercase names to ease evolution to classes
+  /// (refer to the PropertyList "problem" we are facing currently...)
+  typedef std::map<int, IVistaThreadPoolWorkInstance*> DONEMAP;
 
-	typedef std::pair<VistaMutex*, VistaThreadCondition*> MTPAIR;
+  typedef std::pair<VistaMutex*, VistaThreadCondition*> MTPAIR;
 
-	std::vector<VistaThreadPoolThread *> m_vThreadPool;
-	std::vector<MTPAIR> m_vFinishConditions;
-	std::deque<IVistaThreadPoolWorkInstance *> m_vWorkPool;
+  std::vector<VistaThreadPoolThread*>       m_vThreadPool;
+  std::vector<MTPAIR>                       m_vFinishConditions;
+  std::deque<IVistaThreadPoolWorkInstance*> m_vWorkPool;
 
-	std::string m_sThreadNamePrefix;
+  std::string m_sThreadNamePrefix;
 
-	DONEMAP m_mpDonePool;
+  DONEMAP m_mpDonePool;
 
-	VistaMutex *m_pQueueLock;
-	VistaMutex *m_pDoneLock;
+  VistaMutex* m_pQueueLock;
+  VistaMutex* m_pDoneLock;
 
-	VistaThreadCondition *m_pQueueNotEmpty;
-	VistaThreadCondition *m_pQueueEmpty;
-	VistaThreadCondition *m_pAllJobsDone;
+  VistaThreadCondition* m_pQueueNotEmpty;
+  VistaThreadCondition* m_pQueueEmpty;
+  VistaThreadCondition* m_pAllJobsDone;
 
-	volatile bool m_bQueueClosed;
-	volatile bool m_bShutdown;
-	volatile bool m_bWorkStarted;
-	volatile int  m_nMaxThreads;
-	volatile int  m_nTotalNumberOfJobs;
-	volatile int  m_nTotalNumberOfProcessedJobs;
-	volatile int  m_nNumberOfCurrentlyProcessedJobs;
+  volatile bool m_bQueueClosed;
+  volatile bool m_bShutdown;
+  volatile bool m_bWorkStarted;
+  volatile int  m_nMaxThreads;
+  volatile int  m_nTotalNumberOfJobs;
+  volatile int  m_nTotalNumberOfProcessedJobs;
+  volatile int  m_nNumberOfCurrentlyProcessedJobs;
 };
 
 /*============================================================================*/
@@ -199,4 +199,3 @@ private:
 /*============================================================================*/
 
 #endif //_VISTASYSTEM_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDummyClusterDataCollect.h"
 
 #include <VistaBase/VistaTimeUtils.h>
@@ -30,54 +29,43 @@
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
-
 VistaDummyClusterDataCollect::VistaDummyClusterDataCollect()
-: IVistaClusterDataCollect( false, true )
-{
+    : IVistaClusterDataCollect(false, true) {
 }
 
-VistaDummyClusterDataCollect::~VistaDummyClusterDataCollect()
-{
+VistaDummyClusterDataCollect::~VistaDummyClusterDataCollect() {
 }
 
-bool VistaDummyClusterDataCollect::GetIsValid() const
-{
-	return true;
+bool VistaDummyClusterDataCollect::GetIsValid() const {
+  return true;
 }
 
-std::string VistaDummyClusterDataCollect::GetDataCollectType() const
-{
-	return "DummyClusterDataCollet";
+std::string VistaDummyClusterDataCollect::GetDataCollectType() const {
+  return "DummyClusterDataCollet";
 }
 
-bool VistaDummyClusterDataCollect::CollectTime( const VistaType::systemtime nOwnTime,
-							std::vector<VistaType::systemtime>& vecCollected )
-{
-	vecCollected.push_back( nOwnTime );
-	return true;
+bool VistaDummyClusterDataCollect::CollectTime(
+    const VistaType::systemtime nOwnTime, std::vector<VistaType::systemtime>& vecCollected) {
+  vecCollected.push_back(nOwnTime);
+  return true;
 }
-bool VistaDummyClusterDataCollect::CollectData( const VistaPropertyList& oList,
-						std::vector<VistaPropertyList>& vecCollected )
-{
-	vecCollected.push_back( oList );
-	return true;
+bool VistaDummyClusterDataCollect::CollectData(
+    const VistaPropertyList& oList, std::vector<VistaPropertyList>& vecCollected) {
+  vecCollected.push_back(oList);
+  return true;
 }
-bool VistaDummyClusterDataCollect::CollectData( const VistaType::byte* pDataBuffer, 
-						const int iBufferSize,
-						std::vector<std::vector<VistaType::byte> >& vecCollected )
-{
-	vecCollected.push_back( std::vector<VistaType::byte>() );
-	vecCollected[0].resize( iBufferSize );
-	memcpy( &vecCollected[0][0], pDataBuffer, iBufferSize );
-	return true;
+bool VistaDummyClusterDataCollect::CollectData(const VistaType::byte* pDataBuffer,
+    const int iBufferSize, std::vector<std::vector<VistaType::byte>>& vecCollected) {
+  vecCollected.push_back(std::vector<VistaType::byte>());
+  vecCollected[0].resize(iBufferSize);
+  memcpy(&vecCollected[0][0], pDataBuffer, iBufferSize);
+  return true;
 }
 
-int VistaDummyClusterDataCollect::GetSendBlockingThreshold() const
-{
-	return -1;
+int VistaDummyClusterDataCollect::GetSendBlockingThreshold() const {
+  return -1;
 }
 
-bool VistaDummyClusterDataCollect::SetSendBlockingThreshold( const int nNumBytes )
-{
-	return false;
+bool VistaDummyClusterDataCollect::SetSendBlockingThreshold(const int nNumBytes) {
+  return false;
 }

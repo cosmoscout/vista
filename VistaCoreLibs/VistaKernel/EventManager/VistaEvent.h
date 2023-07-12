@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAEVENT_H
 #define _VISTAEVENT_H
 
@@ -34,9 +33,8 @@
 
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <string>
 #include <iostream>
-
+#include <string>
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -48,9 +46,8 @@
 class VistaEventManager;
 
 // prototypes
-class   VistaEvent;
-VISTAKERNELAPI std::ostream & operator<< ( std::ostream &, const VistaEvent & );
-
+class VistaEvent;
+VISTAKERNELAPI std::ostream& operator<<(std::ostream&, const VistaEvent&);
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
@@ -58,116 +55,103 @@ VISTAKERNELAPI std::ostream & operator<< ( std::ostream &, const VistaEvent & );
 /**
  * VistaEvent - the mother of all events ;-)
  */
-class VISTAKERNELAPI VistaEvent : public IVistaSerializable
-{
-public:
-	/**
-	 * Event types, supported by Vista
-	 */
-	enum VISTAKERNELAPI EVENT_TYPE
-	{
-		VET_INVALID		= -1,
-		VET_ALL			= -2
-	};
+class VISTAKERNELAPI VistaEvent : public IVistaSerializable {
+ public:
+  /**
+   * Event types, supported by Vista
+   */
+  enum VISTAKERNELAPI EVENT_TYPE { VET_INVALID = -1, VET_ALL = -2 };
 
-	enum VISTAKERNELAPI EVENT_ID
-	{
-		VEID_NONE = -1,
-		VEID_LAST
-	};
+  enum VISTAKERNELAPI EVENT_ID { VEID_NONE = -1, VEID_LAST };
 
-public:
+ public:
+  virtual ~VistaEvent();
 
-	virtual ~VistaEvent();
+  /**
+   * Returns the system time of the event's creation
+   * @return  VistaType::systemtime    event creation time
+   */
+  VistaType::systemtime GetTime() const;
 
-	/**
-	 * Returns the system time of the event's creation
-	 * @return  VistaType::systemtime    event creation time
-	 */
-	VistaType::systemtime GetTime() const;
+  /**
+   * Returns the type of the event
+   * @return  int    event type id
+   */
+  int GetType() const;
 
-	/**
-	 * Returns the type of the event
-	 * @return  int    event type id
-	 */
-	int GetType() const;
+  /**
+   * Returns, whether the event has already been handled
+   * @return  bool   true = already handled / false = not handled yet
+   */
+  bool IsHandled() const;
 
-	/**
-	 * Returns, whether the event has already been handled
-	 * @return  bool   true = already handled / false = not handled yet
-	 */
-	bool IsHandled() const;
+  /**
+   * Sets the handling state of the object.
+   * Use this to mark the event as being handled.
+   * @param   bool bHandled
+   */
+  void SetHandled(bool bHandled);
 
-	/**
-	 * Sets the handling state of the object.
-	 * Use this to mark the event as being handled.
-	 * @param   bool bHandled
-	 */
-	void SetHandled( bool bHandled );
+  /**
+   * Returns the name of the event.
+   * @return  std::string
+   */
+  virtual std::string GetName() const;
 
-	/**
-	 * Returns the name of the event.
-	 * @return  std::string
-	 */
-	virtual std::string GetName() const;
+  /**
+   * Prints out some debug information to the given output stream.
+   * @param   std::ostream& out
+   */
+  virtual void Debug(std::ostream& oOut) const;
 
-	/**
-	 * Prints out some debug information to the given output stream.
-	 * @param   std::ostream& out
-	 */
-	virtual void Debug( std::ostream& oOut ) const;
+  /**
+   * Returns the event id
+   * @return  int    event id
+   */
+  int GetId() const;
 
-	/**
-	 * Returns the event id
-	 * @return  int    event id
-	 */
-	int GetId() const;
+  /**
+   * Sets the id of the event.
+   * @param   int iId
+   * @return  bool    true=success / false=failure (i.e. id=INVALID)
+   */
+  virtual bool SetId(int iEventId);
 
-	/**
-	 * Sets the id of the event.
-	 * @param   int iId
-	 * @return  bool    true=success / false=failure (i.e. id=INVALID)
-	 */
-	virtual bool SetId( int iEventId );
+  /**
+   * Think of this as "SAVE"
+   */
+  virtual int Serialize(IVistaSerializer& oSerializer) const;
 
+  /**
+   * Think of this as "LOAD"
+   */
+  virtual int DeSerialize(IVistaDeSerializer& oDeSerializer);
 
-	/**
-	 * Think of this as "SAVE"
-	 */
-	virtual int Serialize( IVistaSerializer& oSerializer) const;
+  virtual std::string GetSignature() const;
 
-	/**
-	 * Think of this as "LOAD"
-	 */
-	virtual int DeSerialize( IVistaDeSerializer& oDeSerializer );
+  static int  GetTypeId();
+  static void SetTypeId(int nId);
 
-	virtual std::string GetSignature() const;
+  static std::string GetIdString(int nId);
 
-	static int GetTypeId();
-	static void SetTypeId(int nId);
+  int GetCount() const;
 
-	static std::string GetIdString(int nId);
+ protected:
+  // avoid instantiation of this class -> use a derived class, instead!
+  VistaEvent(const int iEventType = VET_INVALID, const int iEventID = VET_INVALID);
+  void SetType(int iType);
 
-	int GetCount() const;
+  bool                  m_bHandled; // already handled?
+  VistaType::systemtime m_nTime;    // creation time of event (gets set by CEventManager)
 
-protected:
-	// avoid instantiation of this class -> use a derived class, instead!
-	VistaEvent( const int iEventType = VET_INVALID,
-				const int iEventID = VET_INVALID );		
-	void SetType(int iType);
+ private:
+  /** @todo: static EventID may be confused with "normal" eventId */
+  static int m_nEventId;
+  int        m_iType; // the type of the event
+  int        m_iId;   // the event id
+  int        m_nCount;
 
-	bool		m_bHandled;	// already handled?
-	VistaType::systemtime	m_nTime;	// creation time of event (gets set by CEventManager)
-
-private:
-	/** @todo: static EventID may be confused with "normal" eventId */
-	static int	m_nEventId;
-	int			m_iType;	// the type of the event
-	int			m_iId;		// the event id
-	int			m_nCount;
-
-	friend class VistaEventManager;
+  friend class VistaEventManager;
 };
 
 #endif //_VISTAEVENT_H
-

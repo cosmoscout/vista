@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTADUMMYCLUSTERBARRIER_H
 #define _VISTADUMMYCLUSTERBARRIER_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include <VistaInterProcComm/Cluster/VistaClusterBarrier.h>
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -44,21 +43,19 @@ class IVistaSerializable;
  * VistaNetworkSync is an abstract base class for a barrier wait among
  * several nodes in a cluster
  */
-class VISTAINTERPROCCOMMAPI VistaDummyClusterBarrier : public IVistaClusterBarrier
-{
-public:
-	VistaDummyClusterBarrier();
-	virtual ~VistaDummyClusterBarrier();
+class VISTAINTERPROCCOMMAPI VistaDummyClusterBarrier : public IVistaClusterBarrier {
+ public:
+  VistaDummyClusterBarrier();
+  virtual ~VistaDummyClusterBarrier();
 
-	virtual bool BarrierWait( int iTimeOut = 0 );
+  virtual bool BarrierWait(int iTimeOut = 0);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetBarrierType() const;
+  virtual std::string GetBarrierType() const;
 
-	virtual int GetSendBlockingThreshold() const;
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-
+  virtual int  GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
 };
 
 /*============================================================================*/

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _DEBUGGINGTOOLSDEMOAPPL_H
 #define _DEBUGGINGTOOLSDEMOAPPL_H
 
@@ -42,24 +41,22 @@ class VistaSystem;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class DebuggingToolsDemoAppl : VistaEventHandler
-{
-public:
-	DebuggingToolsDemoAppl( int argc = 0, char  *argv[] = NULL );
-	virtual ~DebuggingToolsDemoAppl();
+class DebuggingToolsDemoAppl : VistaEventHandler {
+ public:
+  DebuggingToolsDemoAppl(int argc = 0, char* argv[] = NULL);
+  virtual ~DebuggingToolsDemoAppl();
 
-	void Run();
+  void Run();
 
-	virtual void HandleEvent( VistaEvent* pEvent );
+  virtual void HandleEvent(VistaEvent* pEvent);
 
-private:
-	VistaSystem *m_pVistaSystem;
+ private:
+  VistaSystem* m_pVistaSystem;
 
-	class StackWalkerKeyCallback;
-	class PrintColorStreamPairsKeyCallback;
-	StackWalkerKeyCallback* m_pStackWalkerCallback;
-	PrintColorStreamPairsKeyCallback* m_pColorCallback;
+  class StackWalkerKeyCallback;
+  class PrintColorStreamPairsKeyCallback;
+  StackWalkerKeyCallback*           m_pStackWalkerCallback;
+  PrintColorStreamPairsKeyCallback* m_pColorCallback;
 };
-
 
 #endif // _DEBUGGINGTOOLSDEMOAPPL_H

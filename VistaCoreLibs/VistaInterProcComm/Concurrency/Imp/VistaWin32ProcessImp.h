@@ -21,12 +21,10 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(VISTA_THREADING_WIN32)
 
 #ifndef _VISTAWIN32PROCESSIMP_H
 #define _VISTAWIN32PROCESSIMP_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -37,7 +35,6 @@
 #if !defined(_WINDOWS_)
 #include <Windows.h>
 #endif
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -52,27 +49,26 @@ class VistaPriority;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI VistaWin32ProcessImp : public IVistaProcessImp
-{
-public:
+class VISTAINTERPROCCOMMAPI VistaWin32ProcessImp : public IVistaProcessImp {
+ public:
+  VistaWin32ProcessImp();
 
-	VistaWin32ProcessImp();
+  virtual ~VistaWin32ProcessImp();
 
-	virtual ~VistaWin32ProcessImp();
+  virtual bool Run(const std::string& inCommand);
+  virtual bool Suspend();
+  virtual bool Resume();
+  virtual bool Join();
+  virtual bool Abort();
 
-	virtual bool Run( const std::string & inCommand );
-	virtual bool Suspend();
-	virtual bool Resume();
-	virtual bool Join();
-	virtual bool Abort();
+  virtual bool SetPriority(const VistaPriority&);
+  virtual void GetPriority(VistaPriority&) const;
 
-	virtual bool SetPriority( const VistaPriority & );
-	virtual void GetPriority( VistaPriority & ) const;
+ private:
+  void CleanupProcess();
 
-private:
-	void CleanupProcess();
-protected:
-	HANDLE   win32Handle;
+ protected:
+  HANDLE win32Handle;
 };
 
 #endif // WIN32

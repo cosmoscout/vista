@@ -1,4 +1,4 @@
-	/*============================================================================*/
+/*============================================================================*/
 /*                              ViSTA VR toolkit                              */
 /*               Copyright (c) 1997-2016 RWTH Aachen University               */
 /*============================================================================*/
@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOSGKEYBOARDDRIVER_H
 #define _VISTAOSGKEYBOARDDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -57,36 +55,36 @@ class VistaOSGWindowingToolkit;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAOSGKEYBOARDDRIVERAPI VistaOSGKeyboardDriver : public IVistaKeyboardDriver
-{
-public:
-	VistaOSGKeyboardDriver( IVistaDriverCreationMethod* pCreation );
-	virtual ~VistaOSGKeyboardDriver();
+class VISTAOSGKEYBOARDDRIVERAPI VistaOSGKeyboardDriver : public IVistaKeyboardDriver {
+ public:
+  VistaOSGKeyboardDriver(IVistaDriverCreationMethod* pCreation);
+  virtual ~VistaOSGKeyboardDriver();
 
-	bool RegisterWindow( VistaWindow* pWindow );
-	bool UnregisterWindow( VistaWindow* pWindow );
-protected:
-	virtual bool DoConnect();
-	virtual bool DoDisconnect();
+  bool RegisterWindow(VistaWindow* pWindow);
+  bool UnregisterWindow(VistaWindow* pWindow);
 
-	virtual bool DoSensorUpdate(VistaType::microtime dTs);
+ protected:
+  virtual bool DoConnect();
+  virtual bool DoDisconnect();
 
-private:
-	typedef std::vector<VistaWindow*>	WindowList;
-	WindowList							m_vecWindows;
-	VistaDriverAbstractWindowAspect*	m_pWindowAspect;
-	VistaOSGWindowingToolkit*			m_pWindowingToolkit;	
+  virtual bool DoSensorUpdate(VistaType::microtime dTs);
+
+ private:
+  typedef std::vector<VistaWindow*> WindowList;
+  WindowList                        m_vecWindows;
+  VistaDriverAbstractWindowAspect*  m_pWindowAspect;
+  VistaOSGWindowingToolkit*         m_pWindowingToolkit;
 };
 
-class VISTAOSGKEYBOARDDRIVERAPI VistaOSGKeyboardDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaOSGKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
-protected:
-private:
-};
+class VISTAOSGKEYBOARDDRIVERAPI VistaOSGKeyboardDriverCreationMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  VistaOSGKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 
+ protected:
+ private:
+};
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */

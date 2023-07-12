@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if !defined(DLVISTATYPES_H)
 #define DLVISTATYPES_H
 
@@ -46,4 +45,3 @@
 #endif // DLV_INT32
 
 #endif // DLVISTATYPES_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaMIDIDriver.h"
 
 #include <VistaInterProcComm/Connections/VistaConnection.h>
@@ -42,50 +41,38 @@
 #define VISTAMIDIPLUGINAPI
 #endif
 
-
-namespace
-{
-	VistaMIDIDriverCreationMethod *SpFactory = NULL;
+namespace {
+VistaMIDIDriverCreationMethod* SpFactory = NULL;
 }
 
-extern "C" VISTAMIDIPLUGINAPI IVistaDeviceDriver *CreateDevice(IVistaDriverCreationMethod *crm)
-{
-	return new VistaMIDIDriver(crm);
+extern "C" VISTAMIDIPLUGINAPI IVistaDeviceDriver* CreateDevice(IVistaDriverCreationMethod* crm) {
+  return new VistaMIDIDriver(crm);
 }
 
-extern "C" VISTAMIDIPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if( SpFactory == NULL )
-		SpFactory = new VistaMIDIDriverCreationMethod(fac);
+extern "C" VISTAMIDIPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaMIDIDriverCreationMethod(fac);
 
-	IVistaReferenceCountable::refup(SpFactory);
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAMIDIPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory == crm )
-	{
-		delete SpFactory;
-		SpFactory = NULL;
-	}
-	else
-		delete crm;
+extern "C" VISTAMIDIPLUGINAPI void DisposeCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory == crm) {
+    delete SpFactory;
+    SpFactory = NULL;
+  } else
+    delete crm;
 }
 
-extern "C" VISTAMIDIPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( SpFactory != NULL )
-	{
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
-	}
+extern "C" VISTAMIDIPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (SpFactory != NULL) {
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
+  }
 }
 
-
-extern "C" VISTAMIDIPLUGINAPI const char *GetDeviceClassName()
-{
-	return "MIDI";
+extern "C" VISTAMIDIPLUGINAPI const char* GetDeviceClassName() {
+  return "MIDI";
 }
-
-

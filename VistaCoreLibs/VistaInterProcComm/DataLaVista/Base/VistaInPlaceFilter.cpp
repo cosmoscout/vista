@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 /*============================================================================*/
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
@@ -41,97 +39,78 @@ using namespace std;
 /*============================================================================*/
 
 IDLVistaInPlaceFilter::IDLVistaInPlaceFilter()
-: IDLVistaFilter()
-{
-	m_pPacketName = new string;
+    : IDLVistaFilter() {
+  m_pPacketName = new string;
 }
 
-IDLVistaInPlaceFilter::~IDLVistaInPlaceFilter()
-{
-	delete m_pPacketName;
+IDLVistaInPlaceFilter::~IDLVistaInPlaceFilter() {
+  delete m_pPacketName;
 }
-
 
 /*============================================================================*/
 /*  IMPLEMENTATION                                                            */
 /*============================================================================*/
 
-
-bool IDLVistaInPlaceFilter::RecycleDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock)
-{
-	// give back to producer
-	(*m_pInput).RecycleDataPacket(pPacket, this);
-	return true;
+bool IDLVistaInPlaceFilter::RecycleDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock) {
+  // give back to producer
+  (*m_pInput).RecycleDataPacket(pPacket, this);
+  return true;
 }
 
-bool IDLVistaInPlaceFilter::AcceptDataPacket(IDLVistaDataPacket *pPacket, IDLVistaPipeComponent *pComp, bool bBlock)
-{
-	IDLVistaDataPacket *p = FilterPacketL(pPacket);
-	if(p) // ok, filtering worked
-	{
-		// forward to output
-		return this->m_pOutput->AcceptDataPacket(p, this);
-	}
-	else
-	{
-		// ok, we should recycle the old packet, filtering did not work or
-		// packet was rejected.
-		RecycleDataPacket(pPacket, this);
-	}
-	// something failed, give back false, the caller should be wise to recycle the packet properly
-	return false;
+bool IDLVistaInPlaceFilter::AcceptDataPacket(
+    IDLVistaDataPacket* pPacket, IDLVistaPipeComponent* pComp, bool bBlock) {
+  IDLVistaDataPacket* p = FilterPacketL(pPacket);
+  if (p) // ok, filtering worked
+  {
+    // forward to output
+    return this->m_pOutput->AcceptDataPacket(p, this);
+  } else {
+    // ok, we should recycle the old packet, filtering did not work or
+    // packet was rejected.
+    RecycleDataPacket(pPacket, this);
+  }
+  // something failed, give back false, the caller should be wise to recycle the packet properly
+  return false;
 }
 
-
-IDLVistaDataPacket *IDLVistaInPlaceFilter::GivePacket(bool bBlock)
-{
-	IDLVistaDataPacket *p = this->m_pInput->GivePacket(bBlock);
-	if(p)
-	{
-		// ok, got a new packet
-		IDLVistaDataPacket *p1 = FilterPacketL(p);
-		if(p1)
-		{
-			// ok, got a new one and it was filtered, we can return this
-			return p1;
-		}
-		else
-		{
-			// hmm... got new packet, but filtering did not work out for this one...
-			RecycleDataPacket(p, this);
-		}
-	}
-	return NULL;
+IDLVistaDataPacket* IDLVistaInPlaceFilter::GivePacket(bool bBlock) {
+  IDLVistaDataPacket* p = this->m_pInput->GivePacket(bBlock);
+  if (p) {
+    // ok, got a new packet
+    IDLVistaDataPacket* p1 = FilterPacketL(p);
+    if (p1) {
+      // ok, got a new one and it was filtered, we can return this
+      return p1;
+    } else {
+      // hmm... got new packet, but filtering did not work out for this one...
+      RecycleDataPacket(p, this);
+    }
+  }
+  return NULL;
 }
 
-IDLVistaDataPacket *IDLVistaInPlaceFilter::CreatePacket()
-{
-	return NULL;
+IDLVistaDataPacket* IDLVistaInPlaceFilter::CreatePacket() {
+  return NULL;
 }
 
-void IDLVistaInPlaceFilter::DeletePacket(IDLVistaDataPacket *)
-{
+void IDLVistaInPlaceFilter::DeletePacket(IDLVistaDataPacket*) {
 }
 
-bool IDLVistaInPlaceFilter::InitPacketMgmt()
-{
-	return true;
+bool IDLVistaInPlaceFilter::InitPacketMgmt() {
+  return true;
 }
 
-int IDLVistaInPlaceFilter::GetInputPacketType() const
-{
-	IDLVistaRegistration *pReg = IDLVistaRegistration::GetRegistrationSingleton();
-	return pReg ? pReg->GetTypeIdForName((*m_pPacketName)) : -1;
+int IDLVistaInPlaceFilter::GetInputPacketType() const {
+  IDLVistaRegistration* pReg = IDLVistaRegistration::GetRegistrationSingleton();
+  return pReg ? pReg->GetTypeIdForName((*m_pPacketName)) : -1;
 }
 
-int IDLVistaInPlaceFilter::GetOutputPacketType() const
-{
-	IDLVistaRegistration *pReg = IDLVistaRegistration::GetRegistrationSingleton();
-	return pReg ? pReg->GetTypeIdForName((*m_pPacketName)) : -1;
+int IDLVistaInPlaceFilter::GetOutputPacketType() const {
+  IDLVistaRegistration* pReg = IDLVistaRegistration::GetRegistrationSingleton();
+  return pReg ? pReg->GetTypeIdForName((*m_pPacketName)) : -1;
 }
 
-
-void IDLVistaInPlaceFilter::SetPacketTypeName(const string &SName)
-{
-	(*m_pPacketName) = SName;
+void IDLVistaInPlaceFilter::SetPacketTypeName(const string& SName) {
+  (*m_pPacketName) = SName;
 }

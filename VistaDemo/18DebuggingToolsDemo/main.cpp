@@ -21,14 +21,12 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 /**
  * Description:
  * This is the DebuggingToolsDemo, showing the usage of VistaStackWalker,
  * VistaStreams+VistaStreamUtils, and VistaBasicProfiler
  * All the interesting stuff is in DebuggingToolsDemo.cpp
  */
-
 
 #include "DebuggingToolsDemo.h"
 
@@ -48,24 +46,16 @@
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-int	main( int argc, char *argv[] )
-{
-	try
-	{
-		DebuggingToolsDemoAppl oDemoAppl( argc, argv );
-		// start application as an endless loop
-		oDemoAppl.Run();
-	}
-	catch( VistaExceptionBase &e )
-	{
-		e.PrintException();
-	}
-	catch( std::exception &e )
-	{
-		std::cerr << "Exception:" << e.what() << std::endl;
-	}
+int main(int argc, char* argv[]) {
+  try {
+    DebuggingToolsDemoAppl oDemoAppl(argc, argv);
+    // start application as an endless loop
+    oDemoAppl.Run();
+  } catch (VistaExceptionBase& e) { e.PrintException(); } catch (std::exception& e) {
+    std::cerr << "Exception:" << e.what() << std::endl;
+  }
 
-	return 0;
+  return 0;
 }
 
 /*============================================================================*/

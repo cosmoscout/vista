@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _OGLDEMOAPPL_H
 #define _OGLDEMOAPPL_H
-
 
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
@@ -47,26 +45,22 @@ class OglDrawObject;
 /**
  * This application is a simple example to show you how to generate a node
  * in ViSTA scene graph where you can call the well-known openGL lines.
- */    
-class OglDemoAppl
-{
-public:
+ */
+class OglDemoAppl {
+ public:
+  // CONSTRUCTORS / DESTRUCTOR
+  OglDemoAppl(int argc = 0, char* argv[] = NULL);
+  virtual ~OglDemoAppl();
 
-	// CONSTRUCTORS / DESTRUCTOR
-	OglDemoAppl( int argc = 0, char  *argv[] = NULL );
-	virtual ~OglDemoAppl();
+  void Run();
 
-	void   Run  ();
-	
-	void   CreateScene ();
+  void CreateScene();
 
+ private:
+  VistaSystem m_vistaSystem;
 
-private:
-	VistaSystem		m_vistaSystem;
-
-	OglDrawObject 	*m_pOglDrawObj;
-	VistaOpenGLNode	*m_pOglRootNode;
+  OglDrawObject*   m_pOglDrawObj;
+  VistaOpenGLNode* m_pOglRootNode;
 };
-
 
 #endif // _OGLDEMOAPPL_H

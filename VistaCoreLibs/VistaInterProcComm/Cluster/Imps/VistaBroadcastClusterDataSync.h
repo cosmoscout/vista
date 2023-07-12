@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTABROADCASTCLUSTERSYNC_H
 #define _VISTABROADCASTCLUSTERSYNC_H
 
@@ -30,13 +29,13 @@
 /*============================================================================*/
 #include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
-#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Cluster/Imps/VistaClusterBytebufferDataSyncBase.h>
-#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
+#include <VistaInterProcComm/Cluster/VistaClusterDataSync.h>
 #include <VistaInterProcComm/Connections/VistaByteBufferDeSerializer.h>
+#include <VistaInterProcComm/Connections/VistaByteBufferSerializer.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /*============================================================================*/
 /* FORWARD DECLERATIONS                                                       */
@@ -51,75 +50,67 @@ class VistaUDPSocket;
  * This is a ClusterDataSync implementation that uses broadcasting to send
  * packages. However, tests showed that this only works for small packages
  * and with a low bytes/sec ratio, where packages/data was lost.
- * If possible, use the ZeroMq-Datasync (if available) or the 
+ * If possible, use the ZeroMq-Datasync (if available) or the
  * TCP/IP DataSync (for small numbers of slaves)
  */
 
-class VISTAINTERPROCCOMMAPI VistaBroadcastClusterLeaderDataSync : public VistaClusterBytebufferLeaderDataSyncBase
-{
-public:
-	VistaBroadcastClusterLeaderDataSync( const bool bVerbose = true );
-	VistaBroadcastClusterLeaderDataSync( const std::string& sBroadcastIP,
-									const int nBroadcastPort,
-									const bool bVerbose = true );
-	VistaBroadcastClusterLeaderDataSync( VistaUDPSocket* pBroadcastSocket,
-									const bool bManageDeletion = true,									
-									const bool bVerbose = true );
+class VISTAINTERPROCCOMMAPI VistaBroadcastClusterLeaderDataSync
+    : public VistaClusterBytebufferLeaderDataSyncBase {
+ public:
+  VistaBroadcastClusterLeaderDataSync(const bool bVerbose = true);
+  VistaBroadcastClusterLeaderDataSync(
+      const std::string& sBroadcastIP, const int nBroadcastPort, const bool bVerbose = true);
+  VistaBroadcastClusterLeaderDataSync(VistaUDPSocket* pBroadcastSocket,
+      const bool bManageDeletion = true, const bool bVerbose = true);
 
-	virtual ~VistaBroadcastClusterLeaderDataSync();
+  virtual ~VistaBroadcastClusterLeaderDataSync();
 
-	bool WaitForConnection( const std::vector<VistaConnectionIP*>& vecConnections );
-	
-	bool AddBroadcast( const std::string& sBroadcastIP,
-						const int nBroadcastPort );
-	bool AddBroadcast( VistaUDPSocket* pBroadcastSocket,
-						const bool bManageDeletion = true );
+  bool WaitForConnection(const std::vector<VistaConnectionIP*>& vecConnections);
 
+  bool AddBroadcast(const std::string& sBroadcastIP, const int nBroadcastPort);
+  bool AddBroadcast(VistaUDPSocket* pBroadcastSocket, const bool bManageDeletion = true);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 
-private:
-	virtual bool DoSendMessage();
-	bool RemoveSocket( VistaUDPSocket* pDeadSocket );
+ private:
+  virtual bool DoSendMessage();
+  bool         RemoveSocket(VistaUDPSocket* pDeadSocket);
 
-private:
-	std::vector<VistaUDPSocket*>	m_vecBCSenderSockets;
-	std::vector<bool>				m_vecDeleteBroadcastSocket;
+ private:
+  std::vector<VistaUDPSocket*> m_vecBCSenderSockets;
+  std::vector<bool>            m_vecDeleteBroadcastSocket;
 };
 
-class VISTAINTERPROCCOMMAPI VistaBroadcastClusterFollowerDataSync : public VistaClusterBytebufferFollowerDataSyncBase
-{
-public:
-	VistaBroadcastClusterFollowerDataSync( const std::string& sBroadcastAddress,
-									const int nBroadcastPort,
-									const bool bSwap,
-									const bool bVerbose = true );
-	VistaBroadcastClusterFollowerDataSync( VistaUDPSocket* pBroadcastSocket,
-									const bool bSwap,
-									const bool bManageDeletion = true,
-									const bool bVerbose = true );
-	virtual ~VistaBroadcastClusterFollowerDataSync();
+class VISTAINTERPROCCOMMAPI VistaBroadcastClusterFollowerDataSync
+    : public VistaClusterBytebufferFollowerDataSyncBase {
+ public:
+  VistaBroadcastClusterFollowerDataSync(const std::string& sBroadcastAddress,
+      const int nBroadcastPort, const bool bSwap, const bool bVerbose = true);
+  VistaBroadcastClusterFollowerDataSync(VistaUDPSocket* pBroadcastSocket, const bool bSwap,
+      const bool bManageDeletion = true, const bool bVerbose = true);
+  virtual ~VistaBroadcastClusterFollowerDataSync();
 
-	bool WaitForConnection( VistaConnectionIP* pConnection );
+  bool WaitForConnection(VistaConnectionIP* pConnection);
 
-	virtual bool GetIsValid() const;
+  virtual bool GetIsValid() const;
 
-	virtual std::string GetDataSyncType() const;
+  virtual std::string GetDataSyncType() const;
 
-	virtual bool SetSendBlockingThreshold( const int nNumBytes );
-	virtual int GetSendBlockingThreshold() const;
+  virtual bool SetSendBlockingThreshold(const int nNumBytes);
+  virtual int  GetSendBlockingThreshold() const;
 
-private:
-	virtual bool DoReceiveMessage();
-	void ProcessError();
-private:
-	VistaUDPSocket*		m_pBCReceiverSocket;
-	bool				m_bManageDeletion;
+ private:
+  virtual bool DoReceiveMessage();
+  void         ProcessError();
+
+ private:
+  VistaUDPSocket* m_pBCReceiverSocket;
+  bool            m_bManageDeletion;
 };
 
 /*============================================================================*/

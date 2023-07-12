@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "ResetCallback.h"
 #include "VrmlVisualizer.h"
 
@@ -35,21 +34,21 @@
 /* CONSTRUCTORS / DESTRUCTOR                                                  */
 /*============================================================================*/
 
-ResetCallback::ResetCallback( VrmlVisualizer *pVrmlVisualizer )
-	:	m_pVrmlVisualizer( pVrmlVisualizer )
-{}
+ResetCallback::ResetCallback(VrmlVisualizer* pVrmlVisualizer)
+    : m_pVrmlVisualizer(pVrmlVisualizer) {
+}
 
-ResetCallback::~ResetCallback(){}
+ResetCallback::~ResetCallback() {
+}
 
 /*============================================================================*/
 /* IMPLEMENTATION                                                             */
 /*============================================================================*/
 
-bool ResetCallback::Do()
-{
-	// parses the Parameters again
-	m_pVrmlVisualizer->ParseParameters();
-	return true;
+bool ResetCallback::Do() {
+  // parses the Parameters again
+  m_pVrmlVisualizer->ParseParameters();
+  return true;
 }
 
 /*============================================================================*/

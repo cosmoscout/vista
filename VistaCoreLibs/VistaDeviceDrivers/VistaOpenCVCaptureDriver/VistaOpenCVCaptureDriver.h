@@ -21,22 +21,20 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTAOPENCVCAPTUREDRIVER_H
 #define __VISTAOPENCVCAPTUREDRIVER_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverGenericParameterAspect.h>
 #include <VistaBase/VistaAutoBufferPool.h>
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverGenericParameterAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
 
-#if defined(WIN32) && !defined(VISTAOPENCVCAPTUREDRIVER_STATIC) 
+#if defined(WIN32) && !defined(VISTAOPENCVCAPTUREDRIVER_STATIC)
 #ifdef VISTAOPENCVCAPTUREDRIVER_EXPORTS
 #define VISTAOPENCVCAPTUREDRIVERAPI __declspec(dllexport)
 #else
@@ -53,154 +51,138 @@
 class VistaDriverInfoAspect;
 class VistaDriverThreadAspect;
 
-namespace cv
-{
-	class VideoCapture;
-	class Mat;
-}
+namespace cv {
+class VideoCapture;
+class Mat;
+} // namespace cv
 
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAOPENCVCAPTUREDRIVERAPI VistaOpenCVCaptureDriver : public IVistaDeviceDriver
-{
-public:
+class VISTAOPENCVCAPTUREDRIVERAPI VistaOpenCVCaptureDriver : public IVistaDeviceDriver {
+ public:
+  struct _videotype {};
 
-	struct _videotype
-	{
-	};
+  struct _typetype {
+    _typetype()
+        : m_nWidth(0)
+        , m_nHeight(0)
+        , m_nFormat(0.0) {
+    }
 
-	struct _typetype
-	{
-		_typetype()
-			: m_nWidth(0)
-			, m_nHeight(0)
-			, m_nFormat(0.0)
-		{}
+    VistaType::uint32  m_nWidth, m_nHeight;
+    VistaType::float64 m_nFormat;
+  };
 
-		VistaType::uint32 m_nWidth,
-			              m_nHeight;
-		VistaType::float64 m_nFormat;
-	};
+  typedef _typetype VideoType;
 
-	typedef _typetype VideoType;
+  struct _frametype {
+    _frametype()
+        : m_Frame(0L) {
+    }
 
-	struct _frametype
-	{
-		_frametype() 
-			: m_Frame(0L) {}
+    cv::Mat* m_Frame;
+  };
 
-		cv::Mat *m_Frame;
-	};
+  typedef _frametype FrameType;
 
-	typedef _frametype FrameType;
+  VistaOpenCVCaptureDriver(IVistaDriverCreationMethod*);
+  virtual ~VistaOpenCVCaptureDriver();
 
-	VistaOpenCVCaptureDriver(IVistaDriverCreationMethod *);
-	virtual ~VistaOpenCVCaptureDriver();
+  class Parameters : public VistaDriverGenericParameterAspect::IParameterContainer {
+    REFL_DECLARE
+   public:
+    Parameters(VistaOpenCVCaptureDriver* pDriver);
 
+    enum {
+      MSG_CAPTUREDEVICE_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
+      MSG_REQUESTEDWIDTH_CHG,
+      MSG_REQUESTEDHEIGHT_CHG,
+      MSG_WIDTH_CHG,
+      MSG_HEIGHT_CHG,
+      MSG_FORMAT_CHG,
+      MSG_FRAMERATE_CHG,
+      MSG_DOESHW2RGB_CHG,
+      MSG_FROMFILE_CHG,
+      MSG_WANTRGB_CHG,
+      MSG_LAST
+    };
 
-	class Parameters : public VistaDriverGenericParameterAspect::IParameterContainer
-	{
-		REFL_DECLARE
-	public:
-		Parameters( VistaOpenCVCaptureDriver* pDriver );
+    int  GetCaptureDevice() const;
+    bool SetCaptureDevice(int);
 
-		enum
-		{
-			MSG_CAPTUREDEVICE_CHG = VistaDriverGenericParameterAspect::IParameterContainer::MSG_LAST,
-			MSG_REQUESTEDWIDTH_CHG,
-			MSG_REQUESTEDHEIGHT_CHG,
-			MSG_WIDTH_CHG,
-			MSG_HEIGHT_CHG,
-			MSG_FORMAT_CHG,
-			MSG_FRAMERATE_CHG,
-			MSG_DOESHW2RGB_CHG,
-			MSG_FROMFILE_CHG,
-			MSG_WANTRGB_CHG,
-			MSG_LAST
-		};
+    int  GetWidthRequested() const;
+    bool SetWidthRequested(int width);
 
-		int GetCaptureDevice() const;
-		bool SetCaptureDevice( int );
+    int  GetHeightRequested() const;
+    bool SetHeightRequested(int height);
 
-		int GetWidthRequested() const;
-		bool SetWidthRequested( int width );
+    int  GetWidth() const;
+    bool SetWidth(int width);
 
-		int GetHeightRequested() const;
-		bool SetHeightRequested( int height );
+    int  GetHeight() const;
+    bool SetHeight(int height);
 
-		int GetWidth() const;
-		bool SetWidth( int width );
+    int  GetFormat() const;
+    bool SetFormat(int);
 
-		int GetHeight() const;
-		bool SetHeight( int height );
+    int  GetFrameRate() const;
+    bool SetFrameRate(int);
 
-		int GetFormat() const;
-		bool SetFormat( int );
+    bool GetDoesHW2RGB() const;
+    bool SetDoesHW2RGB(bool);
 
-		int GetFrameRate() const;
-		bool SetFrameRate( int );
+    bool GetWantRGB() const;
+    bool SetWantRGB(bool);
 
-		bool GetDoesHW2RGB() const;
-		bool SetDoesHW2RGB( bool );
+    std::string GetFromFile() const;
+    bool        SetFromFile(const std::string&);
 
-		bool GetWantRGB() const;
-		bool SetWantRGB( bool );
+    size_t GetMemorySize() const;
 
-		std::string GetFromFile() const;
-		bool SetFromFile( const std::string & );
+    virtual bool TurnDef(bool def);
+    bool         GetIsDef() const;
+    virtual bool Apply();
 
-		size_t GetMemorySize() const;
+   private:
+    VistaOpenCVCaptureDriver* m_parent;
 
-		virtual bool TurnDef( bool def );
-		bool GetIsDef() const;
-		virtual bool Apply();
+    int  m_device, m_widthRQ, m_heightRQ, m_width, m_height, m_framerate;
+    bool m_bDef, m_doesHw2RGB, m_bwantRGB;
+    int  m_format;
 
-	private:
-		VistaOpenCVCaptureDriver *m_parent;
+    std::string m_fromFile;
+  };
 
-		int m_device,
-		    m_widthRQ,
-		    m_heightRQ,
-		    m_width,
-		    m_height,
-		    m_framerate;
-		bool m_bDef, m_doesHw2RGB, m_bwantRGB;
-		int m_format;
+  void SignalPropertyChanged(int msg);
 
-		std::string m_fromFile;
-	};
+ protected:
+  virtual bool PhysicalEnable(bool bEnable);
+  bool         DoSensorUpdate(VistaType::microtime nTs);
 
-	void SignalPropertyChanged(int msg);
-protected:
+  bool DoConnect();
+  bool DoDisconnect();
 
-	virtual bool PhysicalEnable(bool bEnable);
-	bool DoSensorUpdate(VistaType::microtime nTs);
+ private:
+  void OnReconnectCamera(bool bForce = false);
+  void OnUpdateMeasureSize();
 
-	bool DoConnect();
-	bool DoDisconnect();
+  VistaDriverInfoAspect*   m_pInfo;
+  VistaDriverThreadAspect* m_pThread;
 
-private:
-	void OnReconnectCamera(bool bForce = false);
-	void OnUpdateMeasureSize();
+  VistaDriverGenericParameterAspect* m_pParams;
 
-	VistaDriverInfoAspect       *m_pInfo;
-	VistaDriverThreadAspect     *m_pThread;
-
-	VistaDriverGenericParameterAspect *m_pParams;
-
-	cv::VideoCapture *m_pCapture;
-	IVistaDeviceDriver::AllocMemoryFunctor  *m_alloc;
-	 IVistaDeviceDriver::ClaimMemoryFunctor *m_dealloc;	
+  cv::VideoCapture*                       m_pCapture;
+  IVistaDeviceDriver::AllocMemoryFunctor* m_alloc;
+  IVistaDeviceDriver::ClaimMemoryFunctor* m_dealloc;
 };
 
-
-class VISTAOPENCVCAPTUREDRIVERAPI VistaOpenCVCaptureDriverCreationMethod : public IVistaDriverCreationMethod
-{
-public:
-	VistaOpenCVCaptureDriverCreationMethod(IVistaTranscoderFactoryFactory *fac);
-	virtual IVistaDeviceDriver *CreateDriver();
+class VISTAOPENCVCAPTUREDRIVERAPI VistaOpenCVCaptureDriverCreationMethod
+    : public IVistaDriverCreationMethod {
+ public:
+  VistaOpenCVCaptureDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  virtual IVistaDeviceDriver* CreateDriver();
 };
 
 /*============================================================================*/
@@ -212,4 +194,3 @@ public:
 /*============================================================================*/
 
 #endif //__VISTAOPENCVCAPTURE_H
-

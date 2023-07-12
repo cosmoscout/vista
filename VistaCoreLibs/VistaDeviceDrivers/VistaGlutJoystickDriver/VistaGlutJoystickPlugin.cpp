@@ -21,69 +21,55 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32) && !defined(VISTAGLUTJOYSTICKPLUGIN_STATIC)
-	#ifdef VISTAGLUTJOYSTICKPLUGIN_EXPORTS
-		#define VISTAGLUTJOYSTICKPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTAGLUTJOYSTICKPLUGINAPI __declspec(dllimport)
-	#endif
-#else // no Windows or static build
-	#define VISTAGLUTJOYSTICKPLUGINAPI
+#ifdef VISTAGLUTJOYSTICKPLUGIN_EXPORTS
+#define VISTAGLUTJOYSTICKPLUGINAPI __declspec(dllexport)
+#else
+#define VISTAGLUTJOYSTICKPLUGINAPI __declspec(dllimport)
 #endif
-
+#else // no Windows or static build
+#define VISTAGLUTJOYSTICKPLUGINAPI
+#endif
 
 #include "VistaGlutJoystickDriver.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-
-namespace
-{
-	VistaGlutJoystickDriverCreationMethod *SpFactory = NULL;
+namespace {
+VistaGlutJoystickDriverCreationMethod* SpFactory = NULL;
 }
-
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
-#endif //defined(WIN32)
+#endif // defined(WIN32)
 
+extern "C" VISTAGLUTJOYSTICKPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaGlutJoystickDriverCreationMethod(fac);
 
-extern "C" VISTAGLUTJOYSTICKPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if(SpFactory == NULL)
-		SpFactory = new VistaGlutJoystickDriverCreationMethod(fac);
-
-	IVistaReferenceCountable::refup( SpFactory );
-	return SpFactory;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-
-extern "C" VISTAGLUTJOYSTICKPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( crm == SpFactory )
-		if( IVistaReferenceCountable::refdown(crm) )
-			SpFactory = NULL;
+extern "C" VISTAGLUTJOYSTICKPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == SpFactory)
+    if (IVistaReferenceCountable::refdown(crm))
+      SpFactory = NULL;
 }
 
-extern "C" VISTAGLUTJOYSTICKPLUGINAPI const char *GetDeviceClassName()
-{
-	return "GLUTJOYSTICK";
+extern "C" VISTAGLUTJOYSTICKPLUGINAPI const char* GetDeviceClassName() {
+  return "GLUTJOYSTICK";
 }

@@ -21,8 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
-
 #ifndef _VISTARENDERBUFFER_H
 #define _VISTARENDERBUFFER_H
 
@@ -51,56 +49,54 @@
  * VistaRenderbuffer provides a basic abstraction for render-to-texture
  * functionality based on the OpenGL extension GL_EXT_framebuffer_object.
  */
-class VISTAOGLEXTAPI VistaRenderbuffer
-{
-public:
-	VistaRenderbuffer();
-	VistaRenderbuffer(GLenum eFormat, int iWidth, int iHeight);
-	virtual ~VistaRenderbuffer();
+class VISTAOGLEXTAPI VistaRenderbuffer {
+ public:
+  VistaRenderbuffer();
+  VistaRenderbuffer(GLenum eFormat, int iWidth, int iHeight);
+  virtual ~VistaRenderbuffer();
 
-	/**
-	 * Initialize this renderbuffer according to the given values.
-	 */
-	virtual void Init(GLenum eFormat, int iWidth, int iHeight);
+  /**
+   * Initialize this renderbuffer according to the given values.
+   */
+  virtual void Init(GLenum eFormat, int iWidth, int iHeight);
 
-	/**
-	 * Bind this renderbuffer.
-	 */
-	virtual void Bind();
+  /**
+   * Bind this renderbuffer.
+   */
+  virtual void Bind();
 
-	/**
-	 * Release any renderbuffer.
-	 */
-	virtual void Release();
+  /**
+   * Release any renderbuffer.
+   */
+  virtual void Release();
 
-	/**
-	 * Retrieve this renderbuffer's id.
-	 */
-	GLuint GetId() const;
+  /**
+   * Retrieve this renderbuffer's id.
+   */
+  GLuint GetId() const;
 
-	/**
-	 * Check for framebuffer object support.
-	 */
-	bool IsSupported() const;
+  /**
+   * Check for framebuffer object support.
+   */
+  bool IsSupported() const;
 
-protected:
-	/**
-	 * Check, whether this renderbuffer is the currently bound one. If not,
-	 * bind our renderbuffer, but don't reset the static class variable.
-	 */
-	void FastBind();
+ protected:
+  /**
+   * Check, whether this renderbuffer is the currently bound one. If not,
+   * bind our renderbuffer, but don't reset the static class variable.
+   */
+  void FastBind();
 
-	/**
-	 * Check, whether our renderbuffer is supposed to remain bound, i.e. if
-	 * the static class variable points towards our renderbuffer. If not,
-	 * re-bind the one from the static variable.
-	 */
-	void FastRelease();
+  /**
+   * Check, whether our renderbuffer is supposed to remain bound, i.e. if
+   * the static class variable points towards our renderbuffer. If not,
+   * re-bind the one from the static variable.
+   */
+  void FastRelease();
 
-	GLuint	m_iId;
-	static GLuint s_iCurrentlyBoundRenderbuffer;
+  GLuint        m_iId;
+  static GLuint s_iCurrentlyBoundRenderbuffer;
 };
-
 
 /*============================================================================*/
 /* INLINED METHODS                                                            */

@@ -21,13 +21,11 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDisplay.h"
+#include "VistaDisplayBridge.h"
 #include "VistaDisplayManager.h"
 #include "VistaWindow.h"
-#include "VistaDisplayBridge.h"
 #include <VistaAspects/VistaAspectsUtils.h>
-
 
 /*============================================================================*/
 
@@ -40,15 +38,13 @@ using namespace std;
 /*============================================================================*/
 /*  CONSTRUCTORS / DESTRUCTOR                                                 */
 /*============================================================================*/
-VistaDisplay::VistaDisplay(VistaDisplayManager *pDMgr,
-							 IVistaDisplayEntityData *pData,
-							 IVistaDisplayBridge *pBridge)
-	: VistaDisplayEntity(pData, pBridge), m_pDisplayManager( pDMgr )
-{
+VistaDisplay::VistaDisplay(
+    VistaDisplayManager* pDMgr, IVistaDisplayEntityData* pData, IVistaDisplayBridge* pBridge)
+    : VistaDisplayEntity(pData, pBridge)
+    , m_pDisplayManager(pDMgr) {
 }
 
-VistaDisplay::~VistaDisplay()
-{
+VistaDisplay::~VistaDisplay() {
 }
 
 /*============================================================================*/
@@ -60,9 +56,8 @@ VistaDisplay::~VistaDisplay()
 /*  NAME      :   GetDisplayManager                                           */
 /*                                                                            */
 /*============================================================================*/
-VistaDisplayManager *VistaDisplay::GetDisplayManager() const
-{
-	return m_pDisplayManager;
+VistaDisplayManager* VistaDisplay::GetDisplayManager() const {
+  return m_pDisplayManager;
 }
 
 /*============================================================================*/
@@ -70,19 +65,16 @@ VistaDisplayManager *VistaDisplay::GetDisplayManager() const
 /*  NAME      :   GetWindowNames                                              */
 /*                                                                            */
 /*============================================================================*/
-std::list<std::string> VistaDisplay::GetWindowNames() const
-{    
-	std::list<std::string> liNames;
+std::list<std::string> VistaDisplay::GetWindowNames() const {
+  std::list<std::string> liNames;
 
-	if (m_vecWindows.size())
-	{
-		for( std::vector<VistaWindow *>::const_iterator it = m_vecWindows.begin() ; 
-			 it != m_vecWindows.end() ; ++it )
-		{
-			liNames.push_back( (*it)->GetNameForNameable() );
-		}
-	}
-	return liNames;
+  if (m_vecWindows.size()) {
+    for (std::vector<VistaWindow*>::const_iterator it = m_vecWindows.begin();
+         it != m_vecWindows.end(); ++it) {
+      liNames.push_back((*it)->GetNameForNameable());
+    }
+  }
+  return liNames;
 }
 
 /*============================================================================*/
@@ -90,9 +82,8 @@ std::list<std::string> VistaDisplay::GetWindowNames() const
 /*  NAME      :   GetNumberOfWindows                                          */
 /*                                                                            */
 /*============================================================================*/
-unsigned int VistaDisplay::GetNumberOfWindows() const
-{
-	return (unsigned int)m_vecWindows.size();
+unsigned int VistaDisplay::GetNumberOfWindows() const {
+  return (unsigned int)m_vecWindows.size();
 }
 
 /*============================================================================*/
@@ -100,11 +91,10 @@ unsigned int VistaDisplay::GetNumberOfWindows() const
 /*  NAME      :   GetWindow                                                   */
 /*                                                                            */
 /*============================================================================*/
-VistaWindow *VistaDisplay::GetWindow(unsigned int iIndex) const
-{
-	if( iIndex < m_vecWindows.size() )
-		return m_vecWindows[iIndex];
-	return NULL;
+VistaWindow* VistaDisplay::GetWindow(unsigned int iIndex) const {
+  if (iIndex < m_vecWindows.size())
+    return m_vecWindows[iIndex];
+  return NULL;
 }
 
 /*============================================================================*/
@@ -112,9 +102,8 @@ VistaWindow *VistaDisplay::GetWindow(unsigned int iIndex) const
 /*  NAME      :   GetWindows                                                  */
 /*                                                                            */
 /*============================================================================*/
-std::vector<VistaWindow *> &VistaDisplay::GetWindows() 
-{
-	return m_vecWindows;
+std::vector<VistaWindow*>& VistaDisplay::GetWindows() {
+  return m_vecWindows;
 }
 
 /*============================================================================*/
@@ -122,27 +111,23 @@ std::vector<VistaWindow *> &VistaDisplay::GetWindows()
 /*  NAME      :   Debug                                                       */
 /*                                                                            */
 /*============================================================================*/
-void VistaDisplay::Debug(std::ostream &out) const
-{ 
-	VistaDisplayEntity::Debug(out);
+void VistaDisplay::Debug(std::ostream& out) const {
+  VistaDisplayEntity::Debug(out);
 
-	out << " [VistaDisplay] - display string:  " << GetDisplayProperties()->GetDisplayString() 
-		<< std::endl;
-	out << " [VistaDisplay] - windows:         " << GetNumberOfWindows() 
-		<< std::endl;
+  out << " [VistaDisplay] - display string:  " << GetDisplayProperties()->GetDisplayString()
+      << std::endl;
+  out << " [VistaDisplay] - windows:         " << GetNumberOfWindows() << std::endl;
 
-	if (m_vecWindows.size())
-	{
-		out << " [VistaDisplay] - window names:    ";
-		unsigned int i;
-		for (i=0; i<m_vecWindows.size(); ++i)
-		{
-			if (i>0)
-				out << ", ";
-			out << m_vecWindows[i]->GetNameForNameable();
-		}
-		out << std::endl;
-	}
+  if (m_vecWindows.size()) {
+    out << " [VistaDisplay] - window names:    ";
+    unsigned int i;
+    for (i = 0; i < m_vecWindows.size(); ++i) {
+      if (i > 0)
+        out << ", ";
+      out << m_vecWindows[i]->GetNameForNameable();
+    }
+    out << std::endl;
+  }
 }
 
 /*============================================================================*/
@@ -150,9 +135,8 @@ void VistaDisplay::Debug(std::ostream &out) const
 /*  NAME      :   CreateProperties                                            */
 /*                                                                            */
 /*============================================================================*/
-VistaDisplay::IVistaDisplayEntityProperties *VistaDisplay::CreateProperties()
-{
-	return new VistaDisplayProperties(this, GetDisplayBridge());
+VistaDisplay::IVistaDisplayEntityProperties* VistaDisplay::CreateProperties() {
+  return new VistaDisplayProperties(this, GetDisplayBridge());
 }
 
 /*============================================================================*/
@@ -160,79 +144,65 @@ VistaDisplay::IVistaDisplayEntityProperties *VistaDisplay::CreateProperties()
 /*  NAME      :   GetDisplayProperties                                        */
 /*                                                                            */
 /*============================================================================*/
-VistaDisplay::VistaDisplayProperties *VistaDisplay::GetDisplayProperties() const
-{
-	return static_cast<VistaDisplayProperties*>(GetProperties());
+VistaDisplay::VistaDisplayProperties* VistaDisplay::GetDisplayProperties() const {
+  return static_cast<VistaDisplayProperties*>(GetProperties());
 }
-
 
 namespace {
-	const std::string sSReflectionTypeVD("VistaDisplay");
+const std::string sSReflectionTypeVD("VistaDisplay");
 
-	IVistaPropertyGetFunctor *aCgFunctorsVD[] =
-	{
-		new TVistaPropertyGet<std::string, VistaDisplay::VistaDisplayProperties, VistaProperty::PROPT_STRING>
-		("DISPLAY_STRING", sSReflectionTypeVD,
-		 &VistaDisplay::VistaDisplayProperties::GetDisplayString),
-		new TVistaDisplayEntityParentPropertyGet<unsigned int, VistaDisplay, VistaProperty::PROPT_INT>
-		("NUMBER_OF_WINDOWS", sSReflectionTypeVD,
-		 &VistaDisplay::GetNumberOfWindows),
-		new TVistaDisplayEntityParentPropertyGet<std::list<std::string>, VistaDisplay, VistaProperty::PROPT_LIST>
-		("WINDOW_NAMES", sSReflectionTypeVD,
-		 &VistaDisplay::GetWindowNames),
-		NULL
-	};
+IVistaPropertyGetFunctor* aCgFunctorsVD[] = {
+    new TVistaPropertyGet<std::string, VistaDisplay::VistaDisplayProperties,
+        VistaProperty::PROPT_STRING>("DISPLAY_STRING", sSReflectionTypeVD,
+        &VistaDisplay::VistaDisplayProperties::GetDisplayString),
+    new TVistaDisplayEntityParentPropertyGet<unsigned int, VistaDisplay, VistaProperty::PROPT_INT>(
+        "NUMBER_OF_WINDOWS", sSReflectionTypeVD, &VistaDisplay::GetNumberOfWindows),
+    new TVistaDisplayEntityParentPropertyGet<std::list<std::string>, VistaDisplay,
+        VistaProperty::PROPT_LIST>(
+        "WINDOW_NAMES", sSReflectionTypeVD, &VistaDisplay::GetWindowNames),
+    NULL};
 
-	IVistaPropertySetFunctor *aCsFunctorsVD[] =
-	{
-		new TVistaPropertySet<const string &, string,VistaDisplay::VistaDisplayProperties>
-		("NAME", sSReflectionTypeVD,
-		 &VistaDisplay::VistaDisplayProperties::SetName ),
-		new TVistaPropertySet<const std::string &, std::string, VistaDisplay::VistaDisplayProperties>
-		("DISPLAY_STRING", sSReflectionTypeVD,
-		 &VistaDisplay::VistaDisplayProperties::SetDisplayString ),
-		NULL
-	};
-}
+IVistaPropertySetFunctor* aCsFunctorsVD[] = {
+    new TVistaPropertySet<const string&, string, VistaDisplay::VistaDisplayProperties>(
+        "NAME", sSReflectionTypeVD, &VistaDisplay::VistaDisplayProperties::SetName),
+    new TVistaPropertySet<const std::string&, std::string, VistaDisplay::VistaDisplayProperties>(
+        "DISPLAY_STRING", sSReflectionTypeVD,
+        &VistaDisplay::VistaDisplayProperties::SetDisplayString),
+    NULL};
+} // namespace
 
 /*============================================================================*/
 /*                                                                            */
 /*  NAME      :   SetName                                                     */
 /*                                                                            */
 /*============================================================================*/
-bool VistaDisplay::VistaDisplayProperties::SetName(const std::string &sName)
-{
-	VistaDisplay *pD = static_cast<VistaDisplay*>(GetParent());
+bool VistaDisplay::VistaDisplayProperties::SetName(const std::string& sName) {
+  VistaDisplay* pD = static_cast<VistaDisplay*>(GetParent());
 
-	string strOldName = pD->GetNameForNameable();
-	if(strOldName != "")
-	{
-		if (!pD->GetDisplayManager()->RenameDisplay(strOldName, sName))
-			return false;
-	}
-	return IVistaDisplayEntityProperties::SetName(sName);
+  string strOldName = pD->GetNameForNameable();
+  if (strOldName != "") {
+    if (!pD->GetDisplayManager()->RenameDisplay(strOldName, sName))
+      return false;
+  }
+  return IVistaDisplayEntityProperties::SetName(sName);
 }
-
 
 /*============================================================================*/
 /*                                                                            */
 /*  NAME      :   Get/SetDisplayString                                        */
 /*                                                                            */
 /*============================================================================*/
-std::string VistaDisplay::VistaDisplayProperties::GetDisplayString() const
-{
-	return m_strDisplayString;
+std::string VistaDisplay::VistaDisplayProperties::GetDisplayString() const {
+  return m_strDisplayString;
 }
 
-bool VistaDisplay::VistaDisplayProperties::SetDisplayString(const std::string &sDispString)
-{
-	if(m_strDisplayString != sDispString)
-	{
-		m_strDisplayString = sDispString;
-		Notify(MSG_DISPLAYSTRING_CHANGE);
-		return true;
-	}
-	return false;
+bool VistaDisplay::VistaDisplayProperties::SetDisplayString(const std::string& sDispString) {
+  if (m_strDisplayString != sDispString) {
+    m_strDisplayString = sDispString;
+    Notify(MSG_DISPLAYSTRING_CHANGE);
+    return true;
+  }
+  return false;
 }
 
 /*============================================================================*/
@@ -240,9 +210,8 @@ bool VistaDisplay::VistaDisplayProperties::SetDisplayString(const std::string &s
 /*  NAME      :   GetReflectionableType                                       */
 /*                                                                            */
 /*============================================================================*/
-string VistaDisplay::VistaDisplayProperties::GetReflectionableType() const
-{
-	return sSReflectionTypeVD;
+string VistaDisplay::VistaDisplayProperties::GetReflectionableType() const {
+  return sSReflectionTypeVD;
 }
 
 /*============================================================================*/
@@ -250,24 +219,17 @@ string VistaDisplay::VistaDisplayProperties::GetReflectionableType() const
 /*  NAME      :   AddToBaseTypeList                                           */
 /*                                                                            */
 /*============================================================================*/
-int VistaDisplay::VistaDisplayProperties::AddToBaseTypeList(list<string> &rBtList) const
-{
-	int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
-	rBtList.push_back(sSReflectionTypeVD);
+int VistaDisplay::VistaDisplayProperties::AddToBaseTypeList(list<string>& rBtList) const {
+  int nSize = IVistaDisplayEntityProperties::AddToBaseTypeList(rBtList);
+  rBtList.push_back(sSReflectionTypeVD);
 
-	return nSize + 1;
+  return nSize + 1;
 }
 
 VistaDisplay::VistaDisplayProperties::VistaDisplayProperties(
-	VistaDisplayEntity *pParent,
-	IVistaDisplayBridge *pBridge)
-  : IVistaDisplayEntityProperties(pParent,pBridge)
-{
-
+    VistaDisplayEntity* pParent, IVistaDisplayBridge* pBridge)
+    : IVistaDisplayEntityProperties(pParent, pBridge) {
 }
 
-VistaDisplay::VistaDisplayProperties::~VistaDisplayProperties()
-{
+VistaDisplay::VistaDisplayProperties::~VistaDisplayProperties() {
 }
-
-

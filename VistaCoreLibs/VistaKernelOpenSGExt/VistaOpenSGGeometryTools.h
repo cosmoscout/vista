@@ -21,10 +21,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGGEOMETRYTOOLS_H
 #define _VISTAOPENSGGEOMETRYTOOLS_H
-
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
@@ -36,14 +34,14 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
-#include <OpenSG/OSGNode.h>
-#include <OpenSG/OSGGeometry.h>
 #include <OpenSG/OSGChunkMaterial.h>
+#include <OpenSG/OSGGeometry.h>
+#include <OpenSG/OSGNode.h>
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(pop)
@@ -66,77 +64,72 @@ class VistaDisplayManager;
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-namespace VistaOpenSGGeometryTools
-{
-	/**
-	 * COpenSGGeometryGrabber traverses a subtree and collects all geometries
-	 */
-	class VISTAKERNELOPENSGEXTAPI GeometryGrabber
-	{
-	public:
-		GeometryGrabber();
-		virtual ~GeometryGrabber();
+namespace VistaOpenSGGeometryTools {
+/**
+ * COpenSGGeometryGrabber traverses a subtree and collects all geometries
+ */
+class VISTAKERNELOPENSGEXTAPI GeometryGrabber {
+ public:
+  GeometryGrabber();
+  virtual ~GeometryGrabber();
 
-		void Traverse(OSG::NodePtr node);
+  void Traverse(OSG::NodePtr node);
 
-		typedef std::list<OSG::NodePtr> NodeList;
-		typedef std::set<OSG::GeometryPtr> GeoSet;
+  typedef std::list<OSG::NodePtr>    NodeList;
+  typedef std::set<OSG::GeometryPtr> GeoSet;
 
-		const NodeList* GetNodes() const;
-		const GeoSet* GetGeometries() const;
+  const NodeList* GetNodes() const;
+  const GeoSet*   GetGeometries() const;
 
-	private:
-		std::list<OSG::NodePtr> m_lstAllGeoNodes;
-		std::set<OSG::GeometryPtr> m_setAllGeos;
+ private:
+  std::list<OSG::NodePtr>    m_lstAllGeoNodes;
+  std::set<OSG::GeometryPtr> m_setAllGeos;
 
-		OSG::Action::ResultE Enter(OSG::NodePtr& node);
-		OSG::Action::ResultE Leave(OSG::NodePtr& node, OSG::Action::ResultE res);
-	};
+  OSG::Action::ResultE Enter(OSG::NodePtr& node);
+  OSG::Action::ResultE Leave(OSG::NodePtr& node, OSG::Action::ResultE res);
+};
 
+VISTAKERNELOPENSGEXTAPI
+bool CalcVertexNormalsOnSubtree(IVistaNode* pNode,
+    const float&                            fCreaseAngle = 0.524f); // 30 degrees
+VISTAKERNELOPENSGEXTAPI
+bool CalcFaceNormalsOnSubtree(IVistaNode* pNode);
 
-	VISTAKERNELOPENSGEXTAPI
-	bool CalcVertexNormalsOnSubtree(IVistaNode *pNode,
-									const float &fCreaseAngle = 0.524f); // 30 degrees
-	VISTAKERNELOPENSGEXTAPI
-	bool CalcFaceNormalsOnSubtree  (IVistaNode *pNode);
+VISTAKERNELOPENSGEXTAPI
+bool CalcVertexNormals(VistaGeometry* pGeo,
+    const float&                      fCreaseAngle = 0.524f); // 30 degrees
+VISTAKERNELOPENSGEXTAPI
+bool CalcFaceNormals(VistaGeometry* pGeo);
 
-	VISTAKERNELOPENSGEXTAPI
-	bool CalcVertexNormals(VistaGeometry *pGeo,
-									const float &fCreaseAngle = 0.524f); // 30 degrees
-	VISTAKERNELOPENSGEXTAPI
-	bool CalcFaceNormals  (VistaGeometry *pGeo);
+VISTAKERNELOPENSGEXTAPI
+bool CalcVertexNormalsGeo(VistaGeometry* pGeo,
+    const float&                         fCreaseAngle = 0.524f, // 30 degrees
+    bool                                 pCalc = false); // if true do CalcVertexNormals before
+VISTAKERNELOPENSGEXTAPI
+bool CalcFaceNormalsGeo(VistaGeometry* pGeo,
+    bool                               pCalc = false); // if true do CalcFaceNormals before
 
-	VISTAKERNELOPENSGEXTAPI
-	bool CalcVertexNormalsGeo(VistaGeometry *pGeo,
-							  const float &fCreaseAngle = 0.524f, // 30 degrees
-							  bool pCalc = false); // if true do CalcVertexNormals before
-	VISTAKERNELOPENSGEXTAPI
-	bool CalcFaceNormalsGeo  (VistaGeometry *pGeo,
-							  bool pCalc = false); // if true do CalcFaceNormals before
+VISTAKERNELOPENSGEXTAPI
+bool SetUseVBOForGeometry(VistaGeometry* pGeo, const bool bSet);
 
-	VISTAKERNELOPENSGEXTAPI
-	bool SetUseVBOForGeometry( VistaGeometry *pGeo, const bool bSet );
+VISTAKERNELOPENSGEXTAPI
+bool SetUseVBOOnSubtree(IVistaNode* pNode, const bool bSet);
 
-	VISTAKERNELOPENSGEXTAPI
-	bool SetUseVBOOnSubtree( IVistaNode* pNode, const bool bSet );
+VISTAKERNELOPENSGEXTAPI
+bool PreloadRenderData(IVistaNode* pNode, VistaDisplayManager* pDispManager);
+VISTAKERNELOPENSGEXTAPI
+bool PreloadRenderData(VistaGeometry* pGeom, VistaDisplayManager* pDispManager);
+VISTAKERNELOPENSGEXTAPI
+bool PreloadRenderData(osg::GeometryPtr pGeom, osg::WindowPtr pWindow);
+VISTAKERNELOPENSGEXTAPI
+bool PreloadRenderData(osg::ChunkMaterialPtr pMaterial, osg::WindowPtr pWindow);
 
-	VISTAKERNELOPENSGEXTAPI
-	bool PreloadRenderData( IVistaNode* pNode, VistaDisplayManager* pDispManager );
-	VISTAKERNELOPENSGEXTAPI
-	bool PreloadRenderData( VistaGeometry* pGeom, VistaDisplayManager* pDispManager );
-	VISTAKERNELOPENSGEXTAPI
-	bool PreloadRenderData( osg::GeometryPtr pGeom, osg::WindowPtr pWindow );
-	VISTAKERNELOPENSGEXTAPI
-	bool PreloadRenderData( osg::ChunkMaterialPtr pMaterial, osg::WindowPtr pWindow );
-
-	VISTAKERNELOPENSGEXTAPI
-	bool PreloadAllRenderData( VistaDisplayManager* pDispManager );
-}
-
+VISTAKERNELOPENSGEXTAPI
+bool PreloadAllRenderData(VistaDisplayManager* pDispManager);
+} // namespace VistaOpenSGGeometryTools
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
 #endif //_VISTAOPENSGGEOMETRYTOOLS_H
-

@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #include "VistaDummyClusterDataSync.h"
 
 #include <VistaBase/VistaTimeUtils.h>
@@ -30,74 +29,58 @@
 /*  MAKROS AND DEFINES                                                        */
 /*============================================================================*/
 
-
 VistaDummyClusterDataSync::VistaDummyClusterDataSync()
-: IVistaClusterDataSync( false, true )
-{
+    : IVistaClusterDataSync(false, true) {
 }
 
-VistaDummyClusterDataSync::~VistaDummyClusterDataSync()
-{
+VistaDummyClusterDataSync::~VistaDummyClusterDataSync() {
 }
 
-VistaType::systemtime VistaDummyClusterDataSync::GetSyncTime()
-{
-	return VistaTimeUtils::GetStandardTimer().GetSystemTime();
+VistaType::systemtime VistaDummyClusterDataSync::GetSyncTime() {
+  return VistaTimeUtils::GetStandardTimer().GetSystemTime();
 }
 
-bool VistaDummyClusterDataSync::SyncTime( VistaType::systemtime& nTime )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncTime(VistaType::systemtime& nTime) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::SyncData( VistaPropertyList& oList )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncData(VistaPropertyList& oList) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::SyncData( IVistaSerializable& oSerializable )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncData(IVistaSerializable& oSerializable) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::SyncData( VistaType::byte* pData, const int iDataSize )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncData(VistaType::byte* pData, const int iDataSize) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::SyncData( VistaType::byte* pDataBuffer,
-									 const int iBufferSize,
-									 int& iDataSize )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncData(
+    VistaType::byte* pDataBuffer, const int iBufferSize, int& iDataSize) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::SyncData( std::vector<VistaType::byte>& vecData )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncData(std::vector<VistaType::byte>& vecData) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::SyncData( std::string& sData )
-{
-	return true;
+bool VistaDummyClusterDataSync::SyncData(std::string& sData) {
+  return true;
 }
 
-bool VistaDummyClusterDataSync::GetIsValid() const
-{
-	return true;
+bool VistaDummyClusterDataSync::GetIsValid() const {
+  return true;
 }
 
-std::string VistaDummyClusterDataSync::GetDataSyncType() const
-{
-	return "DummySync";
+std::string VistaDummyClusterDataSync::GetDataSyncType() const {
+  return "DummySync";
 }
 
-bool VistaDummyClusterDataSync::SetSendBlockingThreshold( const int nNumBytes )
-{
-	return false;
+bool VistaDummyClusterDataSync::SetSendBlockingThreshold(const int nNumBytes) {
+  return false;
 }
 
-int VistaDummyClusterDataSync::GetSendBlockingThreshold() const
-{
-	return -1;
+int VistaDummyClusterDataSync::GetSendBlockingThreshold() const {
+  return -1;
 }

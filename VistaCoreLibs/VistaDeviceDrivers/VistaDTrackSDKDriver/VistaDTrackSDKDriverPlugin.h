@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef __VISTADTRACKSDKDRIVERPLUGINPLUGIN_H
 #define __VISTADTRACKSDKDRIVERPLUGINPLUGIN_H
 
@@ -30,7 +29,7 @@
 /*============================================================================*/
 
 #if defined(WIN32)
-#pragma warning (disable: 4786)
+#pragma warning(disable : 4786)
 
 #define VISTADTRACKSDKDRIVERPLUGINEXPORT __declspec(dllexport)
 #define VISTADTRACKSDKDRIVERPLUGINIMPORT __declspec(dllimport)
@@ -55,8 +54,6 @@
 #define VISTADTRACKSDKDRIVERPLUGINAPI
 #endif
 
-
-
 /*============================================================================*/
 /* MACROS AND DEFINES                                                         */
 /*============================================================================*/
@@ -64,12 +61,10 @@
 class IVistaDeviceDriver;
 class IVistaDriverCreationMethod;
 
-
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDeviceDriver *CreateDevice(unsigned int);
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod();
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI const char *GetDeviceClassName();
-extern "C" VISTADTRACKSDKDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod *);
-
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDeviceDriver* CreateDevice(unsigned int);
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod();
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI const char*                 GetDeviceClassName();
+extern "C" VISTADTRACKSDKDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod*);
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
@@ -79,8 +74,3 @@ extern "C" VISTADTRACKSDKDRIVERPLUGINAPI void Unload(IVistaDriverCreationMethod 
 /* END OF FILE                                                                */
 /*============================================================================*/
 #endif //__VISTADTRACKSDKDRIVERPLUGINPLUGIN_H
-
-
-
-
-

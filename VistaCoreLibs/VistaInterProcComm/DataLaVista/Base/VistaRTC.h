@@ -21,7 +21,6 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef IDLVISTARTC_H
 #define IDLVISTARTC_H
 
@@ -32,53 +31,48 @@
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 #include "VistaDLVTypes.h"
+#include <VistaInterProcComm/VistaInterProcCommConfig.h>
 
 /*============================================================================*/
 /* FORWARD DECLARATIONS                                                       */
 /*============================================================================*/
 
-
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
 
-class VISTAINTERPROCCOMMAPI IDLVistaRTC
-{
-public:
+class VISTAINTERPROCCOMMAPI IDLVistaRTC {
+ public:
+  virtual ~IDLVistaRTC();
 
-	virtual ~IDLVistaRTC();
+  virtual DLV_INT64 GetTickCount() const = 0;
+  virtual DLV_INT32 GetTimeStamp() const = 0;
 
-	virtual DLV_INT64 GetTickCount() const = 0;
-	virtual DLV_INT32 GetTimeStamp() const = 0;
+  virtual double GetSystemTime() const = 0;
 
-	virtual double GetSystemTime() const = 0;
+  virtual double GetTickToSecond(DLV_INT64 nTs) const = 0;
 
-	virtual double GetTickToSecond( DLV_INT64 nTs ) const = 0;
+  static IDLVistaRTC* GetRTCSingleton();
 
-	static IDLVistaRTC *GetRTCSingleton();
+  static const char* GetPrintfFormatSpecifier();
 
-	static const char *GetPrintfFormatSpecifier();
+ protected:
+  IDLVistaRTC();
 
-protected:
-	IDLVistaRTC();
+  static void SetRTCSingleton(IDLVistaRTC*);
 
-	static void SetRTCSingleton(IDLVistaRTC *);
-private:
-	/**
-	 * We prohibit copying
-	 */
-	IDLVistaRTC(IDLVistaRTC &);
+ private:
+  /**
+   * We prohibit copying
+   */
+  IDLVistaRTC(IDLVistaRTC&);
 
-	static IDLVistaRTC *m_pSingleton;
+  static IDLVistaRTC* m_pSingleton;
 };
-
 
 /*============================================================================*/
 /* LOCAL VARS AND FUNCS                                                       */
 /*============================================================================*/
 
-
-#endif //IDLVISTAFILTER_H
-
+#endif // IDLVISTAFILTER_H

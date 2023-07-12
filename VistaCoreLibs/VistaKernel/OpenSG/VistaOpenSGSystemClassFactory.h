@@ -21,15 +21,14 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #ifndef _VISTAOPENSGSGSYSTEMCLASSFACTORY_H
 #define _VISTAOPENSGSGSYSTEMCLASSFACTORY_H
 
 /*============================================================================*/
 /* INCLUDES                                                                   */
 /*============================================================================*/
-#include <time.h>
 #include <string>
+#include <time.h>
 
 #include <VistaKernel/VistaKernelConfig.h>
 #include <VistaKernel/VistaSystemClassFactory.h>
@@ -39,10 +38,10 @@
 #ifdef WIN32
 // disable warnings from OpenSG
 #pragma warning(push)
-#pragma warning(disable: 4127)
-#pragma warning(disable: 4189)
-#pragma warning(disable: 4231)
-#pragma warning(disable: 4267)
+#pragma warning(disable : 4127)
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4231)
+#pragma warning(disable : 4267)
 #endif
 
 #include <OpenSG/OSGConfig.h>
@@ -70,33 +69,31 @@ class VistaWeightedAverageTimer;
 /*============================================================================*/
 /* CLASS DEFINITIONS                                                          */
 /*============================================================================*/
-class VISTAKERNELAPI VistaOpenSGSystemClassFactory : public IVistaSystemClassFactory
-{
-public:
-	VistaOpenSGSystemClassFactory( VistaSystem* pVistaSystem, bool bUseOpenSGThreads );
+class VISTAKERNELAPI VistaOpenSGSystemClassFactory : public IVistaSystemClassFactory {
+ public:
+  VistaOpenSGSystemClassFactory(VistaSystem* pVistaSystem, bool bUseOpenSGThreads);
 
-	~VistaOpenSGSystemClassFactory();
+  ~VistaOpenSGSystemClassFactory();
 
-	virtual std::vector<IVistaSystemClassFactory::Manager> GetInitOrder() const;
+  virtual std::vector<IVistaSystemClassFactory::Manager> GetInitOrder() const;
 
-	virtual VistaGraphicsManager* CreateGraphicsManager();
+  virtual VistaGraphicsManager* CreateGraphicsManager();
 
-	virtual IVistaGraphicsBridge* CreateGraphicsBridge();
+  virtual IVistaGraphicsBridge* CreateGraphicsBridge();
 
-	virtual IVistaNodeBridge* CreateNodeBridge();
+  virtual IVistaNodeBridge* CreateNodeBridge();
 
-	virtual VistaDisplayManager* CreateDisplayManager();
+  virtual VistaDisplayManager* CreateDisplayManager();
 
-	virtual VistaInteractionManager *CreateInteractionManager();	
+  virtual VistaInteractionManager* CreateInteractionManager();
 
-	void Debug(std::ostream &out, bool bVerbose = true) const;
+  void Debug(std::ostream& out, bool bVerbose = true) const;
 
+ private:
+  VistaSystem*       m_pVistaSystem;
+  OSG::RenderAction* m_pRenderAction;
 
-private:
-	VistaSystem       *m_pVistaSystem;
-	OSG::RenderAction *m_pRenderAction;
-
-	long         m_lFCStoreOffset;	
+  long m_lFCStoreOffset;
 };
 
 /*============================================================================*/

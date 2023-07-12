@@ -21,64 +21,54 @@
 /*                                                                            */
 /*============================================================================*/
 
-
 #if defined(WIN32) && !defined(VISTAIRMANPLUGIN_STATIC)
-	#ifdef VISTAIRMANPLUGIN_EXPORTS
-		#define VISTAIRMANDRIVERPLUGINAPI __declspec(dllexport)
-	#else
-		#define VISTAIRMANDRIVERPLUGINAPI __declspec(dllimport)
-	#endif
+#ifdef VISTAIRMANPLUGIN_EXPORTS
+#define VISTAIRMANDRIVERPLUGINAPI __declspec(dllexport)
+#else
+#define VISTAIRMANDRIVERPLUGINAPI __declspec(dllimport)
+#endif
 #else // no Windows or static build
-	#define VISTAIRMANDRIVERPLUGINAPI
+#define VISTAIRMANDRIVERPLUGINAPI
 #endif
 
 #include "VistaIRManDriver.h"
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 
-namespace
-{
-	VistaIRManDriverCreationMethod *SpFactory = NULL;
+namespace {
+VistaIRManDriverCreationMethod* SpFactory = NULL;
 }
-
 
 #if defined(WIN32)
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain( HANDLE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
 
 #endif //__VISTAVISTAIRMANDRIVERCONFIG_H
 
-extern "C" VISTAIRMANDRIVERPLUGINAPI IVistaDriverCreationMethod *GetCreationMethod(IVistaTranscoderFactoryFactory *fac)
-{
-	if(SpFactory == NULL)
-		SpFactory = new VistaIRManDriverCreationMethod(fac);
-	IVistaReferenceCountable::refup( SpFactory );
-	return SpFactory;
+extern "C" VISTAIRMANDRIVERPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaIRManDriverCreationMethod(fac);
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
 }
 
-extern "C" VISTAIRMANDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod *crm)
-{
-	if( crm == SpFactory )
-		if(IVistaReferenceCountable::refdown(SpFactory))
-			SpFactory = NULL;
+extern "C" VISTAIRMANDRIVERPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == SpFactory)
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = NULL;
 }
 
-extern "C" VISTAIRMANDRIVERPLUGINAPI const char *GetDeviceClassName()
-{
-	return "IRMAN";
+extern "C" VISTAIRMANDRIVERPLUGINAPI const char* GetDeviceClassName() {
+  return "IRMAN";
 }
