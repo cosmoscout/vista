@@ -167,6 +167,18 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     vstr::warni() << "SDL2 init of the events system failed - Quitting Vista" << std::endl;
     GetVistaSystem()->Quit();
   }
+  
+  if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) != 0) {
+    vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
+    vstr::warni() << "SDL2 init of the joystick system failed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
+  if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0) {
+    vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
+    vstr::warni() << "SDL2 init of the controller system failed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
 
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
     vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
@@ -184,6 +196,8 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
 VistaSDL2WindowingToolkit::~VistaSDL2WindowingToolkit() {
   TTF_Quit();
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
+  SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+  SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
   SDL_QuitSubSystem(SDL_INIT_EVENTS);
   SDL_Quit();
 }
@@ -299,14 +313,6 @@ void VistaSDL2WindowingToolkit::HandleEvents() {
       // Window
       case SDL_WINDOWEVENT:
         HandleWindowEvents(e.window);
-        break;
-
-      case SDL_CONTROLLERDEVICEADDED:
-        vstr::outi() << "Added controller: " << e.cdevice.which << std::endl;
-        break;
-
-      case SDL_CONTROLLERBUTTONDOWN:
-        vstr::outi() << "Pressed Controller Button: " << SDL_GameControllerGetStringForButton(SDL_GameControllerButton(e.cbutton.button)) << std::endl;
         break;
 
       default:
