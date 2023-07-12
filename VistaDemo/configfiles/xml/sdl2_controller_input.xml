@@ -1,0 +1,44 @@
+<module>
+  <nodespace>
+  </nodespace>
+  <graph>
+    <node name="controller_source" type="DriverSensor">
+      <param name="sensor_index" value="0"/>
+      <param name="driver" value="SDL2CONTROLLER"/>
+    </node>
+
+    <node name="controller" type="HistoryProject">
+    </node>
+
+    <node name="project_mode" type="ConstantValue[int]">
+      <param name="value" value="0"/>
+    </node>
+
+    <node name="debug_text" type="SimpleText" />
+
+  </graph>
+  <edges>
+    <edge fromnode="controller_source"     tonode="controller"              fromport="history"     toport="history"/>
+    <edge fromnode="project_mode"          tonode="controller"              fromport="value"       toport="sampling_mode"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="A_PRESSED"     toport="A_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="B_PRESSED"     toport="B_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="X_PRESSED"     toport="X_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="Y_PRESSED"     toport="Y_PRESSED"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="DPAD_UP_PRESSED"     toport="DPAD_UP_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="DPAD_DOWN_PRESSED"     toport="DPAD_DOWN_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="DPAD_LEFT_PRESSED"     toport="DPAD_LEFT_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="DPAD_RIGHT_PRESSED"     toport="DPAD_RIGHT_PRESSED"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="STICK_LEFT_PRESSED"     toport="STICK_LEFT_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="STICK_RIGHT_PRESSED"     toport="STICK_RIGHT_PRESSED"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="SHOULDER_LEFT_PRESSED"     toport="SHOULDER_LEFT_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="SHOULDER_RIGHT_PRESSED"     toport="SHOULDER_RIGHT_PRESSED"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="START_PRESSED"     toport="START_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="BACK_PRESSED"     toport="BACK_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="GUIDE_PRESSED"     toport="GUIDE_PRESSED"/>
+  </edges>
+</module>
