@@ -144,7 +144,7 @@ bool VistaIcarosController::DoConnect() {
 
 	if (hCommPort == INVALID_HANDLE_VALUE) 
 	{
-		vstr::err() << "[IcarosDriver] IcarosDriver: failed to open com port! Error code: "  << GetLastError() << vstr::endl;
+		vstr::err() << "[IcarosDriver] IcarosDriver: failed to open com port! Error code: "  << GetLastError() << std::endl;
 		return false;
 	}
 
@@ -154,7 +154,7 @@ bool VistaIcarosController::DoConnect() {
 	res = GetCommState(hCommPort, &dcb);
 	if (!res) 
 	{
-		vstr::err() << "[IcarosDriver] GetCommStateFailed! Error code: " << GetLastError() << vstr::endl;
+		vstr::err() << "[IcarosDriver] GetCommStateFailed! Error code: " << GetLastError() << std::endl;
 		return false;
 	}
 
@@ -170,10 +170,10 @@ bool VistaIcarosController::DoConnect() {
 	res = SetCommState(hCommPort, &dcb);
 	if (!res)
 	{
-		vstr::err() << "[IcarosDriver] SetCommState failed! Error code: " << GetLastError() << vstr::endl;
+		vstr::err() << "[IcarosDriver] SetCommState failed! Error code: " << GetLastError() << std::endl;
 		return false;
 	}
-	vstr::outi() << "[IcarosDriver] Port configured successfull " << vstr::endl;
+	vstr::outi() << "[IcarosDriver] Port configured successfull " << std::endl;
 
 	/********************************************************/
 	// Send the start sensoring command to ICAROS
@@ -183,10 +183,10 @@ bool VistaIcarosController::DoConnect() {
 	res = WriteFile(hCommPort, startCMD.c_str(), startCMD.length(), &dwwritten, NULL);
 	if (!res)
 	{
-		vstr::err() << "[IcarosDriver] WriteFile failed! Error code: " << GetLastError() << vstr::endl;
+		vstr::err() << "[IcarosDriver] WriteFile failed! Error code: " << GetLastError() << std::endl;
 		return false;
 	}
-	vstr::outi() << "[IcarosDriver] Start command send to device. The device should now sends the sensor updates ... " << vstr::endl;
+	vstr::outi() << "[IcarosDriver] Start command send to device. The device should now sends the sensor updates ... " << std::endl;
 
 	/********************************************************/
 	// Reading sensor values from ICAROS
@@ -220,7 +220,7 @@ bool VistaIcarosController::DoConnect() {
 bool VistaIcarosController::DoDisconnect() {
   readSensor = false;
   CloseHandle(hCommPort);
-  vstr::outi() << "[IcarosDriver] Device disconnected " << GetLastError() << vstr::endl;
+  vstr::outi() << "[IcarosDriver] Device disconnected " << GetLastError() << std::endl;
   return true;
 }
 
