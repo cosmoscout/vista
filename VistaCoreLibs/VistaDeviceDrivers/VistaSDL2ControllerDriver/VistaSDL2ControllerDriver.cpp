@@ -245,24 +245,24 @@ bool VistaSDL2ControllerDriver::DoSensorUpdate(VistaType::microtime dTs) {
     int value = e.value;
     switch (e.axis) {
       case SDL_CONTROLLER_AXIS_LEFTX:
-        state->stickLeftX = value;
+        m_currentState.stickLeftX = value;
         break;
       case SDL_CONTROLLER_AXIS_LEFTY:
-        state->stickLeftY = value;
+        m_currentState.stickLeftY = value;
         break;
         
       case SDL_CONTROLLER_AXIS_RIGHTX:
-        state->stickRightX = value;
+        m_currentState.stickRightX = value;
         break;
       case SDL_CONTROLLER_AXIS_RIGHTY:
-        state->stickRightY = value;
+        m_currentState.stickRightY = value;
         break;
         
       case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-        state->triggerLeft = value;
+        m_currentState.triggerLeft = value;
         break;
       case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-        state->triggerRight = value;
+        m_currentState.triggerRight = value;
         break;
     }
 
