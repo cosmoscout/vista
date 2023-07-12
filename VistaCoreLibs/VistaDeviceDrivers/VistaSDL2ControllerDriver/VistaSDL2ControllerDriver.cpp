@@ -117,7 +117,7 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
   });
 
   m_axisListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERAXISMOTION, [this] (SDL_Event e) {
-    if (m_currentController == SDL_GameControllerFromInstanceID(e.cbutton.which)) {
+    if (m_currentController == SDL_GameControllerFromInstanceID(e.caxis.which)) {
       m_axisEvents.push_back(e.caxis);
     }
   });
@@ -242,7 +242,7 @@ bool VistaSDL2ControllerDriver::DoSensorUpdate(VistaType::microtime dTs) {
 
   while (!m_axisEvents.empty()) {
     SDL_ControllerAxisEvent e = m_axisEvents.front();
-    int16_t value = e.value;
+    int value = e.value;
     switch (e.axis) {
       case SDL_CONTROLLER_AXIS_LEFTX:
         state->stickLeftX = value;

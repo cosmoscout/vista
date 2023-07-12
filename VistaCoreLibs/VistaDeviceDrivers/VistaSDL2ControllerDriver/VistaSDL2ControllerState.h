@@ -21,8 +21,6 @@
 #ifndef __VISTASDL2CONTROLLERSENSORMEASURES_H
 #define __VISTASDL2CONTROLLERSENSORMEASURES_H
 
-#include <stdint.h>
-
 struct VistaSDL2ControllerState {
   bool aPressed;             // SDL_CONTROLLER_BUTTON_A
   bool bPressed;             // SDL_CONTROLLER_BUTTON_B
@@ -53,14 +51,14 @@ struct VistaSDL2ControllerState {
   
   bool touchpadPressed;      // SDL_CONTROLLER_BUTTON_TOUCHPAD
 
-  int16_t stickLeftX;        // SDL_CONTROLLER_AXIS_LEFTX
-  int16_t stickLeftY;        // SDL_CONTROLLER_AXIS_LEFTY
+  int stickLeftX;            // SDL_CONTROLLER_AXIS_LEFTX
+  int stickLeftY;            // SDL_CONTROLLER_AXIS_LEFTY
 
-  int16_t stickRightX;       // SDL_CONTROLLER_AXIS_RIGHTX
-  int16_t stickRightY;       // SDL_CONTROLLER_AXIS_RIGHTY
+  int stickRightX;           // SDL_CONTROLLER_AXIS_RIGHTX
+  int stickRightY;           // SDL_CONTROLLER_AXIS_RIGHTY
   
-  int16_t triggerLeft;       // SDL_CONTROLLER_AXIS_TRIGGERLEFT
-  int16_t triggerRight;      // SDL_CONTROLLER_AXIS_TRIGGERRIGHT
+  int triggerLeft;           // SDL_CONTROLLER_AXIS_TRIGGERLEFT
+  int triggerRight;          // SDL_CONTROLLER_AXIS_TRIGGERRIGHT
 };
 
 #endif //__VISTASDL2CONTROLLERSENSORMEASURES_H

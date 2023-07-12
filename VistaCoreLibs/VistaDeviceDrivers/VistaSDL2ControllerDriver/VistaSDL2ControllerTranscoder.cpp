@@ -28,7 +28,7 @@ namespace {
 class SDL2ControllerMeasureTranscoder final : public IVistaMeasureTranscode {
  public:
   SDL2ControllerMeasureTranscoder() {
-    m_nNumberOfScalars = 21;
+    m_nNumberOfScalars = 27;
   }
 
   ~SDL2ControllerMeasureTranscoder() final = default;
@@ -40,10 +40,10 @@ class SDL2ControllerMeasureTranscoder final : public IVistaMeasureTranscode {
   REFL_INLINEIMP(SDL2ControllerMeasureTranscoder, IVistaMeasureTranscode);
 };
 
-class SDL2APressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2APressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2APressedTranscoder() 
-    : IVistaMeasureTranscode::TTranscodeValueGet<bool>("A_PRESSED",
+    : IVistaMeasureTranscode::BoolGet("A_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's A button") {
   }
 
@@ -58,10 +58,10 @@ class SDL2APressedTranscoder final : public IVistaMeasureTranscode::TTranscodeVa
   }
 };
 
-class SDL2BPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2BPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2BPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("B_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("B_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's B button") {
   }
 
@@ -76,10 +76,10 @@ class SDL2BPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeVa
   }
 };
 
-class SDL2XPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2XPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2XPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("X_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("X_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's X button") {
   }
 
@@ -94,10 +94,10 @@ class SDL2XPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeVa
   }
 };
 
-class SDL2YPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2YPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2YPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("Y_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("Y_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's Y button") {
   }
 
@@ -112,10 +112,10 @@ class SDL2YPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeVa
   }
 };
 
-class SDL2UpPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2UpPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2UpPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("DPAD_UP_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("DPAD_UP_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's UP button") {
   }
 
@@ -130,10 +130,10 @@ class SDL2UpPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeV
   }
 };
 
-class SDL2DownPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2DownPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2DownPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("DPAD_DOWN_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("DPAD_DOWN_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's DOWN button") {
   }
 
@@ -148,10 +148,10 @@ class SDL2DownPressedTranscoder final : public IVistaMeasureTranscode::TTranscod
   }
 };
 
-class SDL2LeftPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2LeftPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2LeftPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("DPAD_LEFT_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("DPAD_LEFT_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's LEFT button") {
   }
 
@@ -166,10 +166,10 @@ class SDL2LeftPressedTranscoder final : public IVistaMeasureTranscode::TTranscod
   }
 };
 
-class SDL2RightPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2RightPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2RightPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("DPAD_RIGHT_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("DPAD_RIGHT_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's RIGHT button") {
   }
 
@@ -184,10 +184,10 @@ class SDL2RightPressedTranscoder final : public IVistaMeasureTranscode::TTransco
   }
 };
 
-class SDL2StickLeftPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2StickLeftPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2StickLeftPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("STICK_LEFT_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("STICK_LEFT_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's STICK_LEFT button") {
   }
 
@@ -202,10 +202,10 @@ class SDL2StickLeftPressedTranscoder final : public IVistaMeasureTranscode::TTra
   }
 };
 
-class SDL2StickRightPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2StickRightPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2StickRightPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("STICK_RIGHT_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("STICK_RIGHT_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's STICK_RIGHT button") {
   }
 
@@ -220,10 +220,10 @@ class SDL2StickRightPressedTranscoder final : public IVistaMeasureTranscode::TTr
   }
 };
 
-class SDL2ShoulderLeftPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2ShoulderLeftPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2ShoulderLeftPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("SHOULDER_LEFT_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("SHOULDER_LEFT_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's SHOULDER_LEFT button") {
   }
 
@@ -238,10 +238,10 @@ class SDL2ShoulderLeftPressedTranscoder final : public IVistaMeasureTranscode::T
   }
 };
 
-class SDL2ShoulderRightPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2ShoulderRightPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2ShoulderRightPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("SHOULDER_RIGHT_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("SHOULDER_RIGHT_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's SHOULDER_RIGHT button") {
   }
 
@@ -256,10 +256,10 @@ class SDL2ShoulderRightPressedTranscoder final : public IVistaMeasureTranscode::
   }
 };
 
-class SDL2BackPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2BackPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2BackPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("BACK_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("BACK_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's BACK button") {
   }
 
@@ -274,10 +274,10 @@ class SDL2BackPressedTranscoder final : public IVistaMeasureTranscode::TTranscod
   }
 };
 
-class SDL2GuidePressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2GuidePressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2GuidePressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("GUIDE_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("GUIDE_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's GUIDE button") {
   }
 
@@ -292,10 +292,10 @@ class SDL2GuidePressedTranscoder final : public IVistaMeasureTranscode::TTransco
   }
 };
 
-class SDL2StartPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2StartPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2StartPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("START_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("START_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's START button") {
   }
 
@@ -310,10 +310,10 @@ class SDL2StartPressedTranscoder final : public IVistaMeasureTranscode::TTransco
   }
 };
 
-class SDL2Misc1PressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2Misc1PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2Misc1PressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("MISC1_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("MISC1_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's MISC1 button") {
   }
 
@@ -328,10 +328,10 @@ class SDL2Misc1PressedTranscoder final : public IVistaMeasureTranscode::TTransco
   }
 };
 
-class SDL2Paddle1PressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2Paddle1PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2Paddle1PressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("PADDLE1_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("PADDLE1_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE1 button") {
   }
 
@@ -346,10 +346,10 @@ class SDL2Paddle1PressedTranscoder final : public IVistaMeasureTranscode::TTrans
   }
 };
 
-class SDL2Paddle2PressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2Paddle2PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2Paddle2PressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("PADDLE2_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("PADDLE2_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE2 button") {
   }
 
@@ -364,10 +364,10 @@ class SDL2Paddle2PressedTranscoder final : public IVistaMeasureTranscode::TTrans
   }
 };
 
-class SDL2Paddle3PressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2Paddle3PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2Paddle3PressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("PADDLE3_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("PADDLE3_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE3 button") {
   }
 
@@ -382,10 +382,10 @@ class SDL2Paddle3PressedTranscoder final : public IVistaMeasureTranscode::TTrans
   }
 };
 
-class SDL2Paddle4PressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2Paddle4PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2Paddle4PressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("PADDLE4_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("PADDLE4_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE4 button") {
   }
 
@@ -400,10 +400,10 @@ class SDL2Paddle4PressedTranscoder final : public IVistaMeasureTranscode::TTrans
   }
 };
 
-class SDL2TouchPadPressedTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<bool> {
+class SDL2TouchPadPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
   SDL2TouchPadPressedTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<bool>("TOUCHPAD_PRESSED",
+      : IVistaMeasureTranscode::BoolGet("TOUCHPAD_PRESSED",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's TOUCHPAD button") {
   }
 
@@ -418,109 +418,109 @@ class SDL2TouchPadPressedTranscoder final : public IVistaMeasureTranscode::TTran
   }
 };
 
-class SDL2StickLeftXTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<int16_t> {
+class SDL2StickLeftXTranscoder final : public IVistaMeasureTranscode::IntGet {
  public:
   SDL2StickLeftXTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<int16_t>("STICK_LEFT_X",
+      : IVistaMeasureTranscode::IntGet("STICK_LEFT_X",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's left stick x value") {
   }
 
-  int16_t GetValue(const VistaSensorMeasure* measure) const final {
+  int GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
     return m->stickLeftX;
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, int16_t& button) const final {
+  bool GetValue(const VistaSensorMeasure* measure, int& button) const final {
     button = GetValue(measure);
     return true;
   }
 };
 
-class SDL2StickLeftYTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<int16_t> {
+class SDL2StickLeftYTranscoder final : public IVistaMeasureTranscode::IntGet {
  public:
   SDL2StickLeftYTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<int16_t>("STICK_LEFT_Y",
+      : IVistaMeasureTranscode::IntGet("STICK_LEFT_Y",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's left stick y value") {
   }
 
-  int16_t GetValue(const VistaSensorMeasure* measure) const final {
+  int GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
     return m->stickLeftY;
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, int16_t& button) const final {
+  bool GetValue(const VistaSensorMeasure* measure, int& button) const final {
     button = GetValue(measure);
     return true;
   }
 };
 
-class SDL2StickRightXTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<int16_t> {
+class SDL2StickRightXTranscoder final : public IVistaMeasureTranscode::IntGet {
  public:
   SDL2StickRightXTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<int16_t>("STICK_RIGHT_X",
+      : IVistaMeasureTranscode::IntGet("STICK_RIGHT_X",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's right stick x value") {
   }
 
-  int16_t GetValue(const VistaSensorMeasure* measure) const final {
+  int GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
     return m->stickRightX;
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, int16_t& button) const final {
+  bool GetValue(const VistaSensorMeasure* measure, int& button) const final {
     button = GetValue(measure);
     return true;
   }
 };
 
-class SDL2StickRightYTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<int16_t> {
+class SDL2StickRightYTranscoder final : public IVistaMeasureTranscode::IntGet {
  public:
   SDL2StickRightYTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<int16_t>("STICK_RIGHT_Y",
+      : IVistaMeasureTranscode::IntGet("STICK_RIGHT_Y",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's right stick y value") {
   }
 
-  int16_t GetValue(const VistaSensorMeasure* measure) const final {
+  int GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
     return m->stickRightY;
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, int16_t& button) const final {
+  bool GetValue(const VistaSensorMeasure* measure, int& button) const final {
     button = GetValue(measure);
     return true;
   }
 };
 
-class SDL2TriggerLeftTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<int16_t> {
+class SDL2TriggerLeftTranscoder final : public IVistaMeasureTranscode::IntGet {
  public:
   SDL2TriggerLeftTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<int16_t>("TRIGGER_LEFT",
+      : IVistaMeasureTranscode::IntGet("TRIGGER_LEFT",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's left trigger value") {
   }
 
-  int16_t GetValue(const VistaSensorMeasure* measure) const final {
+  int GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
     return m->triggerLeft;
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, int16_t& button) const final {
+  bool GetValue(const VistaSensorMeasure* measure, int& button) const final {
     button = GetValue(measure);
     return true;
   }
 };
 
-class SDL2TriggerRightTranscoder final : public IVistaMeasureTranscode::TTranscodeValueGet<int16_t> {
+class SDL2TriggerRightTranscoder final : public IVistaMeasureTranscode::IntGet {
  public:
   SDL2TriggerRightTranscoder()
-      : IVistaMeasureTranscode::TTranscodeValueGet<int16_t>("TRIGGER_RIGHT",
+      : IVistaMeasureTranscode::IntGet("TRIGGER_RIGHT",
             SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's right trigger value") {
   }
 
-  int16_t GetValue(const VistaSensorMeasure* measure) const final {
+  int GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
     return m->triggerRight;
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, int16_t& button) const final {
+  bool GetValue(const VistaSensorMeasure* measure, int& button) const final {
     button = GetValue(measure);
     return true;
   }

@@ -40,5 +40,13 @@
     <edge fromnode="controller"            tonode="debug_text"                   fromport="START_PRESSED"     toport="START_PRESSED"/>
     <edge fromnode="controller"            tonode="debug_text"                   fromport="BACK_PRESSED"     toport="BACK_PRESSED"/>
     <edge fromnode="controller"            tonode="debug_text"                   fromport="GUIDE_PRESSED"     toport="GUIDE_PRESSED"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="STICK_LEFT_X"     toport="STICK_LEFT_X"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="STICK_LEFT_Y"     toport="STICK_LEFT_Y"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="STICK_RIGHT_X"     toport="STICK_RIGHT_X"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="STICK_RIGHT_Y"     toport="STICK_RIGHT_Y"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="TRIGGER_LEFT"     toport="TRIGGER_LEFT"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="TRIGGER_RIGHT"     toport="TRIGGER_RIGHT"/>
   </edges>
 </module>

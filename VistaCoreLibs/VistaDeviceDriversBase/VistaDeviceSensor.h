@@ -490,6 +490,11 @@ class VISTADEVICEDRIVERSAPI IVistaMeasureTranscode : public IVistaReflectionable
   typedef TTranscodeValueGet<unsigned int> UIntGet;
 
   /**
+   * return type of bool (convenience)
+   */
+  typedef TTranscodeValueGet<bool> BoolGet;
+
+  /**
    * return type of an array of doubles (convenience).
    * Note the "scalar" in the type name in comparison to the simple
    * typedef DoubleGet
