@@ -30,6 +30,7 @@
 #include <VistaKernel/VistaSystem.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <cmath>
+#include <limits>
 #include <stdint.h>
 
 VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod* crm)
@@ -242,7 +243,7 @@ bool VistaSDL2ControllerDriver::DoSensorUpdate(VistaType::microtime dTs) {
 
   while (!m_axisEvents.empty()) {
     SDL_ControllerAxisEvent e = m_axisEvents.front();
-    int value = e.value;
+    float value = static_cast<double>(e.value) / static_cast<double>(std::numeric_limits<int16_t>::max());
     switch (e.axis) {
       case SDL_CONTROLLER_AXIS_LEFTX:
         m_currentState.stickLeftX = value;

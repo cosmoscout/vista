@@ -51,14 +51,14 @@ struct VistaSDL2ControllerState {
   
   bool touchpadPressed;      // SDL_CONTROLLER_BUTTON_TOUCHPAD
 
-  int stickLeftX;            // SDL_CONTROLLER_AXIS_LEFTX
-  int stickLeftY;            // SDL_CONTROLLER_AXIS_LEFTY
+  float stickLeftX;          // SDL_CONTROLLER_AXIS_LEFTX
+  float stickLeftY;          // SDL_CONTROLLER_AXIS_LEFTY
 
-  int stickRightX;           // SDL_CONTROLLER_AXIS_RIGHTX
-  int stickRightY;           // SDL_CONTROLLER_AXIS_RIGHTY
+  float stickRightX;         // SDL_CONTROLLER_AXIS_RIGHTX
+  float stickRightY;         // SDL_CONTROLLER_AXIS_RIGHTY
   
-  int triggerLeft;           // SDL_CONTROLLER_AXIS_TRIGGERLEFT
-  int triggerRight;          // SDL_CONTROLLER_AXIS_TRIGGERRIGHT
+  float triggerLeft;         // SDL_CONTROLLER_AXIS_TRIGGERLEFT
+  float triggerRight;        // SDL_CONTROLLER_AXIS_TRIGGERRIGHT
 };
 
 #endif //__VISTASDL2CONTROLLERSENSORMEASURES_H

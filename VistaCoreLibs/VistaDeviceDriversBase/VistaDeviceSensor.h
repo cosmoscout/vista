@@ -480,6 +480,11 @@ class VISTADEVICEDRIVERSAPI IVistaMeasureTranscode : public IVistaReflectionable
   typedef TTranscodeValueGet<double> DoubleGet;
 
   /**
+   * return type of a float (convenience)
+   */
+  typedef TTranscodeValueGet<float> FloatGet;
+
+  /**
    * return type of int (convenience)
    */
   typedef TTranscodeValueGet<int> IntGet;
