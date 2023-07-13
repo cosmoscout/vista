@@ -47,6 +47,8 @@ set( DirFiles
 	VdfnDriverSensorNode.h
 	VdfnDumpHistoryNode.cpp
 	VdfnDumpHistoryNode.h
+	VdfnEulerRotateNode.cpp
+	VdfnEulerRotateNode.h
 	VdfnForceFeedbackNode.cpp
 	VdfnForceFeedbackNode.h
 	VdfnGetElementNode.h
