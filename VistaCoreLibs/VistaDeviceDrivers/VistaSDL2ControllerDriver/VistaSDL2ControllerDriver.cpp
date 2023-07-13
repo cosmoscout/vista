@@ -22,7 +22,9 @@
 #include "VistaBase/VistaStreamUtils.h"
 #include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
 #include "VistaSDL2ControllerState.h"
+#include "VistaTools/VistaIniFileParser.h"
 
+#include <SDL_error.h>
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
@@ -90,8 +92,21 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
   AddDeviceSensor(sensor);
   sensor->SetMeasureTranscode(GetFactory()->GetTranscoderFactoryForSensor("")->CreateTranscoder());
 
-  // TODO: load from settings.
-  SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+
+  VistaIniFileParser parser(true);
+  VistaPropertyList interactionProperties;
+  parser.ReadProplistFromFile(GetVistaSystem()->GetInteractionIniFile(), interactionProperties, true);
+
+  std::string dbFile;
+  bool hasDBFile = interactionProperties.GetValueInSubList("CONTROLLER_DB", "SDL2CONTROLLER", dbFile);
+  if (!hasDBFile) {
+    vstr::warnp() << "[VistaSDL2ControllerDriver] Property 'CONTROLLER_DB' for controller database not set!" << std::endl;
+  }
+
+  int result = SDL_GameControllerAddMappingsFromFile(dbFile.c_str());
+  if (result == -1) {
+    vstr::warnp() << "[VistaSDL2ControllerDriver] Error while loading controller database: " << SDL_GetError() << std::endl;
+  }
 
   m_addControllerListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERDEVICEADDED, [this] (SDL_Event e) {
     if (!m_currentController) {

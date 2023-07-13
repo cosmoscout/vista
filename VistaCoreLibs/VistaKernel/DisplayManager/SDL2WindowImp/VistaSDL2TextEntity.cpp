@@ -20,8 +20,12 @@
 
 #include <GL/glew.h>
 
+#include "VistaAspects/VistaPropertyList.h"
 #include "VistaBase/VistaStreamUtils.h"
+#include "VistaKernel/VistaSystem.h"
+#include "VistaKernel/DisplayManager/VistaDisplayManager.h"
 #include "VistaSDL2TextEntity.h"
+#include "VistaTools/VistaIniFileParser.h"
 
 #include <SDL2/SDL_render.h>
 #include <SDL_pixels.h>
@@ -33,9 +37,23 @@
 #include <array>
 #include <cstdint>
 
-const char* SANS_FONT_FILE  = "fonts/OpenSans-Regular.ttf";
-const char* SERIF_FONT_FILE = "fonts/SourceSerifPro-Regular.ttf";
-const char* MONO_FONT_FILE  = "fonts/SometypeMono-Regular.ttf";
+std::string GetFontPath(const std::string& font) {
+  VistaIniFileParser parser(true);
+  VistaPropertyList displayProperties;
+  parser.ReadProplistFromFile(GetVistaSystem()->GetDisplayIniFile(), displayProperties, true);
+
+  std::string fontFile = "";
+
+  if (VistaAspectsComparisonStuff::StringEquals(font, "MONOSPACE", false)) {
+    displayProperties.GetValueInSubList("MONO_FONT", "FONTS", fontFile);
+  } else if (VistaAspectsComparisonStuff::StringEquals(font, "SERIF", false)) {
+    displayProperties.GetValueInSubList("SERIF_FONT", "FONTS", fontFile);
+  } else {
+    displayProperties.GetValueInSubList("SANS_FONT", "FONTS", fontFile);
+  }
+
+  return fontFile;
+}
 
 VistaSDL2TextEntity::VistaSDL2TextEntity() {
   m_nXPos     = 0;
@@ -45,28 +63,21 @@ VistaSDL2TextEntity::VistaSDL2TextEntity() {
   m_oColor    = VistaColor::BRICK_RED;
   m_sText     = "";
   m_pointSize = 18;
-  m_fontType  = TTF_OpenFont(SANS_FONT_FILE, m_pointSize);
+  m_fontType  = TTF_OpenFont(GetFontPath("SANS").c_str(), m_pointSize);
 }
 
 VistaSDL2TextEntity::~VistaSDL2TextEntity() {
   TTF_CloseFont(m_fontType);
 }
 
-void VistaSDL2TextEntity::SetFont(const std::string& sFamily, int iSize) {
+void VistaSDL2TextEntity::SetFont(const std::string& family, int size) {
   TTF_CloseFont(m_fontType);
 
-  m_pointSize = iSize;
-
-  if (VistaAspectsComparisonStuff::StringEquals(sFamily, "MONOSPACE", false)) {
-    m_fontType = TTF_OpenFont(MONO_FONT_FILE, iSize);
-  } else if (VistaAspectsComparisonStuff::StringEquals(sFamily, "SERIF", false)) {
-    m_fontType = TTF_OpenFont(SERIF_FONT_FILE, iSize);
-  } else {
-    m_fontType = TTF_OpenFont(SANS_FONT_FILE, iSize);
-  }
+  m_pointSize = size;
+  m_fontType = TTF_OpenFont(GetFontPath(family).c_str(), size);
 
   if (m_fontType == nullptr) {
-    vstr::errp() << "[VistaSDL2TextEntity] Could not open font: " << sFamily << std::endl;
+    vstr::errp() << "[VistaSDL2TextEntity] Could not open font: " << family << std::endl;
   }
 }
 
@@ -83,6 +94,10 @@ TTF_Font* VistaSDL2TextEntity::GetFontType() {
 }
 
 void VistaSDL2TextEntity::DrawCharacters() {
+  if (!m_fontType) {
+    return;
+  }
+
   SDL_Color color = {
     static_cast<Uint8>(m_oColor.GetRed() * 255),
     static_cast<Uint8>(m_oColor.GetGreen() * 255),
