@@ -340,7 +340,7 @@ size_t VistaSDL2WindowingToolkit::RegisterEventCallback(SDL_EventType eventType,
   return m_callbackCounter;
 }
 
-void VistaSDL2WindowingToolkit::UnregisterEventCallback(SDL_EventType eventType, size_t callbackId) {
+void VistaSDL2WindowingToolkit::unregisterEventCallback(SDL_EventType eventType, size_t callbackId) {
   m_eventCallbacks[eventType].erase(callbackId);
 }
 

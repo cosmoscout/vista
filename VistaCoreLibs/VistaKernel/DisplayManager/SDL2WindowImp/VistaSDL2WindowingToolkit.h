@@ -127,7 +127,7 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
 
   using SDLEventCallback = std::function<void(SDL_Event)>;
   size_t RegisterEventCallback(SDL_EventType eventType, SDLEventCallback callback);
-  void UnregisterEventCallback(SDL_EventType eventType, size_t callbackId);
+  void unregisterEventCallback(SDL_EventType eventType, size_t callbackId);
 
  protected:
   bool CheckVSyncAvailability();
