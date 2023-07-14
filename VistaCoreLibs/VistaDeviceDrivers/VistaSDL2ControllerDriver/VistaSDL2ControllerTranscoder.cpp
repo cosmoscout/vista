@@ -18,11 +18,13 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
-#include "VistaBase/VistaStreamUtils.h"
 #include "VistaSDL2ControllerState.h"
 
+#include <VistaBase/VistaStreamUtils.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
+
+#include <utility>
 
 namespace {
 class SDL2ControllerMeasureTranscoder final : public IVistaMeasureTranscode {
@@ -40,533 +42,119 @@ class SDL2ControllerMeasureTranscoder final : public IVistaMeasureTranscode {
   REFL_INLINEIMP(SDL2ControllerMeasureTranscoder, IVistaMeasureTranscode);
 };
 
-class SDL2APressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
+class SDL2ButtonTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
-  SDL2APressedTranscoder() 
-    : IVistaMeasureTranscode::BoolGet("A_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's A button") {
+  SDL2ButtonTranscoder(const std::string& name, const std::string& description,
+      std::function<bool(const VistaSDL2ControllerState*)> getFunction)
+      : IVistaMeasureTranscode::BoolGet(
+            name, SDL2ControllerMeasureTranscoder::GetTypeString(), description)
+      , m_getFunction(std::move(getFunction)) {
   }
 
   bool GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->aPressed;
+    return m_getFunction(m);
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
+  bool GetValue(const VistaSensorMeasure* measure, bool& axisValue) const final {
+    axisValue = GetValue(measure);
     return true;
   }
+
+ private:
+  const std::function<bool(const VistaSDL2ControllerState*)> m_getFunction;
 };
 
-class SDL2BPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
+class SDL2AxisTranscoder final : public IVistaMeasureTranscode::FloatGet {
  public:
-  SDL2BPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("B_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's B button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->bPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2XPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2XPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("X_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's X button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->xPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2YPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2YPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("Y_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's Y button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->yPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2UpPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2UpPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("DPAD_UP_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's UP button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->dpadUpPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2DownPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2DownPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("DPAD_DOWN_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's DOWN button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->dpadDownPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2LeftPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2LeftPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("DPAD_LEFT_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's LEFT button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->dpadLeftPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2RightPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2RightPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("DPAD_RIGHT_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's RIGHT button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->dpadRightPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2StickLeftPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2StickLeftPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("STICK_LEFT_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's STICK_LEFT button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->stickLeftPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2StickRightPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2StickRightPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("STICK_RIGHT_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's STICK_RIGHT button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->stickRightPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2ShoulderLeftPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2ShoulderLeftPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("SHOULDER_LEFT_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's SHOULDER_LEFT button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->shoulderLeftPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2ShoulderRightPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2ShoulderRightPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("SHOULDER_RIGHT_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's SHOULDER_RIGHT button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->shoulderRightPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2BackPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2BackPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("BACK_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's BACK button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->backPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2GuidePressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2GuidePressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("GUIDE_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's GUIDE button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->guidePressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2StartPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2StartPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("START_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's START button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->startPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2Misc1PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2Misc1PressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("MISC1_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's MISC1 button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->misc1Pressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2Paddle1PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2Paddle1PressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("PADDLE1_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE1 button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->paddle1Pressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2Paddle2PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2Paddle2PressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("PADDLE2_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE2 button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->paddle2Pressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2Paddle3PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2Paddle3PressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("PADDLE3_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE3 button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->paddle3Pressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2Paddle4PressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2Paddle4PressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("PADDLE4_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's PADDLE4 button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->paddle4Pressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2TouchPadPressedTranscoder final : public IVistaMeasureTranscode::BoolGet {
- public:
-  SDL2TouchPadPressedTranscoder()
-      : IVistaMeasureTranscode::BoolGet("TOUCHPAD_PRESSED",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's TOUCHPAD button") {
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->touchpadPressed;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, bool& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2StickLeftXTranscoder final : public IVistaMeasureTranscode::FloatGet {
- public:
-  SDL2StickLeftXTranscoder()
-      : IVistaMeasureTranscode::FloatGet("STICK_LEFT_X",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's left stick x value") {
+  SDL2AxisTranscoder(const std::string& name, const std::string& description,
+      std::function<float(const VistaSDL2ControllerState*)> getFunction)
+      : IVistaMeasureTranscode::FloatGet(
+            name, SDL2ControllerMeasureTranscoder::GetTypeString(), description)
+      , m_getFunction(std::move(getFunction)) {
   }
 
   float GetValue(const VistaSensorMeasure* measure) const final {
     auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->stickLeftX;
+    return m_getFunction(m);
   }
 
-  bool GetValue(const VistaSensorMeasure* measure, float& button) const final {
-    button = GetValue(measure);
+  bool GetValue(const VistaSensorMeasure* measure, float& axisValue) const final {
+    axisValue = GetValue(measure);
     return true;
   }
-};
 
-class SDL2StickLeftYTranscoder final : public IVistaMeasureTranscode::FloatGet {
- public:
-  SDL2StickLeftYTranscoder()
-      : IVistaMeasureTranscode::FloatGet("STICK_LEFT_Y",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's left stick y value") {
-  }
-
-  float GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->stickLeftY;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, float& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2StickRightXTranscoder final : public IVistaMeasureTranscode::FloatGet {
- public:
-  SDL2StickRightXTranscoder()
-      : IVistaMeasureTranscode::FloatGet("STICK_RIGHT_X",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's right stick x value") {
-  }
-
-  float GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->stickRightX;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, float& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2StickRightYTranscoder final : public IVistaMeasureTranscode::FloatGet {
- public:
-  SDL2StickRightYTranscoder()
-      : IVistaMeasureTranscode::FloatGet("STICK_RIGHT_Y",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's right stick y value") {
-  }
-
-  float GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->stickRightY;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, float& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2TriggerLeftTranscoder final : public IVistaMeasureTranscode::FloatGet {
- public:
-  SDL2TriggerLeftTranscoder()
-      : IVistaMeasureTranscode::FloatGet("TRIGGER_LEFT",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's left trigger value") {
-  }
-
-  float GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->triggerLeft;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, float& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
-};
-
-class SDL2TriggerRightTranscoder final : public IVistaMeasureTranscode::FloatGet {
- public:
-  SDL2TriggerRightTranscoder()
-      : IVistaMeasureTranscode::FloatGet("TRIGGER_RIGHT",
-            SDL2ControllerMeasureTranscoder::GetTypeString(), "SDL2 controller's right trigger value") {
-  }
-
-  float GetValue(const VistaSensorMeasure* measure) const final {
-    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
-    return m->triggerRight;
-  }
-
-  bool GetValue(const VistaSensorMeasure* measure, float& button) const final {
-    button = GetValue(measure);
-    return true;
-  }
+ private:
+  const std::function<float(const VistaSDL2ControllerState*)> m_getFunction;
 };
 
 IVistaPropertyGetFunctor* SapGetter[] = {
-  new SDL2APressedTranscoder,
-  new SDL2BPressedTranscoder,
-  new SDL2XPressedTranscoder,
-  new SDL2YPressedTranscoder,
+    new SDL2ButtonTranscoder("A_PRESSED", "SDL2 controller's A button",
+        [](const VistaSDL2ControllerState* m) { return m->aPressed; }),
+    new SDL2ButtonTranscoder("B_PRESSED", "SDL2 controller's B button",
+        [](const VistaSDL2ControllerState* m) { return m->bPressed; }),
+    new SDL2ButtonTranscoder("X_PRESSED", "SDL2 controller's X button",
+        [](const VistaSDL2ControllerState* m) { return m->xPressed; }),
+    new SDL2ButtonTranscoder("Y_PRESSED", "SDL2 controller's Y button",
+        [](const VistaSDL2ControllerState* m) { return m->yPressed; }),
 
-  new SDL2UpPressedTranscoder,
-  new SDL2DownPressedTranscoder,
-  new SDL2LeftPressedTranscoder,
-  new SDL2RightPressedTranscoder,
+    new SDL2ButtonTranscoder("DPAD_UP_PRESSED", "SDL2 controller's UP button",
+        [](const VistaSDL2ControllerState* m) { return m->dpadUpPressed; }),
+    new SDL2ButtonTranscoder("DPAD_DOWN_PRESSED", "SDL2 controller's DOWN button",
+        [](const VistaSDL2ControllerState* m) { return m->dpadDownPressed; }),
+    new SDL2ButtonTranscoder("DPAD_LEFT_PRESSED", "SDL2 controller's LEFT button",
+        [](const VistaSDL2ControllerState* m) { return m->dpadLeftPressed; }),
+    new SDL2ButtonTranscoder("DPAD_RIGHT_PRESSED", "SDL2 controller's RIGHT button",
+        [](const VistaSDL2ControllerState* m) { return m->dpadRightPressed; }),
 
-  new SDL2StickLeftPressedTranscoder,
-  new SDL2StickRightPressedTranscoder,
+    new SDL2ButtonTranscoder("STICK_LEFT_PRESSED", "SDL2 controller's left stick button",
+        [](const VistaSDL2ControllerState* m) { return m->stickLeftPressed; }),
+    new SDL2ButtonTranscoder("STICK_RIGHT_PRESSED", "SDL2 controller's right stick button",
+        [](const VistaSDL2ControllerState* m) { return m->stickRightPressed; }),
 
-  new SDL2ShoulderLeftPressedTranscoder,
-  new SDL2ShoulderRightPressedTranscoder,
+    new SDL2ButtonTranscoder("SHOULDER_LEFT_PRESSED", "SDL2 controller's left shoulder button",
+        [](const VistaSDL2ControllerState* m) { return m->shoulderLeftPressed; }),
+    new SDL2ButtonTranscoder("SHOULDER_RIGHT_PRESSED", "SDL2 controller's right shoulder button",
+        [](const VistaSDL2ControllerState* m) { return m->shoulderRightPressed; }),
 
-  new SDL2BackPressedTranscoder,
-  new SDL2GuidePressedTranscoder,
-  new SDL2StartPressedTranscoder,
+    new SDL2ButtonTranscoder("BACK_PRESSED", "SDL2 controller's back button",
+        [](const VistaSDL2ControllerState* m) { return m->backPressed; }),
+    new SDL2ButtonTranscoder("GUIDE_PRESSED", "SDL2 controller's guide button",
+        [](const VistaSDL2ControllerState* m) { return m->guidePressed; }),
+    new SDL2ButtonTranscoder("START_PRESSED", "SDL2 controller's start button",
+        [](const VistaSDL2ControllerState* m) { return m->startPressed; }),
 
-  new SDL2Misc1PressedTranscoder,
+    new SDL2ButtonTranscoder("MISC1_PRESSED", "SDL2 controller's misc 1 button",
+        [](const VistaSDL2ControllerState* m) { return m->misc1Pressed; }),
 
-  new SDL2Paddle1PressedTranscoder,
-  new SDL2Paddle2PressedTranscoder,
-  new SDL2Paddle3PressedTranscoder,
-  new SDL2Paddle4PressedTranscoder,
+    new SDL2ButtonTranscoder("PADDLE1_PRESSED", "SDL2 controller's paddle 1 button",
+        [](const VistaSDL2ControllerState* m) { return m->paddle1Pressed; }),
+    new SDL2ButtonTranscoder("PADDLE2_PRESSED", "SDL2 controller's paddle 2 button",
+        [](const VistaSDL2ControllerState* m) { return m->paddle2Pressed; }),
+    new SDL2ButtonTranscoder("PADDLE3_PRESSED", "SDL2 controller's paddle 3 button",
+        [](const VistaSDL2ControllerState* m) { return m->paddle3Pressed; }),
+    new SDL2ButtonTranscoder("PADDLE4_PRESSED", "SDL2 controller's paddle 4 button",
+        [](const VistaSDL2ControllerState* m) { return m->paddle4Pressed; }),
 
-  new SDL2TouchPadPressedTranscoder,
+    new SDL2ButtonTranscoder("TOUCHPAD_PRESSED", "SDL2 controller's touchpad button",
+        [](const VistaSDL2ControllerState* m) { return m->touchpadPressed; }),
 
-  new SDL2StickLeftXTranscoder,
-  new SDL2StickLeftYTranscoder,
+    new SDL2AxisTranscoder("STICK_LEFT_X", "SDL2 controller's left stick x value",
+        [](const VistaSDL2ControllerState* m) { return m->stickLeftX; }),
+    new SDL2AxisTranscoder("STICK_LEFT_Y", "SDL2 controller's left stick y value",
+        [](const VistaSDL2ControllerState* m) { return m->stickLeftY; }),
 
-  new SDL2StickRightXTranscoder,
-  new SDL2StickRightYTranscoder,
+    new SDL2AxisTranscoder("STICK_RIGHT_X", "SDL2 controller's right stick x value",
+        [](const VistaSDL2ControllerState* m) { return m->stickRightX; }),
+    new SDL2AxisTranscoder("STICK_RIGHT_Y", "SDL2 controller's right stick y value",
+        [](const VistaSDL2ControllerState* m) { return m->stickRightY; }),
 
-  new SDL2TriggerLeftTranscoder,
-  new SDL2TriggerRightTranscoder,
+    new SDL2AxisTranscoder("TRIGGER_LEFT", "SDL2 controller's left trigger value",
+        [](const VistaSDL2ControllerState* m) { return m->triggerLeft; }),
+    new SDL2AxisTranscoder("TRIGGER_RIGHT", "SDL2 controller's right trigger value",
+        [](const VistaSDL2ControllerState* m) { return m->triggerRight; }),
 
-  nullptr
-};
+    nullptr};
 
 class VistaSDL2ControllerTranscoderFactory : public IVistaMeasureTranscoderFactory {
  public:
@@ -586,9 +174,11 @@ class VistaSDL2ControllerTranscoderFactory : public IVistaMeasureTranscoderFacto
 } // namespace
 
 #ifdef VISTASDL2CONTROLLERTRANSCODER_EXPORTS
-DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaSDL2ControllerTranscoderFactory>)
+DEFTRANSCODERPLUG_FUNC_EXPORTS(
+    TSimpleTranscoderFactoryFactory<VistaSDL2ControllerTranscoderFactory>)
 #else
-DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaSDL2ControllerTranscoderFactory>)
+DEFTRANSCODERPLUG_FUNC_IMPORTS(
+    TSimpleTranscoderFactoryFactory<VistaSDL2ControllerTranscoderFactory>)
 #endif
 
 DEFTRANSCODERPLUG_CLEANUP;
