@@ -21,9 +21,9 @@
 #include "VistaSDL2KeyboardDriver.h"
 #include "VistaBase/VistaStreamUtils.h"
 #include "VistaKernel/VistaSystem.h"
-#include <SDL.h>
-#include <SDL_keycode.h>
-#include <SDL_scancode.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_scancode.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>

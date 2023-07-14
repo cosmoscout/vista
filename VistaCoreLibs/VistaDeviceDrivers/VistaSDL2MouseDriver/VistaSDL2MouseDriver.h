@@ -23,13 +23,12 @@
 
 #include "VistaDeviceDriversBase/VistaDeviceSensor.h"
 #include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
-#include <SDL_events.h>
-#include <SDL_stdinc.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_stdinc.h>
 #include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <map>
 #include <vector>
-#include <SDL2/SDL_scancode.h>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2MOUSEDRIVER_STATIC)

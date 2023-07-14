@@ -24,9 +24,9 @@
 #include "VistaSDL2ControllerState.h"
 #include "VistaTools/VistaIniFileParser.h"
 
-#include <SDL_error.h>
-#include <SDL_events.h>
-#include <SDL_gamecontroller.h>
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_gamecontroller.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaKernel/VistaSystem.h>

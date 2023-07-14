@@ -22,8 +22,8 @@
 #define __VISTASDL2CONTROLLER_H
 
 #include "VistaDeviceDrivers/VistaSDL2ControllerDriver/VistaSDL2ControllerState.h"
-#include <SDL_events.h>
-#include <SDL_gamecontroller.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_gamecontroller.h>
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>

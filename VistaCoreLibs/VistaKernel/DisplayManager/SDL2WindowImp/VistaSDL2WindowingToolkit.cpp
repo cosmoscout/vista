@@ -28,8 +28,8 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_video.h>
-#include <SDL_gamecontroller.h>
-#include <SDL_keyboard.h>
+#include <SDL2/SDL_gamecontroller.h>
+#include <SDL2/SDL_keyboard.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
 #include <VistaKernel/GraphicsManager/VistaGLTexture.h>

@@ -22,9 +22,9 @@
 #include "VistaBase/VistaStreamUtils.h"
 #include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
 #include "VistaKernel/VistaSystem.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_mouse.h>
-#include <SDL_events.h>
+#include <SDL2/SDL_events.h>
 #include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>

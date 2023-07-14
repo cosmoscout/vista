@@ -22,7 +22,7 @@
 #define _VISTASDLWINDOWINGTOOLKIT_H
 
 #include <SDL2/SDL_video.h>
-#include <SDL_events.h>
+#include <SDL2/SDL_events.h>
 #include <VistaKernel/VistaKernelConfig.h>
 
 #include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>

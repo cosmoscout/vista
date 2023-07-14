@@ -28,8 +28,8 @@
 #include "VistaTools/VistaIniFileParser.h"
 
 #include <SDL2/SDL_render.h>
-#include <SDL_pixels.h>
-#include <SDL_surface.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_surface.h>
 #include <VistaAspects/VistaAspectsUtils.h>
 
 #include <SDL2/SDL.h>
