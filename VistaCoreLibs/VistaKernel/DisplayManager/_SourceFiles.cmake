@@ -18,6 +18,9 @@ endif()
 
 if ( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
 	list( APPEND SubDirs SDL2WindowImp )
+	if( VISTACORELIBS_USE_OPENVR )
+		list( APPEND SubDirs OpenVRSDL2WindowImp )
+	endif()
 endif()
 
 set( DirFiles	

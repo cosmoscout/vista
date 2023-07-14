@@ -49,13 +49,13 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void Run() final;
   void Quit() final;
 
-  void DisplayWindow(const VistaWindow* window) final;
+  void DisplayWindow(const VistaWindow* window) override;
   void DisplayAllWindows() final;
 
-  bool RegisterWindow(VistaWindow* window) final;
-  bool UnregisterWindow(VistaWindow* window) final;
+  bool RegisterWindow(VistaWindow* window) override;
+  bool UnregisterWindow(VistaWindow* window) override;
 
-  bool InitWindow(VistaWindow* window) final;
+  bool InitWindow(VistaWindow* window) override;
 
   bool SetWindowUpdateCallback(IVistaExplicitCallbackInterface* callback) final;
 
