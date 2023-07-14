@@ -63,19 +63,19 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     GetVistaSystem()->Quit();
   }
 
-  m_motionEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEMOTION, [this] (SDL_Event event) {
+  m_motionEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEMOTION, [this] (SDL_Event event) {
     m_motionEvents.push_back(event.motion);
   });
   
-  m_buttonDownEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEBUTTONDOWN, [this] (SDL_Event event) {
+  m_buttonDownEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEBUTTONDOWN, [this] (SDL_Event event) {
     m_buttonEvents.push_back(event.button);
   });
   
-  m_buttonUpEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEBUTTONUP, [this] (SDL_Event event) {
+  m_buttonUpEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEBUTTONUP, [this] (SDL_Event event) {
     m_buttonEvents.push_back(event.button);
   });
   
-  m_wheelEventListener = m_sdl2Toolkit->registerEventCallback(SDL_MOUSEWHEEL, [this] (SDL_Event event) {
+  m_wheelEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEWHEEL, [this] (SDL_Event event) {
     m_wheelEvents.push_back(event.wheel);
   });
 
@@ -85,10 +85,10 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
 VistaSDL2MouseDriver::~VistaSDL2MouseDriver() {
   RemDeviceSensor(m_mouseSensor);
 
-  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEMOTION, m_motionEventListener);
-  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);
-  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEBUTTONUP, m_buttonUpEventListener);
-  m_sdl2Toolkit->unregisterEventCallback(SDL_MOUSEWHEEL, m_wheelEventListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEMOTION, m_motionEventListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONUP, m_buttonUpEventListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEWHEEL, m_wheelEventListener);
   
   delete m_mouseSensor;
 }

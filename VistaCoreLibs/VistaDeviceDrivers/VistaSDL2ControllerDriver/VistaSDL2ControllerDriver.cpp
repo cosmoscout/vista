@@ -105,31 +105,31 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
     }
   }
 
-  m_addControllerListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERDEVICEADDED, [this] (SDL_Event e) {
+  m_addControllerListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERDEVICEADDED, [this] (SDL_Event e) {
     if (!m_currentController) {
       m_currentController = SDL_GameControllerOpen(e.cdevice.which);
     }
   });
 
-  m_removeControllerListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERDEVICEREMOVED, [this] (SDL_Event e) {
+  m_removeControllerListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERDEVICEREMOVED, [this] (SDL_Event e) {
     if (m_currentController == SDL_GameControllerFromInstanceID(e.cdevice.which)) {
       SDL_GameControllerClose(m_currentController);
     }
   });
 
-  m_buttonDownListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERBUTTONDOWN, [this] (SDL_Event e) {
+  m_buttonDownListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERBUTTONDOWN, [this] (SDL_Event e) {
     if (m_currentController == SDL_GameControllerFromInstanceID(e.cbutton.which)) {
       m_buttonEvents.push_back(e.cbutton);
     }
   });
 
-  m_buttonUpListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERBUTTONUP, [this] (SDL_Event e) {
+  m_buttonUpListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERBUTTONUP, [this] (SDL_Event e) {
     if (m_currentController == SDL_GameControllerFromInstanceID(e.cbutton.which)) {
       m_buttonEvents.push_back(e.cbutton);
     }
   });
 
-  m_axisListener = m_sdl2Toolkit->registerEventCallback(SDL_CONTROLLERAXISMOTION, [this] (SDL_Event e) {
+  m_axisListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERAXISMOTION, [this] (SDL_Event e) {
     if (m_currentController == SDL_GameControllerFromInstanceID(e.caxis.which)) {
       m_axisEvents.push_back(e.caxis);
     }
@@ -141,10 +141,10 @@ VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
     SDL_GameControllerClose(m_currentController);
   }
 
-  m_sdl2Toolkit->unregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
-  m_sdl2Toolkit->unregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
-  m_sdl2Toolkit->unregisterEventCallback(SDL_CONTROLLERBUTTONDOWN, m_buttonDownListener);
-  m_sdl2Toolkit->unregisterEventCallback(SDL_CONTROLLERDEVICEADDED, m_addControllerListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONDOWN, m_buttonDownListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEADDED, m_addControllerListener);
 
   VistaDeviceSensor* sensor = GetSensorByIndex(0);
   RemDeviceSensor(sensor);

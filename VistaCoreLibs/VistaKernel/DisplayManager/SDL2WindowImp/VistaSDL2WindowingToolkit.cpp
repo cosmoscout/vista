@@ -334,13 +334,13 @@ void VistaSDL2WindowingToolkit::Run() {
   }
 }
 
-size_t VistaSDL2WindowingToolkit::registerEventCallback(SDL_EventType eventType, SDLEventCallback callback) {
+size_t VistaSDL2WindowingToolkit::RegisterEventCallback(SDL_EventType eventType, SDLEventCallback callback) {
   size_t id = m_callbackCounter++;
   m_eventCallbacks[eventType].emplace(id, callback);
   return m_callbackCounter;
 }
 
-void VistaSDL2WindowingToolkit::unregisterEventCallback(SDL_EventType eventType, size_t callbackId) {
+void VistaSDL2WindowingToolkit::UnregisterEventCallback(SDL_EventType eventType, size_t callbackId) {
   m_eventCallbacks[eventType].erase(callbackId);
 }
 
