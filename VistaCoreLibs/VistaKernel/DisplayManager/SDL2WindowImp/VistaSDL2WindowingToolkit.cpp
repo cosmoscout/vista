@@ -18,38 +18,29 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
+#include "VistaSDL2WindowingToolkit.h"
+
 #include <GL/glew.h>
 
 #include "VistaSDL2TextEntity.h"
-#include "VistaSDL2WindowingToolkit.h"
 
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_mouse.h>
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_video.h>
-#include <SDL2/SDL_gamecontroller.h>
-#include <SDL2/SDL_keyboard.h>
-#include <VistaKernel/DisplayManager/VistaDisplayManager.h>
+#include <VistaBase/VistaBaseTypes.h>
+#include <VistaBase/VistaExceptionBase.h>
+#include <VistaBase/VistaStreamUtils.h>
 #include <VistaKernel/DisplayManager/VistaWindow.h>
-#include <VistaKernel/GraphicsManager/VistaGLTexture.h>
 #include <VistaKernel/GraphicsManager/VistaImage.h>
 #include <VistaKernel/VistaSystem.h>
 
-#include <VistaBase/VistaExceptionBase.h>
-
-#include <VistaAspects/VistaExplicitCallbackInterface.h>
-#include <VistaBase/VistaStreamUtils.h>
-#include <VistaBase/VistaUtilityMacros.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_gamecontroller.h>
+#include <SDL2/SDL_keyboard.h>
 
-#include <cassert>
-#include <cstddef>
 #include <cstdint>
 #include <string>
-#include <sys/types.h>
 
 #ifdef DEBUG
 #define DEBUG_CHECK_GL(sPrefix)                                                                    \
@@ -64,7 +55,6 @@
 #else
 #define DEBUG_CHECK_GL(sPrefix)
 #endif
-
 
 // Maintain maps of all windows in order to be able to match incoming
 // sdl callbacks to the correct callback. Since all windows usually use the
@@ -153,9 +143,9 @@ struct SDL2WindowInfo {
 };
 
 VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
-    : m_quitLoop(false)
+    : m_callbackCounter(0)
+    , m_quitLoop(false)
     , m_updateCallback(nullptr)
-    , m_callbackCounter(0)
     , m_tmpWindowID(nullptr)
     , m_globalVSyncAvailability(~0)
     , m_hasFullWindow(false)
@@ -167,7 +157,7 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     vstr::warni() << "SDL2 init of the events system failed - Quitting Vista" << std::endl;
     GetVistaSystem()->Quit();
   }
-  
+
   if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) != 0) {
     vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
     vstr::warni() << "SDL2 init of the joystick system failed - Quitting Vista" << std::endl;
@@ -210,83 +200,87 @@ void VistaSDL2WindowingToolkit::HandleWindowEvents(const SDL_WindowEvent& event)
   SDL2WindowInfo* window = GetWindowFromId(event.windowID);
 
   switch (event.event) {
-    case SDL_WINDOWEVENT_SHOWN:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_HIDDEN:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_EXPOSED:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_MOVED:
-      window->currentPosX = event.data1;
-      window->currentPosY = event.data2;
-      window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_POSITION_CHANGE);
-      break;
-    case SDL_WINDOWEVENT_RESIZED:
-      window->currentSizeX = event.data1;
-      window->currentSizeY = event.data2;
-      window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
-      break;
-    case SDL_WINDOWEVENT_SIZE_CHANGED:
-      window->currentSizeX = event.data1;
-      window->currentSizeY = event.data2;
-      window->window->GetWindowProperties()->Notify(VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
-      break;
-    case SDL_WINDOWEVENT_MINIMIZED:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_MAXIMIZED:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_RESTORED:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_ENTER:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_LEAVE:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_FOCUS_GAINED:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_FOCUS_LOST:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_CLOSE:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_TAKE_FOCUS:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_HIT_TEST:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_ICCPROF_CHANGED:
-      // ignored
-      break;
-    case SDL_WINDOWEVENT_DISPLAY_CHANGED:
-      // ignored
-      break;
-    default:
-      vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event.windowID << " got unknown event " << std::to_string(event.event) << std::endl;
-      break;
+  case SDL_WINDOWEVENT_SHOWN:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_HIDDEN:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_EXPOSED:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_MOVED:
+    window->currentPosX = event.data1;
+    window->currentPosY = event.data2;
+    window->window->GetWindowProperties()->Notify(
+        VistaWindow::VistaWindowProperties::MSG_POSITION_CHANGE);
+    break;
+  case SDL_WINDOWEVENT_RESIZED:
+    window->currentSizeX = event.data1;
+    window->currentSizeY = event.data2;
+    window->window->GetWindowProperties()->Notify(
+        VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
+    break;
+  case SDL_WINDOWEVENT_SIZE_CHANGED:
+    window->currentSizeX = event.data1;
+    window->currentSizeY = event.data2;
+    window->window->GetWindowProperties()->Notify(
+        VistaWindow::VistaWindowProperties::MSG_SIZE_CHANGE);
+    break;
+  case SDL_WINDOWEVENT_MINIMIZED:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_MAXIMIZED:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_RESTORED:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_ENTER:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_LEAVE:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_FOCUS_GAINED:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_FOCUS_LOST:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_CLOSE:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_TAKE_FOCUS:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_HIT_TEST:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_ICCPROF_CHANGED:
+    // ignored
+    break;
+  case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+    // ignored
+    break;
+  default:
+    vstr::warnp() << "[SDL2WindowingToolkit]: Window " << event.windowID << " got unknown event "
+                  << std::to_string(event.event) << std::endl;
+    break;
   }
 }
 
 void VistaSDL2WindowingToolkit::HandleDisplayEvent(const SDL_DisplayEvent& event) const {
   switch (event.event) {
-    case SDL_DISPLAYEVENT_CONNECTED:
-      // ignored
-      break;
-    case SDL_DISPLAYEVENT_DISCONNECTED:
-      // ignored
-      break;
-    case SDL_DISPLAYEVENT_ORIENTATION:
-      // ignored
-      break;
+  case SDL_DISPLAYEVENT_CONNECTED:
+    // ignored
+    break;
+  case SDL_DISPLAYEVENT_DISCONNECTED:
+    // ignored
+    break;
+  case SDL_DISPLAYEVENT_ORIENTATION:
+    // ignored
+    break;
   }
 }
 
@@ -299,24 +293,24 @@ void VistaSDL2WindowingToolkit::HandleEvents() {
       callback.second(e);
     }
 
-    switch(eventType) {
-      // Quit
-      case SDL_QUIT:
-        m_quitLoop = true;
-        break;
+    switch (eventType) {
+    // Quit
+    case SDL_QUIT:
+      m_quitLoop = true;
+      break;
 
-      // Display
-      case SDL_DISPLAYEVENT:
-        HandleDisplayEvent(e.display);
-        break;
-        
-      // Window
-      case SDL_WINDOWEVENT:
-        HandleWindowEvents(e.window);
-        break;
+    // Display
+    case SDL_DISPLAYEVENT:
+      HandleDisplayEvent(e.display);
+      break;
 
-      default:
-        break;
+    // Window
+    case SDL_WINDOWEVENT:
+      HandleWindowEvents(e.window);
+      break;
+
+    default:
+      break;
     }
   }
 }
@@ -334,13 +328,15 @@ void VistaSDL2WindowingToolkit::Run() {
   }
 }
 
-size_t VistaSDL2WindowingToolkit::RegisterEventCallback(SDL_EventType eventType, SDLEventCallback callback) {
+size_t VistaSDL2WindowingToolkit::RegisterEventCallback(
+    SDL_EventType eventType, SDLEventCallback callback) {
   size_t id = m_callbackCounter++;
   m_eventCallbacks[eventType].emplace(id, callback);
   return m_callbackCounter;
 }
 
-void VistaSDL2WindowingToolkit::UnregisterEventCallback(SDL_EventType eventType, size_t callbackId) {
+void VistaSDL2WindowingToolkit::UnregisterEventCallback(
+    SDL_EventType eventType, size_t callbackId) {
   m_eventCallbacks[eventType].erase(callbackId);
 }
 
@@ -355,7 +351,8 @@ void VistaSDL2WindowingToolkit::DisplayWindow(const VistaWindow* window) {
   } else if (info->numMultiSamples > 1) {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, info->fboId);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, info->blitFboId);
-    glBlitFramebuffer(0, 0, info->currentSizeX, info->currentSizeY, 0, 0, info->currentSizeX, info->currentSizeY, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer(0, 0, info->currentSizeX, info->currentSizeY, 0, 0, info->currentSizeX,
+        info->currentSizeY, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, info->fboId);
 
@@ -378,7 +375,7 @@ bool VistaSDL2WindowingToolkit::RegisterWindow(VistaWindow* window) {
   if (itExists != m_windowInfo.end()) {
     return false;
   }
-  
+
   m_windowInfo[window] = new SDL2WindowInfo(window);
   return true;
 }
@@ -388,13 +385,13 @@ bool VistaSDL2WindowingToolkit::UnregisterWindow(VistaWindow* window) {
     return false;
   }
 
-  const SDL2WindowInfo* info = itExists->second;
-  SDL_Window* sdlWindow = info->sdlWindow;
+  const SDL2WindowInfo* info      = itExists->second;
+  SDL_Window*           sdlWindow = info->sdlWindow;
   if (info->isOffscreenBuffer) {
     glDeleteFramebuffers(1, &info->fboId);
     glDeleteRenderbuffers(1, &info->fboDepthId);
     glDeleteRenderbuffers(1, &info->fboColorId);
-    
+
     if (info->fboStencilId != 0) {
       glDeleteRenderbuffers(1, &info->fboStencilId);
     }
@@ -485,7 +482,7 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     if (info->isDebugContext) {
       contextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
     }
-    
+
     if (info->isForwardCompatible) {
       contextFlags |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
     }
@@ -493,7 +490,6 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
   }
 
-  
   uint32_t flags = SDL_WINDOW_OPENGL;
   if (!info->drawBorder) {
     flags |= SDL_WINDOW_BORDERLESS;
@@ -504,7 +500,8 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     windowOptions |= SDL_WINDOW_FULLSCREEN;
   }
 
-  info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX, info->currentPosY, info->currentSizeX, info->currentSizeY, windowOptions);
+  info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX,
+      info->currentPosY, info->currentSizeX, info->currentSizeY, windowOptions);
   if (!info->sdlWindow) {
     vstr::errp() << "[SDL2WindowingToolkit]: Could not create window!" << std::endl;
     GetVistaSystem()->Quit();
@@ -518,13 +515,12 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
                  << "OpenGL context could not be created!" << std::endl;
     GetVistaSystem()->Quit();
   }
-  
+
   GLenum glewStatus = glewInit();
   if (glewStatus != GLEW_OK) {
     vstr::errp() << "[SDL2WindowingToolkit]: "
                  << "GLEW initialization failed!\n"
-                 << "GLEW Error: " << glewGetErrorString(glewStatus)
-                 << std::endl;
+                 << "GLEW Error: " << glewGetErrorString(glewStatus) << std::endl;
     GetVistaSystem()->Quit();
   }
 
@@ -610,20 +606,24 @@ bool VistaSDL2WindowingToolkit::InitAsFbo(VistaWindow* window) {
   glGenRenderbuffers(1, &info->fboColorId);
   glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
   glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, info->currentSizeX, info->currentSizeY);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->fboColorId);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->fboColorId);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   glGenRenderbuffers(1, &info->fboDepthId);
   glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+  glRenderbufferStorage(
+      GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->fboDepthId);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   if (info->useStencilBuffer) {
     glGenRenderbuffers(1, &info->fboStencilId);
     glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, info->fboStencilId);
+    glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, info->fboStencilId);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
   }
 
@@ -648,21 +648,26 @@ bool VistaSDL2WindowingToolkit::InitAsMultisampleFbo(VistaWindow* window) {
 
   glGenRenderbuffers(1, &info->fboColorId);
   glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_RGB, info->currentSizeX, info->currentSizeY);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->fboColorId);
+  glRenderbufferStorageMultisample(
+      GL_RENDERBUFFER, info->numMultiSamples, GL_RGB, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->fboColorId);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   glGenRenderbuffers(1, &info->fboDepthId);
   glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_DEPTH_COMPONENT24,
+      info->currentSizeX, info->currentSizeY);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->fboDepthId);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   if (info->useStencilBuffer) {
     glGenRenderbuffers(1, &info->fboStencilId);
     glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, info->fboStencilId);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_STENCIL_INDEX,
+        info->currentSizeX, info->currentSizeY);
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, info->fboStencilId);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
   }
 
@@ -682,20 +687,23 @@ bool VistaSDL2WindowingToolkit::InitAsMultisampleFbo(VistaWindow* window) {
   glGenRenderbuffers(1, &info->blitFboColorId);
   glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboColorId);
   glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, info->currentSizeX, info->currentSizeY);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->blitFboColorId);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, info->blitFboColorId);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   glGenRenderbuffers(1, &info->blitFboDepthId);
   glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboDepthId);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->blitFboDepthId);
+  glRenderbufferStorage(
+      GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+  glFramebufferRenderbuffer(
+      GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, info->blitFboDepthId);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status != GL_FRAMEBUFFER_COMPLETE) {
     VISTA_THROW("Failed to set up frame buffer window", -1);
   }
-  
+
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   return true;
@@ -706,18 +714,18 @@ bool VistaSDL2WindowingToolkit::SetWindowUpdateCallback(IVistaExplicitCallbackIn
 
   for (auto const& window : m_windowInfo) {
     window.second->updateCallback = callback;
-    SDL_Window* sdlWindow = window.second->sdlWindow;
+    SDL_Window* sdlWindow         = window.second->sdlWindow;
     if (sdlWindow != nullptr) {
       SDL_GL_SwapWindow(sdlWindow);
     }
   }
-  
+
   return true;
 }
 
 bool VistaSDL2WindowingToolkit::GetWindowPosition(const VistaWindow* window, int& x, int& y) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
-  
+
   x = info->currentPosX;
   y = info->currentPosY;
 
@@ -743,7 +751,8 @@ bool VistaSDL2WindowingToolkit::SetWindowPosition(VistaWindow* window, int x, in
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetWindowSize(const VistaWindow* window, int& width, int& height) const {
+bool VistaSDL2WindowingToolkit::GetWindowSize(
+    const VistaWindow* window, int& width, int& height) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   width  = info->currentSizeX;
@@ -767,12 +776,14 @@ bool VistaSDL2WindowingToolkit::SetWindowSize(VistaWindow* window, int width, in
       glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
       glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+      glRenderbufferStorage(
+          GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
       glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
       if (info->useStencilBuffer) {
         glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+        glRenderbufferStorage(
+            GL_RENDERBUFFER, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
       }
 #ifdef DEBUG
@@ -785,16 +796,19 @@ bool VistaSDL2WindowingToolkit::SetWindowSize(VistaWindow* window, int width, in
 #endif
     } else {
       glBindRenderbuffer(GL_RENDERBUFFER, info->fboColorId);
-      glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_RGB, info->currentSizeX, info->currentSizeY);
+      glRenderbufferStorageMultisample(
+          GL_RENDERBUFFER, info->numMultiSamples, GL_RGB, info->currentSizeX, info->currentSizeY);
       glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
       glBindRenderbuffer(GL_RENDERBUFFER, info->fboDepthId);
-      glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_DEPTH_COMPONENT24,
+          info->currentSizeX, info->currentSizeY);
       glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
       if (info->useStencilBuffer) {
         glBindRenderbuffer(GL_RENDERBUFFER, info->fboStencilId);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_STENCIL_INDEX, info->currentSizeX, info->currentSizeY);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, info->numMultiSamples, GL_STENCIL_INDEX,
+            info->currentSizeX, info->currentSizeY);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
       }
 #ifdef DEBUG
@@ -811,7 +825,8 @@ bool VistaSDL2WindowingToolkit::SetWindowSize(VistaWindow* window, int width, in
       glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
       glBindRenderbuffer(GL_RENDERBUFFER, info->blitFboDepthId);
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
+      glRenderbufferStorage(
+          GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, info->currentSizeX, info->currentSizeY);
       glBindRenderbuffer(GL_RENDERBUFFER, 0);
 #ifdef DEBUG
       glBindFramebuffer(GL_FRAMEBUFFER, info->blitFboId);
@@ -863,7 +878,8 @@ bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, bool enabled)
 
   if (enabled) {
     SDL_GetWindowPosition(info->sdlWindow, &info->preFullscreenPosX, &info->preFullscreenPosY);
-    SDL_GetWindowSizeInPixels(info->sdlWindow, &info->preFullscreenSizeX, &info->preFullscreenSizeY);
+    SDL_GetWindowSizeInPixels(
+        info->sdlWindow, &info->preFullscreenSizeX, &info->preFullscreenSizeY);
 
     SDL_SetWindowFullscreen(info->sdlWindow, SDL_WINDOW_FULLSCREEN);
     info->fullscreenActive = true;
@@ -879,7 +895,7 @@ bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, bool enabled)
 }
 bool VistaSDL2WindowingToolkit::SetWindowTitle(VistaWindow* window, const std::string& title) {
   SDL2WindowInfo* info = GetWindowInfo(window);
-  info->windowTitle = title;
+  info->windowTitle    = title;
 
   if (info->isOffscreenBuffer) {
     return false;
@@ -904,7 +920,7 @@ bool VistaSDL2WindowingToolkit::SetCursorIsEnabled(VistaWindow* window, bool set
 
   info->cursorEnabled = set;
   if (set) {
-    auto cursor = SDL_CreateSystemCursor((SDL_SystemCursor) info->cursor);
+    auto cursor = SDL_CreateSystemCursor((SDL_SystemCursor)info->cursor);
     SDL_SetCursor(cursor);
     SDL_ShowCursor(SDL_ENABLE);
   } else {
@@ -1016,7 +1032,6 @@ bool VistaSDL2WindowingToolkit::SetMultiSamples(const VistaWindow* window, int n
     return false;
   }
 
-
   info->numMultiSamples = numSamples;
   return true;
 }
@@ -1061,16 +1076,18 @@ bool VistaSDL2WindowingToolkit::SetUseOffscreenBuffer(VistaWindow* window, bool 
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
-  SDL2WindowInfo* info = GetWindowInfo(window);
-  int numPixels = info->currentSizeX * info->currentSizeY;
-  int dataSize  = numPixels * 3;
+bool VistaSDL2WindowingToolkit::GetRGBImage(
+    const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
+  SDL2WindowInfo* info      = GetWindowInfo(window);
+  int             numPixels = info->currentSizeX * info->currentSizeY;
+  int             dataSize  = numPixels * 3;
   vecData.resize(dataSize);
   int ret = GetRGBImage(window, vecData.data(), dataSize);
   return (ret == dataSize);
 }
 
-int VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const {
+int VistaSDL2WindowingToolkit::GetRGBImage(
+    const VistaWindow* window, VistaType::byte* data, int bufferSize) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   DEBUG_CHECK_GL("Pre-GetRGBImage");
@@ -1098,7 +1115,8 @@ int VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window, VistaType:
   return dataSize;
 }
 
-bool VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
+bool VistaSDL2WindowingToolkit::GetDepthImage(
+    const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   int numPixels = info->currentSizeX * info->currentSizeY;
@@ -1108,7 +1126,8 @@ bool VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, std::ve
   return (ret == dataSize);
 }
 
-int VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, VistaType::byte* data, const int bufferSize) const {
+int VistaSDL2WindowingToolkit::GetDepthImage(
+    const VistaWindow* window, VistaType::byte* data, const int bufferSize) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   int numPixels = info->currentSizeX * info->currentSizeY;
@@ -1116,7 +1135,7 @@ int VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window, VistaTyp
   if (bufferSize < dataSize) {
     return 0;
   }
-  
+
   DEBUG_CHECK_GL("Pre-GetDepthImage");
 
   if (!info->isOffscreenBuffer) {
@@ -1148,12 +1167,14 @@ VistaImage VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window) {
     result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE);
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, result.GetDataWrite());
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE,
+        result.GetDataWrite());
   } else {
     result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE);
 
     glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE, result.GetDataWrite());
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE,
+        result.GetDataWrite());
   }
 
   DEBUG_CHECK_GL("Post-GetRGBImage");
@@ -1171,12 +1192,14 @@ VistaImage VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window) {
     result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_LUMINANCE, GL_FLOAT);
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, result.GetDataWrite());
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT,
+        result.GetDataWrite());
   } else {
     result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_LUMINANCE, GL_FLOAT);
 
     glReadBuffer(GL_FRONT);
-    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT, result.GetDataWrite());
+    glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT,
+        result.GetDataWrite());
   }
 
   DEBUG_CHECK_GL("Post-GetDepthImage");
@@ -1190,7 +1213,7 @@ int VistaSDL2WindowingToolkit::GetWindowId(const VistaWindow* window) const {
   if (info->isOffscreenBuffer) {
     return -1;
   }
-  
+
   return info->windowId;
 }
 
@@ -1249,9 +1272,9 @@ bool VistaSDL2WindowingToolkit::SetCursor(VistaWindow* window, int cursor) {
 
   info->cursor = cursor;
   if (info->cursorEnabled) {
-    SDL_SetCursor(SDL_CreateSystemCursor((SDL_SystemCursor) cursor));
+    SDL_SetCursor(SDL_CreateSystemCursor((SDL_SystemCursor)cursor));
   }
-  
+
   return true;
 }
 
@@ -1291,17 +1314,17 @@ bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
   if (m_globalVSyncAvailability != ~0) {
     return (m_globalVSyncAvailability != VSYNC_STATE_UNAVAILABLE);
   }
-  
+
   void* SetSwapIntervalFunction = nullptr;
   void* GetSwapIntervalFunction = nullptr;
 
 #ifdef WIN32
 
   m_globalVSyncAvailability = VSYNC_STATE_UNAVAILABLE;
-  SetSwapIntervalFunction    = SDL_GL_GetProcAddress("wglSwapIntervalEXT");
+  SetSwapIntervalFunction   = SDL_GL_GetProcAddress("wglSwapIntervalEXT");
   if (SetSwapIntervalFunction) {
     m_globalVSyncAvailability = VSYNC_STATE_UNKNOWN;
-    GetSwapIntervalFunction = SDL_GL_GetProcAddress("wglGetSwapIntervalEXT");
+    GetSwapIntervalFunction   = SDL_GL_GetProcAddress("wglGetSwapIntervalEXT");
   }
 
 #elif defined LINUX
@@ -1329,7 +1352,8 @@ SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(const VistaWindow* wind
   return itWindow->second;
 }
 
-bool VistaSDL2WindowingToolkit::GetContextVersion(int& major, int& minor, const VistaWindow* target) const {
+bool VistaSDL2WindowingToolkit::GetContextVersion(
+    int& major, int& minor, const VistaWindow* target) const {
   SDL2WindowInfo* info = GetWindowInfo(target);
 
   major = info->contextMajor;
@@ -1376,7 +1400,8 @@ bool VistaSDL2WindowingToolkit::GetIsForwardCompatible(const VistaWindow* target
   return info->isForwardCompatible;
 }
 
-bool VistaSDL2WindowingToolkit::SetIsForwardCompatible(bool isForwardCompatible, VistaWindow* target) {
+bool VistaSDL2WindowingToolkit::SetIsForwardCompatible(
+    bool isForwardCompatible, VistaWindow* target) {
   SDL2WindowInfo* info = GetWindowInfo(target);
 
   if (info->isInitialized) {
@@ -1391,7 +1416,7 @@ bool VistaSDL2WindowingToolkit::SetIsForwardCompatible(bool isForwardCompatible,
 }
 
 bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
-  SDL2WindowInfo* info        = GetWindowInfo(window);
+  SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->contextMajor != 1 || info->contextMinor != 0) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, info->contextMajor);
@@ -1404,7 +1429,7 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
     if (info->isDebugContext) {
       contextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
     }
-    
+
     if (info->isForwardCompatible) {
       contextFlags |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
     }
@@ -1412,7 +1437,8 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
   }
 
-  m_dummyWindowId = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+  m_dummyWindowId = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0,
+      0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
   if (!m_dummyWindowId) {
     vstr::errp() << "[SDL2WindowingToolkit]: Could not create dummy window!" << std::endl;
     GetVistaSystem()->Quit();
@@ -1428,8 +1454,7 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
   if (glewStatus != GLEW_OK) {
     vstr::errp() << "[SDL2WindowingToolkit]: "
                  << "GLEW initialization failed!\n"
-                 << "GLEW Error: " << glewGetErrorString(glewStatus)
-                 << std::endl;
+                 << "GLEW Error: " << glewGetErrorString(glewStatus) << std::endl;
     GetVistaSystem()->Quit();
   }
 

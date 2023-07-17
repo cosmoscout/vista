@@ -21,16 +21,16 @@
 #ifndef _VISTASDLWINDOWINGTOOLKIT_H
 #define _VISTASDLWINDOWINGTOOLKIT_H
 
-#include <SDL2/SDL_video.h>
-#include <SDL2/SDL_events.h>
-#include <VistaKernel/VistaKernelConfig.h>
-
 #include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
 
-#include <deque>
+#include <VistaKernel/VistaKernelConfig.h>
+
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_events.h>
+
 #include <map>
-#include <string>
 #include <functional>
+#include <string>
 
 class VistaDisplayManager;
 class VistaGLTexture;
@@ -98,7 +98,7 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   bool GetIsForwardCompatible(const VistaWindow* target) const final;
   bool SetIsForwardCompatible(const bool isForwardCompatible, VistaWindow* target) final;
 
-  int GetRGBImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const final;
+  int  GetRGBImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const final;
   bool GetRGBImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const final;
   int  GetDepthImage(const VistaWindow* window, VistaType::byte* data, int bufferSize) const final;
   bool GetDepthImage(const VistaWindow* window, std::vector<VistaType::byte>& vecData) const final;
@@ -121,13 +121,13 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
 
   IVistaTextEntity* CreateTextEntity() final;
 
-  int GetWindowId(const VistaWindow* window) const final;
+  int  GetWindowId(const VistaWindow* window) const final;
   void BindWindow(VistaWindow* window) final;
   void UnbindWindow(VistaWindow* window) final;
 
   using SDLEventCallback = std::function<void(SDL_Event)>;
   size_t RegisterEventCallback(SDL_EventType eventType, SDLEventCallback callback);
-  void UnregisterEventCallback(SDL_EventType eventType, size_t callbackId);
+  void   UnregisterEventCallback(SDL_EventType eventType, size_t callbackId);
 
  protected:
   bool CheckVSyncAvailability();
@@ -149,21 +149,21 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void HandleWindowEvents(const SDL_WindowEvent& windowEvent) const;
   void HandleDisplayEvent(const SDL_DisplayEvent& event) const;
 
-  size_t m_callbackCounter;
+  size_t                                                      m_callbackCounter;
   std::map<SDL_EventType, std::map<size_t, SDLEventCallback>> m_eventCallbacks;
 
   using WindowInfoMap = std::map<const VistaWindow*, SDL2WindowInfo*>;
-  WindowInfoMap                                         m_windowInfo;
-  bool                                                  m_quitLoop;
-  IVistaExplicitCallbackInterface*                      m_updateCallback;
-  mutable SDL_Window*                                   m_tmpWindowID;
-  int                                                   m_globalVSyncAvailability;
+  WindowInfoMap                    m_windowInfo;
+  bool                             m_quitLoop;
+  IVistaExplicitCallbackInterface* m_updateCallback;
+  mutable SDL_Window*              m_tmpWindowID;
+  int                              m_globalVSyncAvailability;
 
   bool          m_hasFullWindow;
   SDL_Window*   m_fullWindowId;
   SDL_Window*   m_dummyWindowId;
   SDL_GLContext m_dummyContextId;
-  int m_cursor;
+  int           m_cursor;
 };
 
 #endif
