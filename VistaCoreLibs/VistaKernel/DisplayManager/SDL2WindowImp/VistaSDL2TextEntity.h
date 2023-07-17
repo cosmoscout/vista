@@ -1,6 +1,7 @@
 /*============================================================================*/
 /*                              ViSTA VR toolkit                              */
 /*               Copyright (c) 1997-2016 RWTH Aachen University               */
+/*            Copyright (c) 2016-2023 German Aerospace Center (DLR)           */
 /*============================================================================*/
 /*                                  License                                   */
 /*                                                                            */
@@ -22,40 +23,51 @@
 #define _VISTASDL2TEXTENTITY_H
 
 #include <VistaKernel/DisplayManager/VistaTextEntity.h>
-#include <VistaKernel/VistaKernelConfig.h>
 
 #include <SDL2/SDL_ttf.h>
 
 /**
  * SDL2 implementation of IVistaTextEntity. See VistaTextEntity.h for
- * documentation. Default value is Helvetice 18.
+ * documentation. Default value is a Sans Serif font with 18pt.
+ *
+ * This text entity requires font files to be provided in the display ini file.
+ *
+ * Example:
+ *
+ * [FONTS]
+ * MONO_FONT  = fonts/a-mono-font.ttf
+ * SANS_FONT  = fonts/a-sans-font.ttf
+ * SERIF_FONT = fonts/a-serif-font.ttf
  */
-class VISTAKERNELAPI VistaSDL2TextEntity : public IVistaTextEntity {
+class VISTAKERNELAPI VistaSDL2TextEntity final : public IVistaTextEntity {
  public:
   explicit VistaSDL2TextEntity();
-  virtual ~VistaSDL2TextEntity();
+  ~VistaSDL2TextEntity() final;
 
   /**
    * \param fontfamily
    * \param fontsize
    */
-  void SetFont(const std::string& family, int fontSize);
+  void SetFont(const std::string& family, int fontSize) final;
 
   /**
    * This method returns the *real* fontsize. This must not be the same
    * as given in SetFont, because of the bestfit algorithm.
    * \return fontsize
    */
-  int GetFontSize() const;
+  int GetFontSize() const final;
 
   /**
    * This method returns the *real* fontfmaily. This must not be the same
    * as given in SetFont, because of the bestfit algorithm.
    * \return fontfamily
    */
-  std::string GetFontFamily() const;
+  std::string GetFontFamily() const final;
 
-  void DrawCharacters();
+  /**
+   * This method renders the given string to a location set with glWindowPos* or glRasterPos*.
+   */
+  void DrawCharacters() final;
 
   /**
    * Gives the native SDL2 font pointer.
@@ -63,8 +75,8 @@ class VISTAKERNELAPI VistaSDL2TextEntity : public IVistaTextEntity {
   TTF_Font* GetFontType();
 
  private:
-  TTF_Font*     m_fontType;
-  int           m_pointSize;
+  TTF_Font* m_fontType;
+  int       m_pointSize;
 };
 
 #endif //_VISTASDL2TEXTENTITY_H
