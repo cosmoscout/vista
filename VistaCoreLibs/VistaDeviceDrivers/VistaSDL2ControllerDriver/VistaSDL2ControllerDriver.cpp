@@ -144,6 +144,7 @@ VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONDOWN, m_buttonDownListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEREMOVED, m_removeControllerListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEADDED, m_addControllerListener);
 
   VistaDeviceSensor* sensor = GetSensorByIndex(0);
