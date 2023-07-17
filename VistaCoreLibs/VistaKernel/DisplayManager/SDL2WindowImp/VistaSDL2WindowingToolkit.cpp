@@ -24,6 +24,7 @@
 
 #include "VistaSDL2TextEntity.h"
 
+#include <VistaAspects/VistaExplicitCallbackInterface.h>
 #include <VistaBase/VistaBaseTypes.h>
 #include <VistaBase/VistaExceptionBase.h>
 #include <VistaBase/VistaStreamUtils.h>
@@ -63,7 +64,8 @@
 
 struct SDL2WindowInfo {
   SDL2WindowInfo(VistaWindow* window)
-      : window(window)
+      : isInitialized(false)
+      , window(window)
       , updateCallback(nullptr)
       , currentSizeX(0)
       , currentSizeY(0)
@@ -77,28 +79,27 @@ struct SDL2WindowInfo {
       , useStereo(false)
       , useAccumBuffer(false)
       , useStencilBuffer(false)
+      , numMultiSamples(0)
       , drawBorder(true)
       , sdlWindow(nullptr)
       , windowId(-1)
       , glContext(nullptr)
       , windowTitle("ViSTA")
       , vSyncMode(VistaSDL2WindowingToolkit::VSYNC_STATE_UNKNOWN)
-      , cursorEnabled(true)
-      , cursor(-1)
-      , isOffscreenBuffer(false)
-      , fboId(0)
-      , fboDepthId(0)
-      , fboColorId(0)
-      , fboStencilId(0)
-      , blitFboId(0)
-      , blitFboColorId(0)
-      , blitFboDepthId(0)
       , contextMajor(1)
       , contextMinor(0)
       , isDebugContext(false)
       , isForwardCompatible(false)
-      , numMultiSamples(0)
-      , isInitialized(false) {
+      , cursorEnabled(true)
+      , cursor(-1)
+      , isOffscreenBuffer(false)
+      , fboId(0)
+      , fboColorId(0)
+      , fboDepthId(0)
+      , fboStencilId(0)
+      , blitFboId(0)
+      , blitFboColorId(0)
+      , blitFboDepthId(0) {
   }
 
   ~SDL2WindowInfo() = default;
@@ -146,11 +147,11 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     : m_callbackCounter(0)
     , m_quitLoop(false)
     , m_updateCallback(nullptr)
-    , m_tmpWindowID(nullptr)
+    , m_tmpWindow(nullptr)
     , m_globalVSyncAvailability(~0)
     , m_hasFullWindow(false)
-    , m_fullWindowId(nullptr)
-    , m_dummyWindowId(nullptr)
+    , m_fullWindow(nullptr)
+    , m_dummyWindow(nullptr)
     , m_dummyContextId(nullptr) {
   if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0) {
     vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
@@ -289,6 +290,7 @@ void VistaSDL2WindowingToolkit::HandleEvents() {
   while (SDL_PollEvent(&e)) {
     SDL_EventType eventType = static_cast<SDL_EventType>(e.type);
 
+    // We call all registered event listeners for this event type.
     for (const auto& callback : m_eventCallbacks[eventType]) {
       callback.second(e);
     }
@@ -361,10 +363,6 @@ void VistaSDL2WindowingToolkit::DisplayWindow(const VistaWindow* window) {
 }
 
 void VistaSDL2WindowingToolkit::DisplayAllWindows() {
-  if (m_windowInfo.empty()) {
-    return;
-  }
-
   for (auto const& window : m_windowInfo) {
     DisplayWindow(window.first);
   }
@@ -379,6 +377,7 @@ bool VistaSDL2WindowingToolkit::RegisterWindow(VistaWindow* window) {
   m_windowInfo[window] = new SDL2WindowInfo(window);
   return true;
 }
+
 bool VistaSDL2WindowingToolkit::UnregisterWindow(VistaWindow* window) {
   auto itExists = m_windowInfo.find(window);
   if (itExists == m_windowInfo.end()) {
@@ -490,14 +489,13 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
   }
 
-  uint32_t flags = SDL_WINDOW_OPENGL;
-  if (!info->drawBorder) {
-    flags |= SDL_WINDOW_BORDERLESS;
-  }
-
   uint32_t windowOptions = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
   if (info->fullscreenActive) {
     windowOptions |= SDL_WINDOW_FULLSCREEN;
+  }
+
+  if (!info->drawBorder) {
+    windowOptions |= SDL_WINDOW_BORDERLESS;
   }
 
   info->sdlWindow = SDL_CreateWindow(info->windowTitle.c_str(), info->currentPosX,
@@ -551,7 +549,7 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
 
   if (!m_hasFullWindow) {
     m_hasFullWindow = true;
-    m_fullWindowId  = info->sdlWindow;
+    m_fullWindow  = info->sdlWindow;
   }
 
   return true;
@@ -560,7 +558,7 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
 bool VistaSDL2WindowingToolkit::InitAsFbo(VistaWindow* window) {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
-  if (!m_hasFullWindow && m_dummyWindowId == nullptr) {
+  if (!m_hasFullWindow && m_dummyWindow == nullptr) {
     vstr::warnp()
         << "Using offscreen window without valid real window - creating dummy win for context"
         << std::endl;
@@ -1437,14 +1435,14 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
   }
 
-  m_dummyWindowId = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0,
+  m_dummyWindow = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0,
       0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
-  if (!m_dummyWindowId) {
+  if (!m_dummyWindow) {
     vstr::errp() << "[SDL2WindowingToolkit]: Could not create dummy window!" << std::endl;
     GetVistaSystem()->Quit();
   }
 
-  m_dummyContextId = SDL_GL_CreateContext(m_dummyWindowId);
+  m_dummyContextId = SDL_GL_CreateContext(m_dummyWindow);
   if (!m_dummyContextId) {
     vstr::errp() << "[SDL2WindowingToolkit]: Could not create dummy context!" << std::endl;
     GetVistaSystem()->Quit();
@@ -1462,14 +1460,14 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
 }
 
 void VistaSDL2WindowingToolkit::DestroyDummyWindow() {
-  if (m_dummyWindowId) {
-    SDL_DestroyWindow(m_dummyWindowId);
+  if (m_dummyWindow) {
+    SDL_DestroyWindow(m_dummyWindow);
   }
 
   if (m_dummyContextId) {
     SDL_GL_DeleteContext(m_dummyContextId);
   }
 
-  m_dummyWindowId  = nullptr;
+  m_dummyWindow  = nullptr;
   m_dummyContextId = nullptr;
 }

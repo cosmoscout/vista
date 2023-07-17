@@ -33,20 +33,42 @@
 #include <string>
 
 class VistaDisplayManager;
-class VistaGLTexture;
 class VistaImage;
 struct SDL2WindowInfo;
 
 /**
  * SDL2 implementation of IVistaWindowingToolkit. See IVistaWindowingToolkit.h
  * for documentation.
+ *
+ * Additionally to providing all required windowing functions this toolkit also provides functions
+ * for registering event callbacks. See RegisterEventCallback and UnregisterEventCallback below.
  */
 class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
  public:
+  /**
+   * Create a new SDL2WindowingToolkit. It initializes the following SDL subsystems and libraries:
+   * - Events
+   * - Joystick
+   * - Gamecontroller
+   * - Video
+   * - TTF
+   */
   VistaSDL2WindowingToolkit();
+
+  /**
+   * Cleans all the SDL subsystems up.
+   */
   ~VistaSDL2WindowingToolkit();
 
+  /**
+   * This starts and executes the main loop. The window update callbacks are being called and all
+   * events are being handled here.
+   */
   void Run() final;
+
+  /**
+   * Stops the main loop.
+   */
   void Quit() final;
 
   void DisplayWindow(const VistaWindow* window) override;
@@ -110,8 +132,9 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
     VSYNC_STATE_UNKNOWN     = -1,
     VSYNC_DISABLED          = 0,
     VSYNC_ENABLED           = 1,
-    ADAPTIVE_VSYNC_ENABLED  = 2
+    ADAPTIVE_VSYNC_ENABLED  = 2 // Currently not supported by Vista.
   };
+
   bool GetVSyncCanBeModified(const VistaWindow* window) final;
   bool SetVSyncMode(VistaWindow* window, bool enabled) final;
   int  GetVSyncMode(const VistaWindow* window) final;
@@ -126,8 +149,18 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void UnbindWindow(VistaWindow* window) final;
 
   using SDLEventCallback = std::function<void(SDL_Event)>;
+
+  /**
+   * You can use this function to register a callback to a specific SDL event type. You will then
+   * be notified of all events matching this type. The returned id is needed for unregistering.
+   */
   size_t RegisterEventCallback(SDL_EventType eventType, SDLEventCallback callback);
-  void   UnregisterEventCallback(SDL_EventType eventType, size_t callbackId);
+
+  /**
+   * Unregisters an event of the given type and with the given id. The event type MUST be identical
+   * to the one given at RegisterEventCallback!
+   */
+  void UnregisterEventCallback(SDL_EventType eventType, size_t callbackId);
 
  protected:
   bool CheckVSyncAvailability();
@@ -142,11 +175,24 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   void DestroyDummyWindow();
 
  private:
-  SDL2WindowInfo* GetWindowFromId(Uint32 windowID) const;
+  /**
+   * Returns the WindowInfo from the given id. The id matches SDLs internal window ids.
+   */
+  SDL2WindowInfo* GetWindowFromId(Uint32 windowId) const;
 
+  /**
+   * Handle SDL events. Also notifies event listeners.
+   */
   void HandleEvents();
 
+  /**
+   * Handles window specific events.
+   */
   void HandleWindowEvents(const SDL_WindowEvent& windowEvent) const;
+
+  /**
+   * Handles display specific events.
+   */
   void HandleDisplayEvent(const SDL_DisplayEvent& event) const;
 
   size_t                                                      m_callbackCounter;
@@ -156,14 +202,16 @@ class VISTAKERNELAPI VistaSDL2WindowingToolkit : public IVistaWindowingToolkit {
   WindowInfoMap                    m_windowInfo;
   bool                             m_quitLoop;
   IVistaExplicitCallbackInterface* m_updateCallback;
-  mutable SDL_Window*              m_tmpWindowID;
+  mutable SDL_Window*              m_tmpWindow;
   int                              m_globalVSyncAvailability;
 
-  bool          m_hasFullWindow;
-  SDL_Window*   m_fullWindowId;
-  SDL_Window*   m_dummyWindowId;
+  bool        m_hasFullWindow;
+  SDL_Window* m_fullWindow;
+
+  SDL_Window*   m_dummyWindow;
   SDL_GLContext m_dummyContextId;
-  int           m_cursor;
+
+  int m_cursor;
 };
 
 #endif
