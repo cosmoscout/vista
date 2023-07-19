@@ -43,7 +43,7 @@ vista_set_version( VistaCoreLibs HEAD HEAD )
 # vista_set_version( VistaCoreLibs BRANCH IMAGES ${VISTACORELIBS_VERSION_MAJOR} ${VISTACORELIBS_VERSION_MINOR} ${VISTACORELIBS_VERSION_PATCH} )
 
 
-set( VISTACORELIBS_USE_SDL2_WINDOWIMP OFF CACHE BOOL "Determines if the SDL2-based WindowToolit Implementation will be prefered" )
+set( VISTACORELIBS_USE_SDL2_WINDOWIMP OFF CACHE BOOL "Determines if the SDL2-based WindowToolkit Implementation will be prefered" )
 
 vista_find_package( OpenGL QUIET )
 vista_find_package( OpenSG 1.8 QUIET )

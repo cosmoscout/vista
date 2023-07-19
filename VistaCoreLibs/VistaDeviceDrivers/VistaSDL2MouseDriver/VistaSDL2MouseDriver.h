@@ -64,6 +64,7 @@ class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
   Uint8 m_rmb;
 
   double m_wheel;
+  double m_wheelState;
 
   std::deque<SDL_MouseMotionEvent> m_motionEvents;
   std::deque<SDL_MouseButtonEvent> m_buttonEvents;

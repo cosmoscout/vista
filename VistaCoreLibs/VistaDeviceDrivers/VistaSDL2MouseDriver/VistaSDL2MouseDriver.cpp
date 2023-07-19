@@ -56,6 +56,7 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     , m_mmb(0)
     , m_rmb(0)
     , m_wheel(0)
+    , m_wheelState(0)
     , m_connected(false) {
 
   if (!m_sdl2Toolkit) {
@@ -128,6 +129,7 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
   if (!m_wheelEvents.empty()) {
     SDL_MouseWheelEvent e = m_wheelEvents.back();
     m_wheel = e.preciseY;
+    m_wheelState += e.preciseY;
     m_wheelEvents.clear();
   } else {
     m_wheel = 0;
@@ -139,6 +141,7 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
   UpdateMouseButton(0, IVistaMouseDriver::BT_LEFT, m_lmb);
   UpdateMouseButton(0, IVistaMouseDriver::BT_MIDDLE, m_mmb);
   UpdateMouseButton(0, IVistaMouseDriver::BT_RIGHT, m_rmb);
+  UpdateMouseButton(0, IVistaMouseDriver::BT_WHEEL_STATE, m_wheelState);
   UpdateMouseButton(0, IVistaMouseDriver::BT_WHEEL_DIR, m_wheel);
   MeasureStop(0);
 
