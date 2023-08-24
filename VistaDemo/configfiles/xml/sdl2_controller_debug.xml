@@ -48,5 +48,10 @@
     
     <edge fromnode="controller"            tonode="debug_text"                   fromport="TRIGGER_LEFT"     toport="TRIGGER_LEFT"/>
     <edge fromnode="controller"            tonode="debug_text"                   fromport="TRIGGER_RIGHT"     toport="TRIGGER_RIGHT"/>
+
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE1_PRESSED"     toport="PADDLE1_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE2_PRESSED"     toport="PADDLE2_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE3_PRESSED"     toport="PADDLE3_PRESSED"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE4_PRESSED"     toport="PADDLE4_PRESSED"/>
   </edges>
 </module>

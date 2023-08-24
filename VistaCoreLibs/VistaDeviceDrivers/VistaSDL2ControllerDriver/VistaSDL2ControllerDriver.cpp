@@ -108,12 +108,14 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
   m_addControllerListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERDEVICEADDED, [this] (SDL_Event e) {
     if (!m_currentController) {
       m_currentController = SDL_GameControllerOpen(e.cdevice.which);
+      vstr::outi() << "[VistaSDL2ControllerDriver] Controller connected: " << SDL_GameControllerName(m_currentController) << std::endl;
     }
   });
 
   m_removeControllerListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERDEVICEREMOVED, [this] (SDL_Event e) {
     if (m_currentController == SDL_GameControllerFromInstanceID(e.cdevice.which)) {
       SDL_GameControllerClose(m_currentController);
+      m_currentController = nullptr;
     }
   });
 
