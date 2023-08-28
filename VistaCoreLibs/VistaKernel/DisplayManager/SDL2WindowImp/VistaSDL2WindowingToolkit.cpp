@@ -176,6 +176,15 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     vstr::warni() << "SDL2 init of the video system failed - Quitting Vista" << std::endl;
     GetVistaSystem()->Quit();
   }
+  
+  if (SDL_InitSubSystem(SDL_INIT_SENSOR) != 0) {
+    vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
+    vstr::warni() << "SDL2 init of the sensor system failed - Quitting Vista" << std::endl;
+    GetVistaSystem()->Quit();
+  }
+
+  SDL_JoystickEventState(SDL_ENABLE);
+  SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_PS5, "1");
 
   if (TTF_Init() != 0) {
     vstr::warni() << "TTF Error: " << TTF_GetError() << std::endl;
@@ -186,6 +195,7 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
 
 VistaSDL2WindowingToolkit::~VistaSDL2WindowingToolkit() {
   TTF_Quit();
+  SDL_QuitSubSystem(SDL_INIT_SENSOR);
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
   SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
   SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);

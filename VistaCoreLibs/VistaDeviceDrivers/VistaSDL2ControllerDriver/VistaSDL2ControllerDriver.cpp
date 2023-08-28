@@ -40,46 +40,6 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
     , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
     , m_currentController(nullptr)
     , m_connected(false) {
-      
-
-  m_currentState = {
-    false,
-    false,
-    false,
-    false,
-
-    false,
-    false,
-    false,
-    false,
-
-    false,
-    false,
-
-    false,
-    false,
-
-    false,
-    false,
-    false,
-    false,
-
-    false,
-    false,
-    false,
-    false,
-
-    false,
-
-    0,
-    0,
-
-    0,
-    0,
-
-    0,
-    0,
-  };
 
   if (!m_sdl2Toolkit) {
     vstr::errp() << "[VistaSDL2ControllerDriver] Can't initialize without SDL2 windowing toolkit!" << std::endl;
@@ -109,6 +69,11 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
     if (!m_currentController) {
       m_currentController = SDL_GameControllerOpen(e.cdevice.which);
       vstr::outi() << "[VistaSDL2ControllerDriver] Controller connected: " << SDL_GameControllerName(m_currentController) << std::endl;
+
+      SDL_GameControllerSetSensorEnabled(m_currentController, SDL_SENSOR_ACCEL, SDL_TRUE);
+      m_currentState.hasAcceleration = SDL_GameControllerHasSensor(m_currentController, SDL_SENSOR_ACCEL);
+      SDL_GameControllerSetSensorEnabled(m_currentController, SDL_SENSOR_GYRO, SDL_TRUE);
+      m_currentState.hasGyro         = SDL_GameControllerHasSensor(m_currentController, SDL_SENSOR_GYRO);
     }
   });
 
@@ -136,6 +101,12 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
       m_axisEvents.push_back(e.caxis);
     }
   });
+  
+  m_sensorListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERSENSORUPDATE, [this] (SDL_Event e) {
+    if (m_currentController == SDL_GameControllerFromInstanceID(e.csensor.which)) {
+      m_sensorEvents.push_back(e.csensor);
+    }
+  });
 }
 
 VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
@@ -143,6 +114,7 @@ VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
     SDL_GameControllerClose(m_currentController);
   }
 
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERSENSORUPDATE, m_sensorListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONDOWN, m_buttonDownListener);
@@ -283,6 +255,20 @@ bool VistaSDL2ControllerDriver::DoSensorUpdate(VistaType::microtime dTs) {
     }
 
     m_axisEvents.pop_front();
+  }
+
+  while (!m_sensorEvents.empty()) {
+    SDL_ControllerSensorEvent e = m_sensorEvents.front();
+    switch (e.sensor) {
+      case SDL_SENSOR_ACCEL:
+        std::copy(std::begin(e.data), std::end(e.data), std::begin(m_currentState.imuAcceleration));
+        break;
+      case SDL_SENSOR_GYRO:
+        std::copy(std::begin(e.data), std::end(e.data), std::begin(m_currentState.imuGyro));
+        break;
+    }
+
+    m_sensorEvents.pop_front();
   }
 
   *state = m_currentState;

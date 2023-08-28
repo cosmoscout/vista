@@ -59,12 +59,14 @@ class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDevi
   
   std::deque<SDL_ControllerButtonEvent> m_buttonEvents;
   std::deque<SDL_ControllerAxisEvent>   m_axisEvents;
+  std::deque<SDL_ControllerSensorEvent> m_sensorEvents;
 
   size_t m_addControllerListener;
   size_t m_removeControllerListener;
   size_t m_buttonDownListener;
   size_t m_buttonUpListener;
   size_t m_axisListener;
+  size_t m_sensorListener;
 
   VistaSDL2ControllerState m_currentState;
 

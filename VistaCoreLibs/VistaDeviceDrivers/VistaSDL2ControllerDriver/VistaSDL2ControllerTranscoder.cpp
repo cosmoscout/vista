@@ -42,9 +42,9 @@ class SDL2ControllerMeasureTranscoder final : public IVistaMeasureTranscode {
   REFL_INLINEIMP(SDL2ControllerMeasureTranscoder, IVistaMeasureTranscode);
 };
 
-class SDL2ButtonTranscoder final : public IVistaMeasureTranscode::BoolGet {
+class SDL2BoolTranscoder final : public IVistaMeasureTranscode::BoolGet {
  public:
-  SDL2ButtonTranscoder(const std::string& name, const std::string& description,
+  SDL2BoolTranscoder(const std::string& name, const std::string& description,
       std::function<bool(const VistaSDL2ControllerState*)> getFunction)
       : IVistaMeasureTranscode::BoolGet(
             name, SDL2ControllerMeasureTranscoder::GetTypeString(), description)
@@ -88,55 +88,78 @@ class SDL2AxisTranscoder final : public IVistaMeasureTranscode::FloatGet {
   const std::function<float(const VistaSDL2ControllerState*)> m_getFunction;
 };
 
+class SDL2SensorTranscoder final : public IVistaMeasureTranscode::V3Get {
+ public:
+  SDL2SensorTranscoder(const std::string& name, const std::string& description,
+      std::function<VistaVector3D(const VistaSDL2ControllerState*)> getFunction)
+      : IVistaMeasureTranscode::V3Get(
+            name, SDL2ControllerMeasureTranscoder::GetTypeString(), description)
+      , m_getFunction(std::move(getFunction)) {
+  }
+
+  VistaVector3D GetValue(const VistaSensorMeasure* measure) const final {
+    auto m = reinterpret_cast<const VistaSDL2ControllerState*>(measure->m_vecMeasures.data());
+    return m_getFunction(m);
+  }
+
+  bool GetValue(const VistaSensorMeasure* measure, VistaVector3D& axisValue) const final {
+    axisValue = GetValue(measure);
+    return true;
+  }
+
+ private:
+  const std::function<VistaVector3D(const VistaSDL2ControllerState*)> m_getFunction;
+};
+
 IVistaPropertyGetFunctor* SapGetter[] = {
-    new SDL2ButtonTranscoder("A_PRESSED", "SDL2 controller's A button",
+    new SDL2BoolTranscoder("A_PRESSED", "SDL2 controller's A button",
         [](const VistaSDL2ControllerState* m) { return m->aPressed; }),
-    new SDL2ButtonTranscoder("B_PRESSED", "SDL2 controller's B button",
+    new SDL2BoolTranscoder("B_PRESSED", "SDL2 controller's B button",
         [](const VistaSDL2ControllerState* m) { return m->bPressed; }),
-    new SDL2ButtonTranscoder("X_PRESSED", "SDL2 controller's X button",
+    new SDL2BoolTranscoder("X_PRESSED", "SDL2 controller's X button",
         [](const VistaSDL2ControllerState* m) { return m->xPressed; }),
-    new SDL2ButtonTranscoder("Y_PRESSED", "SDL2 controller's Y button",
+    new SDL2BoolTranscoder("Y_PRESSED", "SDL2 controller's Y button",
         [](const VistaSDL2ControllerState* m) { return m->yPressed; }),
 
-    new SDL2ButtonTranscoder("DPAD_UP_PRESSED", "SDL2 controller's UP button",
+    new SDL2BoolTranscoder("DPAD_UP_PRESSED", "SDL2 controller's UP button",
         [](const VistaSDL2ControllerState* m) { return m->dpadUpPressed; }),
-    new SDL2ButtonTranscoder("DPAD_DOWN_PRESSED", "SDL2 controller's DOWN button",
+    new SDL2BoolTranscoder("DPAD_DOWN_PRESSED", "SDL2 controller's DOWN button",
         [](const VistaSDL2ControllerState* m) { return m->dpadDownPressed; }),
-    new SDL2ButtonTranscoder("DPAD_LEFT_PRESSED", "SDL2 controller's LEFT button",
+    new SDL2BoolTranscoder("DPAD_LEFT_PRESSED", "SDL2 controller's LEFT button",
         [](const VistaSDL2ControllerState* m) { return m->dpadLeftPressed; }),
-    new SDL2ButtonTranscoder("DPAD_RIGHT_PRESSED", "SDL2 controller's RIGHT button",
+    new SDL2BoolTranscoder("DPAD_RIGHT_PRESSED", "SDL2 controller's RIGHT button",
         [](const VistaSDL2ControllerState* m) { return m->dpadRightPressed; }),
 
-    new SDL2ButtonTranscoder("STICK_LEFT_PRESSED", "SDL2 controller's left stick button",
+    new SDL2BoolTranscoder("STICK_LEFT_PRESSED", "SDL2 controller's left stick button",
         [](const VistaSDL2ControllerState* m) { return m->stickLeftPressed; }),
-    new SDL2ButtonTranscoder("STICK_RIGHT_PRESSED", "SDL2 controller's right stick button",
+    new SDL2BoolTranscoder("STICK_RIGHT_PRESSED", "SDL2 controller's right stick button",
         [](const VistaSDL2ControllerState* m) { return m->stickRightPressed; }),
 
-    new SDL2ButtonTranscoder("SHOULDER_LEFT_PRESSED", "SDL2 controller's left shoulder button",
+    new SDL2BoolTranscoder("SHOULDER_LEFT_PRESSED", "SDL2 controller's left shoulder button",
         [](const VistaSDL2ControllerState* m) { return m->shoulderLeftPressed; }),
-    new SDL2ButtonTranscoder("SHOULDER_RIGHT_PRESSED", "SDL2 controller's right shoulder button",
+    new SDL2BoolTranscoder("SHOULDER_RIGHT_PRESSED", "SDL2 controller's right shoulder button",
         [](const VistaSDL2ControllerState* m) { return m->shoulderRightPressed; }),
 
-    new SDL2ButtonTranscoder("BACK_PRESSED", "SDL2 controller's back button",
+    new SDL2BoolTranscoder("BACK_PRESSED", "SDL2 controller's back button",
         [](const VistaSDL2ControllerState* m) { return m->backPressed; }),
-    new SDL2ButtonTranscoder("GUIDE_PRESSED", "SDL2 controller's guide button",
+    new SDL2BoolTranscoder("GUIDE_PRESSED", "SDL2 controller's guide button",
         [](const VistaSDL2ControllerState* m) { return m->guidePressed; }),
-    new SDL2ButtonTranscoder("START_PRESSED", "SDL2 controller's start button",
+    new SDL2BoolTranscoder("START_PRESSED", "SDL2 controller's start button",
         [](const VistaSDL2ControllerState* m) { return m->startPressed; }),
 
-    new SDL2ButtonTranscoder("MISC1_PRESSED", "SDL2 controller's misc 1 button",
+    new SDL2BoolTranscoder("MISC1_PRESSED", "SDL2 controller's misc 1 button",
         [](const VistaSDL2ControllerState* m) { return m->misc1Pressed; }),
 
-    new SDL2ButtonTranscoder("PADDLE1_PRESSED", "SDL2 controller's paddle 1 button",
+    new SDL2BoolTranscoder("PADDLE1_PRESSED", "SDL2 controller's paddle 1 button",
         [](const VistaSDL2ControllerState* m) { return m->paddle1Pressed; }),
-    new SDL2ButtonTranscoder("PADDLE2_PRESSED", "SDL2 controller's paddle 2 button",
+    new SDL2BoolTranscoder("PADDLE2_PRESSED", "SDL2 controller's paddle 2 button",
         [](const VistaSDL2ControllerState* m) { return m->paddle2Pressed; }),
-    new SDL2ButtonTranscoder("PADDLE3_PRESSED", "SDL2 controller's paddle 3 button",
+    new SDL2BoolTranscoder("PADDLE3_PRESSED", "SDL2 controller's paddle 3 button",
         [](const VistaSDL2ControllerState* m) { return m->paddle3Pressed; }),
-    new SDL2ButtonTranscoder("PADDLE4_PRESSED", "SDL2 controller's paddle 4 button",
+    new SDL2BoolTranscoder("PADDLE4_PRESSED", "SDL2 controller's paddle 4 button",
         [](const VistaSDL2ControllerState* m) { return m->paddle4Pressed; }),
 
-    new SDL2ButtonTranscoder("TOUCHPAD_PRESSED", "SDL2 controller's touchpad button",
+    new SDL2BoolTranscoder("TOUCHPAD_PRESSED", "SDL2 controller's touchpad button",
         [](const VistaSDL2ControllerState* m) { return m->touchpadPressed; }),
 
     new SDL2AxisTranscoder("STICK_LEFT_X", "SDL2 controller's left stick x value",
@@ -153,6 +176,16 @@ IVistaPropertyGetFunctor* SapGetter[] = {
         [](const VistaSDL2ControllerState* m) { return m->triggerLeft; }),
     new SDL2AxisTranscoder("TRIGGER_RIGHT", "SDL2 controller's right trigger value",
         [](const VistaSDL2ControllerState* m) { return m->triggerRight; }),
+
+    new SDL2BoolTranscoder("HAS_ACCEL_SENSOR", "If the controller has an acceleration sensor.",
+        [](const VistaSDL2ControllerState* m) { return m->hasAcceleration; }),
+    new SDL2SensorTranscoder("IMU_ACCELERATION", "The IMU acceleration.",
+        [](const VistaSDL2ControllerState* m) { return VistaVector3D(m->imuAcceleration); }),
+        
+    new SDL2BoolTranscoder("HAS_GYRO_SENSOR", "If the controller has an gyro sensor.",
+        [](const VistaSDL2ControllerState* m) { return m->hasGyro; }),
+    new SDL2SensorTranscoder("IMU_GYRO", "The IMU gyro.",
+        [](const VistaSDL2ControllerState* m) { return VistaVector3D(m->imuGyro); }),
 
     nullptr};
 

@@ -53,5 +53,10 @@
     <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE2_PRESSED"     toport="PADDLE2_PRESSED"/>
     <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE3_PRESSED"     toport="PADDLE3_PRESSED"/>
     <edge fromnode="controller"            tonode="debug_text"                   fromport="PADDLE4_PRESSED"     toport="PADDLE4_PRESSED"/>
+    
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="HAS_ACCEL_SENSOR"    toport="HAS_ACCEL_SENSOR"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="IMU_ACCELERATION"    toport="IMU_ACCELERATION"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="HAS_GYRO_SENSOR"     toport="HAS_GYRO_SENSOR"/>
+    <edge fromnode="controller"            tonode="debug_text"                   fromport="IMU_GYRO"            toport="IMU_GYRO"/>
   </edges>
 </module>
