@@ -40,9 +40,9 @@ Notes on 🟡:
   - While the IMU seems to be working, it is not quite clear if the mapping is correct.
 - PS5 on Linux
   - When using the Controller via Bluetooth some buttons and axis are mapped wrong.
-  - By default the touchpad works like a mouse.
+  - The touchpad is detected as a mouse, not as the controller touchpad.
 - XBox on Windows:
   - The advanced buttons map to A, B, X and Y.
-  - They should be remappable using the XBox-Devices app, to which we don't have access.
+  - They should be re-mappable using the XBox-Devices app, to which we don't have access.
 - XBox on Linux
   - The advanced buttons map to A, B, X and Y.

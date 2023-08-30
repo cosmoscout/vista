@@ -20,32 +20,32 @@
   <edges>
     <edge fromnode="controller_source" tonode="controller" fromport="history"                toport="history"/>
     <edge fromnode="project_mode"      tonode="controller" fromport="value"                  toport="sampling_mode"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="A_PRESSED"              toport="A_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="B_PRESSED"              toport="B_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="X_PRESSED"              toport="X_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="Y_PRESSED"              toport="Y_PRESSED"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="DPAD_UP_PRESSED"        toport="DPAD_UP_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="DPAD_DOWN_PRESSED"      toport="DPAD_DOWN_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="DPAD_LEFT_PRESSED"      toport="DPAD_LEFT_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="DPAD_RIGHT_PRESSED"     toport="DPAD_RIGHT_PRESSED"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="STICK_LEFT_PRESSED"     toport="STICK_LEFT_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="STICK_RIGHT_PRESSED"    toport="STICK_RIGHT_PRESSED"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="SHOULDER_LEFT_PRESSED"  toport="SHOULDER_LEFT_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="SHOULDER_RIGHT_PRESSED" toport="SHOULDER_RIGHT_PRESSED"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="START_PRESSED"          toport="START_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="BACK_PRESSED"           toport="BACK_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="GUIDE_PRESSED"          toport="GUIDE_PRESSED"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="STICK_LEFT_X"           toport="STICK_LEFT_X"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="STICK_LEFT_Y"           toport="STICK_LEFT_Y"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="STICK_RIGHT_X"          toport="STICK_RIGHT_X"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="STICK_RIGHT_Y"          toport="STICK_RIGHT_Y"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="TRIGGER_LEFT"           toport="TRIGGER_LEFT"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="TRIGGER_RIGHT"          toport="TRIGGER_RIGHT"/>
 
@@ -53,16 +53,18 @@
     <edge fromnode="controller"        tonode="debug_text" fromport="PADDLE2_PRESSED"        toport="PADDLE2_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="PADDLE3_PRESSED"        toport="PADDLE3_PRESSED"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="PADDLE4_PRESSED"        toport="PADDLE4_PRESSED"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="HAS_ACCEL_SENSOR"       toport="HAS_ACCEL_SENSOR"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="IMU_ACCELERATION"       toport="IMU_ACCELERATION"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="HAS_GYRO_SENSOR"        toport="HAS_GYRO_SENSOR"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="IMU_GYRO"               toport="IMU_GYRO"/>
-    
+
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_PRESSED"       toport="TOUCHPAD_PRESSED"/>
+
     <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_1_DOWN" toport="TOUCHPAD_FINGER_1_DOWN"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_1_X"    toport="TOUCHPAD_FINGER_1_X"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_1_Y"    toport="TOUCHPAD_FINGER_1_Y"/>
-    
+
     <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_2_DOWN" toport="TOUCHPAD_FINGER_2_DOWN"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_2_X"    toport="TOUCHPAD_FINGER_2_X"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_2_Y"    toport="TOUCHPAD_FINGER_2_Y"/>
