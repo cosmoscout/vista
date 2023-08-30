@@ -28,7 +28,7 @@ The controllers sadly have a different feature set depending on OS and connectio
 |------------------|:-------:|:-----:|
 | **_PS5_**        | 🔌 📡  | 🔌 📡 |
 | Standard Buttons | ✅ ✅  | ✅ 🟡|
-| Touchpad         |         | 🟡 🟡|
+| Touchpad         | ✅ ✅  | 🟡 🟡|
 | IMU              | 🟡 🟡  | ❌ ❌|
 | Advanced Buttons | ✅ ✅  | ❌ ❌|
 | **_XBox_**       | 🔌 📡  | 🔌 📡 |

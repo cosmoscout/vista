@@ -64,6 +64,14 @@ struct VistaSDL2ControllerState {
   float imuAcceleration[3] = {0.0F, 0.0F, 0.0F}; // SDL_CONTROLLERSENSORUPDATE
   bool  hasGyro            = false;
   float imuGyro[3]         = {0.0F, 0.0F, 0.0F}; // SDL_CONTROLLERSENSORUPDATE
+  
+  bool  touchpadFinger1Down = false;             // SDL_CONTROLLERTOUCHPADDOWN, SDL_CONTROLLERTOUCHPADUP
+  float touchpadFinger1X    = 0.0F;              // SDL_CONTROLLERTOUCHPADMOTION
+  float touchpadFinger1Y    = 0.0F;              // SDL_CONTROLLERTOUCHPADMOTION
+
+  bool  touchpadFinger2Down = false;             // SDL_CONTROLLERTOUCHPADDOWN, SDL_CONTROLLERTOUCHPADUP
+  float touchpadFinger2X    = 0.0F;              // SDL_CONTROLLERTOUCHPADMOTION
+  float touchpadFinger2Y    = 0.0F;              // SDL_CONTROLLERTOUCHPADMOTION
 };
 
 #endif //__VISTASDL2CONTROLLERSENSORMEASURES_H

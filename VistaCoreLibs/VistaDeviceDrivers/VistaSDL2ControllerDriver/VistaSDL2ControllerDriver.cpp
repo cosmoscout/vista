@@ -111,6 +111,24 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
       m_sensorEvents.push_back(e.csensor);
     }
   });
+
+  m_touchpadDownListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERTOUCHPADDOWN, [this] (SDL_Event e) {
+    if (m_currentController == SDL_GameControllerFromInstanceID(e.csensor.which)) {
+      m_touchpadEvents.push_back(e.ctouchpad);
+    }
+  });
+
+  m_touchpadUpListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERTOUCHPADUP, [this] (SDL_Event e) {
+    if (m_currentController == SDL_GameControllerFromInstanceID(e.csensor.which)) {
+      m_touchpadEvents.push_back(e.ctouchpad);
+    }
+  });
+
+  m_touchpadMotionListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERTOUCHPADMOTION, [this] (SDL_Event e) {
+    if (m_currentController == SDL_GameControllerFromInstanceID(e.csensor.which)) {
+      m_touchpadEvents.push_back(e.ctouchpad);
+    }
+  });
 }
 
 VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
@@ -273,6 +291,43 @@ bool VistaSDL2ControllerDriver::DoSensorUpdate(VistaType::microtime dTs) {
     }
 
     m_sensorEvents.pop_front();
+  }
+  
+  while (!m_touchpadEvents.empty()) {
+    SDL_ControllerTouchpadEvent e = m_touchpadEvents.front();
+    switch (e.type) {
+      case SDL_CONTROLLERTOUCHPADDOWN:
+        vstr::outi() << "finger " << e.finger << " down" << std::endl;
+        if (e.finger == 0) {
+          m_currentState.touchpadFinger1Down = true;
+          m_currentState.touchpadFinger1X    = e.x;
+          m_currentState.touchpadFinger1Y    = e.y;
+        } else if (e.finger == 1) {
+          m_currentState.touchpadFinger2Down = true;
+          m_currentState.touchpadFinger2X    = e.x;
+          m_currentState.touchpadFinger2Y    = e.y;
+        }
+        break;
+      case SDL_CONTROLLERTOUCHPADUP:
+        vstr::outi() << "finger " << e.finger << " up" << std::endl;
+        if (e.finger == 0) {
+          m_currentState.touchpadFinger1Down = false;
+        } else if (e.finger == 1) {
+          m_currentState.touchpadFinger2Down = false;
+        }
+        break;
+      case SDL_CONTROLLERTOUCHPADMOTION:
+        if (e.finger == 0) {
+          m_currentState.touchpadFinger1X    = e.x;
+          m_currentState.touchpadFinger1Y    = e.y;
+        } else if (e.finger == 1) {
+          m_currentState.touchpadFinger2X    = e.x;
+          m_currentState.touchpadFinger2Y    = e.y;
+        }
+        break;
+    }
+
+    m_touchpadEvents.pop_front();
   }
 
   *state = m_currentState;

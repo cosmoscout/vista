@@ -58,5 +58,13 @@
     <edge fromnode="controller"        tonode="debug_text" fromport="IMU_ACCELERATION"       toport="IMU_ACCELERATION"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="HAS_GYRO_SENSOR"        toport="HAS_GYRO_SENSOR"/>
     <edge fromnode="controller"        tonode="debug_text" fromport="IMU_GYRO"               toport="IMU_GYRO"/>
+    
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_1_DOWN" toport="TOUCHPAD_FINGER_1_DOWN"/>
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_1_X"    toport="TOUCHPAD_FINGER_1_X"/>
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_1_Y"    toport="TOUCHPAD_FINGER_1_Y"/>
+    
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_2_DOWN" toport="TOUCHPAD_FINGER_2_DOWN"/>
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_2_X"    toport="TOUCHPAD_FINGER_2_X"/>
+    <edge fromnode="controller"        tonode="debug_text" fromport="TOUCHPAD_FINGER_2_Y"    toport="TOUCHPAD_FINGER_2_Y"/>
   </edges>
 </module>

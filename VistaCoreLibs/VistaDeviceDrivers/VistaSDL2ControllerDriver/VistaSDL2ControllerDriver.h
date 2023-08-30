@@ -57,9 +57,10 @@ class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDevi
   
   SDL_GameController* m_currentController;
   
-  std::deque<SDL_ControllerButtonEvent> m_buttonEvents;
-  std::deque<SDL_ControllerAxisEvent>   m_axisEvents;
-  std::deque<SDL_ControllerSensorEvent> m_sensorEvents;
+  std::deque<SDL_ControllerButtonEvent>   m_buttonEvents;
+  std::deque<SDL_ControllerAxisEvent>     m_axisEvents;
+  std::deque<SDL_ControllerSensorEvent>   m_sensorEvents;
+  std::deque<SDL_ControllerTouchpadEvent> m_touchpadEvents;
 
   size_t m_addControllerListener;
   size_t m_removeControllerListener;
@@ -67,6 +68,9 @@ class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDevi
   size_t m_buttonUpListener;
   size_t m_axisListener;
   size_t m_sensorListener;
+  size_t m_touchpadDownListener;
+  size_t m_touchpadUpListener;
+  size_t m_touchpadMotionListener;
 
   VistaSDL2ControllerState m_currentState;
 
