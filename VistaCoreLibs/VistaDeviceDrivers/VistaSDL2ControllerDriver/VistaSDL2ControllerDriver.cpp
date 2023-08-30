@@ -136,6 +136,9 @@ VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
     SDL_GameControllerClose(m_currentController);
   }
 
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADMOTION, m_touchpadMotionListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADUP, m_touchpadUpListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADDOWN, m_touchpadDownListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERSENSORUPDATE, m_sensorListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
