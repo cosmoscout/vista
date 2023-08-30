@@ -68,7 +68,11 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
   m_addControllerListener = m_sdl2Toolkit->RegisterEventCallback(SDL_CONTROLLERDEVICEADDED, [this] (SDL_Event e) {
     if (!m_currentController) {
       m_currentController = SDL_GameControllerOpen(e.cdevice.which);
-      vstr::outi() << "[VistaSDL2ControllerDriver] Controller connected: " << SDL_GameControllerName(m_currentController) << std::endl;
+      SDL_Joystick* js = SDL_GameControllerGetJoystick(m_currentController);
+      SDL_JoystickGUID guid = SDL_JoystickGetGUID(js);
+      char serial[1024];
+      SDL_JoystickGetGUIDString(guid, serial, sizeof(serial));
+      vstr::outi() << "[VistaSDL2ControllerDriver] Controller connected: " << SDL_GameControllerName(m_currentController) << " (" << serial << ")" << std::endl;
 
       SDL_GameControllerSetSensorEnabled(m_currentController, SDL_SENSOR_ACCEL, SDL_TRUE);
       m_currentState.hasAcceleration = SDL_GameControllerHasSensor(m_currentController, SDL_SENSOR_ACCEL);
