@@ -27,7 +27,7 @@ The controllers sadly have a different feature set depending on OS and connectio
 | Controller       | Windows | Linux |
 |------------------|:-------:|:-----:|
 | **_PS5_**        | 🔌 📡  | 🔌 📡 |
-| Standard Buttons | ✅ ✅  | ✅ 🟡|
+| Standard Buttons | ✅ ✅  | ✅ ✅|
 | Touchpad         | ✅ ✅  | 🟡 🟡|
 | IMU              | 🟡 🟡  | ❌ ❌|
 | Advanced Buttons | ✅ ✅  | ❌ ❌|
@@ -39,7 +39,6 @@ Notes on 🟡:
 - PS5 on Windows
   - While the IMU seems to be working, it is not quite clear if the mapping is correct.
 - PS5 on Linux
-  - When using the Controller via Bluetooth some buttons and axis are mapped wrong.
   - The touchpad is detected as a mouse, not as the controller touchpad.
 - XBox on Windows:
   - The advanced buttons map to A, B, X and Y.
