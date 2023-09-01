@@ -9,7 +9,7 @@ if( VISTACORELIBS_BUILD_WINDOWIMP_OSG )
 endif()
 if( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
     vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_SDL2MOUSE			VistaSDL2MouseDriver			ON	ADVANCED)
-	vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_SDL2KEYBOARD			VistaSDL2KeyboardDriver			ON	ADVANCED)
+	vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_SDL2RAWKEYBOARD		VistaSDL2RawKeyboardDriver		ON	ADVANCED)
 	vista_conditional_add_subdirectory( VISTADRIVERS_BUILD_SDL2CONTROLLER		VistaSDL2ControllerDriver		ON	ADVANCED)
 endif()
 

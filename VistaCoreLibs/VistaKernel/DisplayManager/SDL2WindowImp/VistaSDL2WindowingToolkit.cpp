@@ -189,11 +189,6 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
   SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE, "1");
   SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE, "1");
 
-  SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_XBOX, "1");
-  SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_XBOX_360, "1");
-  SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_WIRELESS, "1");
-  SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE, "1");
-
   if (TTF_Init() != 0) {
     vstr::warni() << "TTF Error: " << TTF_GetError() << std::endl;
     vstr::warni() << "SDL2 init of the TTF library failed - Quitting Vista" << std::endl;
