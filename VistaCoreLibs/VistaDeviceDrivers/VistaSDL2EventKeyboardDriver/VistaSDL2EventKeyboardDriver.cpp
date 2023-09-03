@@ -166,6 +166,11 @@ int GetVistaModifiers(SDL_Keymod mod) {
   return modifiers;
 }
 
+bool isModifier(SDL_Scancode key) {
+  return key == SDL_SCANCODE_LCTRL  || key == SDL_SCANCODE_RCTRL
+      || key == SDL_SCANCODE_LALT   || key == SDL_SCANCODE_RALT
+      || key == SDL_SCANCODE_LSHIFT || key == SDL_SCANCODE_RSHIFT;
+}
 
 VistaSDL2EventKeyboardDriver::VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod* crm)
     : IVistaKeyboardDriver(crm)
@@ -195,7 +200,7 @@ bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {
   while (!m_keyEvents.empty()) {
     SDL_KeyboardEvent e = m_keyEvents.front();
     int key = SDLKeyToVistaKey(e.keysym.scancode);
-    int modifiers = GetVistaModifiers(static_cast<SDL_Keymod>(e.keysym.mod));
+    int modifiers = isModifier(e.keysym.scancode) ? VISTA_KEYMOD_NONE : GetVistaModifiers(static_cast<SDL_Keymod>(e.keysym.mod));
     
     switch (e.type) {
     case SDL_KEYDOWN:
