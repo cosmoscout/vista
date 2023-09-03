@@ -151,15 +151,15 @@ int VistaSDL2EventKeyboardDriver::SDLKeyToVistaKey(int key) {
 int GetVistaModifiers(SDL_Keymod mod) {
   int modifiers = VISTA_KEYMOD_NONE;
 
-  if (mod | KMOD_LCTRL || mod | KMOD_RCTRL) {
+  if (mod & KMOD_LCTRL || mod & KMOD_RCTRL) {
     modifiers |= VISTA_KEYMOD_CTRL;
   }
   
-  if (mod | KMOD_LALT || mod | KMOD_RALT) {
+  if (mod & KMOD_LALT || mod & KMOD_RALT) {
     modifiers |= VISTA_KEYMOD_ALT;
   }
   
-  if (mod | KMOD_LSHIFT || mod | KMOD_RSHIFT) {
+  if (mod & KMOD_LSHIFT || mod & KMOD_RSHIFT) {
     modifiers |= VISTA_KEYMOD_SHIFT;
   }
 
