@@ -175,6 +175,7 @@ bool isModifier(SDL_Scancode key) {
 VistaSDL2EventKeyboardDriver::VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod* crm)
     : IVistaKeyboardDriver(crm)
     , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
+    , m_lastFrameValue(false)
     , m_connected(false) {
 
   m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYDOWN, [this](SDL_Event e) {
@@ -197,6 +198,19 @@ bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
+  if (m_keyEvents.empty()) {
+    if (m_lastFrameValue) {
+      m_lastFrameValue = false;
+
+      MeasureStart(dTs);
+      UpdateKey(0, 0);
+      MeasureStop();
+
+      return true;
+    }
+    return false;
+  }
+
   while (!m_keyEvents.empty()) {
     SDL_KeyboardEvent e = m_keyEvents.front();
     int key = SDLKeyToVistaKey(e.keysym.scancode);
@@ -213,6 +227,7 @@ bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {
       MeasureStart(dTs);
       UpdateKey(-key, modifiers);
       MeasureStop();
+      m_lastFrameValue = true;
       break;
     }
 

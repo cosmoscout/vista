@@ -60,7 +60,9 @@ class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVis
   size_t m_keyDownListener;
   size_t m_keyUpListener;
 
-  bool               m_connected;
+  bool m_lastFrameValue;
+
+  bool m_connected;
 };
 
 class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod
