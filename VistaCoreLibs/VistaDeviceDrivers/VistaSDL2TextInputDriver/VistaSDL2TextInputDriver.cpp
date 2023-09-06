@@ -204,8 +204,20 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
     m_keyEvents.pop_front();
   }
 
+  for (Uint8 key : m_pressedKeys) {
+    if (key < 0 || key > keyboardSize - 1 || !keyboard[key]) {
+      m_pressedKeys.erase(key);
+      MeasureStart(dTs);
+      UpdateKey(-key, modifiers);
+      MeasureStop();
+      m_lastFrameValue = true;
+    }
+  }
+
   while (!m_textEvents.empty()) {
     SDL_TextInputEvent e = m_textEvents.front();
+
+    m_pressedKeys.insert(e.text[0]);
 
     MeasureStart(dTs);
     UpdateKey(e.text[0], modifiers);

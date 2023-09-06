@@ -55,6 +55,8 @@ class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboa
   std::deque<SDL_TextInputEvent> m_textEvents;
   std::deque<SDL_KeyboardEvent>  m_keyEvents;
 
+  std::set<Uint8> m_pressedKeys;
+
   size_t m_keyTextListener;
   size_t m_keyDownListener;
   size_t m_keyUpListener;
