@@ -39,6 +39,10 @@
 #define VISTASDL2EVENTKEYBOARDDRIVERAPI
 #endif
 
+/**
+ * The EventKeyboardDriver uses SDL2's event system to receive keyboard updates. For more
+ * information, see https://wiki.libsdl.org/SDL2/SDL_KeyboardEvent.
+ */
 class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVistaKeyboardDriver {
  public:
   explicit VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);

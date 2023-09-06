@@ -22,12 +22,9 @@
 #include "VistaKernel/VistaSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_scancode.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
-#include <cstring>
-#include <map>
 #include <array>
 
 VistaSDL2EventKeyboardDriverCreationMethod::VistaSDL2EventKeyboardDriverCreationMethod(
@@ -41,6 +38,10 @@ IVistaDeviceDriver* VistaSDL2EventKeyboardDriverCreationMethod::CreateDriver() {
   return new VistaSDL2EventKeyboardDriver(this);
 }
 
+/**
+ * Converts an SDL key to a Vista compatible key. For special keys a translation of the scancode is
+ * being done, otherwise the keycode is being returned.
+ */
 int SDLKeyToVistaKey(int key, SDL_Keycode code) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE:
@@ -108,6 +109,9 @@ int SDLKeyToVistaKey(int key, SDL_Keycode code) {
   }
 }
 
+/**
+ * Translates SDL_Keymod to a Vista compatible integer.
+ */
 int GetVistaModifiers(SDL_Keymod mod) {
   int modifiers = VISTA_KEYMOD_NONE;
 
@@ -150,6 +154,8 @@ bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
+  // If no new key was registered, but last frame a key was released, we want to follow that up with
+  // a single 0 in the history.
   if (m_keyEvents.empty()) {
     if (m_lastFrameValue) {
       m_lastFrameValue = false;
@@ -163,6 +169,7 @@ bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return false;
   }
 
+  // Go through all collected key events and handle them accordingly,
   while (!m_keyEvents.empty()) {
     SDL_KeyboardEvent e         = m_keyEvents.front();
     int               key       = SDLKeyToVistaKey(e.keysym.scancode, e.keysym.sym);

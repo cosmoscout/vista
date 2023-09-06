@@ -21,14 +21,9 @@
 #include "VistaSDL2TextInputDriver.h"
 #include "VistaKernel/VistaSystem.h"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_scancode.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
-#include <algorithm>
-#include <cstring>
-#include <map>
 #include <array>
 
 VistaSDL2TextInputDriverCreationMethod::VistaSDL2TextInputDriverCreationMethod(
@@ -42,6 +37,10 @@ IVistaDeviceDriver* VistaSDL2TextInputDriverCreationMethod::CreateDriver() {
   return new VistaSDL2TextInputDriver(this);
 }
 
+/**
+ * Converts an SDL special key to a Vista compatible key. For special keys a translation of the
+ * scancode is being done, otherwise a 0 being returned.
+ */
 int SDLKeyToVistaKey(int key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE:
@@ -109,6 +108,9 @@ int SDLKeyToVistaKey(int key) {
   }
 }
 
+/**
+ * Checks the keyboard for pressed modifiers and returns a Vista compatible integer.
+ */
 int GetVistaModifiers(const Uint8* keyboard) {
   int modifiers = VISTA_KEYMOD_NONE;
 
@@ -155,9 +157,12 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
+  // Get the keyboard state. It is used for checking the modifiers and if previously pressed keys
+  // have been released.
   int          keyboardSize = 0;
   const Uint8* keyboard     = SDL_GetKeyboardState(&keyboardSize);
 
+  // If last frame a key was released, we want to add a 0 to the history.
   if (m_keyEvents.empty() && m_textEvents.empty()) {
     if (m_lastFrameValue) {
       m_lastFrameValue = false;
@@ -173,6 +178,7 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
 
   int modifiers = GetVistaModifiers(keyboard);
 
+  // First we go through the key events to update special keys. Characters are being ignored here.
   while (!m_keyEvents.empty()) {
     SDL_KeyboardEvent e   = m_keyEvents.front();
     int               key = SDLKeyToVistaKey(e.keysym.scancode);
@@ -198,6 +204,7 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
     m_keyEvents.pop_front();
   }
 
+  // Now we check all previously pressed character keys, if they were released, using the keyboard.
   for (Uint8 key : m_pressedKeys) {
     if (key < 0 || key > keyboardSize - 1 || !keyboard[key]) {
       m_pressedKeys.erase(key);
@@ -208,6 +215,7 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
     }
   }
 
+  // At last we update the newly pressed characters by going through all text input events.
   while (!m_textEvents.empty()) {
     SDL_TextInputEvent e = m_textEvents.front();
 

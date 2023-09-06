@@ -19,15 +19,9 @@
 /*============================================================================*/
 
 #include "VistaSDL2RawKeyboardDriver.h"
-#include "VistaBase/VistaStreamUtils.h"
-#include "VistaKernel/VistaSystem.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_scancode.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <cstring>
-#include <map>
 #include <array>
 
 #include <SDL2/SDL_keyboard.h>
@@ -155,6 +149,9 @@ int VistaSDL2RawKeyboardDriver::SDLKeyToVistaKey(int key) {
   return upModifier * result;
 }
 
+/**
+ * Checks the keyboard for pressed modifiers and returns a Vista compatible integer.
+ */
 int GetVistaModifiers(const Uint8* keyboard) {
   int modifiers = VISTA_KEYMOD_NONE;
 

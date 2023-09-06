@@ -38,6 +38,11 @@
 #define VISTASDL2RAWKEYBOARDDRIVERAPI
 #endif
 
+/**
+ * The RawKeyboardDriver uses SDL2's keyboard state to manage updates. It isn't dependent on the
+ * SDL2 Windowing Toolkit.
+ * For more information, see https://wiki.libsdl.org/SDL2/SDL_GetKeyboardState.
+ */
 class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriver : public IVistaKeyboardDriver {
  public:
   explicit VistaSDL2RawKeyboardDriver(IVistaDriverCreationMethod*);
@@ -50,6 +55,10 @@ class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriver : public IVistaKe
   bool DoDisconnect() final;
 
  private:
+  /**
+   * Converts an SDL key to a Vista compatible key. For special keys a translation of the scancode
+   * is being done, otherwise the keycode is being returned.
+   */
   int SDLKeyToVistaKey(int key);
 
   std::vector<Uint8> m_currentKeyboardState;
