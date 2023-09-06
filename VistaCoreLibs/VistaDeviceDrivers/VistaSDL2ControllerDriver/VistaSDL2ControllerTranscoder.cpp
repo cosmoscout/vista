@@ -181,7 +181,7 @@ IVistaPropertyGetFunctor* SapGetter[] = {
         [](const VistaSDL2ControllerState* m) { return m->hasAcceleration; }),
     new SDL2SensorTranscoder("IMU_ACCELERATION", "The IMU acceleration.",
         [](const VistaSDL2ControllerState* m) { return VistaVector3D(m->imuAcceleration); }),
-        
+
     new SDL2BoolTranscoder("HAS_GYRO_SENSOR", "If the controller has an gyro sensor.",
         [](const VistaSDL2ControllerState* m) { return m->hasGyro; }),
     new SDL2SensorTranscoder("IMU_GYRO", "The IMU gyro.",
@@ -194,7 +194,6 @@ IVistaPropertyGetFunctor* SapGetter[] = {
     new SDL2AxisTranscoder("TOUCHPAD_FINGER_1_Y", "The y positon of finger one on the touchpad",
         [](const VistaSDL2ControllerState* m) { return m->touchpadFinger1Y; }),
 
-        
     new SDL2BoolTranscoder("TOUCHPAD_FINGER_2_DOWN", "If two fingers are on the touchpad.",
         [](const VistaSDL2ControllerState* m) { return m->touchpadFinger2Down; }),
     new SDL2AxisTranscoder("TOUCHPAD_FINGER_2_X", "The x positon of finger two on the touchpad",
@@ -202,8 +201,7 @@ IVistaPropertyGetFunctor* SapGetter[] = {
     new SDL2AxisTranscoder("TOUCHPAD_FINGER_2_Y", "The y positon of finger two on the touchpad",
         [](const VistaSDL2ControllerState* m) { return m->touchpadFinger2Y; }),
 
-    nullptr
-};
+    nullptr};
 
 class VistaSDL2ControllerTranscoderFactory : public IVistaMeasureTranscoderFactory {
  public:

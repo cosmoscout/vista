@@ -55,4 +55,3 @@ extern "C" VISTASDL2CONTROLLERPLUGINAPI void DisposeCreationMethod(
 extern "C" VISTASDL2CONTROLLERPLUGINAPI const char* GetDeviceClassName() {
   return "SDL2CONTROLLER";
 }
-

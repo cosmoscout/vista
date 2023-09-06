@@ -40,8 +40,8 @@
 
 class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboardDriver {
  public:
-  VistaSDL2TextInputDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2TextInputDriver();
+  explicit VistaSDL2TextInputDriver(IVistaDriverCreationMethod*);
+  ~VistaSDL2TextInputDriver() override;
 
  protected:
   bool DoSensorUpdate(VistaType::microtime dTs) final;
@@ -69,8 +69,8 @@ class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboa
 class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriverCreationMethod
     : public IVistaDriverCreationMethod {
  public:
-  VistaSDL2TextInputDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
+  explicit VistaSDL2TextInputDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  IVistaDeviceDriver* CreateDriver() override;
 };
 
 #endif // _VISTASDL2TEXTINPUTDRIVER_H

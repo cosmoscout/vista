@@ -33,7 +33,6 @@
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <cmath>
 #include <limits>
-#include <stdint.h>
 
 VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod* crm)
     : IVistaDeviceDriver(crm)

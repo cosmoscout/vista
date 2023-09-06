@@ -19,22 +19,16 @@
 /*============================================================================*/
 
 #include "VistaSDL2EventKeyboardDriver.h"
-#include "VistaBase/VistaStreamUtils.h"
 #include "VistaKernel/VistaSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_scancode.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
-#include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
-#include <algorithm>
 #include <cstring>
 #include <map>
 #include <array>
-
-#include <SDL2/SDL_keyboard.h>
 
 VistaSDL2EventKeyboardDriverCreationMethod::VistaSDL2EventKeyboardDriverCreationMethod(
     IVistaTranscoderFactoryFactory* fac)
@@ -49,68 +43,68 @@ IVistaDeviceDriver* VistaSDL2EventKeyboardDriverCreationMethod::CreateDriver() {
 
 int SDLKeyToVistaKey(int key, SDL_Keycode code) {
   switch (key) {
-    case SDL_SCANCODE_ESCAPE:
-      return VISTA_KEY_ESC;
-    case SDL_SCANCODE_RETURN:
-      return VISTA_KEY_ENTER;
-    case SDL_SCANCODE_BACKSPACE:
-      return VISTA_KEY_BACKSPACE;
-    case SDL_SCANCODE_F1:
-      return VISTA_KEY_F1;
-    case SDL_SCANCODE_F2:
-      return VISTA_KEY_F2;
-    case SDL_SCANCODE_F3:
-      return VISTA_KEY_F3;
-    case SDL_SCANCODE_F4:
-      return VISTA_KEY_F4;
-    case SDL_SCANCODE_F5:
-      return VISTA_KEY_F5;
-    case SDL_SCANCODE_F6:
-      return VISTA_KEY_F6;
-    case SDL_SCANCODE_F7:
-      return VISTA_KEY_F7;
-    case SDL_SCANCODE_F8:
-      return VISTA_KEY_F8;
-    case SDL_SCANCODE_F9:
-      return VISTA_KEY_F9;
-    case SDL_SCANCODE_F10:
-      return VISTA_KEY_F10;
-    case SDL_SCANCODE_F11:
-      return VISTA_KEY_F11;
-    case SDL_SCANCODE_F12:
-      return VISTA_KEY_F12;
-    case SDL_SCANCODE_LEFT:
-      return VISTA_KEY_LEFTARROW;
-    case SDL_SCANCODE_RIGHT:
-      return VISTA_KEY_RIGHTARROW;
-    case SDL_SCANCODE_UP:
-      return VISTA_KEY_UPARROW;
-    case SDL_SCANCODE_DOWN:
-      return VISTA_KEY_DOWNARROW;
-    case SDL_SCANCODE_PAGEUP:
-      return VISTA_KEY_PAGEUP;
-    case SDL_SCANCODE_PAGEDOWN:
-      return VISTA_KEY_PAGEDOWN;
-    case SDL_SCANCODE_HOME:
-      return VISTA_KEY_HOME;
-    case SDL_SCANCODE_END:
-      return VISTA_KEY_END;
-    case SDL_SCANCODE_DELETE:
-      return VISTA_KEY_DELETE;
-    case SDL_SCANCODE_LSHIFT:
-      return VISTA_KEY_SHIFT_LEFT;
-    case SDL_SCANCODE_RSHIFT:
-      return VISTA_KEY_SHIFT_RIGHT;
-    case SDL_SCANCODE_LCTRL:
-      return VISTA_KEY_CTRL_LEFT;
-    case SDL_SCANCODE_RCTRL:
-      return VISTA_KEY_CTRL_RIGHT;
-    case SDL_SCANCODE_LALT:
-      return VISTA_KEY_ALT_LEFT;
-    case SDL_SCANCODE_RALT:
-      return VISTA_KEY_ALT_RIGHT;
-    default:
-      return static_cast<int>(code);
+  case SDL_SCANCODE_ESCAPE:
+    return VISTA_KEY_ESC;
+  case SDL_SCANCODE_RETURN:
+    return VISTA_KEY_ENTER;
+  case SDL_SCANCODE_BACKSPACE:
+    return VISTA_KEY_BACKSPACE;
+  case SDL_SCANCODE_F1:
+    return VISTA_KEY_F1;
+  case SDL_SCANCODE_F2:
+    return VISTA_KEY_F2;
+  case SDL_SCANCODE_F3:
+    return VISTA_KEY_F3;
+  case SDL_SCANCODE_F4:
+    return VISTA_KEY_F4;
+  case SDL_SCANCODE_F5:
+    return VISTA_KEY_F5;
+  case SDL_SCANCODE_F6:
+    return VISTA_KEY_F6;
+  case SDL_SCANCODE_F7:
+    return VISTA_KEY_F7;
+  case SDL_SCANCODE_F8:
+    return VISTA_KEY_F8;
+  case SDL_SCANCODE_F9:
+    return VISTA_KEY_F9;
+  case SDL_SCANCODE_F10:
+    return VISTA_KEY_F10;
+  case SDL_SCANCODE_F11:
+    return VISTA_KEY_F11;
+  case SDL_SCANCODE_F12:
+    return VISTA_KEY_F12;
+  case SDL_SCANCODE_LEFT:
+    return VISTA_KEY_LEFTARROW;
+  case SDL_SCANCODE_RIGHT:
+    return VISTA_KEY_RIGHTARROW;
+  case SDL_SCANCODE_UP:
+    return VISTA_KEY_UPARROW;
+  case SDL_SCANCODE_DOWN:
+    return VISTA_KEY_DOWNARROW;
+  case SDL_SCANCODE_PAGEUP:
+    return VISTA_KEY_PAGEUP;
+  case SDL_SCANCODE_PAGEDOWN:
+    return VISTA_KEY_PAGEDOWN;
+  case SDL_SCANCODE_HOME:
+    return VISTA_KEY_HOME;
+  case SDL_SCANCODE_END:
+    return VISTA_KEY_END;
+  case SDL_SCANCODE_DELETE:
+    return VISTA_KEY_DELETE;
+  case SDL_SCANCODE_LSHIFT:
+    return VISTA_KEY_SHIFT_LEFT;
+  case SDL_SCANCODE_RSHIFT:
+    return VISTA_KEY_SHIFT_RIGHT;
+  case SDL_SCANCODE_LCTRL:
+    return VISTA_KEY_CTRL_LEFT;
+  case SDL_SCANCODE_RCTRL:
+    return VISTA_KEY_CTRL_RIGHT;
+  case SDL_SCANCODE_LALT:
+    return VISTA_KEY_ALT_LEFT;
+  case SDL_SCANCODE_RALT:
+    return VISTA_KEY_ALT_RIGHT;
+  default:
+    return static_cast<int>(code);
   }
 }
 
@@ -120,11 +114,11 @@ int GetVistaModifiers(SDL_Keymod mod) {
   if (mod & KMOD_LCTRL || mod & KMOD_RCTRL) {
     modifiers |= VISTA_KEYMOD_CTRL;
   }
-  
+
   if (mod & KMOD_LALT || mod & KMOD_RALT) {
     modifiers |= VISTA_KEYMOD_ALT;
   }
-  
+
   if (mod & KMOD_LSHIFT || mod & KMOD_RSHIFT) {
     modifiers |= VISTA_KEYMOD_SHIFT;
   }
@@ -134,17 +128,16 @@ int GetVistaModifiers(SDL_Keymod mod) {
 
 VistaSDL2EventKeyboardDriver::VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod* crm)
     : IVistaKeyboardDriver(crm)
-    , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
+    , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(
+          GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
     , m_lastFrameValue(false)
     , m_connected(false) {
 
-  m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYDOWN, [this](SDL_Event e) {
-    m_keyEvents.push_back(e.key);
-  });
-  
-  m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYUP, [this](SDL_Event e) {
-    m_keyEvents.push_back(e.key);
-  });
+  m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_KEYDOWN, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
+
+  m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_KEYUP, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
 }
 
 VistaSDL2EventKeyboardDriver::~VistaSDL2EventKeyboardDriver() {
@@ -171,17 +164,17 @@ bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {
   }
 
   while (!m_keyEvents.empty()) {
-    SDL_KeyboardEvent e = m_keyEvents.front();
-    int key = SDLKeyToVistaKey(e.keysym.scancode, e.keysym.sym);
-    int modifiers = GetVistaModifiers(static_cast<SDL_Keymod>(e.keysym.mod));
-    
+    SDL_KeyboardEvent e         = m_keyEvents.front();
+    int               key       = SDLKeyToVistaKey(e.keysym.scancode, e.keysym.sym);
+    int               modifiers = GetVistaModifiers(static_cast<SDL_Keymod>(e.keysym.mod));
+
     switch (e.type) {
     case SDL_KEYDOWN:
       MeasureStart(dTs);
       UpdateKey(key, modifiers);
       MeasureStop();
       break;
-    
+
     case SDL_KEYUP:
       MeasureStart(dTs);
       UpdateKey(-key, modifiers);
@@ -205,4 +198,3 @@ bool VistaSDL2EventKeyboardDriver::DoDisconnect() {
   m_connected = false;
   return true;
 }
-

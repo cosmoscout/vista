@@ -39,24 +39,23 @@
 #define VISTASDL2CONTROLLERAPI
 #endif
 
-
 class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDeviceDriver {
 
  public:
-  VistaSDL2ControllerDriver(IVistaDriverCreationMethod* crm);
-  ~VistaSDL2ControllerDriver();
+  explicit VistaSDL2ControllerDriver(IVistaDriverCreationMethod* crm);
+  ~VistaSDL2ControllerDriver() override;
 
  protected:
-  bool DoSensorUpdate(VistaType::microtime dTs);
+  bool DoSensorUpdate(VistaType::microtime dTs) override;
 
-  bool DoConnect();
-  bool DoDisconnect();
+  bool DoConnect() override;
+  bool DoDisconnect() override;
 
  private:
   VistaSDL2WindowingToolkit* m_sdl2Toolkit;
-  
+
   SDL_GameController* m_currentController;
-  
+
   std::deque<SDL_ControllerButtonEvent>   m_buttonEvents;
   std::deque<SDL_ControllerAxisEvent>     m_axisEvents;
   std::deque<SDL_ControllerSensorEvent>   m_sensorEvents;
@@ -74,21 +73,21 @@ class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDevi
 
   VistaSDL2ControllerState m_currentState;
 
-  bool  m_connected;
+  bool m_connected;
 };
 
 class VISTASDL2CONTROLLERAPI VistaSDL2ControllerCreationMethod : public IVistaDriverCreationMethod {
  public:
-  VistaSDL2ControllerCreationMethod(IVistaTranscoderFactoryFactory* fac)
+  explicit VistaSDL2ControllerCreationMethod(IVistaTranscoderFactoryFactory* fac)
       : IVistaDriverCreationMethod(fac) {
     RegisterSensorType("", sizeof(VistaSDL2ControllerState), 120, fac->CreateFactoryForType(""));
   }
 
-  ~VistaSDL2ControllerCreationMethod() {
+  ~VistaSDL2ControllerCreationMethod() override {
     UnregisterType("", false);
   }
 
-  virtual IVistaDeviceDriver* CreateDriver() {
+  IVistaDeviceDriver* CreateDriver() override {
     return new VistaSDL2ControllerDriver(this);
   }
 };

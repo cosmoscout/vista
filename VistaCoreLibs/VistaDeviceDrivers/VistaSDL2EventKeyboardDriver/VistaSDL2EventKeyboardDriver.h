@@ -41,8 +41,8 @@
 
 class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVistaKeyboardDriver {
  public:
-  VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2EventKeyboardDriver();
+  explicit VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);
+  ~VistaSDL2EventKeyboardDriver() override;
 
  protected:
   bool DoSensorUpdate(VistaType::microtime dTs) final;
@@ -66,8 +66,8 @@ class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVis
 class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod
     : public IVistaDriverCreationMethod {
  public:
-  VistaSDL2EventKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
+  explicit VistaSDL2EventKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  IVistaDeviceDriver* CreateDriver() override;
 };
 
 #endif // _VISTASDL2EVENTKEYBOARDDRIVER_H

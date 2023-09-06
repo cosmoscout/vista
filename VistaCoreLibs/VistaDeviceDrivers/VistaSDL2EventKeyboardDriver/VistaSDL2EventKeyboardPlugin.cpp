@@ -60,7 +60,8 @@ extern "C" VISTASDL2EVENTKEYBOARDPLUGINAPI IVistaDriverCreationMethod* GetCreati
   return SpFactory;
 }
 
-extern "C" VISTASDL2EVENTKEYBOARDPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+extern "C" VISTASDL2EVENTKEYBOARDPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
   if (crm == SpFactory)
     if (IVistaReferenceCountable::refdown(SpFactory))
       SpFactory = nullptr;

@@ -40,8 +40,8 @@
 
 class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriver : public IVistaKeyboardDriver {
  public:
-  VistaSDL2RawKeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2RawKeyboardDriver();
+  explicit VistaSDL2RawKeyboardDriver(IVistaDriverCreationMethod*);
+  ~VistaSDL2RawKeyboardDriver() override;
 
  protected:
   bool DoSensorUpdate(VistaType::microtime dTs) final;
@@ -61,8 +61,8 @@ class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriver : public IVistaKe
 class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriverCreationMethod
     : public IVistaDriverCreationMethod {
  public:
-  VistaSDL2RawKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
+  explicit VistaSDL2RawKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  IVistaDeviceDriver* CreateDriver() override;
 };
 
 #endif // _VISTASDL2RAWKEYBOARDDRIVER_H

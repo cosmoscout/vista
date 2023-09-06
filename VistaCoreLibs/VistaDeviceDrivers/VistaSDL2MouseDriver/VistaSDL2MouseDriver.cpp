@@ -49,7 +49,8 @@ IVistaDeviceDriver* VistaSDL2MouseDriverCreationMethod::CreateDriver() {
 VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     : IVistaMouseDriver(crm)
     , m_mouseSensor(new VistaDeviceSensor)
-    , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
+    , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(
+          GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
     , m_x(0)
     , m_y(0)
     , m_lmb(0)
@@ -60,25 +61,22 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
     , m_connected(false) {
 
   if (!m_sdl2Toolkit) {
-    vstr::errp() << "[VistaSDL2MouseDriver] Can't initialize without SDL2 windowing toolkit!" << std::endl;
+    vstr::errp() << "[VistaSDL2MouseDriver] Can't initialize without SDL2 windowing toolkit!"
+                 << std::endl;
     GetVistaSystem()->Quit();
   }
 
-  m_motionEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEMOTION, [this] (SDL_Event event) {
-    m_motionEvents.push_back(event.motion);
-  });
-  
-  m_buttonDownEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEBUTTONDOWN, [this] (SDL_Event event) {
-    m_buttonEvents.push_back(event.button);
-  });
-  
-  m_buttonUpEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEBUTTONUP, [this] (SDL_Event event) {
-    m_buttonEvents.push_back(event.button);
-  });
-  
-  m_wheelEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEWHEEL, [this] (SDL_Event event) {
-    m_wheelEvents.push_back(event.wheel);
-  });
+  m_motionEventListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_MOUSEMOTION, [this](SDL_Event event) { m_motionEvents.push_back(event.motion); });
+
+  m_buttonDownEventListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_MOUSEBUTTONDOWN, [this](SDL_Event event) { m_buttonEvents.push_back(event.button); });
+
+  m_buttonUpEventListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_MOUSEBUTTONUP, [this](SDL_Event event) { m_buttonEvents.push_back(event.button); });
+
+  m_wheelEventListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_MOUSEWHEEL, [this](SDL_Event event) { m_wheelEvents.push_back(event.wheel); });
 
   AddDeviceSensor(m_mouseSensor, 0);
 }
@@ -90,7 +88,7 @@ VistaSDL2MouseDriver::~VistaSDL2MouseDriver() {
   m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONUP, m_buttonUpEventListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEWHEEL, m_wheelEventListener);
-  
+
   delete m_mouseSensor;
 }
 
@@ -102,24 +100,26 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
   // Just get the latest position and discard all others.
   if (!m_motionEvents.empty()) {
     SDL_MouseMotionEvent e = m_motionEvents.back();
+
     m_x = e.x;
     m_y = e.y;
+
     m_motionEvents.clear();
   }
 
   while (!m_buttonEvents.empty()) {
     SDL_MouseButtonEvent e = m_buttonEvents.front();
-    
+
     switch (e.button) {
-      case SDL_BUTTON_LEFT:
-        m_lmb = e.state;
-        break;
-      case SDL_BUTTON_MIDDLE:
-        m_mmb = e.state;
-        break;
-      case SDL_BUTTON_RIGHT:
-        m_rmb = e.state;
-        break;
+    case SDL_BUTTON_LEFT:
+      m_lmb = e.state;
+      break;
+    case SDL_BUTTON_MIDDLE:
+      m_mmb = e.state;
+      break;
+    case SDL_BUTTON_RIGHT:
+      m_rmb = e.state;
+      break;
     }
 
     m_buttonEvents.pop_front();
@@ -128,13 +128,12 @@ bool VistaSDL2MouseDriver::DoSensorUpdate(VistaType::microtime dTs) {
   // Just get the latest wheel event and discard all others.
   if (!m_wheelEvents.empty()) {
     SDL_MouseWheelEvent e = m_wheelEvents.back();
-    m_wheel = e.preciseY;
+    m_wheel               = e.preciseY;
     m_wheelState += e.preciseY;
     m_wheelEvents.clear();
   } else {
     m_wheel = 0;
   }
-
 
   MeasureStart(0, dTs);
   UpdateMousePosition(0, m_x, m_y);
@@ -157,4 +156,3 @@ bool VistaSDL2MouseDriver::DoDisconnect() {
   m_connected = false;
   return true;
 }
-

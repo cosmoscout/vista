@@ -43,8 +43,8 @@
 
 class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
  public:
-  VistaSDL2MouseDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2MouseDriver();
+  explicit VistaSDL2MouseDriver(IVistaDriverCreationMethod*);
+  ~VistaSDL2MouseDriver() override;
 
  protected:
   bool DoSensorUpdate(VistaType::microtime dTs) final;
@@ -53,36 +53,47 @@ class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
   bool DoDisconnect() final;
 
  private:
-  VistaDeviceSensor* m_mouseSensor;
+  VistaDeviceSensor*         m_mouseSensor;
   VistaSDL2WindowingToolkit* m_sdl2Toolkit;
 
+  /** X-Position of the mouse pointer inside the window. */
   int m_x;
+
+  /** Y-Position of the mouse pointer inside the window. */
   int m_y;
 
+  /** If the left mouse button is pressed or released. Either SDL_PRESSED or SDL_RELEASED */
   Uint8 m_lmb;
+
+  /** If the middle mouse button is pressed or released. Either SDL_PRESSED or SDL_RELEASED */
   Uint8 m_mmb;
+
+  /** If the right mouse button is pressed or released. Either SDL_PRESSED or SDL_RELEASED */
   Uint8 m_rmb;
 
+  /** The last change in wheel position. */
   double m_wheel;
+
+  /** The accumulated change in wheel position. */
   double m_wheelState;
 
   std::deque<SDL_MouseMotionEvent> m_motionEvents;
   std::deque<SDL_MouseButtonEvent> m_buttonEvents;
-  std::deque<SDL_MouseWheelEvent> m_wheelEvents;
+  std::deque<SDL_MouseWheelEvent>  m_wheelEvents;
 
   size_t m_motionEventListener;
   size_t m_buttonDownEventListener;
   size_t m_buttonUpEventListener;
   size_t m_wheelEventListener;
 
-  bool  m_connected;
+  bool m_connected;
 };
 
 class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriverCreationMethod
     : public IVistaDriverCreationMethod {
  public:
-  VistaSDL2MouseDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
+  explicit VistaSDL2MouseDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  IVistaDeviceDriver* CreateDriver() override;
 };
 
 #endif // _VISTASDL2MOUSEDRIVER_H

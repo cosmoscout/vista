@@ -19,16 +19,13 @@
 /*============================================================================*/
 
 #include "VistaSDL2TextInputDriver.h"
-#include "VistaBase/VistaStreamUtils.h"
 #include "VistaKernel/VistaSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_scancode.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
-#include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
 #include <algorithm>
 #include <cstring>
 #include <map>
@@ -137,17 +134,14 @@ VistaSDL2TextInputDriver::VistaSDL2TextInputDriver(IVistaDriverCreationMethod* c
     , m_lastFrameValue(false)
     , m_connected(false) {
 
-  m_keyTextListener = m_sdl2Toolkit->RegisterEventCallback(SDL_TEXTINPUT, [this](SDL_Event e) {
-    m_textEvents.push_back(e.text);
-  });
+  m_keyTextListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_TEXTINPUT, [this](SDL_Event e) { m_textEvents.push_back(e.text); });
 
-  m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYDOWN, [this](SDL_Event e) {
-    m_keyEvents.push_back(e.key);
-  });
+  m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_KEYDOWN, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
 
-  m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYUP, [this](SDL_Event e) {
-    m_keyEvents.push_back(e.key);
-  });
+  m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(
+      SDL_KEYUP, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
 }
 
 VistaSDL2TextInputDriver::~VistaSDL2TextInputDriver() {
@@ -161,8 +155,8 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
-  int keyboardSize = 0;
-  const Uint8* keyboard = SDL_GetKeyboardState(&keyboardSize);
+  int          keyboardSize = 0;
+  const Uint8* keyboard     = SDL_GetKeyboardState(&keyboardSize);
 
   if (m_keyEvents.empty() && m_textEvents.empty()) {
     if (m_lastFrameValue) {
@@ -180,8 +174,8 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
   int modifiers = GetVistaModifiers(keyboard);
 
   while (!m_keyEvents.empty()) {
-    SDL_KeyboardEvent e = m_keyEvents.front();
-    int key = SDLKeyToVistaKey(e.keysym.scancode);
+    SDL_KeyboardEvent e   = m_keyEvents.front();
+    int               key = SDLKeyToVistaKey(e.keysym.scancode);
 
     // Only handle special keys.
     if (key != 0) {

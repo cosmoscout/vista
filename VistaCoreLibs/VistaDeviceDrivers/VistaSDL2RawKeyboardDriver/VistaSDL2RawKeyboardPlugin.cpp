@@ -53,14 +53,15 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
 
 extern "C" VISTASDL2RAWKEYBOARDPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
     IVistaTranscoderFactoryFactory* fac) {
-  if (SpFactory == NULL)
+  if (SpFactory == nullptr)
     SpFactory = new VistaSDL2RawKeyboardDriverCreationMethod(fac);
 
   IVistaReferenceCountable::refup(SpFactory);
   return SpFactory;
 }
 
-extern "C" VISTASDL2RAWKEYBOARDPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+extern "C" VISTASDL2RAWKEYBOARDPLUGINAPI void UnloadCreationMethod(
+    IVistaDriverCreationMethod* crm) {
   if (crm == SpFactory)
     if (IVistaReferenceCountable::refdown(SpFactory))
       SpFactory = nullptr;

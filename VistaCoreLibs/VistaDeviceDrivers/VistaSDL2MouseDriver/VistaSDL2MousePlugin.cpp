@@ -53,7 +53,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
 
 extern "C" VISTASDL2MOUSEPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
     IVistaTranscoderFactoryFactory* fac) {
-  if (SpFactory == NULL)
+  if (SpFactory == nullptr)
     SpFactory = new VistaSDL2MouseDriverCreationMethod(fac);
 
   IVistaReferenceCountable::refup(SpFactory);
