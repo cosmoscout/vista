@@ -541,6 +541,10 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     info->updateCallback = m_updateCallback;
   }
 
+  int displayIndex = SDL_GetWindowDisplayIndex(info->sdlWindow);
+  SDL_DisplayMode displayMode;
+  SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
+  SDL_SetWindowDisplayMode(info->sdlWindow, &displayMode);
   if (info->fullscreenActive) {
     info->preFullscreenPosX  = info->currentPosX;
     info->preFullscreenPosY  = info->currentPosY;
@@ -755,8 +759,8 @@ bool VistaSDL2WindowingToolkit::SetWindowPosition(VistaWindow* window, int x, in
     info->preFullscreenPosY = y;
   } else {
     SDL_SetWindowPosition(info->sdlWindow, x, y);
-    info->currentSizeX = x;
-    info->currentSizeY = y;
+    info->currentPosX = x;
+    info->currentPosY = y;
   }
 
   return true;
@@ -891,6 +895,11 @@ bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, bool enabled)
     SDL_GetWindowPosition(info->sdlWindow, &info->preFullscreenPosX, &info->preFullscreenPosY);
     SDL_GetWindowSizeInPixels(
         info->sdlWindow, &info->preFullscreenSizeX, &info->preFullscreenSizeY);
+
+    int displayIndex = SDL_GetWindowDisplayIndex(info->sdlWindow);
+    SDL_DisplayMode displayMode;
+    SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
+    SDL_SetWindowDisplayMode(info->sdlWindow, &displayMode);
 
     SDL_SetWindowFullscreen(info->sdlWindow, SDL_WINDOW_FULLSCREEN);
     info->fullscreenActive = true;
