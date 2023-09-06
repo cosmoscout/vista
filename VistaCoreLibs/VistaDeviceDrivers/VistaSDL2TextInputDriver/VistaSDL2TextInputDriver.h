@@ -18,31 +18,30 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
-#ifndef _VISTASDL2EVENTKEYBOARDDRIVER_H
-#define _VISTASDL2EVENTKEYBOARDDRIVER_H
+#ifndef _VISTASDL2TEXTINPUTDRIVER_H
+#define _VISTASDL2TEXTINPUTDRIVER_H
 
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <map>
 #include <vector>
-#include <SDL2/SDL_scancode.h>
 #include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
 
 // Windows DLL build
-#if defined(WIN32) && !defined(VISTASDL2EVENTKEYBOARDDRIVER_STATIC)
-#ifdef VISTASDL2EVENTKEYBOARDDRIVER_EXPORTS
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI __declspec(dllexport)
+#if defined(WIN32) && !defined(VISTASDL2TEXTINPUTDRIVER_STATIC)
+#ifdef VISTASDL2TEXTINPUTDRIVER_EXPORTS
+#define VISTASDL2TEXTINPUTDRIVERAPI __declspec(dllexport)
 #else
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI __declspec(dllimport)
+#define VISTASDL2TEXTINPUTDRIVERAPI __declspec(dllimport)
 #endif
 #else // no Windows or static build
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI
+#define VISTASDL2TEXTINPUTDRIVERAPI
 #endif
 
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVistaKeyboardDriver {
+class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboardDriver {
  public:
-  VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2EventKeyboardDriver();
+  VistaSDL2TextInputDriver(IVistaDriverCreationMethod*);
+  virtual ~VistaSDL2TextInputDriver();
 
  protected:
   bool DoSensorUpdate(VistaType::microtime dTs) final;
@@ -53,8 +52,10 @@ class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVis
  private:
   VistaSDL2WindowingToolkit* m_sdl2Toolkit;
 
-  std::deque<SDL_KeyboardEvent> m_keyEvents;
+  std::deque<SDL_TextInputEvent> m_textEvents;
+  std::deque<SDL_KeyboardEvent>  m_keyEvents;
 
+  size_t m_keyTextListener;
   size_t m_keyDownListener;
   size_t m_keyUpListener;
 
@@ -63,11 +64,11 @@ class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVis
   bool m_connected;
 };
 
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod
+class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriverCreationMethod
     : public IVistaDriverCreationMethod {
  public:
-  VistaSDL2EventKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  VistaSDL2TextInputDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
   virtual IVistaDeviceDriver* CreateDriver();
 };
 
-#endif // _VISTASDL2EVENTKEYBOARDDRIVER_H
+#endif // _VISTASDL2TEXTINPUTDRIVER_H

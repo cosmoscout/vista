@@ -1,0 +1,229 @@
+/*============================================================================*/
+/*                              ViSTA VR toolkit                              */
+/*               Copyright (c) 1997-2016 RWTH Aachen University               */
+/*============================================================================*/
+/*                                  License                                   */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU Lesser General Public License as published  */
+/*  by the Free Software Foundation, either version 3 of the License, or      */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU Lesser General Public License for more details.                       */
+/*                                                                            */
+/*  You should have received a copy of the GNU Lesser General Public License  */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*============================================================================*/
+
+#include "VistaSDL2TextInputDriver.h"
+#include "VistaBase/VistaStreamUtils.h"
+#include "VistaKernel/VistaSystem.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_scancode.h>
+#include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
+#include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
+#include <VistaKernel/DisplayManager/VistaDisplayManager.h>
+#include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
+#include <algorithm>
+#include <cstring>
+#include <map>
+#include <array>
+
+VistaSDL2TextInputDriverCreationMethod::VistaSDL2TextInputDriverCreationMethod(
+    IVistaTranscoderFactoryFactory* fac)
+    : IVistaDriverCreationMethod(fac) {
+  RegisterSensorType(
+      "", sizeof(IVistaKeyboardDriver::_sKeyboardMeasure), 20, fac->CreateFactoryForType(""));
+}
+
+IVistaDeviceDriver* VistaSDL2TextInputDriverCreationMethod::CreateDriver() {
+  return new VistaSDL2TextInputDriver(this);
+}
+
+int SDLKeyToVistaKey(int key) {
+  switch (key) {
+  case SDL_SCANCODE_ESCAPE:
+    return VISTA_KEY_ESC;
+  case SDL_SCANCODE_RETURN:
+    return VISTA_KEY_ENTER;
+  case SDL_SCANCODE_BACKSPACE:
+    return VISTA_KEY_BACKSPACE;
+  case SDL_SCANCODE_F1:
+    return VISTA_KEY_F1;
+  case SDL_SCANCODE_F2:
+    return VISTA_KEY_F2;
+  case SDL_SCANCODE_F3:
+    return VISTA_KEY_F3;
+  case SDL_SCANCODE_F4:
+    return VISTA_KEY_F4;
+  case SDL_SCANCODE_F5:
+    return VISTA_KEY_F5;
+  case SDL_SCANCODE_F6:
+    return VISTA_KEY_F6;
+  case SDL_SCANCODE_F7:
+    return VISTA_KEY_F7;
+  case SDL_SCANCODE_F8:
+    return VISTA_KEY_F8;
+  case SDL_SCANCODE_F9:
+    return VISTA_KEY_F9;
+  case SDL_SCANCODE_F10:
+    return VISTA_KEY_F10;
+  case SDL_SCANCODE_F11:
+    return VISTA_KEY_F11;
+  case SDL_SCANCODE_F12:
+    return VISTA_KEY_F12;
+  case SDL_SCANCODE_LEFT:
+    return VISTA_KEY_LEFTARROW;
+  case SDL_SCANCODE_RIGHT:
+    return VISTA_KEY_RIGHTARROW;
+  case SDL_SCANCODE_UP:
+    return VISTA_KEY_UPARROW;
+  case SDL_SCANCODE_DOWN:
+    return VISTA_KEY_DOWNARROW;
+  case SDL_SCANCODE_PAGEUP:
+    return VISTA_KEY_PAGEUP;
+  case SDL_SCANCODE_PAGEDOWN:
+    return VISTA_KEY_PAGEDOWN;
+  case SDL_SCANCODE_HOME:
+    return VISTA_KEY_HOME;
+  case SDL_SCANCODE_END:
+    return VISTA_KEY_END;
+  case SDL_SCANCODE_DELETE:
+    return VISTA_KEY_DELETE;
+  case SDL_SCANCODE_LSHIFT:
+    return VISTA_KEY_SHIFT_LEFT;
+  case SDL_SCANCODE_RSHIFT:
+    return VISTA_KEY_SHIFT_RIGHT;
+  case SDL_SCANCODE_LCTRL:
+    return VISTA_KEY_CTRL_LEFT;
+  case SDL_SCANCODE_RCTRL:
+    return VISTA_KEY_CTRL_RIGHT;
+  case SDL_SCANCODE_LALT:
+    return VISTA_KEY_ALT_LEFT;
+  case SDL_SCANCODE_RALT:
+    return VISTA_KEY_ALT_RIGHT;
+  default:
+    return 0;
+  }
+}
+
+int GetVistaModifiers(const Uint8* keyboard) {
+  int modifiers = VISTA_KEYMOD_NONE;
+
+  if (keyboard[SDL_SCANCODE_LCTRL] || keyboard[SDL_SCANCODE_RCTRL]) {
+    modifiers |= VISTA_KEYMOD_CTRL;
+  }
+
+  if (keyboard[SDL_SCANCODE_LALT] || keyboard[SDL_SCANCODE_RALT]) {
+    modifiers |= VISTA_KEYMOD_ALT;
+  }
+
+  if (keyboard[SDL_SCANCODE_LSHIFT] || keyboard[SDL_SCANCODE_RSHIFT]) {
+    modifiers |= VISTA_KEYMOD_SHIFT;
+  }
+
+  return modifiers;
+}
+
+VistaSDL2TextInputDriver::VistaSDL2TextInputDriver(IVistaDriverCreationMethod* crm)
+    : IVistaKeyboardDriver(crm)
+    , m_sdl2Toolkit(dynamic_cast<VistaSDL2WindowingToolkit*>(
+          GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()))
+    , m_lastFrameValue(false)
+    , m_connected(false) {
+
+  m_keyTextListener = m_sdl2Toolkit->RegisterEventCallback(SDL_TEXTINPUT, [this](SDL_Event e) {
+    m_textEvents.push_back(e.text);
+  });
+
+  m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYDOWN, [this](SDL_Event e) {
+    m_keyEvents.push_back(e.key);
+  });
+
+  m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(SDL_KEYUP, [this](SDL_Event e) {
+    m_keyEvents.push_back(e.key);
+  });
+}
+
+VistaSDL2TextInputDriver::~VistaSDL2TextInputDriver() {
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYUP, m_keyUpListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYDOWN, m_keyDownListener);
+  m_sdl2Toolkit->UnregisterEventCallback(SDL_TEXTINPUT, m_keyTextListener);
+}
+
+bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
+  if (!m_connected) {
+    return true;
+  }
+
+  int keyboardSize = 0;
+  const Uint8* keyboard = SDL_GetKeyboardState(&keyboardSize);
+
+  if (m_keyEvents.empty() && m_textEvents.empty()) {
+    if (m_lastFrameValue) {
+      m_lastFrameValue = false;
+
+      MeasureStart(dTs);
+      UpdateKey(0, 0);
+      MeasureStop();
+
+      return true;
+    }
+    return false;
+  }
+
+  int modifiers = GetVistaModifiers(keyboard);
+
+  while (!m_keyEvents.empty()) {
+    SDL_KeyboardEvent e = m_keyEvents.front();
+    int key = SDLKeyToVistaKey(e.keysym.scancode);
+
+    // Only handle special keys.
+    if (key != 0) {
+      switch (e.type) {
+      case SDL_KEYDOWN:
+        MeasureStart(dTs);
+        UpdateKey(key, modifiers);
+        MeasureStop();
+        break;
+
+      case SDL_KEYUP:
+        MeasureStart(dTs);
+        UpdateKey(-key, modifiers);
+        MeasureStop();
+        m_lastFrameValue = true;
+        break;
+      }
+    }
+
+    m_keyEvents.pop_front();
+  }
+
+  while (!m_textEvents.empty()) {
+    SDL_TextInputEvent e = m_textEvents.front();
+
+    MeasureStart(dTs);
+    UpdateKey(e.text[0], modifiers);
+    MeasureStop();
+    m_lastFrameValue = true;
+
+    m_textEvents.pop_front();
+  }
+
+  return true;
+};
+
+bool VistaSDL2TextInputDriver::DoConnect() {
+  m_connected = true;
+  return true;
+}
+
+bool VistaSDL2TextInputDriver::DoDisconnect() {
+  m_connected = false;
+  return true;
+}

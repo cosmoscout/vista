@@ -18,56 +18,54 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
-#ifndef _VISTASDL2EVENTKEYBOARDDRIVER_H
-#define _VISTASDL2EVENTKEYBOARDDRIVER_H
+#include "VistaSDL2TextInputDriver.h"
 
-#include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
-#include <SDL2/SDL_scancode.h>
-#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
-
-// Windows DLL build
-#if defined(WIN32) && !defined(VISTASDL2EVENTKEYBOARDDRIVER_STATIC)
-#ifdef VISTASDL2EVENTKEYBOARDDRIVER_EXPORTS
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI __declspec(dllexport)
+#if defined(WIN32) && !defined(VISTASDL2TEXTINPUTPLUGIN_STATIC)
+#ifdef VISTASDL2TEXTINPUTPLUGIN_EXPORTS
+#define VISTASDL2TEXTINPUTPLUGINAPI __declspec(dllexport)
 #else
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI __declspec(dllimport)
+#define VISTASDL2TEXTINPUTPLUGINAPI __declspec(dllimport)
 #endif
 #else // no Windows or static build
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI
+#define VISTASDL2TEXTINPUTPLUGINAPI
 #endif
 
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVistaKeyboardDriver {
- public:
-  VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2EventKeyboardDriver();
+namespace {
+VistaSDL2TextInputDriverCreationMethod* SpFactory = nullptr;
+}
 
- protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
+#if defined(WIN32)
 
-  bool DoConnect() final;
-  bool DoDisconnect() final;
+#include <windows.h>
 
- private:
-  VistaSDL2WindowingToolkit* m_sdl2Toolkit;
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+  switch (ul_reason_for_call) {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
+}
 
-  std::deque<SDL_KeyboardEvent> m_keyEvents;
+#endif
 
-  size_t m_keyDownListener;
-  size_t m_keyUpListener;
+extern "C" VISTASDL2TEXTINPUTPLUGINAPI IVistaDriverCreationMethod* GetCreationMethod(
+    IVistaTranscoderFactoryFactory* fac) {
+  if (SpFactory == NULL)
+    SpFactory = new VistaSDL2TextInputDriverCreationMethod(fac);
 
-  bool m_lastFrameValue;
+  IVistaReferenceCountable::refup(SpFactory);
+  return SpFactory;
+}
 
-  bool m_connected;
-};
+extern "C" VISTASDL2TEXTINPUTPLUGINAPI void UnloadCreationMethod(IVistaDriverCreationMethod* crm) {
+  if (crm == SpFactory)
+    if (IVistaReferenceCountable::refdown(SpFactory))
+      SpFactory = nullptr;
+}
 
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod
-    : public IVistaDriverCreationMethod {
- public:
-  VistaSDL2EventKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
-};
-
-#endif // _VISTASDL2EVENTKEYBOARDDRIVER_H
+extern "C" VISTASDL2TEXTINPUTPLUGINAPI const char* GetDeviceClassName() {
+  return "SDL2TEXTINPUT";
+}

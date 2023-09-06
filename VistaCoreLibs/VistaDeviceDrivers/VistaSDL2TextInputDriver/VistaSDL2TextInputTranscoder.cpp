@@ -18,56 +18,11 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
 /*============================================================================*/
 
-#ifndef _VISTASDL2EVENTKEYBOARDDRIVER_H
-#define _VISTASDL2EVENTKEYBOARDDRIVER_H
-
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
-#include <SDL2/SDL_scancode.h>
-#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+#include <VistaDeviceDriversBase/VistaDriverPlugDev.h>
 
-// Windows DLL build
-#if defined(WIN32) && !defined(VISTASDL2EVENTKEYBOARDDRIVER_STATIC)
-#ifdef VISTASDL2EVENTKEYBOARDDRIVER_EXPORTS
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI __declspec(dllexport)
+#ifdef VISTASDL2TEXTINPUTTRANSCODER_EXPORTS
+DEFTRANSCODERPLUG_FUNC_EXPORTS(TSimpleTranscoderFactoryFactory<VistaKeyboardDriverTranscodeFactory>)
 #else
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI __declspec(dllimport)
+DEFTRANSCODERPLUG_FUNC_IMPORTS(TSimpleTranscoderFactoryFactory<VistaKeyboardDriverTranscodeFactory>)
 #endif
-#else // no Windows or static build
-#define VISTASDL2EVENTKEYBOARDDRIVERAPI
-#endif
-
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVistaKeyboardDriver {
- public:
-  VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);
-  virtual ~VistaSDL2EventKeyboardDriver();
-
- protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
-
-  bool DoConnect() final;
-  bool DoDisconnect() final;
-
- private:
-  VistaSDL2WindowingToolkit* m_sdl2Toolkit;
-
-  std::deque<SDL_KeyboardEvent> m_keyEvents;
-
-  size_t m_keyDownListener;
-  size_t m_keyUpListener;
-
-  bool m_lastFrameValue;
-
-  bool m_connected;
-};
-
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod
-    : public IVistaDriverCreationMethod {
- public:
-  VistaSDL2EventKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
-  virtual IVistaDeviceDriver* CreateDriver();
-};
-
-#endif // _VISTASDL2EVENTKEYBOARDDRIVER_H
