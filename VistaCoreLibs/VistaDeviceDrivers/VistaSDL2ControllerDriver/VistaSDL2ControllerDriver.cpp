@@ -56,7 +56,7 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
   parser.ReadProplistFromFile(GetVistaSystem()->GetInteractionIniFile(), interactionProperties, true);
 
   std::string dbFile;
-  bool hasDBFile = interactionProperties.GetValueInSubList("CONTROLLER_DB", "SDL2CONTROLLER", dbFile);
+  bool hasDBFile = interactionProperties.GetValueInSubList("PATH", "CONTROLLER_DB", dbFile);
   if (hasDBFile) {
     int result = SDL_GameControllerAddMappingsFromFile(dbFile.c_str());
     if (result == -1) {
