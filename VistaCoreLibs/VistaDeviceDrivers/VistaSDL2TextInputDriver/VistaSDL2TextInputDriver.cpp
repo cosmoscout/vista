@@ -251,8 +251,15 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
   while (!m_textEvents.empty()) {
     SDL_TextInputEvent e = m_textEvents.front();
 
+    // We convert the UTF-8 string from SDL to a UTF-16 string. We just get the first character,
+    // since we aren't handling multi-character input.
+    char16_t character = m_convertUtf8ToUtf16.from_bytes(e.text)[0];
+
     MeasureStart(dTs);
-    UpdateKey(static_cast<int32_t>(e.text[0]), modifiers);
+    // We pass no key mods here, since this is exclusive for text input. SDL already handled key
+    // combinations to create capital or special characters and has given these to us. Key
+    // combinations for other tasks than character input are handled above.
+    UpdateKey(static_cast<int32_t>(character), VISTA_KEYMOD_NONE);
     MeasureStop();
 
     m_textEvents.pop_front();
