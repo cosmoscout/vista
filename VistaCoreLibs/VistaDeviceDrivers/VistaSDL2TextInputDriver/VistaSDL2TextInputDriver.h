@@ -42,8 +42,8 @@
  * The TextInputDriver is the most complex keyboard driver. It is the only driver, to report capital
  * letters and composite characters. To also support navigation it uses a combination of
  * - SDL_TextInputEvents: For handling character input.
- * - SDL_KeyboardEvents: For handling special keys.
- * - SDL_GetKeyboardState: For handling modifiers and character key releases.
+ * - SDL_KeyboardEvents: For handling all events except character input.
+ * - SDL_GetKeyboardState: For handling modifiers.
  *
  * See:
  * - https://wiki.libsdl.org/SDL2/SDL_TextInputEvent
@@ -66,9 +66,6 @@ class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboa
 
   std::deque<SDL_TextInputEvent> m_textEvents;
   std::deque<SDL_KeyboardEvent>  m_keyEvents;
-
-  /** Contains all keys, that were pressed in the last frame. */
-  std::set<Uint8> m_pressedKeys;
 
   size_t m_keyTextListener;
   size_t m_keyDownListener;

@@ -41,7 +41,7 @@ IVistaDeviceDriver* VistaSDL2TextInputDriverCreationMethod::CreateDriver() {
  * Converts an SDL special key to a Vista compatible key. For special keys a translation of the
  * scancode is being done, otherwise a 0 being returned.
  */
-int SDLKeyToVistaKey(int key) {
+int32_t SDLKeyToVistaKey(uint8_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE:
     return VISTA_KEY_ESC;
@@ -104,14 +104,52 @@ int SDLKeyToVistaKey(int key) {
   case SDL_SCANCODE_RALT:
     return VISTA_KEY_ALT_RIGHT;
   default:
-    return 0;
+    return static_cast<int32_t>(SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(key)));
   }
+}
+
+bool IsSpecialKey(uint8_t key) {
+  switch (key) {
+  case SDL_SCANCODE_ESCAPE:
+  case SDL_SCANCODE_RETURN:
+  case SDL_SCANCODE_BACKSPACE:
+  case SDL_SCANCODE_F1:
+  case SDL_SCANCODE_F2:
+  case SDL_SCANCODE_F3:
+  case SDL_SCANCODE_F4:
+  case SDL_SCANCODE_F5:
+  case SDL_SCANCODE_F6:
+  case SDL_SCANCODE_F7:
+  case SDL_SCANCODE_F8:
+  case SDL_SCANCODE_F9:
+  case SDL_SCANCODE_F10:
+  case SDL_SCANCODE_F11:
+  case SDL_SCANCODE_F12:
+  case SDL_SCANCODE_LEFT:
+  case SDL_SCANCODE_RIGHT:
+  case SDL_SCANCODE_UP:
+  case SDL_SCANCODE_DOWN:
+  case SDL_SCANCODE_PAGEUP:
+  case SDL_SCANCODE_PAGEDOWN:
+  case SDL_SCANCODE_HOME:
+  case SDL_SCANCODE_END:
+  case SDL_SCANCODE_DELETE:
+  case SDL_SCANCODE_LSHIFT:
+  case SDL_SCANCODE_RSHIFT:
+  case SDL_SCANCODE_LCTRL:
+  case SDL_SCANCODE_RCTRL:
+  case SDL_SCANCODE_LALT:
+  case SDL_SCANCODE_RALT:
+    return true;
+  }
+
+  return false;
 }
 
 /**
  * Checks the keyboard for pressed modifiers and returns a Vista compatible integer.
  */
-int GetVistaModifiers(const Uint8* keyboard) {
+int32_t GetVistaModifiers(const Uint8* keyboard) {
   int modifiers = VISTA_KEYMOD_NONE;
 
   if (keyboard[SDL_SCANCODE_LCTRL] || keyboard[SDL_SCANCODE_RCTRL]) {
@@ -157,8 +195,7 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
     return true;
   }
 
-  // Get the keyboard state. It is used for checking the modifiers and if previously pressed keys
-  // have been released.
+  // Get the keyboard state. It is used for easily checking the pressed modifiers.
   int          keyboardSize = 0;
   const Uint8* keyboard     = SDL_GetKeyboardState(&keyboardSize);
 
@@ -178,53 +215,45 @@ bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {
 
   int modifiers = GetVistaModifiers(keyboard);
 
-  // First we go through the key events to update special keys. Characters are being ignored here.
+  // This loop registers the following key events:
+  // - key down
+  //   - the key is a special key
+  //   - the key is a character key and alt or ctrl are pressed
+  // - key up
+  //   - all keys
   while (!m_keyEvents.empty()) {
     SDL_KeyboardEvent e   = m_keyEvents.front();
-    int               key = SDLKeyToVistaKey(e.keysym.scancode);
+    int32_t           key = SDLKeyToVistaKey(e.keysym.scancode);
 
-    // Only handle special keys.
-    if (key != 0) {
-      switch (e.type) {
-      case SDL_KEYDOWN:
+    switch (e.type) {
+    case SDL_KEYDOWN:
+      if (IsSpecialKey(e.keysym.scancode) || modifiers & VISTA_KEYMOD_ALT ||
+          modifiers & VISTA_KEYMOD_CTRL) {
         MeasureStart(dTs);
         UpdateKey(key, modifiers);
         MeasureStop();
-        break;
-
-      case SDL_KEYUP:
-        MeasureStart(dTs);
-        UpdateKey(-key, modifiers);
-        MeasureStop();
-        m_lastFrameValue = true;
-        break;
       }
-    }
+      break;
 
-    m_keyEvents.pop_front();
-  }
-
-  // Now we check all previously pressed character keys, if they were released, using the keyboard.
-  for (Uint8 key : m_pressedKeys) {
-    if (key < 0 || key > keyboardSize - 1 || !keyboard[key]) {
-      m_pressedKeys.erase(key);
+    case SDL_KEYUP:
       MeasureStart(dTs);
       UpdateKey(-key, modifiers);
       MeasureStop();
       m_lastFrameValue = true;
+      break;
     }
+    m_keyEvents.pop_front();
   }
 
-  // At last we update the newly pressed characters by going through all text input events.
+  // This loop registers the following key events
+  // - key down
+  //   - a text character has been typed
   while (!m_textEvents.empty()) {
     SDL_TextInputEvent e = m_textEvents.front();
 
-    m_pressedKeys.insert(e.text[0]);
-
     MeasureStart(dTs);
-    UpdateKey(e.text[0], modifiers);
+    UpdateKey(static_cast<int32_t>(e.text[0]), modifiers);
     MeasureStop();
-    m_lastFrameValue = true;
 
     m_textEvents.pop_front();
   }
