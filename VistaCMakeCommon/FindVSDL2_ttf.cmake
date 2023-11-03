@@ -11,10 +11,16 @@ if( NOT VSDL2_TTF_FOUND )
 
 		if( WIN32 )
 			set( SDL2_TTF_LIBRARY_DIRS "${SDL2_TTF_ROOT_DIR}/lib" )
-			set( SDL2_TTF_LIBRARIES SDL2_ttf.lib )
+			set( SDL2_TTF_LIBRARIES
+				optimized SDL2_ttf.lib
+				debug SDL2_ttfd.lib
+			)
 		else()
 			set( SDL2_TTF_LIBRARY_DIRS "${SDL2_TTF_ROOT_DIR}/lib" )
-			set( SDL2_TTF_LIBRARIES SDL2_ttf.so )
+			set( SDL2_TTF_LIBRARIES
+				optimized SDL2_ttf.so
+				debug SDL2_ttfd.so
+			)
 		endif()
 	endif()
 endif()

@@ -11,10 +11,20 @@ if( NOT VSDL2_FOUND )
 
 		if( WIN32 )
 			set( SDL2_LIBRARY_DIRS "${SDL2_ROOT_DIR}/lib" )
-			set( SDL2_LIBRARIES SDL2.lib SDL2main.lib )
+			set( SDL2_LIBRARIES
+				optimized SDL2.lib
+				optimized SDL2main.lib
+				debug SDL2d.lib
+				debug SDL2maind.lib
+			)
 		else()
 			set( SDL2_LIBRARY_DIRS "${SDL2_ROOT_DIR}/lib" )
-			set( SDL2_LIBRARIES SDL2.so SDL2main.so )
+			set( SDL2_LIBRARIES
+				optimized SDL2.so
+				optimized SDL2main.so
+				debug SDL2d.so
+				debug SDL2maind.so
+			)
 		endif()
 	endif()
 endif()
