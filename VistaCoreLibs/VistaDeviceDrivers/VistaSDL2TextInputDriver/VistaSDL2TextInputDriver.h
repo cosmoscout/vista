@@ -25,6 +25,8 @@
 #include <VistaInterProcComm/Concurrency/VistaMutex.h>
 #include <map>
 #include <vector>
+#include <codecvt>
+#include <locale>
 #include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
 
 // Windows DLL build
@@ -72,6 +74,12 @@ class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboa
   size_t m_keyUpListener;
 
   bool m_lastFrameValue;
+
+  /**
+   * This is used to convert UTF-8 encoded strings, which are provided by SDL, to UTF-16 encoded
+   * strings, which are required by Vista.
+   */
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> m_convertUtf8ToUtf16;
 
   bool m_connected;
 };
