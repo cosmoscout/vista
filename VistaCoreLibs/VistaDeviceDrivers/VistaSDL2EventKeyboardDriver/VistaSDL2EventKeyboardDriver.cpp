@@ -148,8 +148,11 @@ VistaSDL2EventKeyboardDriver::VistaSDL2EventKeyboardDriver(IVistaDriverCreationM
 }
 
 VistaSDL2EventKeyboardDriver::~VistaSDL2EventKeyboardDriver() {
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYUP, m_keyUpListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYDOWN, m_keyDownListener);
+  if (GetVistaSystem() && GetVistaSystem()->GetDisplayManager() &&
+      GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()) {
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYUP, m_keyUpListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYDOWN, m_keyDownListener);
+  }
 }
 
 bool VistaSDL2EventKeyboardDriver::DoSensorUpdate(VistaType::microtime dTs) {

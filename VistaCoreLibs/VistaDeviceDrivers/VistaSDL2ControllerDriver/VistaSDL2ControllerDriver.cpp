@@ -149,19 +149,23 @@ VistaSDL2ControllerDriver::VistaSDL2ControllerDriver(IVistaDriverCreationMethod*
 }
 
 VistaSDL2ControllerDriver::~VistaSDL2ControllerDriver() {
-  if (m_currentController) {
-    SDL_GameControllerClose(m_currentController);
-  }
+  if (GetVistaSystem() && GetVistaSystem()->GetDisplayManager() &&
+      GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()) {
 
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADMOTION, m_touchpadMotionListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADUP, m_touchpadUpListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADDOWN, m_touchpadDownListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERSENSORUPDATE, m_sensorListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONDOWN, m_buttonDownListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEREMOVED, m_removeControllerListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEADDED, m_addControllerListener);
+    if (m_currentController) {
+      SDL_GameControllerClose(m_currentController);
+    }
+
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADMOTION, m_touchpadMotionListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADUP, m_touchpadUpListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERTOUCHPADDOWN, m_touchpadDownListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERSENSORUPDATE, m_sensorListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERAXISMOTION, m_axisListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONUP, m_buttonUpListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERBUTTONDOWN, m_buttonDownListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEREMOVED, m_removeControllerListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_CONTROLLERDEVICEADDED, m_addControllerListener);
+  }
 
   VistaDeviceSensor* sensor = GetSensorByIndex(0);
   IVistaDeviceDriver::RemDeviceSensor(sensor);

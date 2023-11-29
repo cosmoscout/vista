@@ -1348,6 +1348,7 @@ VistaOpenSGDisplayBridge::VistaOpenSGDisplayBridge(
 
 VistaOpenSGDisplayBridge::~VistaOpenSGDisplayBridge() {
   delete m_pWindowingToolkit;
+  m_pWindowingToolkit = nullptr;
 }
 
 void VistaOpenSGDisplayBridge::SetDisplayManager(VistaDisplayManager* pDisplayManager) {

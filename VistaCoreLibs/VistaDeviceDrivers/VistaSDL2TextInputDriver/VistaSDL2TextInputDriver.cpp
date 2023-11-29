@@ -188,9 +188,12 @@ VistaSDL2TextInputDriver::VistaSDL2TextInputDriver(IVistaDriverCreationMethod* c
 }
 
 VistaSDL2TextInputDriver::~VistaSDL2TextInputDriver() {
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYUP, m_keyUpListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYDOWN, m_keyDownListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_TEXTINPUT, m_keyTextListener);
+  if (GetVistaSystem() && GetVistaSystem()->GetDisplayManager() &&
+      GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()) {
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYUP, m_keyUpListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_KEYDOWN, m_keyDownListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_TEXTINPUT, m_keyTextListener);
+  }
 }
 
 bool VistaSDL2TextInputDriver::DoSensorUpdate(VistaType::microtime dTs) {

@@ -83,10 +83,13 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
 VistaSDL2MouseDriver::~VistaSDL2MouseDriver() {
   IVistaDeviceDriver::RemDeviceSensor(m_mouseSensor);
 
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEMOTION, m_motionEventListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONUP, m_buttonUpEventListener);
-  m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEWHEEL, m_wheelEventListener);
+  if (GetVistaSystem() && GetVistaSystem()->GetDisplayManager() &&
+      GetVistaSystem()->GetDisplayManager()->GetWindowingToolkit()) {
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEMOTION, m_motionEventListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONUP, m_buttonUpEventListener);
+    m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEWHEEL, m_wheelEventListener);
+  }
 
   delete m_mouseSensor;
 }

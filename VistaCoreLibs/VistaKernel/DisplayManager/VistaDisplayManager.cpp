@@ -66,6 +66,7 @@ VistaDisplayManager::~VistaDisplayManager() {
 
   /** @todo  <ms> - find a better place to do this... */
   delete m_pBridge;
+  m_pBridge = nullptr;
 
   for (std::vector<VistaReferenceFrame*>::iterator it = m_vecRefFrames.begin();
        it != m_vecRefFrames.end(); ++it) {
