@@ -729,10 +729,6 @@ bool VistaSDL2WindowingToolkit::SetWindowUpdateCallback(IVistaExplicitCallbackIn
 
   for (auto const& window : m_windowInfo) {
     window.second->updateCallback = callback;
-    SDL_Window* sdlWindow         = window.second->sdlWindow;
-    if (sdlWindow != nullptr) {
-      SDL_GL_SwapWindow(sdlWindow);
-    }
   }
 
   return true;
