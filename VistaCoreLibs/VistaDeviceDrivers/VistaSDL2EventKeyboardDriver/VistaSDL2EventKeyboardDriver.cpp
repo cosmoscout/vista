@@ -19,18 +19,21 @@
 /*============================================================================*/
 
 #include "VistaSDL2EventKeyboardDriver.h"
-#include "VistaKernel/VistaSystem.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_keycode.h>
+
+#include <VistaKernel/VistaSystem.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
+
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL.h>
+
 #include <array>
 
 VistaSDL2EventKeyboardDriverCreationMethod::VistaSDL2EventKeyboardDriverCreationMethod(
     IVistaTranscoderFactoryFactory* fac)
     : IVistaDriverCreationMethod(fac) {
-  RegisterSensorType(
+  IVistaDriverCreationMethod::RegisterSensorType(
       "", sizeof(IVistaKeyboardDriver::_sKeyboardMeasure), 20, fac->CreateFactoryForType(""));
 }
 
@@ -138,10 +141,10 @@ VistaSDL2EventKeyboardDriver::VistaSDL2EventKeyboardDriver(IVistaDriverCreationM
     , m_connected(false) {
 
   m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_KEYDOWN, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
+      SDL_KEYDOWN, [this](SDL_Event const& e) { m_keyEvents.push_back(e.key); });
 
   m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_KEYUP, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
+      SDL_KEYUP, [this](SDL_Event const& e) { m_keyEvents.push_back(e.key); });
 }
 
 VistaSDL2EventKeyboardDriver::~VistaSDL2EventKeyboardDriver() {

@@ -22,10 +22,10 @@
 #define _VISTASDL2RAWKEYBOARDDRIVER_H
 
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
+
 #include <SDL2/SDL_scancode.h>
+
+#include <vector>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2RAWKEYBOARDDRIVER_STATIC)
@@ -59,7 +59,7 @@ class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriver : public IVistaKe
    * Converts an SDL key to a Vista compatible key. For special keys a translation of the scancode
    * is being done, otherwise the keycode is being returned.
    */
-  int SDLKeyToVistaKey(int key);
+  int SDLKeyToVistaKey(int key) const;
 
   std::vector<Uint8> m_currentKeyboardState;
   std::vector<Uint8> m_lastKeyboardState;
@@ -67,7 +67,7 @@ class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriver : public IVistaKe
   bool               m_connected;
 };
 
-class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriverCreationMethod
+class VISTASDL2RAWKEYBOARDDRIVERAPI VistaSDL2RawKeyboardDriverCreationMethod final
     : public IVistaDriverCreationMethod {
  public:
   explicit VistaSDL2RawKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);

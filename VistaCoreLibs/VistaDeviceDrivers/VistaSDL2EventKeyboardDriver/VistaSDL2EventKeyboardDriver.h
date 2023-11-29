@@ -22,11 +22,9 @@
 #define _VISTASDL2EVENTKEYBOARDDRIVER_H
 
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
-#include <SDL2/SDL_scancode.h>
 #include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+
+#include <deque>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2EVENTKEYBOARDDRIVER_STATIC)
@@ -43,16 +41,17 @@
  * The EventKeyboardDriver uses SDL2's event system to receive keyboard updates. For more
  * information, see https://wiki.libsdl.org/SDL2/SDL_KeyboardEvent.
  */
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVistaKeyboardDriver {
+class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver final
+    : public IVistaKeyboardDriver {
  public:
   explicit VistaSDL2EventKeyboardDriver(IVistaDriverCreationMethod*);
   ~VistaSDL2EventKeyboardDriver() override;
 
  protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
+  bool DoSensorUpdate(VistaType::microtime dTs) override;
 
-  bool DoConnect() final;
-  bool DoDisconnect() final;
+  bool DoConnect() override;
+  bool DoDisconnect() override;
 
  private:
   VistaSDL2WindowingToolkit* m_sdl2Toolkit;
@@ -67,7 +66,7 @@ class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriver : public IVis
   bool m_connected;
 };
 
-class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod
+class VISTASDL2EVENTKEYBOARDDRIVERAPI VistaSDL2EventKeyboardDriverCreationMethod final
     : public IVistaDriverCreationMethod {
  public:
   explicit VistaSDL2EventKeyboardDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);

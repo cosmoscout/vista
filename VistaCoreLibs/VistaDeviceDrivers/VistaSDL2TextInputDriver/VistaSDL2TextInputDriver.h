@@ -22,12 +22,10 @@
 #define _VISTASDL2TEXTINPUTDRIVER_H
 
 #include <VistaDeviceDriversBase/Drivers/VistaKeyboardDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
+#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+
 #include <codecvt>
 #include <locale>
-#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2TEXTINPUTDRIVER_STATIC)
@@ -52,16 +50,16 @@
  * - https://wiki.libsdl.org/SDL2/SDL_KeyboardEvent
  * - https://wiki.libsdl.org/SDL2/SDL_GetKeyboardState,
  */
-class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboardDriver {
+class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver final : public IVistaKeyboardDriver {
  public:
   explicit VistaSDL2TextInputDriver(IVistaDriverCreationMethod*);
   ~VistaSDL2TextInputDriver() override;
 
  protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
+  bool DoSensorUpdate(VistaType::microtime dTs) override;
 
-  bool DoConnect() final;
-  bool DoDisconnect() final;
+  bool DoConnect() override;
+  bool DoDisconnect() override;
 
  private:
   VistaSDL2WindowingToolkit* m_sdl2Toolkit;
@@ -84,7 +82,7 @@ class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriver : public IVistaKeyboa
   bool m_connected;
 };
 
-class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriverCreationMethod
+class VISTASDL2TEXTINPUTDRIVERAPI VistaSDL2TextInputDriverCreationMethod final
     : public IVistaDriverCreationMethod {
  public:
   explicit VistaSDL2TextInputDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);

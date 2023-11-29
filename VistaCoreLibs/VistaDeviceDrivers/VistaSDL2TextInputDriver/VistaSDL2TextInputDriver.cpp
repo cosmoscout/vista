@@ -19,17 +19,20 @@
 /*============================================================================*/
 
 #include "VistaSDL2TextInputDriver.h"
-#include "VistaKernel/VistaSystem.h"
-#include <SDL2/SDL.h>
+
+#include <VistaKernel/VistaSystem.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
+
+#include <SDL2/SDL.h>
+
 #include <array>
 
 VistaSDL2TextInputDriverCreationMethod::VistaSDL2TextInputDriverCreationMethod(
     IVistaTranscoderFactoryFactory* fac)
     : IVistaDriverCreationMethod(fac) {
-  RegisterSensorType(
+  IVistaDriverCreationMethod::RegisterSensorType(
       "", sizeof(IVistaKeyboardDriver::_sKeyboardMeasure), 20, fac->CreateFactoryForType(""));
 }
 
@@ -104,7 +107,7 @@ int32_t SDLKeyToVistaKey(uint8_t key) {
   case SDL_SCANCODE_RALT:
     return VISTA_KEY_ALT_RIGHT;
   default:
-    return static_cast<int32_t>(SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(key)));
+    return SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(key));
   }
 }
 
@@ -175,13 +178,13 @@ VistaSDL2TextInputDriver::VistaSDL2TextInputDriver(IVistaDriverCreationMethod* c
     , m_connected(false) {
 
   m_keyTextListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_TEXTINPUT, [this](SDL_Event e) { m_textEvents.push_back(e.text); });
+      SDL_TEXTINPUT, [this](SDL_Event const& e) { m_textEvents.push_back(e.text); });
 
   m_keyDownListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_KEYDOWN, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
+      SDL_KEYDOWN, [this](SDL_Event const& e) { m_keyEvents.push_back(e.key); });
 
   m_keyUpListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_KEYUP, [this](SDL_Event e) { m_keyEvents.push_back(e.key); });
+      SDL_KEYUP, [this](SDL_Event const& e) { m_keyEvents.push_back(e.key); });
 }
 
 VistaSDL2TextInputDriver::~VistaSDL2TextInputDriver() {

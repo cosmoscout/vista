@@ -205,15 +205,15 @@ IVistaPropertyGetFunctor* SapGetter[] = {
 
 class VistaSDL2ControllerTranscoderFactory : public IVistaMeasureTranscoderFactory {
  public:
-  virtual IVistaMeasureTranscode* CreateTranscoder() {
+  IVistaMeasureTranscode* CreateTranscoder() final {
     return new SDL2ControllerMeasureTranscoder;
   }
 
-  virtual void DestroyTranscoder(IVistaMeasureTranscode* transcoder) {
+  void DestroyTranscoder(IVistaMeasureTranscode* transcoder) final {
     delete transcoder;
   }
 
-  virtual std::string GetTranscoderName() const {
+  std::string GetTranscoderName() const final {
     return "VistaSDL2ControllerTranscoderFactory";
   }
 };

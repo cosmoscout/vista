@@ -21,12 +21,14 @@
 #ifndef __VISTASDL2CONTROLLER_H
 #define __VISTASDL2CONTROLLER_H
 
-#include "VistaDeviceDrivers/VistaSDL2ControllerDriver/VistaSDL2ControllerState.h"
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_gamecontroller.h>
+#include "VistaSDL2ControllerState.h"
+
 #include <VistaDeviceDriversBase/VistaDeviceDriver.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_gamecontroller.h>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2CONTROLLERDRIVER_STATIC)
@@ -43,7 +45,7 @@ class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDevi
 
  public:
   explicit VistaSDL2ControllerDriver(IVistaDriverCreationMethod* crm);
-  ~VistaSDL2ControllerDriver() override;
+  ~        VistaSDL2ControllerDriver() override;
 
  protected:
   bool DoSensorUpdate(VistaType::microtime dTs) override;
@@ -76,15 +78,17 @@ class VISTASDL2CONTROLLERAPI VistaSDL2ControllerDriver final : public IVistaDevi
   bool m_connected;
 };
 
-class VISTASDL2CONTROLLERAPI VistaSDL2ControllerCreationMethod : public IVistaDriverCreationMethod {
+class VISTASDL2CONTROLLERAPI VistaSDL2ControllerCreationMethod final
+    : public IVistaDriverCreationMethod {
  public:
   explicit VistaSDL2ControllerCreationMethod(IVistaTranscoderFactoryFactory* fac)
       : IVistaDriverCreationMethod(fac) {
-    RegisterSensorType("", sizeof(VistaSDL2ControllerState), 120, fac->CreateFactoryForType(""));
+    IVistaDriverCreationMethod::RegisterSensorType(
+        "", sizeof(VistaSDL2ControllerState), 120, fac->CreateFactoryForType(""));
   }
 
   ~VistaSDL2ControllerCreationMethod() override {
-    UnregisterType("", false);
+    IVistaDriverCreationMethod::UnregisterType("", false);
   }
 
   IVistaDeviceDriver* CreateDriver() override {

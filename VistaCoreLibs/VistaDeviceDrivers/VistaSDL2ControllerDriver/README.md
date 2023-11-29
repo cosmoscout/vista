@@ -1,7 +1,7 @@
 # SDL2 Controller Support
 
 This document describes how different controllers work in different configurations.
-Even though SDL2 tries to support each controllers features there are some differences.
+Even though SDL2 tries to support each controller's features there are some differences.
 
 ## SDL2 Controller Usage
 

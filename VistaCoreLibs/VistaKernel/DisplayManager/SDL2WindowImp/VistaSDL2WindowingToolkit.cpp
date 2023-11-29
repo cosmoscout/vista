@@ -37,8 +37,6 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_video.h>
-#include <SDL2/SDL_gamecontroller.h>
-#include <SDL2/SDL_keyboard.h>
 
 #include <cstdint>
 #include <string>
@@ -63,84 +61,49 @@
 // are around
 
 struct SDL2WindowInfo {
-  SDL2WindowInfo(VistaWindow* window)
-      : isInitialized(false)
-      , window(window)
-      , updateCallback(nullptr)
-      , currentSizeX(0)
-      , currentSizeY(0)
-      , currentPosX(SDL_WINDOWPOS_CENTERED)
-      , currentPosY(SDL_WINDOWPOS_CENTERED)
-      , preFullscreenSizeX(0)
-      , preFullscreenSizeY(0)
-      , preFullscreenPosX(0)
-      , preFullscreenPosY(0)
-      , fullscreenActive(false)
-      , useStereo(false)
-      , useAccumBuffer(false)
-      , useStencilBuffer(false)
-      , numMultiSamples(0)
-      , drawBorder(true)
-      , sdlWindow(nullptr)
-      , windowId(-1)
-      , glContext(nullptr)
-      , windowTitle("ViSTA")
-      , vSyncMode(VistaSDL2WindowingToolkit::VSYNC_STATE_UNKNOWN)
-      , contextMajor(1)
-      , contextMinor(0)
-      , isDebugContext(false)
-      , isForwardCompatible(false)
-      , cursorEnabled(true)
-      , cursor(-1)
-      , isOffscreenBuffer(false)
-      , fboId(0)
-      , fboColorId(0)
-      , fboDepthId(0)
-      , fboStencilId(0)
-      , blitFboId(0)
-      , blitFboColorId(0)
-      , blitFboDepthId(0) {
+  explicit SDL2WindowInfo(VistaWindow* window)
+      : window(window) {
   }
 
   ~SDL2WindowInfo() = default;
 
-  bool                             isInitialized;
+  bool                             isInitialized{false};
   VistaWindow*                     window;
-  IVistaExplicitCallbackInterface* updateCallback;
-  int                              currentSizeX;
-  int                              currentSizeY;
-  int                              currentPosX;
-  int                              currentPosY;
-  int                              preFullscreenSizeX;
-  int                              preFullscreenSizeY;
-  int                              preFullscreenPosX;
-  int                              preFullscreenPosY;
-  bool                             fullscreenActive;
-  bool                             useStereo;
-  bool                             useAccumBuffer;
-  bool                             useStencilBuffer;
-  int                              numMultiSamples;
-  bool                             drawBorder;
-  SDL_Window*                      sdlWindow;
-  unsigned int                     windowId;
-  SDL_GLContext                    glContext;
-  std::string                      windowTitle;
-  int                              vSyncMode;
-  int                              contextMajor;
-  int                              contextMinor;
-  bool                             isDebugContext;
-  bool                             isForwardCompatible;
-  bool                             cursorEnabled;
-  int                              cursor;
+  IVistaExplicitCallbackInterface* updateCallback{nullptr};
+  int                              currentSizeX{0};
+  int                              currentSizeY{0};
+  int                              currentPosX{SDL_WINDOWPOS_CENTERED};
+  int                              currentPosY{SDL_WINDOWPOS_CENTERED};
+  int                              preFullscreenSizeX{0};
+  int                              preFullscreenSizeY{0};
+  int                              preFullscreenPosX{0};
+  int                              preFullscreenPosY{0};
+  bool                             fullscreenActive{false};
+  bool                             useStereo{false};
+  bool                             useAccumBuffer{false};
+  bool                             useStencilBuffer{false};
+  int                              numMultiSamples{0};
+  bool                             drawBorder{true};
+  SDL_Window*                      sdlWindow{nullptr};
+  unsigned int                     windowId{0};
+  SDL_GLContext                    glContext{nullptr};
+  std::string                      windowTitle{"ViSTA"};
+  int                              vSyncMode{VistaSDL2WindowingToolkit::VSYNC_STATE_UNKNOWN};
+  int                              contextMajor{1};
+  int                              contextMinor{0};
+  bool                             isDebugContext{false};
+  bool                             isForwardCompatible{false};
+  bool                             cursorEnabled{true};
+  int                              cursor{-1};
   // for Offscreen Buffer
-  bool   isOffscreenBuffer;
-  GLuint fboId;
-  GLuint fboColorId;
-  GLuint fboDepthId;
-  GLuint fboStencilId;
-  GLuint blitFboId;
-  GLuint blitFboColorId;
-  GLuint blitFboDepthId;
+  bool   isOffscreenBuffer{false};
+  GLuint fboId{0};
+  GLuint fboColorId{0};
+  GLuint fboDepthId{0};
+  GLuint fboStencilId{0};
+  GLuint blitFboId{0};
+  GLuint blitFboColorId{0};
+  GLuint blitFboDepthId{0};
 };
 
 VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
@@ -152,7 +115,8 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     , m_hasFullWindow(false)
     , m_fullWindow(nullptr)
     , m_dummyWindow(nullptr)
-    , m_dummyContextId(nullptr) {
+    , m_dummyContextId(nullptr)
+    , m_cursor(0) {
   if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0) {
     vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
     vstr::warni() << "SDL2 init of the events system failed - Quitting Vista" << std::endl;
@@ -176,7 +140,7 @@ VistaSDL2WindowingToolkit::VistaSDL2WindowingToolkit()
     vstr::warni() << "SDL2 init of the video system failed - Quitting Vista" << std::endl;
     GetVistaSystem()->Quit();
   }
-  
+
   if (SDL_InitSubSystem(SDL_INIT_SENSOR) != 0) {
     vstr::warni() << "SDL2 Error: " << SDL_GetError() << std::endl;
     vstr::warni() << "SDL2 init of the sensor system failed - Quitting Vista" << std::endl;
@@ -210,7 +174,7 @@ IVistaTextEntity* VistaSDL2WindowingToolkit::CreateTextEntity() {
   return new VistaSDL2TextEntity();
 }
 
-void VistaSDL2WindowingToolkit::HandleWindowEvents(const SDL_WindowEvent& event) const {
+void VistaSDL2WindowingToolkit::HandleWindowEvents(SDL_WindowEvent const& event) const {
   SDL2WindowInfo* window = GetWindowFromId(event.windowID);
 
   switch (event.event) {
@@ -301,7 +265,7 @@ void VistaSDL2WindowingToolkit::HandleDisplayEvent(const SDL_DisplayEvent& event
 void VistaSDL2WindowingToolkit::HandleEvents() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
-    SDL_EventType eventType = static_cast<SDL_EventType>(e.type);
+    auto eventType = static_cast<SDL_EventType>(e.type);
 
     // We call all registered event listeners for this event type.
     for (const auto& callback : m_eventCallbacks[eventType]) {
@@ -346,7 +310,7 @@ void VistaSDL2WindowingToolkit::Run() {
 size_t VistaSDL2WindowingToolkit::RegisterEventCallback(
     SDL_EventType eventType, SDLEventCallback callback) {
   size_t id = m_callbackCounter++;
-  m_eventCallbacks[eventType].emplace(id, callback);
+  m_eventCallbacks[eventType].emplace(id, std::move(callback));
   return m_callbackCounter;
 }
 
@@ -359,7 +323,7 @@ void VistaSDL2WindowingToolkit::Quit() {
   m_quitLoop = true;
 }
 
-void VistaSDL2WindowingToolkit::DisplayWindow(const VistaWindow* window) {
+void VistaSDL2WindowingToolkit::DisplayWindow(VistaWindow const* window) {
   SDL2WindowInfo* info = GetWindowInfo(window);
   if (!info->isOffscreenBuffer) {
     SDL_GL_SwapWindow(info->sdlWindow);
@@ -421,8 +385,8 @@ bool VistaSDL2WindowingToolkit::UnregisterWindow(VistaWindow* window) {
     SDL_GL_DeleteContext(info->glContext);
   }
 
-  if (info->sdlWindow) {
-    SDL_DestroyWindow(info->sdlWindow);
+  if (sdlWindow) {
+    SDL_DestroyWindow(sdlWindow);
   }
 
   delete info;
@@ -447,9 +411,7 @@ bool VistaSDL2WindowingToolkit::InitWindow(VistaWindow* window) {
   }
 
   if (!info->isOffscreenBuffer) {
-    if (!InitAsNormalWindow(window)) {
-      return false;
-    }
+    InitAsNormalWindow(window);
     DestroyDummyWindow();
   } else { // is RenderToTexture
     if (!InitAsFbo(window)) {
@@ -490,7 +452,7 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
   }
 
   if (info->isDebugContext || info->isForwardCompatible) {
-    uint32_t contextFlags{};
+    int32_t contextFlags{};
     if (info->isDebugContext) {
       contextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
     }
@@ -541,7 +503,7 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
     info->updateCallback = m_updateCallback;
   }
 
-  int displayIndex = SDL_GetWindowDisplayIndex(info->sdlWindow);
+  int             displayIndex = SDL_GetWindowDisplayIndex(info->sdlWindow);
   SDL_DisplayMode displayMode;
   SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
   SDL_SetWindowDisplayMode(info->sdlWindow, &displayMode);
@@ -566,7 +528,7 @@ bool VistaSDL2WindowingToolkit::InitAsNormalWindow(VistaWindow* window) {
 
   if (!m_hasFullWindow) {
     m_hasFullWindow = true;
-    m_fullWindow  = info->sdlWindow;
+    m_fullWindow    = info->sdlWindow;
   }
 
   return true;
@@ -734,7 +696,7 @@ bool VistaSDL2WindowingToolkit::SetWindowUpdateCallback(IVistaExplicitCallbackIn
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetWindowPosition(const VistaWindow* window, int& x, int& y) const {
+bool VistaSDL2WindowingToolkit::GetWindowPosition(VistaWindow const* window, int& x, int& y) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   x = info->currentPosX;
@@ -763,7 +725,7 @@ bool VistaSDL2WindowingToolkit::SetWindowPosition(VistaWindow* window, int x, in
 }
 
 bool VistaSDL2WindowingToolkit::GetWindowSize(
-    const VistaWindow* window, int& width, int& height) const {
+    VistaWindow const* window, int& width, int& height) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   width  = info->currentSizeX;
@@ -865,7 +827,7 @@ bool VistaSDL2WindowingToolkit::SetWindowSize(VistaWindow* window, int width, in
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetFullscreen(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetFullscreen(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
   return info->fullscreenActive;
 }
@@ -892,7 +854,7 @@ bool VistaSDL2WindowingToolkit::SetFullscreen(VistaWindow* window, bool enabled)
     SDL_GetWindowSizeInPixels(
         info->sdlWindow, &info->preFullscreenSizeX, &info->preFullscreenSizeY);
 
-    int displayIndex = SDL_GetWindowDisplayIndex(info->sdlWindow);
+    int             displayIndex = SDL_GetWindowDisplayIndex(info->sdlWindow);
     SDL_DisplayMode displayMode;
     SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
     SDL_SetWindowDisplayMode(info->sdlWindow, &displayMode);
@@ -922,7 +884,7 @@ bool VistaSDL2WindowingToolkit::SetWindowTitle(VistaWindow* window, const std::s
   return true;
 }
 
-std::string VistaSDL2WindowingToolkit::GetWindowTitle(const VistaWindow* window) const {
+std::string VistaSDL2WindowingToolkit::GetWindowTitle(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
   return info->windowTitle;
 }
@@ -945,7 +907,7 @@ bool VistaSDL2WindowingToolkit::SetCursorIsEnabled(VistaWindow* window, bool set
 
   return true;
 }
-bool VistaSDL2WindowingToolkit::GetCursorIsEnabled(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetCursorIsEnabled(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
@@ -955,7 +917,7 @@ bool VistaSDL2WindowingToolkit::GetCursorIsEnabled(const VistaWindow* window) co
   return info->cursorEnabled;
 }
 
-bool VistaSDL2WindowingToolkit::GetUseStereo(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetUseStereo(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
@@ -982,7 +944,7 @@ bool VistaSDL2WindowingToolkit::SetUseStereo(VistaWindow* window, bool set) {
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetUseAccumBuffer(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetUseAccumBuffer(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
@@ -1009,7 +971,7 @@ bool VistaSDL2WindowingToolkit::SetUseAccumBuffer(VistaWindow* window, bool set)
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetUseStencilBuffer(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetUseStencilBuffer(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
@@ -1032,13 +994,13 @@ bool VistaSDL2WindowingToolkit::SetUseStencilBuffer(VistaWindow* window, bool se
   return true;
 }
 
-int VistaSDL2WindowingToolkit::GetMultiSamples(const VistaWindow* window) const {
+int VistaSDL2WindowingToolkit::GetMultiSamples(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   return info->numMultiSamples;
 }
 
-bool VistaSDL2WindowingToolkit::SetMultiSamples(const VistaWindow* window, int numSamples) {
+bool VistaSDL2WindowingToolkit::SetMultiSamples(VistaWindow const* window, int numSamples) {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isInitialized) {
@@ -1052,13 +1014,13 @@ bool VistaSDL2WindowingToolkit::SetMultiSamples(const VistaWindow* window, int n
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetUseOffscreenBuffer(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetUseOffscreenBuffer(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   return info->isOffscreenBuffer;
 }
 
-bool VistaSDL2WindowingToolkit::GetDrawBorder(const VistaWindow* window) const {
+bool VistaSDL2WindowingToolkit::GetDrawBorder(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
   return info->drawBorder;
 }
@@ -1093,7 +1055,7 @@ bool VistaSDL2WindowingToolkit::SetUseOffscreenBuffer(VistaWindow* window, bool 
 }
 
 bool VistaSDL2WindowingToolkit::GetRGBImage(
-    const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
+    VistaWindow const* window, std::vector<VistaType::byte>& vecData) const {
   SDL2WindowInfo* info      = GetWindowInfo(window);
   int             numPixels = info->currentSizeX * info->currentSizeY;
   int             dataSize  = numPixels * 3;
@@ -1103,7 +1065,7 @@ bool VistaSDL2WindowingToolkit::GetRGBImage(
 }
 
 int VistaSDL2WindowingToolkit::GetRGBImage(
-    const VistaWindow* window, VistaType::byte* data, int bufferSize) const {
+    VistaWindow const* window, VistaType::byte* data, int bufferSize) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   DEBUG_CHECK_GL("Pre-GetRGBImage");
@@ -1132,22 +1094,22 @@ int VistaSDL2WindowingToolkit::GetRGBImage(
 }
 
 bool VistaSDL2WindowingToolkit::GetDepthImage(
-    const VistaWindow* window, std::vector<VistaType::byte>& vecData) const {
+    VistaWindow const* window, std::vector<VistaType::byte>& vecData) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   int numPixels = info->currentSizeX * info->currentSizeY;
-  int dataSize  = numPixels * sizeof(float);
+  int dataSize  = static_cast<int>(numPixels * sizeof(float));
   vecData.resize(dataSize);
   int ret = GetDepthImage(window, vecData.data(), dataSize);
   return (ret == dataSize);
 }
 
 int VistaSDL2WindowingToolkit::GetDepthImage(
-    const VistaWindow* window, VistaType::byte* data, const int bufferSize) const {
+    VistaWindow const* window, VistaType::byte* data, const int bufferSize) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   int numPixels = info->currentSizeX * info->currentSizeY;
-  int dataSize  = numPixels * sizeof(float);
+  int dataSize  = static_cast<int>(numPixels * sizeof(float));
   if (bufferSize < dataSize) {
     return 0;
   }
@@ -1172,7 +1134,7 @@ int VistaSDL2WindowingToolkit::GetDepthImage(
   return dataSize;
 }
 
-VistaImage VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window) {
+VistaImage VistaSDL2WindowingToolkit::GetRGBImage(VistaWindow const* window) {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   DEBUG_CHECK_GL("Pre-GetRGBImage");
@@ -1180,13 +1142,13 @@ VistaImage VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window) {
   VistaImage result;
 
   if (!info->isOffscreenBuffer) {
-    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE);
+    result.Set2DData(info->currentSizeX, info->currentSizeY, nullptr, GL_RGB, GL_UNSIGNED_BYTE);
 
     glReadBuffer(GL_BACK);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE,
         result.GetDataWrite());
   } else {
-    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_RGB, GL_UNSIGNED_BYTE);
+    result.Set2DData(info->currentSizeX, info->currentSizeY, nullptr, GL_RGB, GL_UNSIGNED_BYTE);
 
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_RGB, GL_UNSIGNED_BYTE,
@@ -1197,7 +1159,7 @@ VistaImage VistaSDL2WindowingToolkit::GetRGBImage(const VistaWindow* window) {
   return result;
 }
 
-VistaImage VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window) {
+VistaImage VistaSDL2WindowingToolkit::GetDepthImage(VistaWindow const* window) {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   VistaImage result;
@@ -1205,13 +1167,13 @@ VistaImage VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window) {
   DEBUG_CHECK_GL("Pre-GetDepthImage");
 
   if (!info->isOffscreenBuffer) {
-    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_LUMINANCE, GL_FLOAT);
+    result.Set2DData(info->currentSizeX, info->currentSizeY, nullptr, GL_LUMINANCE, GL_FLOAT);
 
     glReadBuffer(GL_BACK);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT,
         result.GetDataWrite());
   } else {
-    result.Set2DData(info->currentSizeX, info->currentSizeY, NULL, GL_LUMINANCE, GL_FLOAT);
+    result.Set2DData(info->currentSizeX, info->currentSizeY, nullptr, GL_LUMINANCE, GL_FLOAT);
 
     glReadBuffer(GL_FRONT);
     glReadPixels(0, 0, info->currentSizeX, info->currentSizeY, GL_DEPTH_COMPONENT, GL_FLOAT,
@@ -1223,19 +1185,19 @@ VistaImage VistaSDL2WindowingToolkit::GetDepthImage(const VistaWindow* window) {
   return result;
 }
 
-int VistaSDL2WindowingToolkit::GetWindowId(const VistaWindow* window) const {
+int VistaSDL2WindowingToolkit::GetWindowId(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
     return -1;
   }
 
-  return info->windowId;
+  return static_cast<int>(info->windowId);
 }
 
-SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowFromId(Uint32 windowID) const {
+SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowFromId(Uint32 windowId) const {
   for (auto const& window : m_windowInfo) {
-    if (window.second->windowId == windowID) {
+    if (window.second->windowId == windowId) {
       return window.second;
     }
   }
@@ -1256,11 +1218,11 @@ void VistaSDL2WindowingToolkit::BindWindow(VistaWindow* window) {
 void VistaSDL2WindowingToolkit::UnbindWindow(VistaWindow* window) {
 }
 
-bool VistaSDL2WindowingToolkit::GetVSyncCanBeModified(const VistaWindow* window) {
+bool VistaSDL2WindowingToolkit::GetVSyncCanBeModified(VistaWindow const* window) {
   return CheckVSyncAvailability();
 }
 
-int VistaSDL2WindowingToolkit::GetVSyncMode(const VistaWindow* window) {
+int VistaSDL2WindowingToolkit::GetVSyncMode(VistaWindow const* window) {
   if (CheckVSyncAvailability() == VSYNC_DISABLED) {
     return VSYNC_STATE_UNAVAILABLE;
   }
@@ -1279,7 +1241,7 @@ int VistaSDL2WindowingToolkit::GetVSyncMode(const VistaWindow* window) {
   return m_globalVSyncAvailability;
 }
 
-bool VistaSDL2WindowingToolkit::SetCursor(VistaWindow* window, int cursor) {
+bool VistaSDL2WindowingToolkit::SetCursor(VistaWindow const* window, int cursor) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
 
   if (info->isOffscreenBuffer) {
@@ -1288,13 +1250,13 @@ bool VistaSDL2WindowingToolkit::SetCursor(VistaWindow* window, int cursor) {
 
   info->cursor = cursor;
   if (info->cursorEnabled) {
-    SDL_SetCursor(SDL_CreateSystemCursor((SDL_SystemCursor)cursor));
+    SDL_SetCursor(SDL_CreateSystemCursor(static_cast<SDL_SystemCursor>(cursor)));
   }
 
   return true;
 }
 
-int VistaSDL2WindowingToolkit::GetCursor(const VistaWindow* window) {
+int VistaSDL2WindowingToolkit::GetCursor(VistaWindow const* window) const {
   SDL2WindowInfo* info = GetWindowInfo(window);
   return info->cursor;
 }
@@ -1332,7 +1294,6 @@ bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
   }
 
   void* SetSwapIntervalFunction = nullptr;
-  void* GetSwapIntervalFunction = nullptr;
 
 #ifdef WIN32
 
@@ -1340,7 +1301,6 @@ bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
   SetSwapIntervalFunction   = SDL_GL_GetProcAddress("wglSwapIntervalEXT");
   if (SetSwapIntervalFunction) {
     m_globalVSyncAvailability = VSYNC_STATE_UNKNOWN;
-    GetSwapIntervalFunction   = SDL_GL_GetProcAddress("wglGetSwapIntervalEXT");
   }
 
 #elif defined LINUX
@@ -1359,7 +1319,7 @@ bool VistaSDL2WindowingToolkit::CheckVSyncAvailability() {
   return (m_globalVSyncAvailability != VSYNC_STATE_UNAVAILABLE);
 }
 
-SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(const VistaWindow* window) const {
+SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(VistaWindow const* window) const {
   auto itWindow = m_windowInfo.find(window);
   if (itWindow == m_windowInfo.end()) {
     return nullptr;
@@ -1369,7 +1329,7 @@ SDL2WindowInfo* VistaSDL2WindowingToolkit::GetWindowInfo(const VistaWindow* wind
 }
 
 bool VistaSDL2WindowingToolkit::GetContextVersion(
-    int& major, int& minor, const VistaWindow* target) const {
+    int& major, int& minor, VistaWindow const* target) const {
   SDL2WindowInfo* info = GetWindowInfo(target);
 
   major = info->contextMajor;
@@ -1392,7 +1352,7 @@ bool VistaSDL2WindowingToolkit::SetContextVersion(int major, int minor, VistaWin
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetIsDebugContext(const VistaWindow* target) const {
+bool VistaSDL2WindowingToolkit::GetIsDebugContext(VistaWindow const* target) const {
   SDL2WindowInfo* info = GetWindowInfo(target);
   return info->isDebugContext;
 }
@@ -1411,7 +1371,7 @@ bool VistaSDL2WindowingToolkit::SetIsDebugContext(bool isDebug, VistaWindow* tar
   return true;
 }
 
-bool VistaSDL2WindowingToolkit::GetIsForwardCompatible(const VistaWindow* target) const {
+bool VistaSDL2WindowingToolkit::GetIsForwardCompatible(VistaWindow const* target) const {
   SDL2WindowInfo* info = GetWindowInfo(target);
   return info->isForwardCompatible;
 }
@@ -1441,7 +1401,7 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
   }
 
   if (info->isDebugContext || info->isForwardCompatible) {
-    uint32_t contextFlags{};
+    int32_t contextFlags{};
     if (info->isDebugContext) {
       contextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
     }
@@ -1453,8 +1413,8 @@ bool VistaSDL2WindowingToolkit::CreateDummyWindow(VistaWindow* window) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, contextFlags);
   }
 
-  m_dummyWindow = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0,
-      0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+  m_dummyWindow = SDL_CreateWindow("dummy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0,
+      SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
   if (!m_dummyWindow) {
     vstr::errp() << "[SDL2WindowingToolkit]: Could not create dummy window!" << std::endl;
     GetVistaSystem()->Quit();
@@ -1486,6 +1446,6 @@ void VistaSDL2WindowingToolkit::DestroyDummyWindow() {
     SDL_GL_DeleteContext(m_dummyContextId);
   }
 
-  m_dummyWindow  = nullptr;
+  m_dummyWindow    = nullptr;
   m_dummyContextId = nullptr;
 }

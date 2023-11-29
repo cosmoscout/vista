@@ -19,26 +19,25 @@
 /*============================================================================*/
 
 #include "VistaSDL2MouseDriver.h"
-#include "VistaBase/VistaStreamUtils.h"
-#include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
-#include "VistaKernel/VistaSystem.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mouse.h>
-#include <SDL2/SDL_events.h>
-#include <VistaDeviceDriversBase/DriverAspects/VistaDriverAbstractWindowAspect.h>
+
+#include <VistaBase/VistaStreamUtils.h>
+#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+#include <VistaKernel/VistaSystem.h>
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/DisplayManager/VistaDisplayManager.h>
 #include <VistaKernel/DisplayManager/VistaWindowingToolkit.h>
-#include <algorithm>
-#include <cstring>
-#include <map>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_events.h>
+
 #include <array>
 #include <memory>
 
 VistaSDL2MouseDriverCreationMethod::VistaSDL2MouseDriverCreationMethod(
     IVistaTranscoderFactoryFactory* fac)
     : IVistaDriverCreationMethod(fac) {
-  RegisterSensorType(
+  IVistaDriverCreationMethod::RegisterSensorType(
       "", sizeof(IVistaMouseDriver::_sMouseMeasure), 20, fac->CreateFactoryForType(""));
 }
 
@@ -67,22 +66,22 @@ VistaSDL2MouseDriver::VistaSDL2MouseDriver(IVistaDriverCreationMethod* crm)
   }
 
   m_motionEventListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_MOUSEMOTION, [this](SDL_Event event) { m_motionEvents.push_back(event.motion); });
+      SDL_MOUSEMOTION, [this](SDL_Event const& event) { m_motionEvents.push_back(event.motion); });
 
-  m_buttonDownEventListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_MOUSEBUTTONDOWN, [this](SDL_Event event) { m_buttonEvents.push_back(event.button); });
+  m_buttonDownEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEBUTTONDOWN,
+      [this](SDL_Event const& event) { m_buttonEvents.push_back(event.button); });
 
-  m_buttonUpEventListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_MOUSEBUTTONUP, [this](SDL_Event event) { m_buttonEvents.push_back(event.button); });
+  m_buttonUpEventListener = m_sdl2Toolkit->RegisterEventCallback(SDL_MOUSEBUTTONUP,
+      [this](SDL_Event const& event) { m_buttonEvents.push_back(event.button); });
 
   m_wheelEventListener = m_sdl2Toolkit->RegisterEventCallback(
-      SDL_MOUSEWHEEL, [this](SDL_Event event) { m_wheelEvents.push_back(event.wheel); });
+      SDL_MOUSEWHEEL, [this](SDL_Event const& event) { m_wheelEvents.push_back(event.wheel); });
 
-  AddDeviceSensor(m_mouseSensor, 0);
+  IVistaMouseDriver::AddDeviceSensor(m_mouseSensor, 0);
 }
 
 VistaSDL2MouseDriver::~VistaSDL2MouseDriver() {
-  RemDeviceSensor(m_mouseSensor);
+  IVistaDeviceDriver::RemDeviceSensor(m_mouseSensor);
 
   m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEMOTION, m_motionEventListener);
   m_sdl2Toolkit->UnregisterEventCallback(SDL_MOUSEBUTTONDOWN, m_buttonDownEventListener);

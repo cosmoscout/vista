@@ -19,17 +19,19 @@
 /*============================================================================*/
 
 #include "VistaSDL2RawKeyboardDriver.h"
+
 #include <VistaDeviceDriversBase/VistaDeviceSensor.h>
 #include <VistaKernel/InteractionManager/VistaKeyboardSystemControl.h>
-#include <cstring>
-#include <array>
 
 #include <SDL2/SDL_keyboard.h>
+
+#include <cstring>
+#include <array>
 
 VistaSDL2RawKeyboardDriverCreationMethod::VistaSDL2RawKeyboardDriverCreationMethod(
     IVistaTranscoderFactoryFactory* fac)
     : IVistaDriverCreationMethod(fac) {
-  RegisterSensorType(
+  IVistaDriverCreationMethod::RegisterSensorType(
       "", sizeof(IVistaKeyboardDriver::_sKeyboardMeasure), 20, fac->CreateFactoryForType(""));
 }
 
@@ -37,7 +39,7 @@ IVistaDeviceDriver* VistaSDL2RawKeyboardDriverCreationMethod::CreateDriver() {
   return new VistaSDL2RawKeyboardDriver(this);
 }
 
-int VistaSDL2RawKeyboardDriver::SDLKeyToVistaKey(int key) {
+int VistaSDL2RawKeyboardDriver::SDLKeyToVistaKey(int key) const {
   Uint8 curr = m_currentKeyboardState[key];
   Uint8 prev = m_lastKeyboardState[key];
 
@@ -49,7 +51,7 @@ int VistaSDL2RawKeyboardDriver::SDLKeyToVistaKey(int key) {
   // If the key is currently pressed or not.
   int upModifier = curr ? 1 : -1;
 
-  int result = 0;
+  int result;
   switch (key) {
   case SDL_SCANCODE_ESCAPE:
     result = VISTA_KEY_ESC;

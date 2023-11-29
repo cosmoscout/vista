@@ -21,14 +21,12 @@
 #ifndef _VISTASDL2MOUSEDRIVER_H
 #define _VISTASDL2MOUSEDRIVER_H
 
-#include "VistaDeviceDriversBase/VistaDeviceSensor.h"
-#include "VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h"
+#include <VistaDeviceDriversBase/VistaDeviceSensor.h>
+#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+#include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
+
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_stdinc.h>
-#include <VistaDeviceDriversBase/Drivers/VistaMouseDriver.h>
-#include <VistaInterProcComm/Concurrency/VistaMutex.h>
-#include <map>
-#include <vector>
 
 // Windows DLL build
 #if defined(WIN32) && !defined(VISTASDL2MOUSEDRIVER_STATIC)
@@ -41,16 +39,17 @@
 #define VISTASDL2MOUSEDRIVERAPI
 #endif
 
-class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
+class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver final : public IVistaMouseDriver {
  public:
   explicit VistaSDL2MouseDriver(IVistaDriverCreationMethod*);
+
   ~VistaSDL2MouseDriver() override;
 
  protected:
-  bool DoSensorUpdate(VistaType::microtime dTs) final;
+  bool DoSensorUpdate(VistaType::microtime dTs) override;
 
-  bool DoConnect() final;
-  bool DoDisconnect() final;
+  bool DoConnect() override;
+  bool DoDisconnect() override;
 
  private:
   VistaDeviceSensor*         m_mouseSensor;
@@ -89,10 +88,10 @@ class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriver : public IVistaMouseDriver {
   bool m_connected;
 };
 
-class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriverCreationMethod
+class VISTASDL2MOUSEDRIVERAPI VistaSDL2MouseDriverCreationMethod final
     : public IVistaDriverCreationMethod {
  public:
-  explicit VistaSDL2MouseDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
+  explicit            VistaSDL2MouseDriverCreationMethod(IVistaTranscoderFactoryFactory* fac);
   IVistaDeviceDriver* CreateDriver() override;
 };
 
