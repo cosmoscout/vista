@@ -447,14 +447,17 @@ VistaSystem::~VistaSystem() {
       switch (*rit) {
       case IVistaSystemClassFactory::DISPLAY: {
         delete m_pDisplayManager;
+        m_pDisplayManager = nullptr;
         break;
       }
       case IVistaSystemClassFactory::GRAPHICS: {
         delete m_pGraphicsManager;
+        m_pGraphicsManager = nullptr;
         break;
       }
       case IVistaSystemClassFactory::INTERACTION: {
         delete m_pInteractionManager;
+        m_pInteractionManager = nullptr;
         break;
       }
       default:
@@ -464,10 +467,19 @@ VistaSystem::~VistaSystem() {
   }
 
   delete m_pKeyboardSystemControl;
+  m_pKeyboardSystemControl = nullptr;
+
   delete m_pFramerateDisplay;
+  m_pFramerateDisplay = nullptr;
+
   delete m_pFrameLoop;
+  m_pFrameLoop = nullptr;
+
   delete m_pClusterMode;
+  m_pClusterMode = nullptr;
+
   delete m_pRuntimeLimiter;
+  m_pRuntimeLimiter = nullptr;
 
   for (std::vector<VistaFrameSeriesCapture*>::iterator itCapture = m_vecFrameCaptures.begin();
        itCapture != m_vecFrameCaptures.end(); ++itCapture) {
@@ -475,10 +487,16 @@ VistaSystem::~VistaSystem() {
   }
 
   delete m_pEventManager;
+  m_pEventManager = nullptr;
 
   delete m_pCommandEvent;
+  m_pCommandEvent = nullptr;
+
   delete m_pMessagePort;
+  m_pMessagePort = nullptr;
+
   delete m_pExternalMsg;
+  m_pExternalMsg = nullptr;
 
   for (VistaDriverMap::iterator it = m_pDriverMap->begin(); it != m_pDriverMap->end(); ++it) {
     (*it).second->SetIsEnabled(false);
@@ -487,6 +505,7 @@ VistaSystem::~VistaSystem() {
   }
 
   delete m_pConfigurator;
+  m_pConfigurator= nullptr;
 
 #ifdef VISTA_WITH_ZEROMQ
   /**
@@ -513,18 +532,24 @@ VistaSystem::~VistaSystem() {
 #endif
 
   delete m_pDllHlp;
+  m_pDllHlp = nullptr;
+
   delete m_pDriverMap;
+  m_pDriverMap = nullptr;
 
   delete m_pDfnObjects;
+  m_pDfnObjects = nullptr;
 
   // delete RTC
   delete IDLVistaRTC::GetRTCSingleton();
-  IVistaTimerImp::SetSingleton(NULL);
+  IVistaTimerImp::SetSingleton(nullptr);
 
   VistaIPComm::CloseIPComm();
 
   delete m_pSystemClassFactory;
-  S_pVistaSystem = NULL;
+  m_pSystemClassFactory = nullptr;
+
+  S_pVistaSystem = nullptr;
 
   m_liDriverPluginPathes.push_back(".");
 

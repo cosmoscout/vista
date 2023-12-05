@@ -66,6 +66,7 @@ VistaDisplayManager::~VistaDisplayManager() {
 
   /** @todo  <ms> - find a better place to do this... */
   delete m_pBridge;
+  m_pBridge = nullptr;
 
   for (std::vector<VistaReferenceFrame*>::iterator it = m_vecRefFrames.begin();
        it != m_vecRefFrames.end(); ++it) {
@@ -149,8 +150,8 @@ bool VistaDisplayManager::CreateDisplaySystems(
     vstr::IndentObject oWtaIndent;
     std::string        sWtaType;
     if (oSection.GetValue("WINDOWINGTOOLKIT", sWtaType) == false) {
-      vstr::outi() << "No WindowingToolkitAbstraction specified, defaulting to [GLUT]" << std::endl;
-      sWtaType = "GLUT";
+      vstr::outi() << "No WindowingToolkitAbstraction specified, defaulting to [SDL2]" << std::endl;
+      sWtaType = "SDL2";
     } else {
       vstr::outi() << "WindowingToolkitAbstraction specified as [" << sWtaType << "]" << std::endl;
     }

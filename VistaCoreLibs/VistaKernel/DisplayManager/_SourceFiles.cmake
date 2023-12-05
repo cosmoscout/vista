@@ -1,5 +1,3 @@
-
-
 set( RelativeDir "./DisplayManager" )
 set( RelativeSourceGroup "Source Files\\DisplayManager" )
 set( SubDirs )
@@ -13,8 +11,16 @@ if( VISTACORELIBS_BUILD_WINDOWIMP_GLUT )
 		list( APPEND SubDirs OpenVRGlutWindowImp )
 	endif()
 endif()
+
 if( VISTACORELIBS_BUILD_WINDOWIMP_OSG )
 	list( APPEND SubDirs OpenSceneGraphWindowImp )
+endif()
+
+if ( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
+	list( APPEND SubDirs SDL2WindowImp )
+	if( VISTACORELIBS_USE_OPENVR )
+		list( APPEND SubDirs OpenVRSDL2WindowImp )
+	endif()
 endif()
 
 set( DirFiles	
@@ -69,4 +75,3 @@ endforeach()
 foreach( SubDirFile ${SubDirFiles} )
 	include( ${SubDirFile} )
 endforeach()
-

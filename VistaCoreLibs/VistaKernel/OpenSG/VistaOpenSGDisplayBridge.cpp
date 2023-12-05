@@ -59,6 +59,9 @@
 #ifdef VISTA_WITH_GLUT
 #include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
 #endif
+#ifdef VISTA_WITH_SDL2
+#include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
+#endif
 #ifdef VISTA_WITH_OSG
 #include <VistaKernel/DisplayManager/OpenSceneGraphWindowImp/VistaOSGWindowingToolkit.h>
 #endif
@@ -90,8 +93,13 @@
 #include <OVR.h>
 #include <OVR_CAPI_GL.h>
 #endif
-#ifdef VISTA_WITH_OPENVR
+#if defined(VISTA_WITH_OPENVR) && defined(VISTA_WITH_GLUT)
 #include "VistaKernel/DisplayManager/OpenVRGlutWindowImp/VistaOpenVRGlutWindowingToolkit.h"
+#include <openvr/openvr.h>
+#include <openvr/openvr_capi.h>
+#endif
+#if defined(VISTA_WITH_OPENVR) && defined(VISTA_WITH_SDL2)
+#include "VistaKernel/DisplayManager/OpenVRSDL2WindowImp/VistaOpenVRSDL2WindowingToolkit.h"
 #include <openvr/openvr.h>
 #include <openvr/openvr_capi.h>
 #endif
@@ -1340,6 +1348,7 @@ VistaOpenSGDisplayBridge::VistaOpenSGDisplayBridge(
 
 VistaOpenSGDisplayBridge::~VistaOpenSGDisplayBridge() {
   delete m_pWindowingToolkit;
+  m_pWindowingToolkit = nullptr;
 }
 
 void VistaOpenSGDisplayBridge::SetDisplayManager(VistaDisplayManager* pDisplayManager) {
@@ -2383,6 +2392,13 @@ IVistaWindowingToolkit* VistaOpenSGDisplayBridge::CreateWindowingToolkit(const s
     return m_pWindowingToolkit;
   }
 #endif
+#ifdef VISTA_WITH_SDL2
+  if (VistaAspectsComparisonStuff::StringEquals(sName, "SDL2", false)) {
+    // compare the string once and store the result as enum
+    m_pWindowingToolkit = new VistaSDL2WindowingToolkit;
+    return m_pWindowingToolkit;
+  }
+#endif
 #ifdef VISTA_WITH_OSG
   if (VistaAspectsComparisonStuff::StringEquals(sName, "OSG", false)) {
     // compare the string once and store the result as enum
@@ -2397,10 +2413,17 @@ IVistaWindowingToolkit* VistaOpenSGDisplayBridge::CreateWindowingToolkit(const s
     return m_pWindowingToolkit;
   }
 #endif
-#ifdef VISTA_WITH_OPENVR
+#if defined (VISTA_WITH_OPENVR) && defined (VISTA_WITH_GLUT)
   if (VistaAspectsComparisonStuff::StringEquals(sName, "OPENVR", false)) {
     // compare the string once and store the result as enum
     m_pWindowingToolkit = new VistaOpenVRGlutWindowingToolkit();
+    return m_pWindowingToolkit;
+  }
+#endif
+#if defined (VISTA_WITH_OPENVR) && defined (VISTA_WITH_SDL2)
+  if (VistaAspectsComparisonStuff::StringEquals(sName, "OPENVR_SDL2", false)) {
+    // compare the string once and store the result as enum
+    m_pWindowingToolkit = new VistaOpenVRSDL2WindowingToolkit();
     return m_pWindowingToolkit;
   }
 #endif
@@ -3247,8 +3270,13 @@ bool VistaOpenSGDisplayBridge::SetViewportType(
 #else
     OpenVRViewportData* pOpenVRData = Vista::assert_cast<OpenVRViewportData*>(pData);
 
+#ifdef VISTA_WITH_GLUT
     VistaOpenVRGlutWindowingToolkit* pOpenVRWinTK =
         dynamic_cast<VistaOpenVRGlutWindowingToolkit*>(GetWindowingToolkit());
+#elif defined (VISTA_WITH_SDL2)
+    VistaOpenVRSDL2WindowingToolkit* pOpenVRWinTK =
+        dynamic_cast<VistaOpenVRSDL2WindowingToolkit*>(GetWindowingToolkit());
+#endif
     if (pOpenVRWinTK == NULL) {
       vstr::errp() << "Trying to create OpenVR Viewport without using OpenVR Window Toolkit"
                    << std::endl;

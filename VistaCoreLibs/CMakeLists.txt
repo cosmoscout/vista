@@ -42,18 +42,31 @@ set( VISTACORELIBS_VERSION_PATCH "0" CACHE STRING "Patch package version" )
 vista_set_version( VistaCoreLibs HEAD HEAD )
 # vista_set_version( VistaCoreLibs BRANCH IMAGES ${VISTACORELIBS_VERSION_MAJOR} ${VISTACORELIBS_VERSION_MINOR} ${VISTACORELIBS_VERSION_PATCH} )
 
+
+set( VISTACORELIBS_USE_SDL2_WINDOWIMP OFF CACHE BOOL "Determines if the SDL2-based WindowToolkit Implementation will be prefered" )
+
 vista_find_package( OpenGL QUIET )
 vista_find_package( OpenSG 1.8 QUIET )
-vista_find_package( GLUT QUIET )
 vista_find_package( GLEW QUIET )
+
+if ( VISTACORELIBS_USE_SDL2_WINDOWIMP )
+	vista_find_package( SDL2 QUIET )
+	vista_find_package( SDL2_ttf QUIET )
+endif()
+
+set( VISTACORELIBS_USE_GLUT_WINDOWIMP ON CACHE BOOL "Determines if the GLUT-based WindowToolit Implementation will be prefered" )
+
+if ( VISTACORELIBS_USE_GLUT_WINDOWIMP )
+	vista_find_package( GLUT QUIET )
+endif()
 
 set( BUILD_KERNEL_DEFAULT OFF )
 
 if( FIRST_CONFIGURE_RUN )
 	if( NOT OPENGL_FOUND )
 		message( "OpenGL not found - VistaKernel will be disabled by default" )
-	elseif( NOT GLUT_FOUND )
-		message( "Glut not found - VistaKernel will be disabled by default" )
+	elseif( NOT GLUT_FOUND AND (NOT SDL2_FOUND OR NOT SDL2_TTF_FOUND))
+		message( "Glut and SDL2 not found - VistaKernel will be disabled by default" )
 	elseif( NOT OPENSG_FOUND )
 		message( "OpenSG not found - VistaKernel will be disabled by default" )
 	else()
@@ -65,6 +78,7 @@ endif( FIRST_CONFIGURE_RUN )
 set( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY OFF CACHE BOOL "If set to true, a <Package>Config.cmake file will be created and installed for each library, not just one for the CoreLibs" )
 
 set( VISTACORELIBS_BUILD_WINDOWIMP_GLUT ${GLUT_FOUND} CACHE BOOL "Determines if the GLUT-based WindowToolit Implementation will be built" )
+set( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 ${SDL2_FOUND} CACHE BOOL "Determines if the SDL2-based WindowToolit Implementation will be built" )
 set( VISTACORELIBS_BUILD_WINDOWIMP_OSG FALSE CACHE BOOL "Determines if the OpenSceneGraph-based WindowToolit Implementation will be built" )
 
 
@@ -159,4 +173,3 @@ vista_create_doxygen_target( "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/Doxyfile
 
 # install license files
 install( FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.LESSER" "README" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/VistaCoreLibs" )
-
