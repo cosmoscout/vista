@@ -314,43 +314,7 @@ void VistaOpenSGGraphicsBridge::SetBBoxDrawingEnabled(bool bState) {
 
 //  little helper to manage OSG images
 osg::ImagePtr VistaOpenSGGraphicsBridge::GetCachedOrLoadImage(const string& sFileName) {
-  osg::ImagePtr image = osg::NullFC;
-
-  map<string, osg::ImagePtr>::const_iterator cit = m_mTextureTable.find(sFileName);
-  if (cit == m_mTextureTable.end()) {
-    // not found, so read image from disk
-    image = osg::Image::create();
-    beginEditCP(image);
-    // OSG Bug Hack Fix for relative pathes under windows
-    // may it has something to do with the employed image libraries ???
-
-    bool bSuccess = image->read(sFileName.c_str());
-/**
- * @todo check this...
- *        if the bug still persists, at least the 256 seeme to be quite optimistic!
- */
-#ifdef WIN32
-    if (bSuccess == false) {
-      char buffer[256];
-      GetCurrentDirectory(256, buffer);
-      bSuccess = image->read((string(buffer) + "/" + sFileName).c_str());
-    }
-#endif
-    endEditCP(image);
-
-    if (bSuccess == false)
-      return osg::NullFC;
-
-    addRefCP(image);
-    /**
-     * @todo refcounting should be deferred to refptrs...chance is high that you mess up with it if
-     * you do it manually!
-     */
-    m_mTextureTable.insert(map<string, osg::ImagePtr>::value_type(sFileName, image));
-  } else
-    image = (*cit).second;
-
-  return image;
+  return osg::NullFC;
 }
 
 VistaColor VistaOpenSGGraphicsBridge::GetBackgroundColor() const {

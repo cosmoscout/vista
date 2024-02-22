@@ -1293,19 +1293,6 @@ VistaOpenSGDisplayBridge::VistaOpenSG2DBitmap::~VistaOpenSG2DBitmap() {
 }
 
 bool VistaOpenSGDisplayBridge::VistaOpenSG2DBitmap::SetBitmap(const std::string& strNewFName) {
-  osg::ImageRefPtr oImage(osg::Image::create());
-
-  std::string sF = VistaFileSystemDirectory::GetCurrentWorkingDirectory() +
-                   VistaFileSystemDirectory::GetOSSpecificSeparator() + strNewFName;
-
-  if (oImage->read(sF.c_str()) == true) {
-    VistaOpenSGDisplayBridge* pBr = static_cast<VistaOpenSGDisplayBridge*>(m_pDispBridge);
-    if (pBr->ReplaceForegroundImage(m_sVpName, m_oImage, oImage, m_fXPos, m_fYPos) == true) {
-      m_oImage = oImage;
-    }
-    return true;
-  }
-
   return false;
 }
 
@@ -3817,34 +3804,7 @@ osg::RenderAction* VistaOpenSGDisplayBridge::GetRenderAction() const {
 
 bool VistaOpenSGDisplayBridge::MakeScreenshot(
     const VistaWindow& oWin, const std::string& strFilename) const {
-  int nSizeX, nSizeY;
-  oWin.GetWindowProperties()->GetSize(nSizeX, nSizeY);
-  osg::ImageRefPtr oImage(osg::Image::create());
-  oImage->set(osg::Image::OSG_RGB_PF, nSizeX, nSizeY);
-
-  int nDataSize = nSizeX * nSizeY * 3;
-  int nRead = oWin.ReadRGBImage(reinterpret_cast<VistaType::byte*>(oImage->getData()), nDataSize);
-  if (nRead != nDataSize) {
-    vstr::warnp() << "[VistaOpenSGDisplayBridge::MakeScreenshot]: Reading image from window failed"
-                  << std::endl;
-    return false;
-  }
-
-  // check if the image already has an extension
-  std::size_t nDotPos       = strFilename.find_last_of('.');
-  std::string sFullFileName = strFilename;
-  if (nDotPos == std::string::npos)
-    sFullFileName += ".jpg";
-
-  VistaFileSystemFile      oFile(sFullFileName);
-  VistaFileSystemDirectory oDir = oFile.GetParentDirectory();
-  if (oDir.Exists() == false && oDir.CreateWithParentDirectories() == false) {
-    vstr::warnp()
-        << "[VistaOpenSGDisplayBridge::MakeScreenshot]: Cannot create directory for file \""
-        << sFullFileName << "\"" << std::endl;
-    return false;
-  }
-  return oImage->write(sFullFileName.c_str());
+  return false;
 }
 
 bool VistaOpenSGDisplayBridge::AddSceneOverlay(
@@ -3972,39 +3932,7 @@ bool VistaOpenSGDisplayBridge::Get2DOverlay(
 
 bool VistaOpenSGDisplayBridge::DoLoadBitmap(const std::string& strNewFName,
     VistaType::byte** pBitmapData, int& nWidth, int& nHeight, bool& bAlpha) {
-  // this call may return osg::NullFC, which is ok (clear image)
-  osg::ImageRefPtr image(osg::Image::create());
-
-  if (image == osg::NullFC)
-    return false;
-
-  std::string sCwd = VistaFileSystemDirectory::GetCurrentWorkingDirectory();
-  if (image->read(
-          (sCwd + VistaFileSystemDirectory::GetOSSpecificSeparator() + strNewFName).c_str()) ==
-      true) {
-    beginEditCP(image);
-
-    if (image->getDataType() != osg::Image::OSG_UINT8_IMAGEDATA)
-      image->convertDataTypeTo(osg::Image::OSG_UINT8_IMAGEDATA);
-
-    endEditCP(image);
-
-    VistaType::byte* pNewBitmap = image->getData();
-    nWidth                      = image->getWidth();
-    nHeight                     = image->getHeight();
-    bAlpha                      = image->hasAlphaChannel();
-
-    // copy buffer
-    int iBuffersize = nWidth * nHeight * (bAlpha ? 4 : 3);
-
-    // alloc memory
-    *pBitmapData = new VistaType::byte[iBuffersize];
-
-    // deep copy image data
-    memcpy(*pBitmapData, pNewBitmap, iBuffersize);
-  }
-
-  return true;
+  return false;
 }
 
 bool VistaOpenSGDisplayBridge::Delete2DDrawingObject(Vista2DDrawingObject* p2DObject) {

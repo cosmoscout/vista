@@ -32,7 +32,6 @@
 
 #include <VistaKernel/VistaSystem.h>
 
-#include <VistaKernel/OpenSG/OSGAC3DFileType.h>
 #include <VistaKernel/OpenSG/OSGVistaOpenGLDrawCore.h>
 #include <VistaKernel/OpenSG/VistaOpenSGGraphicsBridge.h>
 
@@ -414,7 +413,6 @@ VistaOpenSGNodeBridge::VistaOpenSGNodeBridge()
     : IVistaNodeBridge()
     , m_afAmbientLight(0.0f, 0.0f, 0.0f, 1.0f)
     , m_bAmbientLightState(false) {
-  osg::OSGAC3DSceneFileType::the(); // side effect, initialize ac3d file type
 }
 
 VistaOpenSGNodeBridge::~VistaOpenSGNodeBridge() {
@@ -932,156 +930,6 @@ IVistaNodeData* VistaOpenSGNodeBridge::NewTextNodeData(IVista3DText* pT) {
 // av006ce
 IVistaNode* VistaOpenSGNodeBridge::LoadNode(const std::string& strFileName, float fScale,
     VistaSceneGraph::eOptFlags flags, const bool bVerbose) {
-  if (VistaFileSystemFile(strFileName).Exists() == false) {
-    vstr::warnp() << "VistaOpenSGNodeBridge::LoadNode() -- "
-                  << "Loading of model file [" << strFileName << "] failed - file does not exist!"
-                  << std::endl;
-    return NULL;
-  }
-
-  osg::NodeRefPtr pModel(osg::NullFC);
-
-  if (flags != VistaSceneGraph::OPT_NONE) {
-    if (bVerbose) {
-      vstr::outi() << "VistaOpenSGNodeBridge::LoadNode(" << strFileName
-                   << ") -- applying optimizations" << std::endl;
-      ;
-    }
-
-    osg::GraphOpSeq* graphOperator = new osg::GraphOpSeq;
-    // removes redundant geometry information
-    // and merges textures
-
-    if (flags & VistaSceneGraph::OPT_MEMORY_HIGH) {
-      graphOperator->addGraphOp(new osg::MaterialMergeGraphOp);
-      graphOperator->addGraphOp(new osg::SharePtrGraphOp);
-      if (bVerbose)
-        vstr::outi() << "# MEMORY (HIGH):\nMaterialMerge\nSharePtr" << std::endl;
-
-    } else if (flags & VistaSceneGraph::OPT_MEMORY_LOW) {
-      graphOperator->addGraphOp(new osg::MaterialMergeGraphOp);
-      if (bVerbose)
-        vstr::outi() << "# MEMORY (LOW):\nMaterialMerge" << std::endl;
-    }
-
-    if (flags & VistaSceneGraph::OPT_GEOMETRY_LOW) {
-      graphOperator->addGraphOp(new osg::MergeGraphOp);
-      if (bVerbose)
-        vstr::outi() << "# GEOMETRY (LOW):\nMerge" << std::endl;
-
-    } else if (flags & VistaSceneGraph::OPT_GEOMETRY_MID) {
-      graphOperator->addGraphOp(new osg::MergeGraphOp);
-      graphOperator->addGraphOp(new osg::StripeGraphOp);
-      if (bVerbose)
-        vstr::outi() << "# GEOMETRY (MID):\nMerge\nStripe" << std::endl;
-
-    } else if (flags & VistaSceneGraph::OPT_GEOMETRY_HIGH) {
-      graphOperator->addGraphOp(new osg::MergeGraphOp);
-      graphOperator->addGraphOp(new osg::StripeGraphOp);
-      if (bVerbose)
-        vstr::outi() << "# GEOMETRY (HIGH):\nMerge\nStripe\nPrune" << std::endl;
-
-      std::string               sOpts = std::string("opt_") + strFileName;
-      float                     nSize = 1.0f;
-      osg::PruneGraphOp::Method m     = osg::PruneGraphOp::SUM_OF_DIMENSIONS;
-
-      VistaIniFileParser oFile;
-      if (oFile.ReadFile(sOpts)) {
-        if (bVerbose)
-          vstr::outi() << "\tResolving PRUNE options from [" << sOpts << "]" << std::endl;
-
-        nSize = oFile.GetPropertyList().GetValueInSubListOrDefault<int>("SIZE", "PRUNE", 1);
-
-        string s = oFile.GetPropertyList().GetValueInSubListOrDefault<std::string>(
-            "METHOD", "PRUNE", "SUM_OF_DIMENSIONS");
-        VistaConversion::StringToLower(s);
-        if (s == "sum_of_dimensions") {
-          m = osg::PruneGraphOp::SUM_OF_DIMENSIONS;
-        } else if (s == "volume") {
-          m = osg::PruneGraphOp::VOLUME;
-        }
-        if (bVerbose) {
-          vstr::outi() << "Using: Prune.SIZE = " << nSize << "\nand: method = " << s << std::endl;
-        }
-      } else {
-        if (bVerbose)
-          vstr::outi() << "Using default options (1.0f and SUM_OF_DIMENSIONS)" << std::endl;
-      }
-
-      graphOperator->addGraphOp(new osg::PruneGraphOp(nSize, m));
-    }
-
-    if (flags & VistaSceneGraph::OPT_CULLING) {
-      if (bVerbose)
-        vstr::outi() << "# CULLING:\nSplit" << std::endl;
-      osg::UInt16        nSize = 1000;
-      std::string        sOpts = std::string("opt_") + strFileName;
-      VistaIniFileParser oFile;
-      if (oFile.ReadFile(sOpts)) {
-        if (bVerbose)
-          vstr::outi() << "\tResolving SPLIT options from [" << sOpts << "]" << std::endl;
-        nSize = (osg::UInt16)oFile.GetPropertyList().GetValueInSubListOrDefault<int>(
-            "MAXPOLYGONS", "SPLIT", 1000);
-      }
-      if (bVerbose)
-        vstr::outi() << "Using nSize = " << nSize << std::endl;
-      graphOperator->addGraphOp(new osg::SplitGraphOp("Split", nSize));
-    }
-
-#if defined(DEBUG)
-    // inspects consitency of the graph loaded, always useful
-    // and does not harm
-    graphOperator->addGraphOp(new osg::VerifyGraphOp("Verify",
-        false,  ///< repair
-        true)); ///< verbose
-#endif
-
-    pModel = osg::SceneFileHandler::the().read(strFileName.c_str(), graphOperator);
-
-    delete graphOperator;
-  } else {
-    if (bVerbose) {
-      vstr::outi() << "VistaOpenSGNodeBridge::LoadNode(" << strFileName
-                   << ") -- applying NO optimizations (" << flags << ")" << std::endl;
-    }
-    pModel = osg::SceneFileHandler::the().read(strFileName.c_str(), NULL);
-  }
-
-  if (pModel != osg::NullFC) {
-    IVistaNode* pRet = dive(this,
-        static_cast<VistaOpenSGGraphicsBridge*>(GetVistaSceneGraph()->GetGraphicsBridge()), pModel);
-
-    if (!pRet)
-      return NULL;
-
-    pRet->SetName(strFileName);
-
-    if (fScale != 1.0f) {
-      VistaOpenSGNodeData* pTransData = static_cast<VistaOpenSGNodeData*>(NewTransformNodeData());
-      osg::Matrix          sc;
-      sc.setScale(fScale);
-
-      osg::TransformPtr pTrans = osg::TransformPtr::dcast(pTransData->GetCore());
-      // should never happen
-      if (!pTrans) {
-        delete pTransData;
-        return NULL;
-      }
-
-      beginEditCP(pTrans, osg::Transform::MatrixFieldMask);
-      pTrans->setMatrix(sc);
-      endEditCP(pTrans, osg::Transform::MatrixFieldMask);
-
-      // pTransData->SetTransform(sc);
-      VistaTransformNode* pTransNode =
-          NewTransformNode(NULL, pTransData, "<load-scale-trans:" + strFileName + ">");
-      pTransNode->AddChild(pRet);
-      return pTransNode;
-    }
-
-    return pRet;
-  }
-
   return NULL;
 }
 
@@ -1197,9 +1045,7 @@ bool VistaOpenSGNodeBridge::ApplyOptimizationToNode(
 /*                                                                            */
 /*============================================================================*/
 bool VistaOpenSGNodeBridge::SaveNode(const std::string& strFName, IVistaNode* pNode) {
-  VistaOpenSGNodeData* pOpenSGNode =
-      Vista::assert_cast<VistaOpenSGNodeData*>(Vista::assert_cast<VistaNode*>(pNode)->GetData());
-  return osg::SceneFileHandler::the().write(pOpenSGNode->GetNode(), strFName.c_str());
+  return false;
 }
 
 /*============================================================================*/

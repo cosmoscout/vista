@@ -4,8 +4,6 @@ set( RelativeDir "./OpenSG" )
 set( RelativeSourceGroup "Source Files\\OpenSG" )
 
 set( DirFiles
-	OSGAC3DFileType.cpp
-	OSGAC3DFileType.h
 	OSGVistaOpenGLDrawCore.cpp
 	OSGVistaOpenGLDrawCore.h
 	OSGVistaOpenGLDrawCore.inl
@@ -24,8 +22,6 @@ set( DirFiles
 	VistaOpenSGGLOverlayForegroundFields.h
 	VistaOpenSGGraphicsBridge.cpp
 	VistaOpenSGGraphicsBridge.h
-	VistaOpenSGImageAndTextureFactory.cpp
-	VistaOpenSGImageAndTextureFactory.h
 	VistaOpenSGNodeBridge.cpp
 	VistaOpenSGNodeBridge.h
 	VistaOpenSGSystemClassFactory.cpp

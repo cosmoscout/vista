@@ -68,7 +68,6 @@
 #pragma warning(pop)
 #endif
 
-#include "VistaOpenSGImageAndTextureFactory.h"
 #include <iostream>
 using namespace std;
 
@@ -100,9 +99,6 @@ VistaOpenSGSystemClassFactory::VistaOpenSGSystemClassFactory(
   m_pRenderAction->setOcclusionCullingMode(osg::RenderAction::OcclusionHierarchicalMultiFrame);
   m_pRenderAction->setOcclusionCulling(false);
   m_pRenderAction->setVolumeDrawing(false);
-
-  IVistaImageAndTextureCoreFactory::SetSingleton(
-      new VistaOpenSGImageAndTextureCoreFactory(m_pRenderAction));
 }
 
 void VistaOpenSGSystemClassFactory::Debug(std::ostream& out, bool bVerbose) const {
