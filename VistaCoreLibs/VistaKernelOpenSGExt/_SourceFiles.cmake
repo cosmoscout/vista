@@ -5,6 +5,8 @@ set( RelativeSourceGroup "Source Files" )
 
 set( DirFiles
 	VistaKernelOpenSGExtConfig.h
+	VistaOpenSGMaterialTools.cpp
+	VistaOpenSGMaterialTools.h
 	VistaOpenSGGraphicsStatsOverlay.cpp
 	VistaOpenSGGraphicsStatsOverlay.h
 	_SourceFiles.cmake
