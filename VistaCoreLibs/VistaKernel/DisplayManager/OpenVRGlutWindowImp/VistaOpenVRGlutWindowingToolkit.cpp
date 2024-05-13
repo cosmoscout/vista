@@ -95,7 +95,3 @@ void VistaOpenVRGlutWindowingToolkit::DisplayWindow(const VistaWindow* pWindow) 
 vr::IVRSystem* VistaOpenVRGlutWindowingToolkit::GetVRSystem() {
   return m_pVRSystem;
 }
-
-/*============================================================================*/
-/* IMPLEMENTATION                                                             */
-/*============================================================================*/

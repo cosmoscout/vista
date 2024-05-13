@@ -62,6 +62,7 @@
 #include "VdfnDemultiplexNode.h"
 #include "VdfnDifferenceNode.h"
 #include "VdfnDumpHistoryNode.h"
+#include "VdfnEulerRotateNode.h"
 #include "VdfnForceFeedbackNode.h"
 #include "VdfnHistoryPort.h"
 #include "VdfnInvertNode.h"
@@ -972,6 +973,7 @@ VISTADFNAPI bool VdfnNodeCreators::RegisterNodeCreators(
   pFac->SetNodeCreator("LatestUpdate[int]", new TVdfnDefaultNodeCreate<TVdfnLatestUpdateNode<int>>);
 
   pFac->SetNodeCreator("AxisRotate", new TVdfnDefaultNodeCreate<VdfnAxisRotateNode>);
+  pFac->SetNodeCreator("EulerRotate", new TVdfnDefaultNodeCreate<VdfnEulerRotateNode>);
   pFac->SetNodeCreator("MatrixCompose", new TVdfnDefaultNodeCreate<VdfnMatrixComposeNode>);
   pFac->SetNodeCreator("ProjectVector", new VdfnProjectVectorNodeCreate);
   pFac->SetNodeCreator("ForceFeedback", new VdfnForceFeedbackNodeCreate(pDrivers));

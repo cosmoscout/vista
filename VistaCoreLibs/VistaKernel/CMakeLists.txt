@@ -1,5 +1,3 @@
-
-
 vista_adopt_version( VistaKernel VistaCoreLibs )
 
 set( VISTAKERNEL_INTERNAL_DEPENDENCIES 
@@ -29,10 +27,17 @@ if( VISTACORELIBS_BUILD_WINDOWIMP_GLUT )
 		add_definitions( -DVISTA_GLUT_ABORT_ON_FRAME_EXCEPTIONS )
 	endif()
 endif()
+
 if( VISTACORELIBS_BUILD_WINDOWIMP_OSG )
 	vista_use_package( OpenSceneGraph 3+ REQUIRED osgViewer osgGA )
 	vista_use_package( GLUT REQUIRED ) # currently still needed for text
 	add_definitions( -DVISTA_WITH_OSG )
+endif()
+
+if( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
+	vista_use_package( SDL2 REQUIRED )
+	vista_use_package( SDL2_ttf REQUIRED )
+	add_definitions( -DVISTA_WITH_SDL2 )
 endif()
 
 vista_find_package( ZMQ COMPONENTS PGM QUIET )
@@ -59,7 +64,7 @@ if( VISTACORELIBS_USE_INFINITE_REVERSE_PROJECTION )
 	add_definitions( -DVISTA_OPENVR_INFINITE_REVERSE_PROJECTION )
 endif()
 
-if( NOT VISTACORELIBS_BUILD_WINDOWIMP_GLUT AND NOT VISTACORELIBS_BUILD_WINDOWIMP_OSG )
+if( NOT VISTACORELIBS_BUILD_WINDOWIMP_GLUT AND NOT VISTACORELIBS_BUILD_WINDOWIMP_OSG AND NOT VISTACORELIBS_BUILD_WINDOWIMP_SDL2 )
 	message( WARNING "No Windowing Toolkit will be built!" )
 endif()
 

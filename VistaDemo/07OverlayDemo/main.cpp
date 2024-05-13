@@ -44,7 +44,7 @@
 #include <VistaKernel/EventManager/VistaEventManager.h>
 #include <VistaKernel/EventManager/VistaSystemEvent.h>
 
-#include <VistaKernel/DisplayManager //Vista3DTextOverlay.h>
+#include <VistaKernel/DisplayManager/Vista3DTextOverlay.h>
 #include <VistaKernel/DisplayManager/VistaTextEntity.h>
 
 #include <VistaAspects/VistaExplicitCallbackInterface.h>

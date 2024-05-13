@@ -83,6 +83,7 @@ using namespace ATL;
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <cstdint>
 #endif // defined WIN32
 
 #if !defined(_isnan)

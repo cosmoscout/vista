@@ -480,6 +480,11 @@ class VISTADEVICEDRIVERSAPI IVistaMeasureTranscode : public IVistaReflectionable
   typedef TTranscodeValueGet<double> DoubleGet;
 
   /**
+   * return type of a float (convenience)
+   */
+  typedef TTranscodeValueGet<float> FloatGet;
+
+  /**
    * return type of int (convenience)
    */
   typedef TTranscodeValueGet<int> IntGet;
@@ -488,6 +493,11 @@ class VISTADEVICEDRIVERSAPI IVistaMeasureTranscode : public IVistaReflectionable
    * return type of unsigned int (convenience)
    */
   typedef TTranscodeValueGet<unsigned int> UIntGet;
+
+  /**
+   * return type of bool (convenience)
+   */
+  typedef TTranscodeValueGet<bool> BoolGet;
 
   /**
    * return type of an array of doubles (convenience).
