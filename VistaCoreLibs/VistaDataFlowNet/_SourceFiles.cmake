@@ -90,6 +90,8 @@ set( DirFiles
 	VdfnProjectVectorNode.h
 	VdfnQuaternionSlerpNode.cpp
 	VdfnQuaternionSlerpNode.h
+	VdfnQuaternionToEulerNode.cpp
+	VdfnQuaternionToEulerNode.h
 	VdfnRangeCheckNode.h
 	VdfnReEvalNode.cpp
 	VdfnReEvalNode.h

@@ -73,6 +73,7 @@
 #include "VdfnNodeFactory.h"
 #include "VdfnProjectVectorNode.h"
 #include "VdfnQuaternionSlerpNode.h"
+#include "VdfnQuaternionToEulerNode.h"
 #include "VdfnReadWorkspaceNode.h"
 #include "VdfnSamplerNode.h"
 #include "VdfnTrackingRedundancyNode.h"
@@ -929,6 +930,8 @@ VISTADFNAPI bool VdfnNodeCreators::RegisterNodeCreators(
       "DecomposeTransformMatrix", new TVdfnDefaultNodeCreate<VdfnDecomposeTransformMatrixNode>);
 
   pFac->SetNodeCreator("QuaternionSlerp", new TVdfnDefaultNodeCreate<VdfnQuaternionSlerpNode>);
+  
+  pFac->SetNodeCreator("QuaternionToEuler", new TVdfnDefaultNodeCreate<VdfnQuaternionToEulerNode>);
 
   pFac->SetNodeCreator("And[bool]",
       new TVdfnBinOpCreate<bool, bool, bool>(new VdfnBinaryOps::AndOp<bool, bool, bool>));
