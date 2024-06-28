@@ -113,15 +113,18 @@ void VistaSDL2TextEntity::DrawCharacters() {
   // Everything below here is very antiquated OpenGL, since the calling code is using functions like
   // glWindowPos* and glRasterPos* to set the rendering position.
 
-  glPushAttrib(GL_BLEND);
-  glPushAttrib(GL_BLEND_EQUATION);
-  glPushAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_PIXEL_MODE_BIT | GL_COLOR_BUFFER_BIT
+               | GL_CLIENT_PIXEL_STORE_BIT);
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  // We need to save this value, so we can change it back after rendering.
+  int initialRowLength;
+  glGetIntegerv(GL_UNPACK_ROW_LENGTH, &initialRowLength);
+
   // We need to tell OpenGL, the length of a row in pixel. SDL gives the row length in bits, so we
-  // have to devide it by the BytesPerPixel.
+  // have to divide it by the BytesPerPixel.
   glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->pitch / surface->format->BytesPerPixel);
 
   // We get the current raster position, because we later need it for some transformation.
@@ -136,13 +139,13 @@ void VistaSDL2TextEntity::DrawCharacters() {
   glWindowPos2f(x, y + surface->h);
   glPixelZoom(1, -1);
 
-  // We render the text using the SDL buffer. Somehow the GL_BGRA format works, althoug SDL claims
+  // We render the text using the SDL buffer. Somehow the GL_BGRA format works, although SDL claims
   // that they use the ARGB format for their surface. Maybe this is a result of SDL also saving the
   // image upside down.
   glDrawPixels(surface->w, surface->h, GL_BGRA, GL_UNSIGNED_BYTE, surface->pixels);
 
-  glPopAttrib();
-  glPopAttrib();
+  // Reset GL state to original.
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, initialRowLength);
   glPopAttrib();
 
   SDL_FreeSurface(surface);
