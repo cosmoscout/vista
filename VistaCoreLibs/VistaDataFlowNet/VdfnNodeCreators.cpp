@@ -73,6 +73,7 @@
 #include "VdfnNodeFactory.h"
 #include "VdfnProjectVectorNode.h"
 #include "VdfnQuaternionSlerpNode.h"
+#include "VdfnQuaternionToEulerNode.h"
 #include "VdfnReadWorkspaceNode.h"
 #include "VdfnSamplerNode.h"
 #include "VdfnTrackingRedundancyNode.h"
@@ -295,7 +296,7 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //	{
 //		VistaDeviceSensor* pSensor = NULL;
 //		const VistaPropertyList &subs =
-//oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
+// oParams.GetPropertyConstRef("param").GetPropertyListConstRef();
 //
 //		std::string sDriver;
 //		if( subs.GetValue( "driver", sDriver ) == false )
@@ -313,11 +314,11 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //		IVistaDeviceDriver *pDriver = m_pMap->GetDeviceDriver( sDriver );
 //		if( pDriver == NULL )
 //		{
-//			vstr::warnp() << "[DriverSensorNodeCreate]: Driver [" << sDriver << "] not found
-//in map\n"
+//			vstr::warnp() << "[DriverSensorNodeCreate]: Driver [" << sDriver << "] not
+//found in map\n"
 //						<< vstr::indent << " Available Drivers:" <<
-//std::endl; 			vstr::IndentObject oIndent; 			for(VistaDriverMap::const_iterator cit = m_pMap->begin();
-//				cit != m_pMap->end(); ++cit)
+// std::endl; 			vstr::IndentObject oIndent;
+// for(VistaDriverMap::const_iterator cit = m_pMap->begin(); 				cit != m_pMap->end(); ++cit)
 //			{
 //				vstr::warni()  << (*cit).first << std::endl;
 //			}
@@ -336,9 +337,11 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //			if( nType == VistaDriverSensorMappingAspect::INVALID_TYPE )
 //			{
 //				vstr::warnp() << "[SensorNodeCreate]: - "
-//						<< "Driver [" << sDriver << "] has a sensor mapping aspect,
+//						<< "Driver [" << sDriver << "] has a sensor mapping
+//aspect,
 //"
-//						<< "but no sensor type with name [" << sSensorType <<
+//						<< "but no sensor type with name [" << sSensorType
+//<<
 //"].\n"
 //						<< vstr::indent << "Type names are: " << std::endl;
 //				std::list<std::string> liTypes = pMappingAspect->GetTypeNames();
@@ -356,14 +359,15 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //			if( !bHasSensorIndex && !bHasSensorName )
 //			{
 //				if( pMappingAspect->GetNumberOfRegisteredTypes() != 1
-//					&& pMappingAspect->GetNumRegisteredSensorsForType( nType ) > 1
+//					&& pMappingAspect->GetNumRegisteredSensorsForType( nType ) >
+//1
 //)
 //				{
 //					vstr::warnp() << "[SensorNodeCreate]: - Driver ["
 //							<< sDriver << "] requires a sensor to be
-//specified!"
-//							<< " Use \"sensor_name\" or \"sensor_index\"" <<
-//std::endl; 					return NULL;
+// specified!"
+//							<< " Use \"sensor_name\" or
+//\"sensor_index\"" << std::endl; 					return NULL;
 //				}
 //				unsigned int nId = pMappingAspect->GetSensorId( nType, 0 );
 //				pSensor = pDriver->GetSensorByIndex( nId );
@@ -383,15 +387,15 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //				if( bHasSensorName )
 //				{
 //					vstr::warnp() << "[SensorNodeCreate]: - "
-//						<< "Driver [" << sDriver << "] has no sensor with name [" <<
-//sSensorName
+//						<< "Driver [" << sDriver << "] has no sensor with
+//name [" << sSensorName
 //						<< "] for type [" << sSensorType << "].\n";
 //				}
 //				else
 //				{
 //					vstr::warnp() << "[SensorNodeCreate]: - "
-//						<< "Driver [" << sDriver << "] has no sensor with Id [" <<
-//nSensorID
+//						<< "Driver [" << sDriver << "] has no sensor with Id
+//[" << nSensorID
 //						<< "] for type [" << sSensorType << "].\n";
 //				}
 //			}
@@ -418,7 +422,7 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //						<< sDriver << "] requires a sensor to be specified!
 //"
 //						<< "Use \"sensor_name\" or \"sensor_index\"" <<
-//std::endl; 				return NULL;
+// std::endl; 				return NULL;
 //			}
 //
 //			if( pSensor == NULL )
@@ -426,14 +430,14 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //				if( bHasSensorName )
 //				{
 //					vstr::warnp() << "[SensorNodeCreate]: - "
-//						<< "Driver [" << sDriver << "] has no sensor with name [" <<
-//sSensorName << "].\n";
+//						<< "Driver [" << sDriver << "] has no sensor with
+//name [" << sSensorName << "].\n";
 //				}
 //				else
 //				{
 //					vstr::warnp() << "[SensorNodeCreate]: - "
-//						<< "Driver [" << sDriver << "] has no sensor with Id [" <<
-//nSensorID << "].\n";
+//						<< "Driver [" << sDriver << "] has no sensor with Id
+//[" << nSensorID << "].\n";
 //				}
 //				vstr::warni() << "Available sensors are: \n";
 //				vstr::IndentObject oIndent;
@@ -441,7 +445,7 @@ IVdfnNode* VdfnHistoryProjectNodeCreate::CreateNode(const VistaPropertyList& oPa
 //				{
 //					vstr::warni() << "Id: " << i
 //							<<  "\tName: " <<
-//pDriver->GetSensorByIndex(i)->GetSensorName()
+// pDriver->GetSensorByIndex(i)->GetSensorName()
 //							<< std::endl;
 //				}
 //				return NULL;
@@ -929,6 +933,8 @@ VISTADFNAPI bool VdfnNodeCreators::RegisterNodeCreators(
       "DecomposeTransformMatrix", new TVdfnDefaultNodeCreate<VdfnDecomposeTransformMatrixNode>);
 
   pFac->SetNodeCreator("QuaternionSlerp", new TVdfnDefaultNodeCreate<VdfnQuaternionSlerpNode>);
+
+  pFac->SetNodeCreator("QuaternionToEuler", new TVdfnDefaultNodeCreate<VdfnQuaternionToEulerNode>);
 
   pFac->SetNodeCreator("And[bool]",
       new TVdfnBinOpCreate<bool, bool, bool>(new VdfnBinaryOps::AndOp<bool, bool, bool>));
