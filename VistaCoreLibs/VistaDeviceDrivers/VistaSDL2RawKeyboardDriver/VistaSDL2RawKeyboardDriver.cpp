@@ -59,6 +59,9 @@ int VistaSDL2RawKeyboardDriver::SDLKeyToVistaKey(int key) const {
   case SDL_SCANCODE_RETURN:
     result = VISTA_KEY_ENTER;
     break;
+  case SDL_SCANCODE_TAB:
+    result = VISTA_KEY_TAB;
+    break;
   case SDL_SCANCODE_BACKSPACE:
     result = VISTA_KEY_BACKSPACE;
     break;
