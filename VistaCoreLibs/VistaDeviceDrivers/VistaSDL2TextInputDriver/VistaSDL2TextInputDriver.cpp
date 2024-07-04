@@ -50,6 +50,8 @@ int32_t SDLKeyToVistaKey(uint8_t key) {
     return VISTA_KEY_ESC;
   case SDL_SCANCODE_RETURN:
     return VISTA_KEY_ENTER;
+  case SDL_SCANCODE_TAB:
+    return VISTA_KEY_TAB;
   case SDL_SCANCODE_BACKSPACE:
     return VISTA_KEY_BACKSPACE;
   case SDL_SCANCODE_F1:
@@ -115,6 +117,7 @@ bool IsSpecialKey(uint8_t key) {
   switch (key) {
   case SDL_SCANCODE_ESCAPE:
   case SDL_SCANCODE_RETURN:
+  case SDL_SCANCODE_TAB:
   case SDL_SCANCODE_BACKSPACE:
   case SDL_SCANCODE_F1:
   case SDL_SCANCODE_F2:
