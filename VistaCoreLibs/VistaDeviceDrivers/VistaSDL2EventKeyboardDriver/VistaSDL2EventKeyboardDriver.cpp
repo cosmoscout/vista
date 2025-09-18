@@ -51,6 +51,8 @@ int SDLKeyToVistaKey(int key, SDL_Keycode code) {
     return VISTA_KEY_ESC;
   case SDL_SCANCODE_RETURN:
     return VISTA_KEY_ENTER;
+  case SDL_SCANCODE_TAB:
+    return VISTA_KEY_TAB;
   case SDL_SCANCODE_BACKSPACE:
     return VISTA_KEY_BACKSPACE;
   case SDL_SCANCODE_F1:
