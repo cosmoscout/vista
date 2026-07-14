@@ -41,9 +41,6 @@ if( VISTA_COMMON_BUILD )
 endif()
 set( VISTADEMO_COMMON_BUILD TRUE )
 
-# Standard package config
-vista_configure_cpack( VistaDemo )
-
 vista_conditional_add_subdirectory( VISTADEMO_BUILD_01KEYBOARDDEMO 01KeyboardDemo ON )
 vista_conditional_add_subdirectory( VISTADEMO_BUILD_02GEOMETRYDEMO 02GeometryDemo ON )
 vista_conditional_add_subdirectory( VISTADEMO_BUILD_03TEXTDEMO 03TextDemo ON )

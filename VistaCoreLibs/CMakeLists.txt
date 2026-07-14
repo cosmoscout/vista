@@ -33,8 +33,6 @@ include( VistaCommon )
 # Self include
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
-vista_enable_most_compiler_warnings()
-
 set( VISTACORELIBS_VERSION_MAJOR "1" CACHE STRING "Major package version" )
 set( VISTACORELIBS_VERSION_MINOR "0" CACHE STRING "Minor package version" )
 set( VISTACORELIBS_VERSION_PATCH "0" CACHE STRING "Patch package version" )
@@ -120,9 +118,6 @@ add_definitions(
 	-DNOMINMAX
 )
 
-# Standard package config
-vista_configure_cpack( VistaCoreLibs )
-
 # Let the user decide which libraries to build
 vista_conditional_add_subdirectory( VISTACORELIBS_BUILD_BASE 				VistaBase				ON ADVANCED   ADD_TO_LIST VISTACORELIBS_COMPONENTS )
 vista_conditional_add_subdirectory( VISTACORELIBS_BUILD_ASPECTS				VistaAspects			ON ADVANCED   ADD_TO_LIST VISTACORELIBS_COMPONENTS )
@@ -153,23 +148,7 @@ if( NOT ${VISTA_BUILD_PACKS} )
 	vista_create_cmake_configs( VistaCoreLibs 
 							"${CMAKE_CURRENT_SOURCE_DIR}/VistaBuild/CMake/VistaCoreLibsConfig-build.cmake_proto"
 							"${CMAKE_CURRENT_SOURCE_DIR}/VistaBuild/CMake/VistaCoreLibsConfig-install.cmake_proto" )
-	vista_create_uninstall_target()
-else()
-	# VistaDrivers in lib-subdir
-	# install is not known to CPack, everything has to be prepared here.
-	if( ${VISTA_CPACK_GENERATOR} STREQUAL "RPM" AND UNIX )
-		if( VISTA_64BIT )
-			file( WRITE "${CMAKE_CURRENT_SOURCE_DIR}/vistadrivers.conf" "${CMAKE_INSTALL_PREFIX}/lib64/DriverPlugins" )
-		else()
-			file( WRITE "${CMAKE_CURRENT_SOURCE_DIR}/vistadrivers.conf" "${CMAKE_INSTALL_PREFIX}/lib/DriverPlugins" )
-		endif()
-		install( FILES "${CMAKE_CURRENT_SOURCE_DIR}/vistadrivers.conf"
-			 DESTINATION "/etc/ld.so.conf.d"
-			 PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
-	endif()
 endif()
-
-vista_create_doxygen_target( "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/Doxyfile" )
 
 # install license files
 install( FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.LESSER" "README" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/VistaCoreLibs" )

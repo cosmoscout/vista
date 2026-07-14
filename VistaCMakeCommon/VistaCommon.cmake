@@ -10,14 +10,7 @@
 # vista_configure_app( PACKAGE_NAME [OUT_NAME] )
 # vista_configure_lib( PACKAGE_NAME [OUT_NAME] )
 # vista_install( TARGET [INCLUDE/BIN_SUBDIRECTORY [LIBRARY_SUBDIRECTORY] ] [NO_POSTFIX] )
-# vista_install_files_by_extension( SEARCH_ROOT INSTALL_SUBDIR EXTENSION1 [EXTENSION2 ...] )
-# vista_install_all_dlls( INSTALL_SUBDIR )
-# vista_add_target_pathscript_dynamic_lib_path( _PACKAGE_NAME _VALUE [PATH_LIST] )
 # vista_add_pathscript_dynamic_lib_path( _VALUE [PATH_LIST] )
-# vista_add_target_pathscript_envvar( _PACKAGE_NAME _ENVVAR _VALUE [PATH_LIST] )
-# vista_add_pathscript_envvar( _ENVVAR _VALUE [PATH_LIST] )
-# vista_set_target_msvc_arguments( _PACKAGE_NAME _COMMANDLINE_VARS )
-# vista_create_cmake_config_build( PACKAGE_NAME CONFIG_PROTO_FILE TARGET_DIR )
 # vista_create_cmake_config_install( PACKAGE_NAME CONFIG_PROTO_FILE TARGET_DIR )
 # vista_create_version_config( PACKAGE_NAME VERSION_PROTO_FILE )
 # vista_create_cmake_configs( TARGET [CUSTOM_CONFIG_FILE_BUILD [CUSTOM_CONFIG_FILE_INSTALL] ] )
@@ -27,20 +20,11 @@
 # vista_create_info_file( PACKAGE_NAME TARGET_DIR INSTALL_DIR )  included from VistaBuildInfo.cmake
 # vista_delete_info_file( PACKAGE_NAME TARGET_DIR )              included from VistaBuildInfo.cmake
 # vista_create_default_info_file( PACKAGE_NAME )
-# vista_create_doxygen_target( DOXYFILE [WORKING_DIR] )
-# vista_create_uninstall_target( [ON|OFF] )
 # vista_set_install_permissions( OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE )
 
 # UTILITY MACROS:
-# require_vistacommon_version( SVN_REVISION )
 # vista_set_defaultvalue( <cmake set syntax> )
-# vista_add_files_to_sources( TARGET_LIST ROOT_DIR [SOURCE_GROUP group_name] EXTENSION1 [EXTENSION2 ...] )
 # vista_conditional_add_subdirectory( VARIABLE_NAME DIRECTORY [ON|OFF] [ADVANCED [MSG string] )
-# replace_svn_revision_tag( STRING )
-# vista_enable_all_compiler_warnings()
-# vista_enable_most_compiler_warnings()
-# unix_require_cpp11()
-# unix_require_cpp14()
 
 # GENERAL SETTINGS
 # adds info variables
@@ -77,9 +61,7 @@ set( VISTA_COMMON_INCLUDED TRUE )
 
 set( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
 
-if( CMAKE_VERSION VERSION_GREATER 2.8.12 OR CMAKE_VERSION VERSION_EQUAL 2.8.12 )
-	cmake_policy( SET CMP0022 OLD )
-endif()
+cmake_policy( SET CMP0022 NEW )
 
 #this package sets the variables VISTA_HWARCH, VISTA_COMPATIBLE_HWARCH and VISTA_64BIT
 include( VistaHWArchSettings )
@@ -89,16 +71,6 @@ include( VistaBuildInfo )
 ###########################
 ###   Utility macros    ###
 ###########################
-
-# require_vistacommon_version( SVN_REVISION )
-# macro to verify that the VistaCMakeCommon's svn revision is high enough (e.g. to ensure that bugfixes are
-# used. If the VistaCMakeCommon's svn revisionis less than the provided number, a warning it emitted
-macro( require_vistacommon_version _SVN_REVISION )
-	if( ${VISTACMAKECOMMON_REVISION} LESS ${_SVN_REVISION} )
-		message( WARNING "VistaCMakeCommon is requested to have at least revision ${_SVN_REVISION}, but is only "
-						"Revision ${VISTACMAKECOMMON_REVISION} - please update your VistaCMakeCommon!" )
-	endif( ${VISTACMAKECOMMON_REVISION} LESS ${_SVN_REVISION} )
-endmacro( require_vistacommon_version )
 
 # vista_set_defaultvalue( <cmake set() syntax> )
 # macro for overriding default values of pre-initialized variables
@@ -116,72 +88,6 @@ macro( vista_set_defaultvalue _VAR_NAME )
 		set( VISTA_${_VAR_NAME}_ALREADY_INITIALIZED TRUE CACHE INTERNAL "" FORCE )
 	endif()
 endmacro( vista_set_defaultvalue )
-
-# vista_add_files_to_sources( TARGET_LIST ROOT_DIR [NON_RECURSIVE] [SOURCE_GROUP group_name | SOURCE_GROUP_MIRROR_DIR prefix] EXTENSION1 [EXTENSION2 ...] )
-# searches files with any of the passed extensions in the specified root_dir. These files are added to the
-# passed list. If the source_group option is given, the files are also added to the specified source group.
-# The root folder will be searched recursively unless the NON_RECURSIVE option is given
-# IMPORTANT NOTE: due to cmake's string replacement hicka-di-hoo, if you want to use subfolders in your sourcegroups,
-# you'll have to use 4(!) backslashes as separator (e.g. "folder\\\\subfolder")
-macro( vista_add_files_to_sources _TARGET_LIST _SEARCH_ROOT )
-	set( _RECURSIVE TRUE )	
-	set( _EXTENSIONS ${ARGN} )
-	set( _SOURCE_GROUP )
-	set( _SOURCE_GROUP_MIRROR_PATH FALSE )
-	
-	if( "${ARGV2}" STREQUAL "NON_RECURSIVE" )
-		set( _RECURSIVE FALSE )
-		if( ${ARGV3} STREQUAL "SOURCE_GROUP" )
-			set( _SOURCE_GROUP ${ARGV4} )
-			list( REMOVE_AT _EXTENSIONS 0 1 2 )
-		else()
-			list( REMOVE_AT _EXTENSIONS 0 )
-		endif()
-		
-	elseif( ${ARGV2} STREQUAL "SOURCE_GROUP" )
-		set( _SOURCE_GROUP ${ARGV3} )
-		if( ${ARGV4} STREQUAL "NON_RECURSIVE" )
-			set( _RECURSIVE FALSE )
-			list( REMOVE_AT _EXTENSIONS 0 1 2 )
-		else()
-			list( REMOVE_AT _EXTENSIONS 0 1 )
-		endif()
-		
-	elseif( ${ARGV2} STREQUAL "SOURCE_GROUP_MIRROR_DIR" )
-		set( _SOURCE_GROUP ${ARGV3} )
-		set( _SOURCE_GROUP_MIRROR_PATH TRUE )
-		if( ${ARGV4} STREQUAL "NON_RECURSIVE" )
-			set( _RECURSIVE FALSE )
-			list( REMOVE_AT _EXTENSIONS 0 1 2 )
-		else()
-			list( REMOVE_AT _EXTENSIONS 0 1 )
-		endif()
-		
-	endif()
-	
-	set( _FOUND_FILES )
-	foreach( _EXT ${_EXTENSIONS} )
-		if( _RECURSIVE )
-			file( GLOB_RECURSE _FOUND_FILES "${_SEARCH_ROOT}/*.${_EXT}" "${_SEARCH_ROOT}/**/*.${_EXT}" )
-		else()
-			file( GLOB _FOUND_FILES "${_SEARCH_ROOT}/*.${_EXT}" )
-		endif()
-		list( APPEND ${_TARGET_LIST} ${_FOUND_FILES} )
-		if( _SOURCE_GROUP_MIRROR_PATH )
-			get_filename_component( _ABSOLUTE_SEARCH_ROOT "${_SEARCH_ROOT}" ABSOLUTE )
-			foreach( _FILE ${_FOUND_FILES} )
-				file( RELATIVE_PATH _REL_PATH "${_ABSOLUTE_SEARCH_ROOT}" "${_FILE}" )
-				get_filename_component( _REL_PATH "${_REL_PATH}" PATH )
-				set( _SOURCE_GROUP_NAME "${_SOURCE_GROUP}/${_REL_PATH}" )
-				string( REPLACE "/" "\\" _SOURCE_GROUP_NAME "${_SOURCE_GROUP_NAME}" )
-				source_group( "${_SOURCE_GROUP_NAME}" FILES "${_FILE}" )
-			endforeach()
-		elseif( _SOURCE_GROUP )
-			source_group( ${_SOURCE_GROUP} FILES ${_FOUND_FILES} )
-		endif()
-	endforeach( _EXT ${_EXTENSIONS} )
-endmacro( vista_add_files_to_sources )
-
 
 # vista_conditional_add_subdirectory( VARIABLE_NAME DIRECTORY [ON|OFF] [ADVANCED [MSG string] )
 # creates a cache bool variable with the specified name and cache message, initialized to the desired
@@ -302,53 +208,6 @@ function( local_get_existing_config_filename _NAME _ROOT_DIR _CONFIG_FILE _FILEN
 	unset( PACKAGE_REFERENCE_EXISTS_TEST )
 	set( ${_FILENAME} ${${_NAME_UPPER}_REFERENCED_FILE} PARENT_SCOPE )
 endfunction()
-
-# vista_enable_all_compiler_warnings()
-# Enables all compiler warnings, excluding some (subjectively less important) ones
-macro( vista_enable_all_compiler_warnings )
-	if( NOT "${VISTA_SHOW_ALL_WARNINGS_EXECUTED}" )
-		set( VISTA_SHOW_ALL_WARNINGS_EXECUTED TRUE CACHE INTERNAL "" )
-		if( MSVC )
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4" CACHE STRING "Flags used by the compiler during all build types." FORCE )
-		elseif( UNIX )
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra" CACHE STRING "Flags used by the compiler during all build types." FORCE )
-		endif()
-	endif()
-endmacro()
-
-
-# vista_enable_most_compiler_warnings()
-# Enables most compilerwarnings, excluding some (subjectively less important) ones
-macro( vista_enable_most_compiler_warnings )
-	if( NOT "${VISTA_SHOW_MOST_WARNINGS_EXECUTED}" )
-		set( VISTA_SHOW_MOST_WARNINGS_EXECUTED TRUE CACHE INTERNAL "" )
-		if( MSVC )
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4244 /wd4100 /wd4512 /wd4245 /wd4389" CACHE STRING "Flags used by the compiler during all build types." FORCE )
-		elseif( UNIX )
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-reorder" CACHE STRING "Flags used by the compiler during all build types." FORCE )
-		endif()
-	endif()
-endmacro()
-
-macro( unix_require_cpp11 )
-	if( UNIX )
-		# check if there is already a c++ flag present
-		if( NOT "${CMAKE_CXX_FLAGS}" MATCHES ".*-std=.+" )
-			message( "C++11 features required - adding compiler flag -std=c++11 to CMAKE_CXX_FLAGS" )
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" CACHE STRING "Flags used by the compiler during all build types." FORCE )
-		endif()
-	endif()
-endmacro()
-
-macro( unix_require_cpp14 )
-	if( UNIX )
-		# check if there is already a c++ flag present
-		if( NOT "${CMAKE_CXX_FLAGS}" MATCHES ".*-std=.+" )
-			message( "C++14 features required - adding compiler flag -std=c++14 to CMAKE_CXX_FLAGS" )
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14" CACHE STRING "Flags used by the compiler during all build types." FORCE )
-		endif()
-	endif()
-endmacro()
 
 ###########################
 ###   Package macros    ###
@@ -1326,21 +1185,6 @@ macro( vista_configure_lib _PACKAGE_NAME )
 	endif()
 endmacro()
 
-
-# vista_add_target_pathscript_dynamic_lib_path( _PACKAGE_NAME _PATH [PATH_LIST] )
-# adds an environment variable that will be added to the set_path_for_* scripts
-# and the msvc projects for the specified application target
-# if the option PATH_LIST is provided, the input will be transformed to a list
-# of pathes using the OS-specific separator
-macro( vista_add_target_pathscript_dynamic_lib_path _PACKAGE_NAME _PATH )
-	if( UNIX AND ${ARGC} GREATER 2 AND "${ARGV2}" STREQUAL "PATH_LIST" )
-		string( REPLACE ";" ":" _OUTPUT_LIST "${_PATH}" )
-		list( APPEND VISTA_${_PACKAGE_NAME}_ADDITIONAL_PATHENTRIES "${_OUTPUT_LIST}" )
-	else()
-		list( APPEND VISTA_${_PACKAGE_NAME}_ADDITIONAL_PATHENTRIES "${_PATH}" )
-	endif()
-endmacro()
-
 # vista_add_pathscript_dynamic_lib_path( _PATH )
 # adds an environment variable that will be added to the set_path_for_* scripts
 # and the msvc projects for all apps that are configured afterwards
@@ -1354,47 +1198,6 @@ macro( vista_add_pathscript_dynamic_lib_path _PATH )
 		list( APPEND VISTA_ADDITIONAL_PATHENTRIES "${_PATH}" )
 	endif( UNIX AND ${ARGC} GREATER 1 AND "${ARGV1}" STREQUAL "PATH_LIST" )
 endmacro( vista_add_pathscript_dynamic_lib_path _PATH )
-
-
-# vista_add_target_pathscript_envvar( _PACKAGE_NAME _ENVVAR _VALUE )
-# adds an environment variable that will be added to the set_path_for_* scripts
-# and the msvc projects for the specified application target
-# if the option PATH_LIST is provided, the input will be transformed to a list
-# of pathes using the OS-specific separator
-macro( vista_add_target_pathscript_envvar _PACKAGE_NAME _ENVVAR _VALUE )
-	if( UNIX AND ${ARGC} GREATER 4 AND "${ARGV4}" STREQUAL "PATH_LIST" )
-		string( REPLACE ";" ":" _OUTPUT_LIST "${_VALUE}" )
-		list( APPEND VISTA_${_PACKAGE_NAME}_ENVVARS "${_ENVVAR}" "${_OUTPUT_LIST}" )
-	else()
-		list( APPEND VISTA_${_PACKAGE_NAME}_ENVVARS "${_ENVVAR}" "${_VALUE}" )
-	endif( UNIX AND ${ARGC} GREATER 4 AND "${ARGV4}" STREQUAL "PATH_LIST" )
-endmacro( vista_add_target_pathscript_envvar )
-
-# vista_add_target_pathscript_envvar( _ENVVAR _VALUE )
-# adds an environment variable that will be added to the set_path_for_* scripts
-# and the msvc projects for all apps that are configured afterwards
-# if the option PATH_LIST is provided, the input will be transformed to a list
-# of pathes using the OS-specific separator
-macro( vista_add_pathscript_envvar _ENVVAR _VALUE )
-	if( UNIX AND ${ARGC} GREATER 3 AND "${ARGV3}" STREQUAL "PATH_LIST" )
-		string( REPLACE ";" ":" _OUTPUT_LIST "${_VALUE}" )
-		list( APPEND VISTA_ENVVARS "${_ENVVAR}" "${_OUTPUT_LIST}" )
-	else()
-		list( APPEND VISTA_ENVVARS "${_ENVVAR}" "${_VALUE}" )
-	endif( UNIX AND ${ARGC} GREATER 3 AND "${ARGV3}" STREQUAL "PATH_LIST" )
-endmacro( vista_add_pathscript_envvar )
-
-
-# vista_set_target_msvc_arguments( _PACKAGE_NAME _COMMANDLINE_VARS )
-# sets the default commandline args in the msvc project for the specified application target
-macro( vista_set_target_msvc_arguments _PACKAGE_NAME _COMMANDLINE_VARS )
-	if( UNIX AND ${ARGC} GREATER 1 AND "${ARGV1}" STREQUAL "PATH_LIST" )
-		string( REPLACE ";" ":" _OUTPUT_LIST "${_COMMANDLINE_VARS}" )
-		set( VISTA_${_PACKAGE_NAME}_MSVC_ARGUMENTS ${_OUTPUT_LIST} )
-	else()
-		set( VISTA_${_PACKAGE_NAME}_MSVC_ARGUMENTS ${_COMMANDLINE_VARS} )
-	endif( UNIX AND ${ARGC} GREATER 1 AND "${ARGV1}" STREQUAL "PATH_LIST" )
-endmacro( vista_set_target_msvc_arguments )
 
 # vista_install( TARGET [INCLUDE/BIN_SUBDIRECTORY [LIBRARY_SUBDIRECTORY] ] [NO_POSTFIX] )
 # can only be called after vista_configure_[app|lib]
@@ -1513,51 +1316,6 @@ macro( vista_install _PACKAGE_NAME )
 	endif()
 endmacro()
 
-# vista_install_files_by_extension( SEARCH_ROOT INSTALL_SUBDIR [NON_RECURSIVE] [EXECUTABLE] EXTENSION1 [EXTENSION2 ...] )
-# searches in SEARCH_ROOT dor all files matching any of the provided extensions, and
-# installs them to the specified Subdir
-# if NON_RECURSIVE is specified as first parameter after INSTALL_SUBDIR,only the top-level
-# SEARCH_ROOT is searched, otherwise, all subdirs are parsed recursively, too
-# NOTE: files are searched at configure time, not at install time! Thus, if you add a file
-# matching the pattern, you have to configure cmake again to add it to the list of files to
-# install
-macro( vista_install_files_by_extension _SEARCH_ROOT _INSTALL_SUBDIR )
-	set( _EXTENSIONS ${ARGN} )
-	set( _RECURSIVE TRUE )
-	set( _PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
-	
-	if( "${ARGV2}" STREQUAL "NON_RECURSIVE" )
-		set( _RECURSIVE FALSE )
-		list( REMOVE_AT _EXTENSIONS 0 )
-		if( "${ARGV3}" STREQUAL "EXECUTABLE" )
-			set( _PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_EXEC} )
-			list( REMOVE_AT _EXTENSIONS 0 )
-		endif()
-	elseif( "${ARGV2}" STREQUAL "EXECUTABLE" )
-		set( _PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_EXEC} )
-		list( REMOVE_AT _EXTENSIONS 0 )
-		if( "${ARGV3}" STREQUAL "NON_RECURSIVE" )
-			set( _RECURSIVE FALSE )
-			list( REMOVE_AT _EXTENSIONS 0 )
-		endif()
-	endif()		
-		
-	if( _RECURSIVE )
-		foreach( _EXT ${_EXTENSIONS} )
-			file( GLOB_RECURSE _FOUND_FILES "${_SEARCH_ROOT}/*.${_EXT}" "${_SEARCH_ROOT}/**/*.${_EXT}" )			
-			install( FILES ${_FOUND_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}/${_INSTALL_SUBDIR}" 
-						PERMISSIONS ${_PERMISSIONS} )
-		endforeach( _EXT ${_EXTENSIONS} )		
-	else()
-		foreach( _EXT ${_EXTENSIONS} )
-			file( GLOB _FOUND_FILES "${_SEARCH_ROOT}/*.${_EXT}" )
-			install( FILES ${_FOUND_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}/${_INSTALL_SUBDIR}"
-						 PERMISSIONS ${_PERMISSIONS} )
-		endforeach( _EXT ${_EXTENSIONS} )
-	endif()
-endmacro( vista_install_files_by_extension )
-
-
 # vista_install_libs_by_buildtype( SEARCH_ROOT INSTALL_SUBDIR EXTENSION1 [EXTENSION2 ...] )
 # searches in SEARCH_ROOT for all files matching any of the provided extensions, and
 # installs them to the specified Subdir
@@ -1583,31 +1341,6 @@ macro( vista_install_libs_by_buildtype _SEARCH_ROOT _INSTALL_SUBDIR )
 				 PERMISSIONS ${_PERMISSIONS} )
 	endforeach( _EXT ${_EXTENSIONS} )
 endmacro( vista_install_libs_by_buildtype )
-
-
-# vista_install_all_dlls( INSTALL_SUBDIR )
-# searches for ALL .dll's or .so's in all link directories, and installs them
-# to the specified subdir. Only dlls that already exist at configure time will be installed!
-# WARNING use with great care! this can potentially copy a whole lot of dlls if
-# one of the lib's link dirs contains other dll's, too
-# However, this script skips all .so's in /usr/lib* (and subfolders) and /lib* (and subfolders)
-macro( vista_install_all_dlls _INSTALL_SUBDIR )
-	foreach( _DIR ${VISTA_TARGET_LINK_DIRS} ${VISTACORELIBS_DRIVER_PLUGIN_DIRS} )
-		if( WIN32 )
-#			vista_install_files_by_extension( "${_DIR}" ${_INSTALL_SUBDIR} NON_RECURSIVE "dll" )
-			vista_install_libs_by_buildtype( "${_DIR}" ${_INSTALL_SUBDIR} "dll" )
-		elseif( UNIX )
-			string( REGEX MATCH "^/usr/lib.*" _USR_LIB_MATCHED "${_DIR}" )
-			string( REGEX MATCH "^/lib.*" _LIB_MATCHED "${_DIR}" )
-			if( NOT _USR_LIB_MATCHED AND NOT _LIB_MATCHED )
-#				vista_install_files_by_extension( ${_DIR} ${_INSTALL_SUBDIR} NON_RECURSIVE "so" "so.*" )
-				vista_install_libs_by_buildtype( ${_DIR} ${_INSTALL_SUBDIR} "so" "so.*" )
-			endif()
-		endif()
-	endforeach()
-endmacro( vista_install_all_dlls )
-
-
 
 # vista_create_cmake_config_build( PACKAGE_NAME CONFIG_PROTO_FILE TARGET_DIR )
 # configures the specified <package>Config.cmake prototype file, and copies it to the
@@ -1668,7 +1401,7 @@ macro( vista_create_cmake_config_build _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGET_
 		set( _PACKAGE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"  )
 		list( REMOVE_DUPLICATES _PACKAGE_INCLUDE_DIRS )
 	endif( ${_PACKAGE_NAME_UPPER}_INCLUDE_OUTDIR )
-	
+
 	set(_PACKAGE_SHADER_DIRS )
 	if( ${_PACKAGE_NAME_UPPER}_SHADER_DIRS )
 		set( _PACKAGE_SHADER_DIRS ${${_PACKAGE_NAME_UPPER}_SHADER_DIRS} )
@@ -1677,7 +1410,7 @@ macro( vista_create_cmake_config_build _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGET_
 	if( ${_PACKAGE_NAME_UPPER}_CONFIG_DEFINITIONS )
 		set( _PACKAGE_DEFINITIONS ${${_PACKAGE_NAME_UPPER}_CONFIG_DEFINITIONS} )
 	endif( ${_PACKAGE_NAME_UPPER}_CONFIG_DEFINITIONS )
-	
+
 	# set the msvc project (check for overwrite)
 	if( ${_PACKAGE_NAME_UPPER}_MSVC_PROJECT_OVERWRITE )
 		set( _PACKAGE_MSVC_PROJECT ${${_PACKAGE_NAME_UPPER}_MSVC_PROJECT_OVERWRITE} )
@@ -1701,7 +1434,7 @@ macro( vista_create_cmake_config_build _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGET_
 		local_use_existing_config_libs( ${_PACKAGE_NAME} "${_PACKAGE_ROOT_DIR}"
 									"${${_PACKAGE_NAME_UPPER}_BUILD_CONFIG_REFERENCE_DIR}/${_PACKAGE_NAME}Config.cmake"
 									_PACKAGE_LIBRARY_DIRS )
-	
+
 	endif()
 
 	# retrieve relative pathes for library/include dirs
@@ -1716,7 +1449,7 @@ macro( vista_create_cmake_config_build _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGET_
 	endforeach()
 
 	set( _PACKAGE_RELATIVE_LIBRARY_DIRS )
-	foreach( _DIR ${_PACKAGE_LIBRARY_DIRS} )		
+	foreach( _DIR ${_PACKAGE_LIBRARY_DIRS} )
 		file( RELATIVE_PATH _REL_DIR "${_PACKAGE_ROOT_DIR}" "${_DIR}" )
 		if( _REL_DIR )
 			list( APPEND _PACKAGE_RELATIVE_LIBRARY_DIRS "${_REL_DIR}" )
@@ -1748,7 +1481,7 @@ macro( vista_create_cmake_config_build _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGET_
 			set( _ORIG_REFERENCED_FILE )
 			local_get_existing_config_filename( ${_PACKAGE_NAME} "${_PACKAGE_ROOT_DIR}" "${${_PACKAGE_NAME_UPPER}_BUILD_CONFIG_REFERENCE_DIR}/${_PACKAGE_NAME}Config.cmake" _ORIG_REFERENCED_FILE )
 			if( NOT _ORIG_REFERENCED_FILE OR NOT ( "${_ORIG_REFERENCED_FILE}" STREQUAL "${_REFERENCED_FILE}" ) )
-				
+
 				#compare contents of files
 				execute_process( COMMAND ${CMAKE_COMMAND} -E compare_files ${_ORIG_REFERENCED_FILE} ${_REFERENCED_FILE} RESULT_VARIABLE _ARE_SAME OUTPUT_QUIET ERROR_QUIET )
 
@@ -1759,8 +1492,8 @@ macro( vista_create_cmake_config_build _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGET_
 					configure_file( ${VISTA_REFERENCE_CONFIG_PROTO_FILE} ${_REFERENCE_TARGET_FILENAME} @ONLY )
 				endif()
 			endif()
-									
-			
+
+
 		endif()
 	else()
 		# since prior configure runs may have already added it (before the cache was turned off), we
@@ -1818,7 +1551,7 @@ macro( vista_create_cmake_config_install _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGE
 	else()
 		set( _PACKAGE_INCLUDE_DIRS "${_PACKAGE_ROOT_DIR}/include" )
 	endif()
-	
+
 	if( ${_PACKAGE_NAME_UPPER}_LIBRARY_INSTALLDIR )
 		set( _PACKAGE_LIBRARY_DIRS ${${_PACKAGE_NAME_UPPER}_LIBRARY_INSTALLDIR}  )
 	elseif( ${${_PACKAGE_NAME_UPPER}_LIB_INSTALLDIR} )
@@ -1826,17 +1559,17 @@ macro( vista_create_cmake_config_install _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGE
 	else()
 		set( _PACKAGE_LIBRARY_DIRS "${_PACKAGE_ROOT_DIR}/lib" )
 	endif()
-	
+
 	set(_PACKAGE_SHADER_DIRS )
 	if( ${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR )
 		set( _PACKAGE_SHADER_DIRS ${${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR} )
 	endif( ${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR )
-	
+
 	set(_PACKAGE_DEFINITIONS )
 	if( ${_PACKAGE_NAME_UPPER}_CONFIG_DEFINITIONS )
 		set( _PACKAGE_DEFINITIONS ${${_PACKAGE_NAME_UPPER}_CONFIG_DEFINITIONS} )
 	endif( ${_PACKAGE_NAME_UPPER}_CONFIG_DEFINITIONS )
-	
+
 	set( _PACKAGE_MSVC_PROJECT "" )
 
 	#retrieve relative pathes for library/include dirs
@@ -1859,7 +1592,7 @@ macro( vista_create_cmake_config_install _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGE
 			list( APPEND _PACKAGE_RELATIVE_LIBRARY_DIRS "." )
 		endif( _REL_DIR )
 	endforeach( _DIR ${_PACKAGE_LIBRARY_DIRS} )
-	
+
 	set( _PACKAGE_RELATIVE_SHADER_DIRS )
 	foreach( _DIR ${_PACKAGE_SHADER_DIRS} )
 		file( RELATIVE_PATH _REL_DIR "${_PACKAGE_ROOT_DIR}" "${_DIR}" )
@@ -1902,7 +1635,7 @@ macro( vista_create_cmake_config_install _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGE
 			# configure the reference file
 			set( _TEMPORARY_REF_FILENAME "${CMAKE_BINARY_DIR}/toinstall/references/${_PACKAGE_NAME}Config.cmake" )
 			configure_file(	"${VISTA_REFERENCE_CONFIG_PROTO_FILE}" "${_TARGET_REF_FILENAME}" @ONLY )
-			install( FILES "${_TARGET_REF_FILENAME}" 
+			install( FILES "${_TARGET_REF_FILENAME}"
 					DESTINATION "${${_PACKAGE_NAME_UPPER}_INSTALL_CONFIG_REFERENCE_DIR}"
 					PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
 		endif( VISTA_REFERENCE_CONFIG_PROTO_FILE )
@@ -2203,67 +1936,6 @@ macro( vista_create_default_info_file _PACKAGE_NAME )
 	endif( VISTA_CREATE_BUILD_INFO_FILES )
 endmacro( vista_create_default_info_file )
 
-# vista_create_doxygen_target( DOXYFILE [WORKING_DIR] )
-# adds a target for creating doxygen info
-# only works if Doxygen can be found on the system. If successfull, doxygen can be
-# creating by running the "Doxygen" project in MSVC or by calling make Doxygen
-# The path to the Doxy-File has to be absolute!
-# Doxygen is run in either the localion specified by the optional parameter WORKING_DIR, or 
-# by default in the same location as the doxyfile. This means, the OUTPUT_DIRECTORY and INPUT targets
-# specified inside the Doxyfile are relative to this working dir
-macro( vista_create_doxygen_target _DOXYFILE )
-	find_package( Doxygen )
-	if( NOT DOXYGEN_FOUND )
-		message( STATUS "vista_create_doxygen - Doxygen executable not found - cant create doxygen target" )
-	else()
-		if( ${ARGC} GREATER 1 )
-			set( _WORKDIR ${ARGV1} )
-		else()
-			get_filename_component( _WORKDIR "${_DOXYFILE}" PATH )
-		endif( ${ARGC} GREATER 1 )
-		if( NOT EXISTS _WORKDIR )
-			file( MAKE_DIRECTORY "${_WORKDIR}" )
-		endif( NOT EXISTS _WORKDIR )
-		add_custom_target( Doxygen
-			"${DOXYGEN_EXECUTABLE}" "${_DOXYFILE}"
-			WORKING_DIRECTORY "${_WORKDIR}"
-			COMMENT "Generating API documentation with Doxygen"
-		)
-		set_target_properties( Doxygen PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE )
-	endif( NOT DOXYGEN_FOUND )
-endmacro( vista_create_doxygen_target )
-
-# vista_create_uninstall_target( [ON|OFF] )
-# sets a cache variable VISTA_ALLOW_UNINSTALL, with default value of argument (or OFF if no argument is given)
-# if VISTA_ALLOW_UNINSTALL is ON, an uninstall target will be created, which removes all previously installed files.
-# WARNING: this may accidently remove files that might still be needed - use with care
-# Also, the uninstall may leave behind empty directories
-macro( vista_create_uninstall_target )
-	if( ${ARGC} GREATER 1 )
-		set( _DEFAULT ${ARGV0} )
-	else()
-		set( _DEFAULT "OFF" )
-	endif( ${ARGC} GREATER 1 )
-	set( VISTA_ALLOW_UNINSTALL ${_DEFAULT} CACHE BOOL "In enabled, an uninstall project will be created. Use at your own risk - may remove wrong files!" )
-	if( VISTA_ALLOW_UNINSTALL )
-		find_file( VISTA_CMAKE_UNINSTALL_PROTO_FILE "cmake_uninstall.cmake_proto" PATHS ${CMAKE_MODULE_PATH} )
-		if( NOT VISTA_CMAKE_UNINSTALL_PROTO_FILE )
-			message( AUTHOR_WARNING "cant find cmake_uninstall proto file - uninstall target will not be created." )
-		else()
-			configure_file( "${VISTA_CMAKE_UNINSTALL_PROTO_FILE}" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY )
-			if( WIN32 )
-				add_custom_target( UNINSTALL "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
-				set_target_properties( UNINSTALL PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE )
-				set_target_properties( UNINSTALL PROPERTIES FOLDER "CMakePredefinedTargets" )
-			else()
-				add_custom_target( uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
-				set_target_properties( uninstall PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE )
-			endif( WIN32 )
-
-		endif( NOT VISTA_CMAKE_UNINSTALL_PROTO_FILE )
-	endif( VISTA_ALLOW_UNINSTALL )
-endmacro( vista_create_uninstall_target )
-
 # vista_set_install_permissions( [OWNER_READ] [OWNER_WRITE] [OWNER_EXECUTE] [GROUP_READ] [GROUP_WRITE] [GROUP_EXECUTE] [WORLD_READ] [WORLD_WRITE] [WORLD_EXECUTE] [SETUID] [SETGID] )
 # sets the default permissions for installed files (using VistaCMakeCommon-commands, still needs to be set
 # manually for manually called install() )
@@ -2274,104 +1946,6 @@ macro( vista_set_install_permissions )
 	set( VISTA_INSTALL_PERMISSIONS_EXEC ${ARGN} )
 	list( REMOVE_ITEM VISTA_INSTALL_PERMISSIONS_NONEXEC OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE ) 
 endmacro()
-
-# vista_configure_cpack ( _PACKAGE_NAME )
-# Configures common cpack parameters.
-# Sets default package type to tgz / zip.
-# Calls default VistaCMakeCommon/VistaCPackConfig.cmake, if there is no local CPackConfig.cmake defined.
-# IMPORTANT :
-# vista_configure_app/lib should be done before (defines app / lib type, lib is assumed else)!
-# Any install commands have to be done afterwards !
-# Conflicts with vista_create_cmake_configs if archive packages with relative path are used !
-macro( vista_configure_cpack _PACKAGE_NAME )
-	set( VISTA_BUILD_PACKS OFF CACHE BOOL "Build various packages from libs" )
-	if( VISTA_BUILD_PACKS )
-		# Hand over anything that may be useful to CPack
-
-		if( UNIX )
-			set( VISTA_CPACK_GENERATOR "TGZ" CACHE STRING "CPack Generator type, see CPack documentation for acceptable values." )
-		elseif( WIN32 )
-			set( VISTA_CPACK_GENERATOR "ZIP" CACHE STRING "CPack Generator type, see CPack documentation for acceptable values." )
-		endif()
-
-		# Setting this on command line expands to absoule path.
-		# Archive packagers need relative path !
-		if( ${VISTA_CPACK_GENERATOR} STREQUAL "TGZ" )
-			if( VISTA_64BIT )
-				set( CMAKE_INSTALL_PREFIX "LINUX.X86_64" CACHE PATH "distribution directory" FORCE )
-			else()
-				set( CMAKE_INSTALL_PREFIX "LINUX.X86" CACHE PATH "distribution directory" FORCE )
-			endif()
-		elseif( ${VISTA_CPACK_GENERATOR} STREQUAL "ZIP" )
-			if( MSVC11 )
-				set( VISTA_MSVC_VERSION 11 )
-			elseif( MSVC10 )
-				set( VISTA_MSVC_VERSION 10 )
-			elseif( MSVC12 )
-				set( VISTA_MSVC_VERSION 12 )
-			elseif( MSVC14 )
-				set( VISTA_MSVC_VERSION 14 )
-			endif()
-			if( VISTA_64BIT )
-				set( CMAKE_INSTALL_PREFIX "win32-x64.vc${VISTA_MSVC_VERSION}" CACHE PATH "distribution directory" FORCE )
-			else()
-				set( CMAKE_INSTALL_PREFIX "win32.vc${VISTA_MSVC_VERSION}" CACHE PATH "distribution directory" FORCE )
-			endif()
-		elseif( ${VISTA_CPACK_GENERATOR} STREQUAL "RPM" )
-			set( CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "distribution directory" )
-		endif()
-
-		# Make sure RPath is turned off for installation
-		set( VISTA_USE_RPATH OFF CACHE BOOL "Automatically set the rpath for external libs" FORCE )
-
-		# Don't copy release build info
-		set( VISTA_COPY_INSTALL_CONFIGS_REFS_TO_CMAKECOMMON FALSE CACHE BOOL
-			"if enabled, References to <Package>Config.cmake files will be copied to VistaCMakeCommon/share for easier finding" FORCE )
-		
-		string( TOUPPER ${_PACKAGE_NAME} _PACKAGE_NAME_UPPER )
-		
-		if( DEFINED ${_PACKAGE_NAME_UPPER}_TARGET_TYPE )
-			set( CPACK_TARGET_TYPE ${_PACKAGE_NAME_UPPER}_TARGET_TYPE )
-		else()
-			set( CPACK_TARGET_TYPE "LIB" )
-		endif()
-
-		if( DEFINED ${_PACKAGE_NAME_UPPER}_VERSION_MAJOR )
-			set( CPACK_PACKAGE_VERSION_MAJOR ${${_PACKAGE_NAME_UPPER}_VERSION_MAJOR} )
-		else()
-			set( CPACK_PACKAGE_VERSION_MAJOR 1 )
-		endif()
-		if( DEFINED ${_PACKAGE_NAME_UPPER}_VERSION_MINOR )
-			set( CPACK_PACKAGE_VERSION_MINOR ${${_PACKAGE_NAME_UPPER}_VERSION_MINOR} )
-		else()
-			set( CPACK_PACKAGE_VERSION_MINOR 0 )
-		endif()
-		
-		if( DEFINED ${_PACKAGE_NAME_UPPER}_VERSION_PATCH )
-			set( CPACK_PACKAGE_VERSION_PATCH ${${_PACKAGE_NAME_UPPER}_VERSION_PATCH} )
-		else()
-			set( CPACK_PACKAGE_VERSION_PATCH 0 )
-		endif()
-
-		set( CPACK_CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
-		set( CPACK_CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} )
-		set( CPACK_SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR} )
-
-		# Define what kind of packages should be build
-		set( CPACK_GENERATOR ${VISTA_CPACK_GENERATOR} )
-		
-		# Generator dependant setup, prefer local config
-		if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CPackConfig.cmake" )
-			set( CPACK_PROJECT_CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/CPackConfig.cmake" )
-		else()
-			set( CPACK_PROJECT_CONFIG_FILE "${VISTA_CMAKE_COMMON}/VistaCPackConfig.cmake" )
-		endif()
-
-		include(CPack)
-	endif()
-endmacro()
-
-
 
 ###########################
 ###   General Settings  ###
