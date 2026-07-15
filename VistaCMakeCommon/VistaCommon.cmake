@@ -28,7 +28,6 @@
 
 # GENERAL SETTINGS
 # adds info variables
-#	VISTACMAKECOMMON_REVISION - current svn revision of the VistaCMakeCommon
 #	FIRST_CONFIGURATION_RUN - true if this is the first configuration run
 #   VISTA_HWARCH    - variable describing Hardware architecture, e.g. win32.vc9 or LINUX.X86
 #   VISTA_COMPATIBLE_HWARCH - architectures that are compatible to the current HWARCH,
@@ -1308,7 +1307,6 @@ macro( vista_install _PACKAGE_NAME )
 				DESTINATION ${${_PACKAGE_NAME_UPPER}_LIB_INSTALLDIR}
 				FILES_MATCHING PATTERN "*.pdb"
 				PATTERN "build" EXCLUDE
-				PATTERN ".svn" EXCLUDE
 				PATTERN "CMakeFiles" EXCLUDE
 				PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC}
 			)
@@ -1829,16 +1827,7 @@ endmacro()
 # sets the extended version info for the package
 # TYPE has to be RELEASE, HEAD, BRANCH, or TAG
 # NAME can be an arbitrary name (excluding character -)
-# MAJOR, MINOR, PATCH, TWEAK are optional version numbers. If svn_rev is specified, an svn revision is extracted if possible
-# the macro defines the following
-# <PACKAGE>_VERSION_EXT
-# <PACKAGE>_VERSION_TYPE
-# <PACKAGE>_VERSION_NAME
-# <PACKAGE>_VERSION_MAJOR
-# <PACKAGE>_VERSION_MINOR
-# <PACKAGE>_VERSION_PATCH
-# <PACKAGE>_VERSION_TWEAK
-# <PACKAGE>_VERSION_POSIX
+# MAJOR, MINOR, PATCH, TWEAK are optional version numbers.
 macro( vista_set_version _PACKAGE _TYPE _NAME )
 	
 	string( TOUPPER  ${_PACKAGE} _PACKAGE_UPPER )
@@ -1846,39 +1835,19 @@ macro( vista_set_version _PACKAGE _TYPE _NAME )
 	set( ${_PACKAGE_UPPER}_VERSION_NAME		${_NAME} )
 
 	if( ${ARGC} GREATER 3 )
-		if( ${ARGV3} STREQUAL "svn_rev" )
-			vista_find_package( SVN QUIET )
-			vista_get_svn_revision( ${_PACKAGE_UPPER}_VERSION_MAJOR )
-		else( ${ARGV3} STREQUAL "svn_rev" )
-			set( ${_PACKAGE_UPPER}_VERSION_MAJOR ${ARGV3} )
-		endif( ${ARGV3} STREQUAL "svn_rev" )
+		set( ${_PACKAGE_UPPER}_VERSION_MAJOR ${ARGV3} )
 		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION_MAJOR}" )
 	endif( ${ARGC} GREATER 3 )
 	if( ${ARGC} GREATER 4 )
-		if( ${ARGV4} STREQUAL "svn_rev" )
-			vista_find_package( SVN QUIET )
-			vista_get_svn_revision( ${_PACKAGE_UPPER}_VERSION_MINOR )
-		else( ${ARGV4} STREQUAL "svn_rev" )
-			set( ${_PACKAGE_UPPER}_VERSION_MINOR ${ARGV4} )
-		endif( ${ARGV4} STREQUAL "svn_rev" )
+		set( ${_PACKAGE_UPPER}_VERSION_MINOR ${ARGV4} )
 		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION}.${${_PACKAGE_UPPER}_VERSION_MINOR}" )
 	endif( ${ARGC} GREATER 4 )
 	if( ${ARGC} GREATER 5 )
-		if( ${ARGV5} STREQUAL "svn_rev" )
-			vista_find_package( SVN QUIET )
-			vista_get_svn_revision( ${_PACKAGE_UPPER}_VERSION_PATCH )
-		else( ${ARGV5} STREQUAL "svn_rev" )
-			set( ${_PACKAGE_UPPER}_VERSION_PATCH ${ARGV5} )
-		endif( ${ARGV5} STREQUAL "svn_rev" )
+		set( ${_PACKAGE_UPPER}_VERSION_PATCH ${ARGV5} )
 		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION}.${${_PACKAGE_UPPER}_VERSION_PATCH}" )
 	endif( ${ARGC} GREATER 5 )
 	if( ${ARGC} GREATER 6 )
-		if( ${ARGV6} STREQUAL "svn_rev" )
-			vista_find_package( SVN QUIET )
-			vista_get_svn_revision( ${_PACKAGE_UPPER}_VERSION_TWEAK )
-		else( ${ARGV6} STREQUAL "svn_rev" )
-			set( ${_PACKAGE_UPPER}_VERSION_TWEAK 	${ARGV6} )
-		endif( ${ARGV6} STREQUAL "svn_rev" )
+		set( ${_PACKAGE_UPPER}_VERSION_TWEAK 	${ARGV6} )
 		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION}.${${_PACKAGE_UPPER}_VERSION_TWEAK}" )
 	endif( ${ARGC} GREATER 6 )
 
@@ -1950,10 +1919,6 @@ endmacro()
 ###########################
 ###   General Settings  ###
 ###########################
-
-set( VISTACMAKECOMMON_REVISION "$Rev$" )
-string( REGEX MATCH " ([0-9]+) " _MATCH "${VISTACMAKECOMMON_REVISION}" )
-set( VISTACMAKECOMMON_REVISION ${CMAKE_MATCH_1} )
 
 vista_set_defaultvalue( BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries if ON, static libraries if OFF" FORCE )
 
