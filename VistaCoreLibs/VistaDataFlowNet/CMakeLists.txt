@@ -1,7 +1,5 @@
 
 
-vista_adopt_version( VistaDataFlowNet VistaCoreLibs )
-
 # set our dependencies to other corelibs
 set( VISTADATAFLOWNET_INTERNAL_DEPENDENCIES 
 			VistaBase

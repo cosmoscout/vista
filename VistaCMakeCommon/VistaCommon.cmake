@@ -16,7 +16,6 @@
 # vista_create_cmake_configs( TARGET [CUSTOM_CONFIG_FILE_BUILD [CUSTOM_CONFIG_FILE_INSTALL] ] )
 # vista_set_outdir( TARGET DIRECTORY [USE_CONFIG_SUBDIRS])
 # vista_set_version( PACKAGE TYPE NAME [ MAJOR [ MINOR [ PATCH [ TWEAK ]]]] )
-# vista_adopt_version( PACKAGE ADOPT_PARENT )
 # vista_set_install_permissions( OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE )
 
 # UTILITY MACROS:
@@ -1705,8 +1704,6 @@ endmacro( vista_create_version_config )
 # VISTA_CMAKE_ROOT/share into a subfolder composed from the name, the (optional) version, and either -build or -install
 # NOTE: these will be overwritten at the next configure/install, so make sure different versions of the same project
 # have different version names
-# In Addition to the XYZConfig.cmake files, a generic XYZConfigVersion.cmake file is created if the version has been specified
-# using vista_set_version() or vista_adopt_version(), in the same way as the Config files
 macro( vista_create_cmake_configs _TARGET )
 	set( _PACKAGE_NAME ${_TARGET} )
 	string( TOUPPER ${_PACKAGE_NAME} _PACKAGE_NAME_UPPER )
@@ -1865,27 +1862,6 @@ macro( vista_set_version _PACKAGE _TYPE _NAME )
 	set( ${_PACKAGE_UPPER}_VERSION_POSIX "${${_PACKAGE_UPPER}_VERSION_MAJOR}.${${_PACKAGE_UPPER}_VERSION_MINOR}.${${_PACKAGE_UPPER}_VERSION_PATCH}" )
 
 endmacro( vista_set_version _PACKAGE _TYPE _NAME )
-
-# vista_adopt_version( PACKAGE ADOPT_PARENT )
-# sets the version of the package to the one of the adopt parent
-macro( vista_adopt_version _NAME _ADOPT_PARENT )
-	string( TOUPPER ${_NAME} _NAME_UPPER )
-	string( TOUPPER ${_ADOPT_PARENT} _ADOPT_UPPER )
-
-	if( ${_ADOPT_UPPER}_VERSION_EXT )
-		set( ${_NAME_UPPER}_VERSION_TYPE		${${_ADOPT_UPPER}_VERSION_TYPE} )
-		set( ${_NAME_UPPER}_VERSION_NAME		${${_ADOPT_UPPER}_VERSION_NAME} )
-		set( ${_NAME_UPPER}_VERSION				${${_ADOPT_UPPER}_VERSION} )
-		set( ${_NAME_UPPER}_VERSION_EXT			${${_ADOPT_UPPER}_VERSION_EXT} )
-		set( ${_NAME_UPPER}_VERSION_MAJOR		${${_ADOPT_UPPER}_VERSION_MAJOR} )
-		set( ${_NAME_UPPER}_VERSION_MINOR		${${_ADOPT_UPPER}_VERSION_MINOR} )
-		set( ${_NAME_UPPER}_VERSION_PATCH		${${_ADOPT_UPPER}_VERSION_PATCH} )
-		set( ${_NAME_UPPER}_VERSION_TWEAK		${${_ADOPT_UPPER}_VERSION_TWEAK} )
-		set( ${_NAME_UPPER}_VERSION_POSIX		${${_ADOPT_UPPER}_VERSION_POSIX} )
-	else( ${_ADOPT_UPPER}_VERSION_EXT )
-		message( WARNING "vista_adopt_version( ${_NAME} ${_ADOPT_PARENT} ) - cannot find version info for parent!" )
-	endif( ${_ADOPT_UPPER}_VERSION_EXT )
-endmacro( vista_adopt_version _NAME _ADOPT_PARENT )
 
 # vista_set_install_permissions( [OWNER_READ] [OWNER_WRITE] [OWNER_EXECUTE] [GROUP_READ] [GROUP_WRITE] [GROUP_EXECUTE] [WORLD_READ] [WORLD_WRITE] [WORLD_EXECUTE] [SETUID] [SETGID] )
 # sets the default permissions for installed files (using VistaCMakeCommon-commands, still needs to be set

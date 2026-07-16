@@ -1,8 +1,6 @@
 
 
-vista_adopt_version( VistaKernelOpenSGExt VistaCoreLibs )
-
-set( VISTAKERNELOPENSGEXT_INTERNAL_DEPENDENCIES 
+set( VISTAKERNELOPENSGEXT_INTERNAL_DEPENDENCIES
 			VistaBase
 			VistaAspects
 			VistaInterProcComm

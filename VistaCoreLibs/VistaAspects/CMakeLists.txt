@@ -1,7 +1,5 @@
 
 
-vista_adopt_version( VistaAspects VistaCoreLibs )
-
 # set our dependencies to other corelibs
 set( VISTAASPECTS_INTERNAL_DEPENDENCIES 
 				VistaBase )

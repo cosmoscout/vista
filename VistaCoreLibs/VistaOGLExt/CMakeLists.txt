@@ -1,8 +1,6 @@
 
 
-vista_adopt_version( VistaOGLExt VistaCoreLibs )
-
-set( VISTAOGLEXT_INTERNAL_DEPENDENCIES 
+set( VISTAOGLEXT_INTERNAL_DEPENDENCIES
 			VistaBase 
 			VistaAspects
 			VistaTools

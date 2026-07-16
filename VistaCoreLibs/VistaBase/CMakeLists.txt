@@ -1,22 +1,9 @@
-
-
-vista_adopt_version( VistaBase VistaCoreLibs )
-
-# set our dependencies to other corelibs
-set( VISTABASE_INTERNAL_DEPENDENCIES )
-set( VISTABASE_INTERNAL_DEPENDENCIES ${VISTABASE_INTERNAL_DEPENDENCIES} PARENT_SCOPE )
-
-if( UNIX AND NOT APPLE )
-	set( LIBRARIES rt )
-endif( UNIX AND NOT APPLE )
-
-
-include( "./_SourceFiles.cmake" )
+file(GLOB_RECURSE ProjectSources
+		"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
 
 add_library( VistaBase ${ProjectSources} )
-target_link_libraries( VistaBase
-	${LIBRARIES}
-)
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
 	target_precompile_headers(VistaBase PRIVATE precompiled.pch)

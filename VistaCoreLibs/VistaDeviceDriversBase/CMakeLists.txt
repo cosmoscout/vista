@@ -1,7 +1,5 @@
 
 
-vista_adopt_version( VistaDeviceDriversBase VistaCoreLibs )
-
 # set our dependencies to other corelibs
 set( VISTADEVICEDRIVERSBASE_INTERNAL_DEPENDENCIES 
 			VistaBase

@@ -1,6 +1,4 @@
-vista_adopt_version( VistaKernel VistaCoreLibs )
-
-set( VISTAKERNEL_INTERNAL_DEPENDENCIES 
+set( VISTAKERNEL_INTERNAL_DEPENDENCIES
 			VistaBase
 			VistaAspects
 			VistaInterProcComm

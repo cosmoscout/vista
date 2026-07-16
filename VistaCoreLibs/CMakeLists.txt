@@ -143,12 +143,9 @@ set( VISTACORELIBS_LIBRARY_OUTDIR "${CMAKE_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}
 set( VISTACORELIBS_LIBRARY_INSTALLDIR "${CMAKE_INSTALL_PREFIX}/lib" "${CMAKE_INSTALL_PREFIX}/lib/DriverPlugins" )
 set( VISTACORELIBS_CONFIG_DEFINITIONS "${VISTA_PLATFORM_DEFINE}" )
 
-# Conflict with archive Packagers
-if( NOT ${VISTA_BUILD_PACKS} )
-	vista_create_cmake_configs( VistaCoreLibs 
-							"${CMAKE_CURRENT_SOURCE_DIR}/VistaBuild/CMake/VistaCoreLibsConfig-build.cmake_proto"
-							"${CMAKE_CURRENT_SOURCE_DIR}/VistaBuild/CMake/VistaCoreLibsConfig-install.cmake_proto" )
-endif()
+vista_create_cmake_configs( VistaCoreLibs
+						"${CMAKE_CURRENT_SOURCE_DIR}/VistaBuild/CMake/VistaCoreLibsConfig-build.cmake_proto"
+						"${CMAKE_CURRENT_SOURCE_DIR}/VistaBuild/CMake/VistaCoreLibsConfig-install.cmake_proto" )
 
 # install license files
 install( FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.LESSER" "README" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/VistaCoreLibs" )

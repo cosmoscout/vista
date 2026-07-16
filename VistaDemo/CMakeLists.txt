@@ -62,36 +62,3 @@ vista_conditional_add_subdirectory( VISTADEMO_BUILD_19TIMEDEMO 19TimeDemo ON )
 vista_conditional_add_subdirectory( VISTADEMO_BUILD_20PYTHONDFNDEMO 20PythonDFNDemo OFF )
 vista_conditional_add_subdirectory( VISTADEMO_BUILD_21CLUSTERMODEDEMO 21ClusterModeDemo ON )
 vista_conditional_add_subdirectory( VISTADEMO_BUILD_22RECORDREPLAYDEMO 22RecordReplayDemo ON )
-
-# additional package configuration
-if( ${VISTA_BUILD_PACKS} )
-
-	if( ${VISTA_CPACK_GENERATOR} STREQUAL "RPM" AND UNIX )
-		if( VISTA_64BIT )
-			set( VISTACORELIBS_DRIVER_PLUGIN_DIRS "/usr/lib64/DriverPlugins" )
-		else()
-			set( VISTACORELIBS_DRIVER_PLUGIN_DIRS "/usr/lib/DriverPlugins" )
-		endif()
-
-		file( GLOB _INTERACTION_INIS "${CMAKE_CURRENT_SOURCE_DIR}/configfiles/interaction*.ini" )
-		foreach( _FILE ${_INTERACTION_INIS} )
-			configure_file( ${_FILE} ${_FILE} )
-		endforeach()
-
-		install( DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/configfiles/"
-			 DESTINATION "/etc/${CPACK_PACKAGE_NAME}-configfiles"
-			 FILE_PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC}
-			 PATTERN ".svn" EXCLUDE )
-	
-	else()
-		install( DIRECTORY "${CMAKE_SOURCE_DIR}/configfiles"
-			DESTINATION "${CMAKE_INSTALL_PREFIX}"
-			FILE_PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC}
-			PATTERN ".svn" EXCLUDE )
-
-	endif()
-	
-	set( CPACK_TARGET_TYPE "APP" )
-	
-endif()
-
