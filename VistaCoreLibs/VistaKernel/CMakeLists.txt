@@ -82,7 +82,4 @@ endif()
 
 vista_configure_lib( VistaKernel )
 vista_install( VistaKernel VistaKernel )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaKernel )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
 set_property( TARGET VistaKernel PROPERTY LINK_INTERFACE_LIBRARIES "" )

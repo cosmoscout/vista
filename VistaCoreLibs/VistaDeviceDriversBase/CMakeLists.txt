@@ -33,6 +33,3 @@ endif()
 
 vista_configure_lib( VistaDeviceDriversBase )
 vista_install( VistaDeviceDriversBase VistaDeviceDriversBase )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaDeviceDriversBase )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

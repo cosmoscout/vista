@@ -11,6 +11,3 @@ endif()
 
 vista_configure_lib( VistaBase )
 vista_install( VistaBase VistaBase )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaBase )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

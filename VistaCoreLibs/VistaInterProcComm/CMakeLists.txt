@@ -31,6 +31,3 @@ endif()
 
 vista_configure_lib( VistaInterProcComm )
 vista_install( VistaInterProcComm VistaInterProcComm )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaInterProcComm )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

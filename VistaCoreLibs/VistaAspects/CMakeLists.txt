@@ -23,6 +23,3 @@ endif()
 
 vista_configure_lib( VistaAspects )
 vista_install( VistaAspects VistaAspects )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaAspects )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

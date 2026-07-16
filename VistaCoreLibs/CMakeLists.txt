@@ -73,8 +73,6 @@ if( FIRST_CONFIGURE_RUN )
 	
 endif( FIRST_CONFIGURE_RUN )
 
-set( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY OFF CACHE BOOL "If set to true, a <Package>Config.cmake file will be created and installed for each library, not just one for the CoreLibs" )
-
 set( VISTACORELIBS_BUILD_WINDOWIMP_GLUT ${GLUT_FOUND} CACHE BOOL "Determines if the GLUT-based WindowToolit Implementation will be built" )
 set( VISTACORELIBS_BUILD_WINDOWIMP_SDL2 ${SDL2_FOUND} CACHE BOOL "Determines if the SDL2-based WindowToolit Implementation will be built" )
 set( VISTACORELIBS_BUILD_WINDOWIMP_OSG FALSE CACHE BOOL "Determines if the OpenSceneGraph-based WindowToolit Implementation will be built" )

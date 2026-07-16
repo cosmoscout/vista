@@ -37,6 +37,3 @@ set( VISTACORELIBS_SHADER_DIRS ${VISTAOGLEXT_SHADER_DIRS} PARENT_SCOPE )
 
 vista_configure_lib( VistaOGLExt )
 vista_install( VistaOGLExt VistaOGLExt )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaOGLExt )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )

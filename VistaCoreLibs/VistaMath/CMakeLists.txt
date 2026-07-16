@@ -25,6 +25,3 @@ endif()
 
 vista_configure_lib( VistaMath )
 vista_install( VistaMath VistaMath )
-if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-	vista_create_cmake_configs( VistaMath )
-endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
