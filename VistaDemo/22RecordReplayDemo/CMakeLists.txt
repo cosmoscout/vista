@@ -19,7 +19,6 @@ target_link_libraries( 22RecordReplayDemo
 
 vista_configure_app( 22RecordReplayDemo )
 vista_install( 22RecordReplayDemo )
-vista_create_default_info_file( 22RecordReplayDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 22RecordReplayDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 22RecordReplayDemo VistaKernel )

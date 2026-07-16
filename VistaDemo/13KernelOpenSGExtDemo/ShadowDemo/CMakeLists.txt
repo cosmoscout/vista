@@ -19,7 +19,6 @@ target_link_libraries( 13KernelOpenSGExtShadowDemo
 
 vista_configure_app( 13KernelOpenSGExtShadowDemo )
 vista_install( 13KernelOpenSGExtShadowDemo )
-vista_create_default_info_file( 13KernelOpenSGExtShadowDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 13KernelOpenSGExtShadowDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 13KernelOpenSGExtShadowDemo VistaKernelOpenSGExt )

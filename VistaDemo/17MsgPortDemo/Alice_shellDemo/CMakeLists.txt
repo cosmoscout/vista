@@ -19,7 +19,6 @@ target_link_libraries( 17MsgPortAlice
 
 vista_configure_app( 17MsgPortAlice )
 vista_install( 17MsgPortAlice )
-vista_create_default_info_file( 17MsgPortAlice )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 17MsgPortAlice PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 17MsgPortAlice VistaKernel )

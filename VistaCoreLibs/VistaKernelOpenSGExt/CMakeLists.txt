@@ -34,5 +34,4 @@ vista_install( VistaKernelOpenSGExt VistaKernelOpenSGExt )
 if( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
 	vista_create_cmake_configs( VistaKernelOpenSGExt )
 endif( VISTACORELIBS_CREATE_CONFIG_PER_LIBRARY )
-vista_create_default_info_file( VistaKernelOpenSGExt )
 

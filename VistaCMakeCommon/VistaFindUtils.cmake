@@ -14,7 +14,7 @@ set( VISTA_FIND_UTILS_INCLUDED TRUE )
 
 set( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
 
-include( VistaHWArchSettings )
+include( VistaCMakeCommon/VistaHWArchSettings.cmake )
 
 # vista_find_original_package( OWN_PREFIX [ORIGINAL_NAME  [ADDITIONAL_PARAMS]] )
 # Finds and loads an 'original' FindORIGINAL_NAME module from within a

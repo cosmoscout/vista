@@ -20,7 +20,6 @@ target_link_libraries( 16PhantomDemo
 
 vista_configure_app( 16PhantomDemo )
 vista_install( 16PhantomDemo )
-vista_create_default_info_file( 16PhantomDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 16PhantomDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 16PhantomDemo VistaKernel )

@@ -17,5 +17,4 @@ target_link_libraries( KinectDemo
 )
 
 vista_configure_app( KinectDemo )
-vista_create_default_info_file( KinectDemo )
 

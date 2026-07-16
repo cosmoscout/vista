@@ -34,7 +34,6 @@ target_link_libraries( 20PythonDFNDemo
 
 vista_configure_app( 20PythonDFNDemo )
 vista_install( 20PythonDFNDemo )
-vista_create_default_info_file( 20PythonDFNDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 20PythonDFNDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 20PythonDFNDemo VistaKernel )

@@ -20,5 +20,4 @@ target_link_libraries( OpenCVFaceTrackDemo
 )
 
 vista_configure_app( OpenCVFaceTrackDemo )
-vista_create_default_info_file( OpenCVFaceTrackDemo )
 

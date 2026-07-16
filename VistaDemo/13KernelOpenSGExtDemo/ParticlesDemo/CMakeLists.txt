@@ -19,7 +19,6 @@ target_link_libraries( 13KernelOpenSGExtParticlesDemo
 
 vista_configure_app( 13KernelOpenSGExtParticlesDemo )
 vista_install( 13KernelOpenSGExtParticlesDemo )
-vista_create_default_info_file( 13KernelOpenSGExtParticlesDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 13KernelOpenSGExtParticlesDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 13KernelOpenSGExtParticlesDemo VistaKernelOpenSGExt )

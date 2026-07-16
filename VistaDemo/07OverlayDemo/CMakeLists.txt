@@ -19,7 +19,6 @@ target_link_libraries( 07OverlayDemo
 
 vista_configure_app( 07OverlayDemo )
 vista_install( 07OverlayDemo )
-vista_create_default_info_file( 07OverlayDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 07OverlayDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 07OverlayDemo VistaKernel )

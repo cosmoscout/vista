@@ -72,7 +72,6 @@ macro( vista_configure_test TEST_NAME )
 	add_executable( ${TEST_NAME} ${ARGN} )
 	vista_set_outdir( ${TEST_NAME} ${CMAKE_CURRENT_BINARY_DIR} )
 	vista_configure_app( ${TEST_NAME} DONT_COPY_EXECUTABLE )
-	vista_create_default_info_file( ${TEST_NAME} )
 	# FOLDER property groups the executable's project into the "Tests" folder in the Visual Studio solution
 	set_target_properties( ${TEST_NAME} PROPERTIES FOLDER "Tests" )
 	

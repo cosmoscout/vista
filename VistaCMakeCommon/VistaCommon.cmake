@@ -17,9 +17,6 @@
 # vista_set_outdir( TARGET DIRECTORY [USE_CONFIG_SUBDIRS])
 # vista_set_version( PACKAGE TYPE NAME [ MAJOR [ MINOR [ PATCH [ TWEAK ]]]] )
 # vista_adopt_version( PACKAGE ADOPT_PARENT )
-# vista_create_info_file( PACKAGE_NAME TARGET_DIR INSTALL_DIR )  included from VistaBuildInfo.cmake
-# vista_delete_info_file( PACKAGE_NAME TARGET_DIR )              included from VistaBuildInfo.cmake
-# vista_create_default_info_file( PACKAGE_NAME )
 # vista_set_install_permissions( OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE )
 
 # UTILITY MACROS:
@@ -63,9 +60,8 @@ set( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
 cmake_policy( SET CMP0022 NEW )
 
 #this package sets the variables VISTA_HWARCH, VISTA_COMPATIBLE_HWARCH and VISTA_64BIT
-include( VistaHWArchSettings )
-include( VistaFindUtils )
-include( VistaBuildInfo )
+include( VistaCMakeCommon/VistaHWArchSettings.cmake )
+include( VistaCMakeCommon/VistaFindUtils.cmake )
 
 ###########################
 ###   Utility macros    ###
@@ -1227,7 +1223,7 @@ macro( vista_install _PACKAGE_NAME )
 		endif( UNIX AND VISTA_64BIT )
 
 		set( ${_PACKAGE_NAME_UPPER}_BIN_INSTALLDIR "${CMAKE_INSTALL_PREFIX}/bin" )
-		
+
 		if( ${_PACKAGE_NAME_UPPER}_INSTALL_SHADERS )
 			set( ${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR "${CMAKE_INSTALL_PREFIX}/shaders" )
 		endif( ${_PACKAGE_NAME_UPPER}_INSTALL_SHADERS )
@@ -1235,7 +1231,7 @@ macro( vista_install _PACKAGE_NAME )
 		set( ${_PACKAGE_NAME_UPPER}_INC_INSTALLDIR "${CMAKE_INSTALL_PREFIX}" )
 		set( ${_PACKAGE_NAME_UPPER}_LIB_INSTALLDIR "${CMAKE_INSTALL_PREFIX}" )
 		set( ${_PACKAGE_NAME_UPPER}_BIN_INSTALLDIR "${CMAKE_INSTALL_PREFIX}" )
-		
+
 		if( ${_PACKAGE_NAME_UPPER}_INSTALL_SHADERS )
 			set( ${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR "${CMAKE_INSTALL_PREFIX}" )
 		endif( ${_PACKAGE_NAME_UPPER}_INSTALL_SHADERS )
@@ -1290,14 +1286,14 @@ macro( vista_install _PACKAGE_NAME )
 							PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
 			endif( )
 		endforeach()
-		
+
 		if( ${_PACKAGE_NAME_UPPER}_INSTALL_SHADERS )
 			set ( _EXTENSIONS "vp" "fp" "glsl" )
 			foreach( _EXT ${_EXTENSIONS} )
-				file( GLOB_RECURSE _FOUND_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.${_EXT}" )			
-		
-				install( FILES ${_FOUND_FILES} 
-							DESTINATION "${${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR}" 
+				file( GLOB_RECURSE _FOUND_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.${_EXT}" )
+
+				install( FILES ${_FOUND_FILES}
+							DESTINATION "${${_PACKAGE_NAME_UPPER}_SHADER_INSTALLDIR}"
 							PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
 			endforeach()
 		endif()
@@ -1324,7 +1320,7 @@ endmacro()
 macro( vista_install_libs_by_buildtype _SEARCH_ROOT _INSTALL_SUBDIR )
 	set( _EXTENSIONS ${ARGN} )
 	set( _PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_EXEC} )
-	
+
 	foreach( _EXT ${_EXTENSIONS} )
 		file( GLOB _FOUND_FILES "${_SEARCH_ROOT}/*${_EXT}*" )
 		list( FIND CMAKE_CONFIGURATION_TYPES "Release" _FOUND_RELEASE )
@@ -1890,20 +1886,6 @@ macro( vista_adopt_version _NAME _ADOPT_PARENT )
 		message( WARNING "vista_adopt_version( ${_NAME} ${_ADOPT_PARENT} ) - cannot find version info for parent!" )
 	endif( ${_ADOPT_UPPER}_VERSION_EXT )
 endmacro( vista_adopt_version _NAME _ADOPT_PARENT )
-
-# vista_create_default_info_file( PACKAGE_NAME )
-# uses the cache variable VISTA_CREATE_BUILD_INFO_FILES to determine
-# if a build info file should be created, and if so, creates it next to the lib/app,
-# and installs it to .../share/VistaBuildInfo
-macro( vista_create_default_info_file _PACKAGE_NAME )
-	set( VISTA_CREATE_BUILD_INFO_FILES TRUE CACHE BOOL "If enabled, an auto-generated build info file will be generated and installed for each target" )
-	if( VISTA_CREATE_BUILD_INFO_FILES )
-		string( TOUPPER ${_PACKAGE_NAME} _PACKAGE_NAME_UPPER )
-		vista_create_info_file( ${_PACKAGE_NAME} "${${_PACKAGE_NAME_UPPER}_TARGET_OUTDIR}" "${CMAKE_INSTALL_PREFIX}/share/VistaBuildInfo" )
-	else()
-		vista_delete_info_file( ${_PACKAGE_NAME} "${${_PACKAGE_NAME_UPPER}_TARGET_OUTDIR}" )
-	endif( VISTA_CREATE_BUILD_INFO_FILES )
-endmacro( vista_create_default_info_file )
 
 # vista_set_install_permissions( [OWNER_READ] [OWNER_WRITE] [OWNER_EXECUTE] [GROUP_READ] [GROUP_WRITE] [GROUP_EXECUTE] [WORLD_READ] [WORLD_WRITE] [WORLD_EXECUTE] [SETUID] [SETGID] )
 # sets the default permissions for installed files (using VistaCMakeCommon-commands, still needs to be set

@@ -20,7 +20,6 @@ target_link_libraries( 02GeometryDemo
 
 vista_configure_app( 02GeometryDemo )
 vista_install( 02GeometryDemo )
-vista_create_default_info_file( 02GeometryDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 02GeometryDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 02GeometryDemo VistaKernel )

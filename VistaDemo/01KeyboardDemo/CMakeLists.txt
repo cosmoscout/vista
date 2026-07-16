@@ -19,7 +19,6 @@ target_link_libraries( 01KeyboardDemo
 
 vista_configure_app( 01KeyboardDemo )
 vista_install( 01KeyboardDemo )
-vista_create_default_info_file( 01KeyboardDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 01KeyboardDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 01KeyboardDemo VistaKernel )

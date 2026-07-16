@@ -19,7 +19,6 @@ target_link_libraries( 09EventDemo
 
 vista_configure_app( 09EventDemo )
 vista_install( 09EventDemo )
-vista_create_default_info_file( 09EventDemo )
 if( VISTA_COMMON_BUILD )
 	set_target_properties( 09EventDemo PROPERTIES FOLDER "VistaDemo" )
 	add_dependencies( 09EventDemo VistaKernel )

@@ -21,7 +21,6 @@ set( CMAKE_DEBUG_POSTFIX "" )
 vista_set_outdir( ImageTest "${CMAKE_CURRENT_BINARY_DIR}/libs" USE_CONFIG_SUBDIRS )
 
 vista_configure_app( ImageTest )
-vista_create_default_info_file( ImageTest )
 
 add_custom_command( TARGET ImageTest
                     POST_BUILD
