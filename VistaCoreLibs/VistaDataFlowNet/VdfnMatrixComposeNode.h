@@ -52,7 +52,6 @@
  * Has 4 inports for translation, rotation, scale and scale rotation,
  * and invokes the VistaMatrixDeComposer to compute a transformation
  * matrix inside a DFN graph.
- * @todo use doxygen macros to document ports
  *
  * @ingroup VdfnNodes
  * @inport{translation,VistaVector3D,optional, translation amount }
