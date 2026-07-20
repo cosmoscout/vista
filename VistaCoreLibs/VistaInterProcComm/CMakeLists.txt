@@ -14,6 +14,7 @@ target_link_libraries(VistaInterProcComm
 )
 
 target_compile_definitions(VistaInterProcComm PRIVATE
+        $<$<PLATFORM_ID:Windows>:_USE_WIN32_MUTEX>
         $<$<BOOL:${VISTACORELIBS_IPC_USE_EXCEPTIONS}>:VISTA_IPC_USE_EXCEPTIONS>
 )
 
