@@ -1,33 +1,25 @@
+option(VISTACORELIBS_IPC_USE_EXCEPTIONS "Specifies wether or nor the IPC throws exceptions when errors occur" ON)
 
+file(GLOB_RECURSE ProjectSources
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
 
-set( VISTAINTERPROCCOMM_INTERNAL_DEPENDENCIES
-			VistaBase
-			VistaAspects )
-set( VISTAINTERPROCCOMM_INTERNAL_DEPENDENCIES ${VISTAINTERPROCCOMM_INTERNAL_DEPENDENCIES} PARENT_SCOPE )
+add_library(VistaInterProcComm ${ProjectSources})
+target_link_libraries(VistaInterProcComm
+        VistaBase
+        VistaAspects
+        $<$<PLATFORM_ID:Windows>:winmm ws2_32>
+        $<$<PLATFORM_ID:Linux>:pthread>
+)
 
-if( WIN32 )
-	add_definitions( -D_USE_WIN32_MUTEX )
-	set( LIBRARIES winmm ws2_32 )
-elseif( UNIX )
-	set( LIBRARIES pthread )
-endif( WIN32 )
-
-set( VISTACORELIBS_IPC_USE_EXCEPTIONS ON CACHE BOOL "Specifies wether or nor the IPC throws exceptions when errors occur" )
-if( VISTACORELIBS_IPC_USE_EXCEPTIONS )
-	add_definitions( -DVISTA_IPC_USE_EXCEPTIONS )
-endif( VISTACORELIBS_IPC_USE_EXCEPTIONS )
-
-include( "./_SourceFiles.cmake" )
-
-add_library( VistaInterProcComm ${ProjectSources} )
-target_link_libraries( VistaInterProcComm
-    ${VISTAINTERPROCCOMM_INTERNAL_DEPENDENCIES}
-	${LIBRARIES}
+target_compile_definitions(VistaInterProcComm PRIVATE
+        $<$<BOOL:${VISTACORELIBS_IPC_USE_EXCEPTIONS}>:VISTA_IPC_USE_EXCEPTIONS>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-	target_precompile_headers(VistaInterProcComm PRIVATE precompiled.pch)
-endif()
+    target_precompile_headers(VistaInterProcComm PRIVATE precompiled.pch)
+endif ()
 
-vista_configure_lib( VistaInterProcComm )
-vista_install( VistaInterProcComm VistaInterProcComm )
+vista_configure_lib(VistaInterProcComm)
+vista_install(VistaInterProcComm VistaInterProcComm)

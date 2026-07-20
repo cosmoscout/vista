@@ -1,35 +1,27 @@
+option(VISTADEVICEDRIVERS_USE_ATOMICS "Specifies if the Device Driver History uses atomics" ON)
 
+file(GLOB_RECURSE ProjectSources
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
 
-# set our dependencies to other corelibs
-set( VISTADEVICEDRIVERSBASE_INTERNAL_DEPENDENCIES 
-			VistaBase
-			VistaAspects
-			VistaInterProcComm
-			VistaTools
-			VistaMath )
-set( VISTADEVICEDRIVERSBASE_INTERNAL_DEPENDENCIES ${VISTADEVICEDRIVERSBASE_INTERNAL_DEPENDENCIES} PARENT_SCOPE )
+add_library(VistaDeviceDriversBase ${ProjectSources})
+target_link_libraries(VistaDeviceDriversBase
+        VistaBase
+        VistaAspects
+        VistaInterProcComm
+        VistaTools
+        VistaMath
+        $<$<PLATFORM_ID:Windows>:setupapi>
+)
 
-if( WIN32 )
-	set( LIBRARIES setupapi )
-endif( WIN32 )
-
-include( "./_SourceFiles.cmake" )
-
-set( VISTADEVICEDRIVERS_USE_ATOMICS TRUE CACHE BOOL "Specifies if the Device Driver History uses atomics" )
-
-if( VISTADEVICEDRIVERS_USE_ATOMICS )
-	add_definitions( -DVISTA_USE_ATOMICS )
-endif( VISTADEVICEDRIVERS_USE_ATOMICS )
-
-add_library( VistaDeviceDriversBase ${ProjectSources} )
-target_link_libraries( VistaDeviceDriversBase
-    ${VISTADEVICEDRIVERSBASE_INTERNAL_DEPENDENCIES}
-	${LIBRARIES}
+target_compile_definitions(VistaDeviceDriversBase PRIVATE
+        $<$<BOOL:${VISTADEVICEDRIVERS_USE_ATOMICS}>:VISTA_USE_ATOMICS>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-	target_precompile_headers(VistaDeviceDriversBase PRIVATE precompiled.pch)
-endif()
+    target_precompile_headers(VistaDeviceDriversBase PRIVATE precompiled.pch)
+endif ()
 
-vista_configure_lib( VistaDeviceDriversBase )
-vista_install( VistaDeviceDriversBase VistaDeviceDriversBase )
+vista_configure_lib(VistaDeviceDriversBase)
+vista_install(VistaDeviceDriversBase VistaDeviceDriversBase)

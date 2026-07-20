@@ -1,29 +1,28 @@
 
+option(VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES "experimental incemental history transmission" OFF)
 
-# set our dependencies to other corelibs
-set( VISTADATAFLOWNET_INTERNAL_DEPENDENCIES 
-			VistaBase
-			VistaAspects
-			VistaInterProcComm
-			VistaTools
-			VistaMath
-			VistaDeviceDriversBase )
-set( VISTADATAFLOWNET_INTERNAL_DEPENDENCIES ${VISTADATAFLOWNET_INTERNAL_DEPENDENCIES} PARENT_SCOPE )
-set( VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES FALSE CACHE BOOL "experimental incemental history transmission" )
-if( VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES )
-	add_definitions( -DVISTA_TRANSMIT_INCREMENTAL_HISTORIES )
-endif()
+file(GLOB_RECURSE ProjectSources
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
 
-include( "./_SourceFiles.cmake" )
+add_library(VistaDataFlowNet ${ProjectSources})
+target_link_libraries(VistaDataFlowNet
+        VistaBase
+        VistaAspects
+        VistaInterProcComm
+        VistaTools
+        VistaMath
+        VistaDeviceDriversBase
+)
 
-add_library( VistaDataFlowNet ${ProjectSources} )
-target_link_libraries( VistaDataFlowNet
-	${VISTADATAFLOWNET_INTERNAL_DEPENDENCIES}
+target_compile_definitions(VistaDataFlowNet PRIVATE
+    $<$<BOOL:${VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES}>:VISTA_TRANSMIT_INCREMENTAL_HISTORIES>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-	target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
-endif()
+    target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
+endif ()
 
-vista_configure_lib( VistaDataFlowNet )
-vista_install( VistaDataFlowNet VistaDataFlowNet )
+vista_configure_lib(VistaDataFlowNet)
+vista_install(VistaDataFlowNet VistaDataFlowNet)

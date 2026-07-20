@@ -1,25 +1,17 @@
 
+file(GLOB_RECURSE ProjectSources
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
 
-# set our dependencies to other corelibs
-set( VISTAASPECTS_INTERNAL_DEPENDENCIES 
-				VistaBase )
-set( VISTAASPECTS_INTERNAL_DEPENDENCIES ${VISTAASPECTS_INTERNAL_DEPENDENCIES} PARENT_SCOPE )
-
-if( UNIX AND NOT APPLE )
-	set( LIBRARIES rt )
-endif( UNIX AND NOT APPLE )
-
-include( "./_SourceFiles.cmake" )
-
-add_library( VistaAspects ${ProjectSources} )
-target_link_libraries( VistaAspects
-	${VISTAASPECTS_INTERNAL_DEPENDENCIES}
-	${LIBRARIES}
+add_library(VistaAspects ${ProjectSources})
+target_link_libraries(VistaAspects
+        VistaBase
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-	target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
-endif()
+    target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
+endif ()
 
-vista_configure_lib( VistaAspects )
-vista_install( VistaAspects VistaAspects )
+vista_configure_lib(VistaAspects)
+vista_install(VistaAspects VistaAspects)

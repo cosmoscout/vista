@@ -1,5 +1,0 @@
-VistaSpaceNavigatorDriver.cpp
-VistaSpaceNavigatorPlugin.cpp
-VistaSpaceNavigatorConfig.h
-VistaSpaceNavigatorDriver.h
-VistaSpaceNavigatorPlugin.h
