@@ -16,8 +16,8 @@ target_link_libraries(VistaOGLExt
 )
 
 target_compile_definitions(VistaOGLExt PRIVATE
-        $<$<PLATFORM_ID:Windows>:$<$<BOOL:${BUILD_SHARED_LIBS}>:VISTAOGLEXT_EXPORTS>>
-        $<$<PLATFORM_ID:Windows>:$<NOT:$<$<BOOL:${BUILD_SHARED_LIBS}>>>:VISTAOGLEXT_STATIC>
+        $<$<PLATFORM_ID:Windows>:$<BOOL:${BUILD_SHARED_LIBS}>:VISTAOGLEXT_EXPORTS>
+        $<$<PLATFORM_ID:Windows>:$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:VISTAOGLEXT_STATIC>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
