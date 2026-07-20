@@ -9,7 +9,7 @@ endif ()
 
 vista_use_package(VistaCoreLibs REQUIRED VistaKernel FIND_DEPENDENCIES)
 
-file(GLOB_RECURSE ProjectSources
+file(GLOB ProjectSources
         "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
