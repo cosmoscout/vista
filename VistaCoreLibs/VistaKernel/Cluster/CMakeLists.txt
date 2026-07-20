@@ -18,3 +18,4 @@ if (VISTACORELIBS_USE_ZEROMQ)
 endif ()
 
 list(APPEND ProjectSources ${AdditionalSources})
+set(ProjectSources ${ProjectSources} PARENT_SCOPE)

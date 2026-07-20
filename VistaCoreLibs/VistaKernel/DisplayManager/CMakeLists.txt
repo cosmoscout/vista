@@ -52,3 +52,4 @@ if (VISTACORELIBS_BUILD_WINDOWIMP_SDL2)
 endif ()
 
 list(APPEND ProjectSources ${AdditionalSources})
+set(ProjectSources ${ProjectSources} PARENT_SCOPE)
