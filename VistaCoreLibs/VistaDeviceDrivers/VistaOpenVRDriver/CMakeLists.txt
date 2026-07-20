@@ -34,7 +34,7 @@ target_link_libraries(VistaOpenVRDriver
         VistaDeviceDriversBase
         VistaMath
         ${VISTA_USE_PACKAGE_LIBRARIES}
-        ${OPENVR_LIBRARY_DIRS}/${OPENVR_LIBRARIES}
+        ${OPENVR_LIBRARIES}
 )
 
 vista_configure_lib(VistaOpenVRDriver)

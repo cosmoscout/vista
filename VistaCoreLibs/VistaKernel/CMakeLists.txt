@@ -71,8 +71,6 @@ add_subdirectory(InteractionManager)
 add_subdirectory(OpenSG)
 add_subdirectory(Stuff)
 
-message(STATUS ${ProjectSources})
-
 add_library(VistaKernel ${ProjectSources})
 target_link_libraries(VistaKernel
         VistaBase
