@@ -868,8 +868,8 @@ macro( vista_configure_app _PACKAGE_NAME )
 	endif()
 	
 	if( ${_PACKAGE_NAME_UPPER}_COPY_EXEC_DIR )
-		if( CMAKE_VERSION VERSION_LESS 2.8.5 )
-			message( WARNING "vista_configure_app( ${_PACKAGE_NAME} ) - executable copying is only supported in cmake 2.8.5+ - use DONT_COPY_EXECUTABLE option or update cmake" )
+		if( CMAKE_VERSION VERSION_LESS 3.28 )
+			message( WARNING "vista_configure_app( ${_PACKAGE_NAME} ) - executable copying is only supported in cmake 3.28+ - use DONT_COPY_EXECUTABLE option or update cmake" )
 		else()
 			add_custom_command(	TARGET ${_PACKAGE_NAME}
 								POST_BUILD
