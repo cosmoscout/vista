@@ -9,8 +9,8 @@ target_link_libraries(VistaMath
 )
 
 target_compile_definitions(VistaMath PRIVATE
-        $<$<BOOL:WIN32>:$<$<BOOL:${BUILD_SHARED_LIBS}>:VISTAMATH_EXPORTS>>
-        $<$<BOOL:WIN32>:$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:VISTAMATH_STATIC>
+        $<$<PLATFORM_ID:Windows>:$<$<BOOL:${BUILD_SHARED_LIBS}>:VISTAMATH_EXPORTS>>
+        $<$<PLATFORM_ID:Windows>:$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:VISTAMATH_STATIC>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
