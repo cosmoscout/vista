@@ -53,8 +53,8 @@ if (_CAN_BUILD_DRIVER)
     # Actual Driver
     add_library(Vista3DCSpaceNavigatorDriver
             Vista3DCSpaceNavigatorDriver.h
-            $<$<BOOL:_CAN_BUILD_3DXSDK_DRIVER>:Vista3DCSpaceNavigatorDriver_sdk.cpp>
-            $<$<NOT:$<BOOL:_CAN_BUILD_3DXSDK_DRIVER>>:Vista3DCSpaceNavigatorDriver.cpp>
+            $<$<BOOL:${_CAN_BUILD_3DXSDK_DRIVER}>:Vista3DCSpaceNavigatorDriver_sdk.cpp>
+            $<$<NOT:$<BOOL:${_CAN_BUILD_3DXSDK_DRIVER}>>:Vista3DCSpaceNavigatorDriver.cpp>
     )
 
     target_link_libraries(Vista3DCSpaceNavigatorDriver

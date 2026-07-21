@@ -1,6 +1,6 @@
 if (NOT VISTA_COMMON_BUILD)
     cmake_minimum_required(VERSION 3.28)
-    project(VistaCoreLibs)
+    project(VistaCoreLibs 1.0.0)
 endif ()
 
 # For the CoreLibs, we verify that the VistaCMakeCommon really exist
@@ -32,14 +32,6 @@ include(VistaCommon)
 
 # Self include
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-set(VISTACORELIBS_VERSION_MAJOR "1" CACHE STRING "Major package version")
-set(VISTACORELIBS_VERSION_MINOR "0" CACHE STRING "Minor package version")
-set(VISTACORELIBS_VERSION_PATCH "0" CACHE STRING "Patch package version")
-# the version type can be either HEAD, RELASE, BRANCH, or TAG
-vista_set_version(VistaCoreLibs HEAD HEAD)
-# vista_set_version( VistaCoreLibs BRANCH IMAGES ${VISTACORELIBS_VERSION_MAJOR} ${VISTACORELIBS_VERSION_MINOR} ${VISTACORELIBS_VERSION_PATCH} )
-
 
 set(VISTACORELIBS_USE_SDL2_WINDOWIMP OFF CACHE BOOL "Determines if the SDL2-based WindowToolkit Implementation will be prefered")
 

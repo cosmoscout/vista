@@ -3,19 +3,15 @@
 # This file contains common settings and macros for setting up Vista projects
 
 # PACKAGE MACROS:
-# vista_add_external_msvc_project_of_package( PACKAGE_NAME [SOLUTION_FOLDER] [DEPENDENT (DEPENDENT_TARGET)+ ] [ DEPENDS (DEPENDENT_TRAGET)+ ]  )
 # vista_find_package( <package> [version] [EXACT] [QUIET] [[REQUIRED|COMPONENTS] [components...]] [NO_POLICY_SCOPE] [NO_MODULE] )
 # vista_use_package( <package> [version] [EXACT] [QUIET] [[REQUIRED|COMPONENTS] [components...]] [NO_POLICY_SCOPE] [NO_MODULE] [FIND_DEPENDENCIES] [SYSTEM_HEADERS] )
 # vista_find_shader_dirs( PACKAGE_NAME )
 # vista_configure_app( PACKAGE_NAME [OUT_NAME] )
 # vista_configure_lib( PACKAGE_NAME [OUT_NAME] )
 # vista_install( TARGET [INCLUDE/BIN_SUBDIRECTORY [LIBRARY_SUBDIRECTORY] ] [NO_POSTFIX] )
-# vista_add_pathscript_dynamic_lib_path( _VALUE [PATH_LIST] )
 # vista_create_cmake_config_install( PACKAGE_NAME CONFIG_PROTO_FILE TARGET_DIR )
-# vista_create_version_config( PACKAGE_NAME VERSION_PROTO_FILE )
 # vista_create_cmake_configs( TARGET [CUSTOM_CONFIG_FILE_BUILD [CUSTOM_CONFIG_FILE_INSTALL] ] )
 # vista_set_outdir( TARGET DIRECTORY [USE_CONFIG_SUBDIRS])
-# vista_set_version( PACKAGE TYPE NAME [ MAJOR [ MINOR [ PATCH [ TWEAK ]]]] )
 # vista_set_install_permissions( OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE )
 
 # UTILITY MACROS:
@@ -206,153 +202,6 @@ endfunction()
 ###########################
 ###   Package macros    ###
 ###########################
-
-
-# vista_add_external_msvc_project_of_package( PACKAGE_NAME [SOLUTION_FOLDER] [DEPENDENT (DEPENDENT_TARGET)+ ] [ DEPENDS (DEPENDENT_TRAGET)+ ]  [SILENT | WARNING | ERROR] )
-# Adds msvc projects that were exported by a package to the solution (Visual Studio only)
-# note: the targets will NOT be named by their original name, but
-# instead external_NAME, to prevent name clashes (e.g. with included libraries)
-# will only work if a project exists, and other wise fails silently (note: deployments, i.e. installed libs, have no projects and will hence always fail)
-# Parameters:
-#    - PACKAGE_NAME: name of the package (from vista_find|use_package) whose projects should become included
-#	 - [SILENT | WARNING | ERROR] (optional, default is WARNING): SILENT will silently ignore all warnings and
-#                            suppress information output, WARNING will emit warning but continues cmake execution,
-#                            ERROR emits warning and stops cmake execution
-#    - SOLUTION_FOLDER (optional): Visual Studio solution folder where the project(s) should be put
-#    - DEPENDENT (targets)* (optional): list of targets that should depend on the added projects
-#                            Note: for this to work, the macro has to be called AFTER defining the dependent targets
-#    - DEPENDS (targets)* (optional): list of targets on which the loaded targets depend. These can be either manually added targets,
-#                            or other targets loaded with vista_add_external_msvc_project_of_package.
-macro( vista_add_external_msvc_project_of_package _PACKAGE_NAME )	
-	if( MSVC )
-		set( VISTA_ALLOW_ADDING_OF_EXTERNAL_MSVC_PROJECTS ON CACHE BOOL "If enabled, external msvc projects listed in vista_add_external_msvc_project_of_package will be added" )
-		mark_as_advanced( VISTA_ALLOW_ADDING_OF_EXTERNAL_MSVC_PROJECTS )
-		if( VISTA_ALLOW_ADDING_OF_EXTERNAL_MSVC_PROJECTS )
-			string( TOUPPER ${_PACKAGE_NAME} _PACKAGE_NAME_UPPER )
-			set( _NEXT_IS_NAME FALSE )
-			set( _NEXT_IS_PROJ FALSE )
-			set( _NEXT_IS_DEP FALSE )
-			set( _NAME "" )
-			set( _POSSIBLE_DEPENDENCIES "" )
-			set( _FOLDER "" )
-			set( _DEPENDS_TARGETS "" )
-			set( _DEPENDENT_TARGETS "" )
-			set( _WARNING_LEVEL "WARNING" )
-			
-			set( _ARGUMENTS ${ARGV} )
-			list( REMOVE_AT _ARGUMENTS 0 )
-
-
-			# Extract all parameters and DEPENDS and DEPENDENT targets.
-			set( _MODE -1 ) # -1 = first, 0 = nothing, 1 = Depends, 2 = Dependent
-			foreach( _ARG ${_ARGUMENTS} )
-				if( "${_ARG}" STREQUAL "DEPENDS" )
-					set( _MODE 1 )
-				elseif( "${_ARG}" STREQUAL "DEPENDENT" )
-					set( _MODE 2 )
-				elseif( "${_ARG}" STREQUAL "SILENT" )
-					set( _WARNING_LEVEL "SILENT" )
-					set( _MODE 0 )
-				elseif( "${_ARG}" STREQUAL "WARNING" )
-					set( _WARNING_LEVEL "WARNING" )
-					set( _MODE 0 )
-				elseif( "${_ARG}" STREQUAL "ERROR" )
-					set( _WARNING_LEVEL "SEND_ERROR" )
-					set( _MODE 0 )
-				elseif( _MODE STREQUAL -1 )
-					# its the first after the name -> Folder
-					set( _FOLDER "${_ARG}" )
-					set( _MODE 0 )
-				elseif( _MODE STREQUAL 1 )
-					get_property( _EXTERNALLY_ADDED_PROJECTS GLOBAL PROPERTY VISTA_EXTERNALLY_ADDED_PROJECTS )
-					list( FIND _EXTERNALLY_ADDED_PROJECTS "${_ARG}" _VAL )
-					if( _VAL GREATER -1 )
-						list( APPEND _DEPENDS_TARGETS "external_${_ARG}" )
-					elseif( TARGET)
-						list( APPEND _DEPENDS_TARGETS ${_ARG} )
-					else()
-						message( STATUS "vista_add_external_msvc_project_of_package( ${_PACKAGE_NAME_UPPER} ) - dependency to non-existing target ${_ARG} ignored" )
-					endif()			
-				elseif( _MODE STREQUAL 2 )
-					list( APPEND _DEPENDENT_TARGETS ${_ARG} )
-				else()
-					message( WARNING "vista_add_external_msvc_project_of_package: unknown parameter \"${_ARG}\"" )
-				endif()
-			endforeach()
-			
-			if( "${${_PACKAGE_NAME_UPPER}_MSVC_PROJECT}" STREQUAL "" AND NOT "${_WARNING_LEVEL}" STREQUAL "SILENT" )
-				# Sorry for the mess below. But CMake requires it to write a string like this if you want to make it multi-line and formatted...
-				message( "${_WARNING_LEVEL}" 
-	" vista_add_external_msvc_project_of_package - Project \"${_PACKAGE_NAME}\" not found. Check the following:
-	   1. Check spelling of the project name, i.e. whether \"${_PACKAGE_NAME}\" is correct.
-	   2. Check if the CMakeLists.txt includes an appropriate vista_add_package line, e.g. \"vista_use_package( ${_PACKAGE_NAME} )\".
-	   3. Check that you are using the affected library in its \"build\" version and not the \"installed/deployed\" package." )
-			endif()
-			
-			
-			foreach( _ENTRY ${${_PACKAGE_NAME_UPPER}_MSVC_PROJECT} )
-				if( "${_ENTRY}" STREQUAL "PROJ" )
-					set( _NEXT_IS_NAME TRUE )
-					set( _NEXT_IS_PROJ FALSE )			
-					set( _NEXT_IS_DEP FALSE )
-				elseif( "${_ENTRY}" STREQUAL "DEP" )
-					set( _NEXT_IS_PROJ FALSE )
-					set( _NEXT_IS_NAME FALSE )
-					set( _NEXT_IS_DEP TRUE )
-				elseif( _NEXT_IS_NAME )
-					set( _NEXT_IS_NAME FALSE )
-					set( _NEXT_IS_PROJ TRUE )
-					set( _NEXT_IS_DEP FALSE )
-					set( _NAME "${_ENTRY}" )
-				elseif( _NEXT_IS_PROJ )
-					set( _NEXT_IS_PROJ FALSE )
-					set( _NEXT_IS_NAME FALSE )
-					set( _NEXT_IS_DEP FALSE )
-					# sanity check if project exists
-					if( EXISTS "${_ENTRY}" )
-						get_property( _EXTERNALLY_ADDED_PROJECTS GLOBAL PROPERTY VISTA_EXTERNALLY_ADDED_PROJECTS )
-						# check if the project was already added before, e.g. in another subproject
-						list( FIND _EXTERNALLY_ADDED_PROJECTS "${_NAME}" _PROJ_ALREADY_ADDED )
-						if( _PROJ_ALREADY_ADDED EQUAL -1 )
-							if( NOT "${_WARNING_LEVEL}" STREQUAL "SILENT" )
-								message( STATUS "vista_add_external_msvc_project_of_package( ${_PACKAGE_NAME_UPPER} ) - adding external project as external_${_NAME}" )
-							endif()
-							if( MSVC11 OR MSVC12 OR MSVC14 )
-								#file( STRINGS "${_ENTRY}" _MSVCPROJ_GUID REGEX "<ProjectGUID>{[^}]+}</ProjectGUID>" )
-								#string( REGEX REPLACE "<ProjectGUID>{([^}]+)}</ProjectGUID>" "\\1" _MSVCPROJ_GUID "${_MSVCPROJ_GUID}" )
-								#message( "_MSVCPROJ_GUID ${_MSVCPROJ_GUID}" )
-								#include_external_msproject( "external_${_NAME}" "${_ENTRY}" GUID ${_MSVCPROJ_GUID} )
-								include_external_msproject( "external_${_NAME}" "${_ENTRY}" )
-							else()
-								include_external_msproject( "external_${_NAME}" "${_ENTRY}" )
-							endif()
-							set_property( GLOBAL APPEND PROPERTY VISTA_EXTERNALLY_ADDED_PROJECTS ${_NAME} )
-						endif()
-						list( APPEND _POSSIBLE_DEPENDENCIES ${_NAME} )
-						if( _FOLDER AND CMAKE_VERSION VERSION_GREATER 2.8.4 )
-							set_target_properties( "external_${_NAME}" PROPERTIES FOLDER ${_FOLDER} )
-						endif()
-						foreach( _DEP ${_DEPENDS_TARGETS} )
-							add_dependencies( external_${_NAME} ${_DEP} )
-						endforeach()
-						foreach( _DEP ${_DEPENDENT_TARGETS} )
-							add_dependencies( ${_DEP} external_${_NAME} )
-						endforeach()
-					endif()
-				elseif( _NEXT_IS_DEP )
-					list( FIND _POSSIBLE_DEPENDENCIES ${_ENTRY} _FOUND )
-					if( _FOUND GREATER -1 )
-						add_dependencies( external_${_NAME} external_${_ENTRY} )
-					elseif( NOT "${_WARNING_LEVEL}" STREQUAL "SILENT" )
-						message( "vista_add_external_msvc_project_of_package( ${_PACKAGE_NAME} ) - project ${_NAME} requests unknown dependency ${_ENTRY}" )
-					endif()
-				else()
-					message( WARNING "vista_add_external_msvc_project_of_package( ${_PACKAGE_NAME_UPPER} ) - unknown parameter \"${_ENTRY}\"" )
-				endif()
-			endforeach()
-		endif()
-	endif()
-endmacro( vista_add_external_msvc_project_of_package )
 
 # vista_find_package( <package> [version] [EXACT] [QUIET] [[REQUIRED|COMPONENTS] [components...]] [NO_POLICY_SCOPE] [NO_MODULE] )
 # wrapper for the cmake-native find_package with the same (basic) syntax and the following extensions:
@@ -1179,20 +1028,6 @@ macro( vista_configure_lib _PACKAGE_NAME )
 	endif()
 endmacro()
 
-# vista_add_pathscript_dynamic_lib_path( _PATH )
-# adds an environment variable that will be added to the set_path_for_* scripts
-# and the msvc projects for all apps that are configured afterwards
-# if the option PATH_LIST is provided, the input will be transformed to a list
-# of pathes using the OS-specific separator
-macro( vista_add_pathscript_dynamic_lib_path _PATH )
-	if( UNIX AND ${ARGC} GREATER 1 AND "${ARGV1}" STREQUAL "PATH_LIST" )
-		string( REPLACE ";" ":" _OUTPUT_LIST "${_PATH}" )
-		list( APPEND VISTA_${_PACKAGE_NAME}_ADDITIONAL_PATHENTRIES "${_OUTPUT_LIST}" )
-	else()
-		list( APPEND VISTA_ADDITIONAL_PATHENTRIES "${_PATH}" )
-	endif( UNIX AND ${ARGC} GREATER 1 AND "${ARGV1}" STREQUAL "PATH_LIST" )
-endmacro( vista_add_pathscript_dynamic_lib_path _PATH )
-
 # vista_install( TARGET [INCLUDE/BIN_SUBDIRECTORY [LIBRARY_SUBDIRECTORY] ] [NO_POSTFIX] )
 # can only be called after vista_configure_[app|lib]
 # installs generic files (headers, librarys, executables, .pdb's)
@@ -1639,62 +1474,6 @@ macro( vista_create_cmake_config_install _PACKAGE_NAME _CONFIG_PROTO_FILE _TARGE
 	endif( VISTA_COPY_INSTALL_CONFIGS_REFS_TO_CMAKECOMMON )
 endmacro( vista_create_cmake_config_install )
 
-# vista_create_version_config( PACKAGE_NAME VERSION_PROTO_FILE )
-# configures the specified <package>ConfigVersion.cmake prototype file.
-# for this to work, the version variables have to be set (e.g. using vistaa_set_version),
-# at least one of vista_create_cmake_config_build or vista_create_cmake_config_install
-# has to be performed
-# the version files are placed at the same location as the created config files
-# If the cache variable VISTA_COPY_BUILD_CONFIGS_REFS_TO_CMAKECOMMON is ON -- and
-# VISTA_CMAKE_COMMON env var is set -- references are created too
-macro( vista_create_version_config _PACKAGE_NAME _VERSION_PROTO_FILE )
-	string( TOUPPER ${_PACKAGE_NAME} _PACKAGE_NAME_UPPER )
-
-	find_file( VISTA_REFERENCE_CONFIG_PROTO_FILE "PackageConfigReference.cmake_proto" PATH ${CMAKE_MODULE_PATH} $ENV{CMAKE_MODULE_PATH} )
-	set( VISTA_REFERENCE_CONFIG_PROTO_FILE ${VISTA_REFERENCE_CONFIG_PROTO_FILE} CACHE INTERNAL "" FORCE )
-
-	set( _PACKAGE_LIBRARY_NAME ${${_PACKAGE_NAME_UPPER}_OUTPUT_NAME} )
-
-	if( EXISTS ${_VERSION_PROTO_FILE} )
-		set( _VERSION_TYPE 	${${_PACKAGE_NAME_UPPER}_VERSION_TYPE} )
-		set( _VERSION_NAME 	${${_PACKAGE_NAME_UPPER}_VERSION_NAME} )
-		set( _VERSION_MAJOR ${${_PACKAGE_NAME_UPPER}_VERSION_MAJOR} )
-		set( _VERSION_MINOR ${${_PACKAGE_NAME_UPPER}_VERSION_MINOR} )
-		set( _VERSION_PATCH ${${_PACKAGE_NAME_UPPER}_VERSION_PATCH} )
-		set( _VERSION_TWEAK ${${_PACKAGE_NAME_UPPER}_VERSION_TWEAK} )
-		set( _VERSION 		${${_PACKAGE_NAME_UPPER}_VERSION} )
-		set( _VERSION_EXT 	${${_PACKAGE_NAME_UPPER}_VERSION_EXT} )
-
-		if( ${_PACKAGE_NAME_UPPER}_BUILD_CONFIG_DIR )
-			set( _BUILD_VERSION_TARGET "${${_PACKAGE_NAME_UPPER}_BUILD_CONFIG_DIR}/${_PACKAGE_NAME}ConfigVersion.cmake" )
-			configure_file( "${_VERSION_PROTO_FILE}" "${_BUILD_VERSION_TARGET}" @ONLY )
-
-			if( VISTA_COPY_BUILD_CONFIGS_REFS_TO_CMAKECOMMON )
-				set( _REFERENCED_FILE "${_BUILD_VERSION_TARGET}" )
-				set( _REFERENCE_TARGET_FILENAME "${${_PACKAGE_NAME_UPPER}_BUILD_CONFIG_REFERENCE_DIR}/${_PACKAGE_NAME}ConfigVersion.cmake" )
-				configure_file( "${VISTA_REFERENCE_CONFIG_PROTO_FILE}" "${_REFERENCE_TARGET_FILENAME}" @ONLY )
-			endif( VISTA_COPY_BUILD_CONFIGS_REFS_TO_CMAKECOMMON )
-		endif( ${_PACKAGE_NAME_UPPER}_BUILD_CONFIG_DIR )
-
-		if( ${_PACKAGE_NAME_UPPER}_INSTALL_CONFIG_DIR )
-			set( _TEMPORARY_FILENAME "${CMAKE_BINARY_DIR}/toinstall/${_PACKAGE_NAME}ConfigVersion.cmake" )
-			set( _INSTALL_DIR  "${${_PACKAGE_NAME_UPPER}_INSTALL_CONFIG_DIR}" )
-			configure_file( "${_VERSION_PROTO_FILE}" "${_TEMPORARY_FILENAME}" @ONLY )
-			install( FILES "${_TEMPORARY_FILENAME}" DESTINATION "${_INSTALL_DIR}" PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
-
-			if( VISTA_COPY_INSTALL_CONFIGS_REFS_TO_CMAKECOMMON )
-				set( _REFERENCED_FILE "${_INSTALL_DIR}/${_PACKAGE_NAME}ConfigVersion.cmake" )
-				set( _REFERENCE_TEMPORARY_FILENAME "${CMAKE_BINARY_DIR}/toinstall/references/${_PACKAGE_NAME}ConfigVersion.cmake" )
-				configure_file( "${VISTA_REFERENCE_CONFIG_PROTO_FILE}" "${_REFERENCE_TEMPORARY_FILENAME}" @ONLY )
-				install( FILES "${_REFERENCE_TEMPORARY_FILENAME}"
-						DESTINATION "${${_PACKAGE_NAME_UPPER}_INSTALL_CONFIG_REFERENCE_DIR}"
-						PERMISSIONS ${VISTA_INSTALL_PERMISSIONS_NONEXEC} )
-			endif( VISTA_COPY_INSTALL_CONFIGS_REFS_TO_CMAKECOMMON )
-		endif( ${_PACKAGE_NAME_UPPER}_INSTALL_CONFIG_DIR )
-
-	endif( EXISTS ${_VERSION_PROTO_FILE} )
-endmacro( vista_create_version_config )
-
 # vista_create_cmake_configs( TARGET [CUSTOM_CONFIG_FILE_BUILD [CUSTOM_CONFIG_FILE_INSTALL] ] )
 # can only be called after vista_configure_[app|lib]
 # generates XYZConfig.cmake-files for the target, either from a generic prototype or
@@ -1750,17 +1529,6 @@ macro( vista_create_cmake_configs _TARGET )
 		vista_create_cmake_config_install( ${_PACKAGE_NAME}
 											"${_CONFIG_PROTO_FILE_INSTALL}"
 											"${CMAKE_INSTALL_PREFIX}/share/${_PACKAGE_NAME}/cmake" )
-
-		# we create a PackageConfigVersion.cmake file to check the version. we even do so if no version is given
-		# for the package - in this case, it is still helpful in order to check a compatible
-		# build type
-		find_file( VISTA_VERSION_PROTO_FILE "PackageConfigVersion.cmake_proto" PATHS ${CMAKE_MODULE_PATH} )
-		set( VISTA_VERSION_PROTO_FILE "${VISTA_VERSION_PROTO_FILE}" CACHE INTERNAL "" )
-		if( VISTA_VERSION_PROTO_FILE )
-			vista_create_version_config( ${_PACKAGE_NAME} "${VISTA_VERSION_PROTO_FILE}"
-										"${CMAKE_BINARY_DIR}/cmake/${_PACKAGE_NAME}ConfigVersion.cmake" )
-		endif( VISTA_VERSION_PROTO_FILE )
-
 	endif( NOT _PRECONDITION_FAIL )
 endmacro( vista_create_cmake_configs )
 
@@ -1815,53 +1583,6 @@ macro( vista_set_outdir _PACKAGE_NAME _TARGET_DIR )
 
 	set( ${_PACKAGE_NAME_UPPER}_TARGET_OUTDIR "${_TARGET_DIR}" CACHE INTERNAL "" FORCE )
 endmacro()
-
-# vista_set_version( PACKAGE TYPE NAME [ MAJOR [ MINOR [ PATCH [ TWEAK ]]]] )
-# sets the extended version info for the package
-# TYPE has to be RELEASE, HEAD, BRANCH, or TAG
-# NAME can be an arbitrary name (excluding character -)
-# MAJOR, MINOR, PATCH, TWEAK are optional version numbers.
-macro( vista_set_version _PACKAGE _TYPE _NAME )
-	
-	string( TOUPPER  ${_PACKAGE} _PACKAGE_UPPER )
-	set( ${_PACKAGE_UPPER}_VERSION_TYPE		${_TYPE} )
-	set( ${_PACKAGE_UPPER}_VERSION_NAME		${_NAME} )
-
-	if( ${ARGC} GREATER 3 )
-		set( ${_PACKAGE_UPPER}_VERSION_MAJOR ${ARGV3} )
-		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION_MAJOR}" )
-	endif( ${ARGC} GREATER 3 )
-	if( ${ARGC} GREATER 4 )
-		set( ${_PACKAGE_UPPER}_VERSION_MINOR ${ARGV4} )
-		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION}.${${_PACKAGE_UPPER}_VERSION_MINOR}" )
-	endif( ${ARGC} GREATER 4 )
-	if( ${ARGC} GREATER 5 )
-		set( ${_PACKAGE_UPPER}_VERSION_PATCH ${ARGV5} )
-		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION}.${${_PACKAGE_UPPER}_VERSION_PATCH}" )
-	endif( ${ARGC} GREATER 5 )
-	if( ${ARGC} GREATER 6 )
-		set( ${_PACKAGE_UPPER}_VERSION_TWEAK 	${ARGV6} )
-		set( ${_PACKAGE_UPPER}_VERSION			"${${_PACKAGE_UPPER}_VERSION}.${${_PACKAGE_UPPER}_VERSION_TWEAK}" )
-	endif( ${ARGC} GREATER 6 )
-
-	set( ${_PACKAGE_UPPER}_VERSION_EXT			"${${_PACKAGE_UPPER}_VERSION_TYPE}_${${_PACKAGE_UPPER}_VERSION_NAME}" )
-	if( DEFINED ${_PACKAGE_UPPER}_VERSION )
-		set( ${_PACKAGE_UPPER}_VERSION_EXT		"${${_PACKAGE_UPPER}_VERSION_EXT}-${${_PACKAGE_UPPER}_VERSION}" )
-	endif( DEFINED ${_PACKAGE_UPPER}_VERSION )
-	set( ${_PACKAGE_UPPER}_VERSION_EXT			"${${_PACKAGE_UPPER}_VERSION_EXT}-${VISTA_HWARCH}" )
-
-	if( NOT ${_PACKAGE_UPPER}_VERSION_MAJOR )
-		set( ${_PACKAGE_UPPER}_VERSION_MAJOR 1 )
-	endif()
-	if( NOT ${_PACKAGE_UPPER}_VERSION_MINOR )
-		set( ${_PACKAGE_UPPER}_VERSION_MINOR 0 )
-	endif()
-	if( NOT ${_PACKAGE_UPPER}_VERSION_PATCH )
-		set( ${_PACKAGE_UPPER}_VERSION_PATCH 0 )
-	endif()
-	set( ${_PACKAGE_UPPER}_VERSION_POSIX "${${_PACKAGE_UPPER}_VERSION_MAJOR}.${${_PACKAGE_UPPER}_VERSION_MINOR}.${${_PACKAGE_UPPER}_VERSION_PATCH}" )
-
-endmacro( vista_set_version _PACKAGE _TYPE _NAME )
 
 # vista_set_install_permissions( [OWNER_READ] [OWNER_WRITE] [OWNER_EXECUTE] [GROUP_READ] [GROUP_WRITE] [GROUP_EXECUTE] [WORLD_READ] [WORLD_WRITE] [WORLD_EXECUTE] [SETUID] [SETGID] )
 # sets the default permissions for installed files (using VistaCMakeCommon-commands, still needs to be set
