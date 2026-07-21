@@ -30,9 +30,6 @@ else ()
 endif ()
 include(VistaCommon)
 
-
-vista_set_version(VistaDemo HEAD HEAD 1 0 0)
-
 if (VISTA_COMMON_BUILD)
     if (NOT VISTACORELIBS_BUILD_KERNEL)
         message(FATAL_ERROR "VistaDemo cannot be built - VistaCorelibs component VistaKernel is not activated")
