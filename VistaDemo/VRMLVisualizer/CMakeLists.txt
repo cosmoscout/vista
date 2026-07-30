@@ -22,8 +22,6 @@ target_link_libraries(VRMLVisualizer
 vista_configure_app(VRMLVisualizer)
 vista_install(VRMLVisualizer)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(VRMLVisualizer PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(VRMLVisualizer VistaKernel)
-endif ()
+set_target_properties(VRMLVisualizer PROPERTIES FOLDER "VistaDemo")
+add_dependencies(VRMLVisualizer VistaKernel)
 
