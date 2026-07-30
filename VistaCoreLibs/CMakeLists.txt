@@ -1,6 +1,15 @@
 # Self include
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+option(VISTA_ENABLE_WARNINGS "Enable/Disable warnings" ON)
+if (VISTA_ENABLE_WARNINGS)
+    if (MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4244 /wd4100 /wd4512 /wd4245 /wd4389" CACHE STRING "Flags used by the compiler during all build types." FORCE)
+    elseif (UNIX)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-reorder" CACHE STRING "Flags used by the compiler during all build types." FORCE)
+    endif ()
+endif ()
+
 set(VISTACORELIBS_USE_SDL2_WINDOWIMP OFF CACHE BOOL "Determines if the SDL2-based WindowToolkit Implementation will be prefered")
 
 vista_find_package(OpenGL QUIET)
