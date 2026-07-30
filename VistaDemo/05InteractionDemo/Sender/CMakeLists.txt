@@ -15,8 +15,8 @@ target_link_libraries(05InteractionDemoSender
 )
 
 vista_configure_app(05InteractionDemoSender)
-if (VISTA_COMMON_BUILD)
-    set_target_properties(05InteractionDemoSender PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(05InteractionDemoSender VistaKernel)
-endif ()
+
+set_target_properties(05InteractionDemoSender PROPERTIES FOLDER "VistaDemo")
+add_dependencies(05InteractionDemoSender VistaKernel)
+
 

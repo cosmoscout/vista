@@ -17,7 +17,6 @@ target_link_libraries(12IntentionSelectDemo
 vista_configure_app(12IntentionSelectDemo)
 vista_install(12IntentionSelectDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(12IntentionSelectDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(12IntentionSelectDemo VistaKernel)
-endif ()
+set_target_properties(12IntentionSelectDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(12IntentionSelectDemo VistaKernel)
+

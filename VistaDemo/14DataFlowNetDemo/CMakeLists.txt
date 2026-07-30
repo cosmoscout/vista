@@ -24,8 +24,6 @@ set_target_properties(14DataFlowNetDemo PROPERTIES UNITY_BUILD Off)
 vista_configure_app(14DataFlowNetDemo)
 vista_install(14DataFlowNetDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(14DataFlowNetDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(14DataFlowNetDemo VistaKernel)
-endif ()
+set_target_properties(14DataFlowNetDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(14DataFlowNetDemo VistaKernel)
 

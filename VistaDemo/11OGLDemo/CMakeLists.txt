@@ -22,8 +22,7 @@ target_link_libraries(11OGLDemo
 vista_configure_app(11OGLDemo)
 vista_install(11OGLDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(11OGLDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(11OGLDemo VistaKernel)
-endif ()
+set_target_properties(11OGLDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(11OGLDemo VistaKernel)
+
 

@@ -17,8 +17,5 @@ target_link_libraries(19TimeDemo
 vista_configure_app(19TimeDemo)
 vista_install(19TimeDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(19TimeDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(19TimeDemo VistaKernel)
-endif ()
-
+set_target_properties(19TimeDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(19TimeDemo VistaKernel)

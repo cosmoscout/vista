@@ -24,7 +24,7 @@ target_link_libraries(05InteractionDemo
 
 vista_configure_app(05InteractionDemo)
 vista_install(05InteractionDemo)
-if (VISTA_COMMON_BUILD)
-    set_target_properties(05InteractionDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(05InteractionDemo VistaKernel)
-endif ()
+
+set_target_properties(05InteractionDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(05InteractionDemo VistaKernel)
+

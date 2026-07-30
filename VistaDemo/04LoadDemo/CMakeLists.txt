@@ -16,7 +16,7 @@ target_link_libraries(04LoadDemo
 
 vista_configure_app(04LoadDemo)
 vista_install(04LoadDemo)
-if (VISTA_COMMON_BUILD)
-    set_target_properties(04LoadDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(04LoadDemo VistaKernel)
-endif ()
+
+set_target_properties(04LoadDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(04LoadDemo VistaKernel)
+

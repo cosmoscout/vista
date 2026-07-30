@@ -10,8 +10,8 @@ endif ()
 vista_use_package(VistaCoreLibs REQUIRED VistaKernel FIND_DEPENDENCIES)
 
 file(GLOB ProjectSources
-		"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-		"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 
 add_executable(02GeometryDemo ${ProjectSources})
@@ -22,7 +22,6 @@ target_link_libraries(02GeometryDemo
 vista_configure_app(02GeometryDemo)
 vista_install(02GeometryDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(02GeometryDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(02GeometryDemo VistaKernel)
-endif ()
+set_target_properties(02GeometryDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(02GeometryDemo VistaKernel)
+

@@ -17,7 +17,7 @@ target_link_libraries(06CameraControlDemo
 vista_configure_app(06CameraControlDemo)
 vista_install(06CameraControlDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(06CameraControlDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(06CameraControlDemo VistaKernel)
-endif ()
+
+set_target_properties(06CameraControlDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(06CameraControlDemo VistaKernel)
+

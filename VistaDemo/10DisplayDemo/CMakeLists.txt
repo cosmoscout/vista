@@ -22,8 +22,7 @@ target_link_libraries(10DisplayDemo
 vista_configure_app(10DisplayDemo)
 vista_install(10DisplayDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(10DisplayDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(10DisplayDemo VistaKernel)
-endif ()
+set_target_properties(10DisplayDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(10DisplayDemo VistaKernel)
+
 

@@ -22,7 +22,6 @@ target_link_libraries(17MsgPortBob
 vista_configure_app(17MsgPortBob)
 vista_install(17MsgPortBob)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(17MsgPortBob PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(17MsgPortBob VistaKernel)
-endif ()
+set_target_properties(17MsgPortBob PROPERTIES FOLDER "VistaDemo")
+add_dependencies(17MsgPortBob VistaKernel)
+

@@ -22,8 +22,5 @@ target_link_libraries(21ClusterModeDemo
 vista_configure_app(21ClusterModeDemo)
 vista_install(21ClusterModeDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(21ClusterModeDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(21ClusterModeDemo VistaKernel)
-endif ()
-
+set_target_properties(21ClusterModeDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(21ClusterModeDemo VistaKernel)

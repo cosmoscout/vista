@@ -22,7 +22,6 @@ target_link_libraries(18DebuggingToolsDemo
 vista_configure_app(18DebuggingToolsDemo)
 vista_install(18DebuggingToolsDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(18DebuggingToolsDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(18DebuggingToolsDemo VistaKernel)
-endif ()
+set_target_properties(18DebuggingToolsDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(18DebuggingToolsDemo VistaKernel)
+
