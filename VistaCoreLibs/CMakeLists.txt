@@ -1,5 +1,3 @@
-include(${CMAKE_SOURCE_DIR}/VistaCMakeCommon/VistaCommon.cmake)
-
 # Self include
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 

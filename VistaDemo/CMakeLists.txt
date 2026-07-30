@@ -1,5 +1,3 @@
-include(${CMAKE_SOURCE_DIR}/VistaCMakeCommon/VistaCommon.cmake)
-
 if (NOT VISTACORELIBS_BUILD_KERNEL)
     message(FATAL_ERROR "VistaDemo cannot be built - VistaCorelibs component VistaKernel is not activated")
 endif ()
