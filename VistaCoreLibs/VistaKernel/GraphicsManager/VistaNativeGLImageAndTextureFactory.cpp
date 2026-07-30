@@ -23,6 +23,7 @@
 // $Id: VistaAutoBuffer.cpp 31862 2012-08-31 22:54:08Z ingoassenmacher $
 
 #include <GL/glew.h>
+#include <GL/glu.h>
 
 #include "VistaNativeGLImageAndTextureFactory.h"
 

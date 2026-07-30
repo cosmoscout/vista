@@ -1,26 +1,27 @@
-cmake_minimum_required( VERSION 2.8 )
-if( NOT VISTADEMO_COMMON_BUILD )
-	project( VRMLVisualizer )
+cmake_minimum_required(VERSION 3.28)
 
-	list( APPEND CMAKE_MODULE_PATH "$ENV{VISTA_CMAKE_COMMON}" )
-	include( VistaCommon )
-endif( NOT VISTADEMO_COMMON_BUILD )
+if (NOT VISTADEMO_COMMON_BUILD)
+    project(VRMLVisualizer)
 
-vista_use_package( VistaCoreLibs REQUIRED VistaKernel FIND_DEPENDENCIES )
+    list(APPEND CMAKE_MODULE_PATH "$ENV{VISTA_CMAKE_COMMON}")
+    include(VistaCommon)
+endif (NOT VISTADEMO_COMMON_BUILD)
 
-# Including the source files of all source subfolders recursively
-include( "./_SourceFiles.cmake" )
+vista_use_package(VistaCoreLibs REQUIRED VistaKernel FIND_DEPENDENCIES)
 
-add_executable( VRMLVisualizer ${ProjectSources} )
-target_link_libraries( VRMLVisualizer
-	${VISTA_USE_PACKAGE_LIBRARIES} # contains all libraries from vista_use_package() calls
+file(GLOB ProjectSources
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 
-vista_configure_app( VRMLVisualizer )
-vista_install( VRMLVisualizer )
-vista_create_default_info_file( VRMLVisualizer )
-if( VISTA_COMMON_BUILD )
-	set_target_properties( VRMLVisualizer PROPERTIES FOLDER "VistaDemo" )
-	add_dependencies( VRMLVisualizer VistaKernel )
-endif()
+add_executable(VRMLVisualizer ${ProjectSources})
+target_link_libraries(VRMLVisualizer
+        ${VISTA_USE_PACKAGE_LIBRARIES} # contains all libraries from vista_use_package() calls
+)
+
+vista_configure_app(VRMLVisualizer)
+vista_install(VRMLVisualizer)
+
+set_target_properties(VRMLVisualizer PROPERTIES FOLDER "VistaDemo")
+add_dependencies(VRMLVisualizer VistaKernel)
 

@@ -26,11 +26,12 @@
 
 #include <algorithm>
 #include <cassert>
+#include <functional>
 
 namespace {
 template <class Pred>
 class _find_by_id
-    : public std::unary_function<const VistaDriverAbstractWindowAspect::IWindowHandle&, bool> {
+    : public std::function<bool(const VistaDriverAbstractWindowAspect::IWindowHandle&)> {
  public:
   _find_by_id(Pred id)
       : m_Id(id) {
