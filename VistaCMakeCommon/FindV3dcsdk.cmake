@@ -36,4 +36,4 @@ if (NOT V3DCSDK_FOUND)
 
 endif (NOT V3DCSDK_FOUND)
 
-find_package_handle_standard_args(V3DCSDK "3DCSDK could not be found" 3DCSDK_ROOT_DIR)
+find_package_handle_standard_args(V3dcsdk "3DCSDK could not be found" 3DCSDK_ROOT_DIR)
