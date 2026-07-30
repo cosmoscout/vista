@@ -28,26 +28,34 @@ if (VISTACORELIBS_BUILD_WINDOWIMP_GLUT)
 endif ()
 
 if (VISTACORELIBS_BUILD_WINDOWIMP_OSG)
-	file(GLOB OpenSceneGraphWindowImpSources
-			"${CMAKE_CURRENT_SOURCE_DIR}/OpenSceneGraphWindowImp/*.cpp"
-			"${CMAKE_CURRENT_SOURCE_DIR}/OpenSceneGraphWindowImp/*.h"
-	)
-	list(APPEND AdditionalSources ${OpenSceneGraphWindowImpSources})
+    file(GLOB OpenSceneGraphWindowImpSources
+            "${CMAKE_CURRENT_SOURCE_DIR}/OpenSceneGraphWindowImp/*.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/OpenSceneGraphWindowImp/*.h"
+    )
+    list(APPEND AdditionalSources ${OpenSceneGraphWindowImpSources})
+
+    if (NOT VISTACORELIBS_BUILD_WINDOWIMP_GLUT)
+        # workaround, since we are currently still using the glut text imp
+        list(APPEND AdditionalSources
+                "${CMAKE_CURRENT_SOURCE_DIR}/GlutWindowImp/VistaGlutTextEntity.h"
+                "${CMAKE_CURRENT_SOURCE_DIR}/GlutWindowImp/VistaGlutTextEntity.cpp"
+        )
+    endif ()
 endif ()
 
 if (VISTACORELIBS_BUILD_WINDOWIMP_SDL2)
-	file(GLOB SDL2WindowImpSources
-			"${CMAKE_CURRENT_SOURCE_DIR}/SDL2WindowImp/*.cpp"
-			"${CMAKE_CURRENT_SOURCE_DIR}/SDL2WindowImp/*.h"
-	)
-	list(APPEND AdditionalSources ${SDL2WindowImpSources})
+    file(GLOB SDL2WindowImpSources
+            "${CMAKE_CURRENT_SOURCE_DIR}/SDL2WindowImp/*.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/SDL2WindowImp/*.h"
+    )
+    list(APPEND AdditionalSources ${SDL2WindowImpSources})
 
     if (VISTACORELIBS_USE_OPENVR)
-		file(GLOB OpenVRSDL2WindowImpSources
-				"${CMAKE_CURRENT_SOURCE_DIR}/OpenVRSDL2WindowImp/*.cpp"
-				"${CMAKE_CURRENT_SOURCE_DIR}/OpenVRSDL2WindowImp/*.h"
-		)
-		list(APPEND AdditionalSources ${OpenVRSDL2WindowImpSources})
+        file(GLOB OpenVRSDL2WindowImpSources
+                "${CMAKE_CURRENT_SOURCE_DIR}/OpenVRSDL2WindowImp/*.cpp"
+                "${CMAKE_CURRENT_SOURCE_DIR}/OpenVRSDL2WindowImp/*.h"
+        )
+        list(APPEND AdditionalSources ${OpenVRSDL2WindowImpSources})
     endif ()
 endif ()
 
