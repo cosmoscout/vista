@@ -9,6 +9,7 @@
 # vista_configure_app( PACKAGE_NAME [OUT_NAME] )
 # vista_configure_lib( PACKAGE_NAME [OUT_NAME] )
 # vista_install( TARGET [INCLUDE/BIN_SUBDIRECTORY [LIBRARY_SUBDIRECTORY] ] [NO_POSTFIX] )
+# vista_create_cmake_config_build( PACKAGE_NAME CONFIG_PROTO_FILE TARGET_DIR )
 # vista_create_cmake_config_install( PACKAGE_NAME CONFIG_PROTO_FILE TARGET_DIR )
 # vista_create_cmake_configs( TARGET [CUSTOM_CONFIG_FILE_BUILD [CUSTOM_CONFIG_FILE_INSTALL] ] )
 # vista_set_outdir( TARGET DIRECTORY [USE_CONFIG_SUBDIRS])

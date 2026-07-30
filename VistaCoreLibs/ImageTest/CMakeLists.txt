@@ -29,6 +29,3 @@ add_custom_command(TARGET ImageTest
         WORKING_DIRECTORY "${IMAGETEST_TARGET_OUTDIR}"
         COMMENT "blah"
 )
-
-vista_add_external_msvc_project_of_package(VistaCoreLibs "ExternalLibs" DEPENDENT ImageTest)
-

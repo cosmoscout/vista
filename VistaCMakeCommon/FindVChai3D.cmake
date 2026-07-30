@@ -55,12 +55,7 @@ if( NOT VCHAI3D_FOUND )
 		endif(UNIX)
 		
 		#this paths contains only libs which are dynamically loaded
-		if( UNIX )
-			string( REPLACE ";" ":" _OUTPUT_LIST "${CHAI3D_ROOT_DIR}/bin" )
-			list( APPEND VISTA_${_PACKAGE_NAME}_ADDITIONAL_PATHENTRIES "${_OUTPUT_LIST}" )
-		else()
-			list( APPEND VISTA_ADDITIONAL_PATHENTRIES "${CHAI3D_ROOT_DIR}/bin" )
-		endif( UNIX )
+		list( APPEND VISTA_ADDITIONAL_PATHENTRIES "${CHAI3D_ROOT_DIR}/bin" )
 
 	else( CHAI3D_ROOT_DIR )
 		message( WARNING "vista_find_package_root - scr/chai3d.h not found" )	

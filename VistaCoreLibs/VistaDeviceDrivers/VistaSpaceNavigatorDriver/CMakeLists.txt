@@ -70,5 +70,4 @@ INSTALL(DIRECTORY .
         DESTINATION ${VISTA_INSTALL_INC_DIR}/VistaDeviceDrivers/VistaSpaceNavigator
         FILES_MATCHING PATTERN "*.h"
         PATTERN "build" EXCLUDE
-        PATTERN ".svn" EXCLUDE
         PATTERN "CMakeFiles" EXCLUDE)

@@ -2,8 +2,7 @@ include(VistaTestingUtils)
 
 vista_use_package(GTest REQUIRED SYSTEM_HEADERS)
 
-vista_add_pathscript_dynamic_lib_path("${CMAKE_BINARY_DIR}/lib")
-vista_add_pathscript_dynamic_lib_path("${CMAKE_BINARY_DIR}/lib/DriverPlugins")
+list(APPEND VISTA_ADDITIONAL_PATHENTRIES "${CMAKE_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/lib/DriverPlugins")
 
 if (VISTACORELIBS_BUILD_BASE)
     vista_configure_test(VistaMathBasicsTest VistaMathBasicsTest.cpp
