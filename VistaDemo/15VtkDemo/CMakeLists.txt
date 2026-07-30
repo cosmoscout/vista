@@ -23,8 +23,6 @@ target_link_libraries(15VtkDemo
 vista_configure_app(15VtkDemo)
 vista_install(15VtkDemo)
 
-if (VISTA_COMMON_BUILD)
-    set_target_properties(15VtkDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(15VtkDemo VistaKernel)
-endif ()
+set_target_properties(15VtkDemo PROPERTIES FOLDER "VistaDemo")
+add_dependencies(15VtkDemo VistaKernel)
 
