@@ -1,54 +1,67 @@
-		 
-# Transcoder
-
-add_library(VistaMIDITranscoder
-        VistaMIDICommonShare.h
-        VistaMIDITranscoder.cpp
+add_library(VistaMIDITranscoder SHARED
+    VistaMIDICommonShare.h
+    VistaMIDITranscoder.cpp
 )
+
 target_link_libraries(VistaMIDITranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaMIDITranscoder)
-vista_install(VistaMIDITranscoder "VistaDeviceDrivers/VistaMIDIDriver" "DriverPlugins")
-set_target_properties(VistaMIDITranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaMIDITranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
-# Driver Plugin
-
-add_library(VistaMIDIPlugin
-        VistaMIDIPlugin.cpp
+target_compile_definitions(VistaMIDITranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAMIDITRANSCODER_EXPORTS>
 )
+
+add_library(VistaMIDIPlugin SHARED
+    VistaMIDIPlugin.cpp
+)
+
 target_link_libraries(VistaMIDIPlugin
-        VistaMIDIDriver
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaMIDIDriver
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaMIDIPlugin)
-vista_install(VistaMIDIPlugin "VistaDeviceDrivers/VistaMIDIDriver" "DriverPlugins")
-set_target_properties(VistaMIDIPlugin PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaMIDIPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
-# Actual Driver
+target_compile_definitions(VistaMIDIPlugin
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAMIDIPLUGIN_EXPORTS>
+)
 
-add_library(VistaMIDIDriver
-        VistaMIDICommonShare.h
-        VistaMIDIDriver.h
-        VistaMIDIDriver.cpp
+add_library(VistaMIDIDriver SHARED
+    VistaMIDIDriver.cpp
+)
+
+target_sources(VistaMIDIDriver
+  PUBLIC
+    FILE_SET HEADERS
+    FILES
+      VistaMIDICommonShare.h
+      VistaMIDIDriver.h
+)
+
+target_compile_definitions(VistaMIDIDriver
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAMIDIDRIVER_EXPORTS>
 )
 
 target_link_libraries(VistaMIDIDriver
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
-        VistaMath
-        ${VISTA_USE_PACKAGE_LIBRARIES}
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
+    VistaMath
 )
-vista_configure_lib(VistaMIDIDriver)
-vista_install(VistaMIDIDriver "VistaDeviceDrivers/VistaMIDIDriver" "DriverPlugins")
-set_target_properties(VistaMIDIDriver PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaMIDIDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-set_property(TARGET VistaMIDIDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
 
+install(
+    TARGETS VistaMIDITranscoder VistaMIDIPlugin VistaMIDIDriver
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaMIDIDriver"
+)

@@ -1,52 +1,64 @@
-		 
-# Transcoder
-
-add_library(VistaIRManTranscoder
-        VistaIRManTranscoder.cpp
+add_library(VistaIRManTranscoder SHARED
+    VistaIRManTranscoder.cpp
 )
+
 target_link_libraries(VistaIRManTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaIRManTranscoder)
-vista_install(VistaIRManTranscoder "VistaDeviceDrivers/VistaIRManDriver" "DriverPlugins")
-set_target_properties(VistaIRManTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaIRManTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
-# Driver Plugin
-
-add_library(VistaIRManPlugin
-        VistaIRManPlugin.cpp
+target_compile_definitions(VistaIRManTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAIRMANTRANSCODER_EXPORTS>
 )
+
+add_library(VistaIRManPlugin SHARED
+    VistaIRManPlugin.cpp
+)
+
 target_link_libraries(VistaIRManPlugin
-        VistaIRManDriver
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaIRManDriver
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaIRManPlugin)
-vista_install(VistaIRManPlugin "VistaDeviceDrivers/VistaIRManDriver" "DriverPlugins")
-set_target_properties(VistaIRManPlugin PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaIRManPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
-# Actual Driver
+target_compile_definitions(VistaIRManPlugin
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAIRMANPLUGIN_EXPORTS>
+)
 
-add_library(VistaIRManDriver
-        VistaIRManDriver.h
-        VistaIRManDriver.cpp
+add_library(VistaIRManDriver SHARED
+    VistaIRManDriver.cpp
+)
+
+target_sources(VistaIRManDriver
+  PUBLIC
+    FILE_SET HEADERS
+    FILES VistaIRManDriver.h
+)
+
+target_compile_definitions(VistaIRManDriver
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAIRMANDRIVER_EXPORTS>
 )
 
 target_link_libraries(VistaIRManDriver
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
-        VistaMath
-        ${VISTA_USE_PACKAGE_LIBRARIES}
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
+    VistaMath
 )
-vista_configure_lib(VistaIRManDriver)
-vista_install(VistaIRManDriver "VistaDeviceDrivers/VistaIRManDriver" "DriverPlugins")
-set_target_properties(VistaIRManDriver PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaIRManDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-set_property(TARGET VistaIRManDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
 
+install(
+    TARGETS VistaIRManTranscoder VistaIRManPlugin VistaIRManDriver
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaIRManDriver"
+)

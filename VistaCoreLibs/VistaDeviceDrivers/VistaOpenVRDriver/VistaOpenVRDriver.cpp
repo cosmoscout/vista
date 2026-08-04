@@ -22,8 +22,8 @@
 /*                                                                            */
 /*============================================================================*/
 
-#include <openvr/openvr.h>
-#include <openvr/openvr_capi.h>
+#include <openvr.h>
+#include <openvr_capi.h>
 
 #include "VistaOpenVRDriver.h"
 #include "VistaOpenVRDriverConfig.h"

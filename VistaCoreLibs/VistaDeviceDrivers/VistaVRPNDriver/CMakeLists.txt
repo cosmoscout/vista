@@ -1,84 +1,82 @@
-		 
-# Transcoder
+add_library(VistaVRPNTranscoder SHARED
+    VistaVRPNTranscoder.cpp
+)
 
-add_library(VistaVRPNTranscoder
-        VistaVRPNTranscoder.cpp
-)
 target_link_libraries(VistaVRPNTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaVRPNTranscoder)
-vista_install(VistaVRPNTranscoder "VistaDeviceDrivers/VistaVRPNDriver" "DriverPlugins")
-set_target_properties(VistaVRPNTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaVRPNTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaVRPNTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAVRPNTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaVRPNTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaVRPNDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(vrpn QUIET)
+find_package(VRPN QUIET)
 
 if (NOT VRPN_FOUND)
-    message(STATUS "VistaVRPNDriver requires vrpn, which is not available - only transcoder will be built")
-else (NOT VRPN_FOUND)
+  message(STATUS "VistaVRPNDriver requires VRPN, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaVRPNPlugin SHARED
+      VistaVRPNPlugin.cpp
+  )
 
-    # Driver Plugin
+  target_link_libraries(VistaVRPNPlugin
+    PUBLIC
+      VistaVRPNDriver
+      VistaDeviceDriversBase
+  )
 
-    add_library(VistaVRPNPlugin
-            VistaVRPNPlugin.cpp
-    )
-    target_link_libraries(VistaVRPNPlugin
-            VistaVRPNDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaVRPNPlugin)
-    vista_install(VistaVRPNPlugin "VistaDeviceDrivers/VistaVRPNDriver" "DriverPlugins")
-    set_target_properties(VistaVRPNPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaVRPNPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_compile_definitions(VistaVRPNPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAVRPNPLUGIN_EXPORTS>
+  )
 
-    # Actual Driver
+  add_library(VistaVRPNDriver SHARED
+      VistaVRPNDriver.cpp
+  )
 
-    vista_use_package(vrpn REQUIRED)
+  target_sources(VistaVRPNDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaVRPNDriver.h
+  )
 
-    add_library(VistaVRPNDriver
-            VistaVRPNDriver.h
-            VistaVRPNDriver.cpp
-    )
+  target_compile_definitions(VistaVRPNDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAVRPNDRIVER_EXPORTS>
+  )
 
-    target_link_libraries(VistaVRPNDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaVRPNDriver)
-    vista_install(VistaVRPNDriver "VistaDeviceDrivers/VistaVRPNDriver" "DriverPlugins")
-    set_target_properties(VistaVRPNDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaVRPNDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaVRPNDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
+  target_link_libraries(VistaVRPNDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      VRPN::vrpn
+  )
 
-
-    set(VRPN_BUILD_TESTAPPS ON CACHE BOOL "Enable build of test apps for VRPN driver")
-
-    if (VRPN_BUILD_TESTAPPS)
-        add_executable(VRPN_testclient testclient/spacemouseclient.cpp)
-        target_link_libraries(VRPN_testclient
-                VistaBase
-                VistaAspects
-                VistaInterProcComm
-                VistaDeviceDriversBase
-                VistaDataFlowNet
-                VistaMath
-                ${VISTA_USE_PACKAGE_LIBRARIES}
-        )
-
-        vista_use_package(vrpn REQUIRED Server)
-        add_executable(VRPN_testserver testserver/spacemouseserver.cpp)
-        target_link_libraries(VRPN_testserver ${VRPN_LIBRARIES})
-        if (UNIX)
-            target_link_libraries(VRPN_testserver pthread)
-        endif ()
-    endif ()
-endif (NOT VRPN_FOUND)
+  install(
+      TARGETS VistaVRPNPlugin VistaVRPNDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaVRPNDriver"
+  )
+endif ()

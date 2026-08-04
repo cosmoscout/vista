@@ -1,27 +1,46 @@
+add_library(VistaTools SHARED)
+add_library(Vista::Tools ALIAS VistaTools)
 
-file(GLOB_RECURSE ProjectSources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+set_target_properties(VistaTools
+  PROPERTIES
+    EXPORT_NAME Tools
 )
 
-add_library(VistaTools ${ProjectSources})
+file(GLOB_RECURSE ProjectSources "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE ProjectHeaders "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+target_sources(VistaTools
+  PRIVATE
+    ${ProjectSources}
+  PUBLIC
+    FILE_SET HEADERS
+    FILES ${ProjectHeaders}
+)
+
 target_link_libraries(VistaTools
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaMath
-        $<$<PLATFORM_ID:Windows>:PowrProf dbghelp Psapi>
-        $<$<PLATFORM_ID:Linux>:dl>
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaMath
+    $<$<PLATFORM_ID:Windows>:PowrProf dbghelp Psapi>
+    $<$<PLATFORM_ID:Linux>:dl>
 )
 
-target_compile_definitions(VistaTools PRIVATE
-        $<$<PLATFORM_ID:Windows>:$<$<BOOL:${BUILD_SHARED_LIBS}>:VISTATOOLS_EXPORTS>>
-        $<$<PLATFORM_ID:Windows>:$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:VISTATOOLS_STATIC>
+target_compile_definitions(VistaTools
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTATOOLS_EXPORTS>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-    target_precompile_headers(VistaTools PRIVATE precompiled.pch)
+  target_precompile_headers(VistaTools PRIVATE precompiled.pch)
 endif ()
 
-vista_configure_lib(VistaTools)
-vista_install(VistaTools VistaTools)
+install(
+    TARGETS VistaTools
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET HEADERS DESTINATION "include/VistaTools"
+)

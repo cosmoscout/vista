@@ -1,61 +1,82 @@
-		 
-# Transcoder
+add_library(VistaSDL2TextInputTranscoder SHARED
+    VistaSDL2TextInputTranscoder.cpp
+)
 
-add_library(VistaSDL2TextInputTranscoder
-        VistaSDL2TextInputTranscoder.cpp
-)
 target_link_libraries(VistaSDL2TextInputTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaSDL2TextInputTranscoder)
-vista_install(VistaSDL2TextInputTranscoder "VistaDeviceDrivers/VistaSDL2TextInputDriver" "DriverPlugins")
-set_target_properties(VistaSDL2TextInputTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaSDL2TextInputTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaSDL2TextInputTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTASDL2TEXTINPUTTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaSDL2TextInputTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2TextInputDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(SDL2 QUIET)
+find_package(SDL2 QUIET)
 
 if (NOT SDL2_FOUND)
-    message(STATUS "VistaSDL2TextInputDriver requires SDL2, which is not available - only transcoder will be built")
-else (NOT SDL2_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaSDL2TextInputDriver requires SDL2, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaSDL2TextInputPlugin SHARED
+      VistaSDL2TextInputPlugin.cpp
+  )
 
-    add_library(VistaSDL2TextInputPlugin
-            VistaSDL2TextInputPlugin.cpp
-    )
-    target_link_libraries(VistaSDL2TextInputPlugin
-            VistaSDL2TextInputDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaSDL2TextInputPlugin)
-    vista_install(VistaSDL2TextInputPlugin "VistaDeviceDrivers/VistaSDL2TextInputDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2TextInputPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2TextInputPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_link_libraries(VistaSDL2TextInputPlugin
+    PUBLIC
+      VistaSDL2TextInputDriver
+      VistaDeviceDriversBase
+  )
 
-    # Actual Driver
+  target_compile_definitions(VistaSDL2TextInputPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2TEXTINPUTPLUGIN_EXPORTS>
+  )
 
-    vista_use_package(SDL2 REQUIRED)
+  add_library(VistaSDL2TextInputDriver SHARED
+      VistaSDL2TextInputDriver.cpp
+  )
 
-    add_library(VistaSDL2TextInputDriver
-            VistaSDL2TextInputDriver.h
-            VistaSDL2TextInputDriver.cpp
-    )
+  target_sources(VistaSDL2TextInputDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaSDL2TextInputDriver.h
+  )
 
-    target_link_libraries(VistaSDL2TextInputDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            VistaKernel
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaSDL2TextInputDriver)
-    vista_install(VistaSDL2TextInputDriver "VistaDeviceDrivers/VistaSDL2TextInputDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2TextInputDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2TextInputDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaSDL2TextInputDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT SDL2_FOUND)
+  target_compile_definitions(VistaSDL2TextInputDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2TEXTINPUTDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaSDL2TextInputDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      SDL2::SDL2
+  )
+
+  install(
+      TARGETS VistaSDL2TextInputPlugin VistaSDL2TextInputDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2TextInputDriver"
+  )
+endif ()

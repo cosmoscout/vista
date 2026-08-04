@@ -26,8 +26,7 @@
 
 #include <VistaKernel/DisplayManager/SDL2WindowImp/VistaSDL2WindowingToolkit.h>
 
-#include <openvr/openvr.h>
-#include <openvr/openvr_capi.h>
+#include <openvr.h>
 
 /**
  * OpenVR Window extensions around the SDL2 windowing toolkit

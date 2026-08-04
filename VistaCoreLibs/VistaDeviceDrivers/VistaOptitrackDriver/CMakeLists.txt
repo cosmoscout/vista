@@ -1,62 +1,85 @@
-		 
-# Transcoder
-
-add_library(VistaOptitrackTranscoder
-        VistaOptitrackCommonShare.h
-        VistaOptitrackTranscoder.cpp
+add_library(VistaOptitrackTranscoder SHARED
+    VistaOptitrackTranscoder.cpp
+    VistaOptitrackCommonShare.h
 )
+
 target_link_libraries(VistaOptitrackTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaOptitrackTranscoder)
-vista_install(VistaOptitrackTranscoder "VistaDeviceDrivers/VistaOptitrackDriver" "DriverPlugins")
-set_target_properties(VistaOptitrackTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOptitrackTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
-# Driver Plugin
+target_compile_definitions(VistaOptitrackTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOPTITRACKTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaOptitrackTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOptitrackDriver"
+)
+
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(NatNetSDK QUIET)
+find_package(NatNetSDK QUIET)
 
 if (NOT NATNETSDK_FOUND)
-    message(STATUS "VistaOptitrackDriver requires NatNetSDK, which is not available - only transcoder will be built")
+  message(STATUS "VistaOptitrackDriver requires NatNetSDK, which is not available - only transcoder will be built")
 else ()
+  add_library(VistaOptitrackPlugin SHARED
+      VistaOptitrackPlugin.cpp
+  )
 
-    add_library(VistaOptitrackPlugin
-            VistaOptitrackPlugin.cpp
-    )
-    target_link_libraries(VistaOptitrackPlugin
-            VistaOptitrackDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaOptitrackPlugin)
-    vista_install(VistaOptitrackPlugin "VistaDeviceDrivers/VistaOptitrackDriver" "DriverPlugins")
-    set_target_properties(VistaOptitrackPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOptitrackPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_link_libraries(VistaOptitrackPlugin
+    PUBLIC
+      VistaOptitrackDriver
+      VistaDeviceDriversBase
+  )
 
-    # Actual Driver
-    vista_use_package(NatNetSDK REQUIRED)
+  target_compile_definitions(VistaOptitrackPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPTITRACKPLUGIN_EXPORTS>
+  )
 
-    add_library(VistaOptitrackDriver
-            VistaOptitrackCommonShare.h
-            VistaOptitrackDriver.h
-            VistaOptitrackDriver.cpp
-    )
+  add_library(VistaOptitrackDriver SHARED
+      VistaOptitrackDriver.cpp
+  )
 
-    target_link_libraries(VistaOptitrackDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaOptitrackDriver)
-    vista_install(VistaOptitrackDriver "VistaDeviceDrivers/VistaOptitrackDriver" "DriverPlugins")
-    set_target_properties(VistaOptitrackDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOptitrackDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaOptitrackDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
+  target_sources(VistaOptitrackDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaOptitrackDriver.h
+        VistaOptitrackCommonShare.h
+  )
+
+  target_compile_definitions(VistaOptitrackDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPTITRACKDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaOptitrackDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      NatNet::SDK
+  )
+
+  install(
+      TARGETS VistaOptitrackPlugin VistaOptitrackDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOptitrackDriver"
+  )
 endif ()
-

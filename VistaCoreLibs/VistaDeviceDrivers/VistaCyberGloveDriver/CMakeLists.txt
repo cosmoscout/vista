@@ -1,59 +1,67 @@
-		 
-# Transcoder
-
-add_library(VistaCyberGloveTranscoder
-        VistaCyberGloveCommonShare.h
-        VistaCyberGloveTranscoder.cpp
+add_library(VistaCyberGloveTranscoder SHARED
+    VistaCyberGloveCommonShare.h
+    VistaCyberGloveTranscoder.cpp
 )
 
 target_link_libraries(VistaCyberGloveTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaCyberGloveTranscoder)
-vista_install(VistaCyberGloveTranscoder "VistaDeviceDrivers/VistaCyberGloveDriver" "DriverPlugins")
-set_target_properties(VistaCyberGloveTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaCyberGloveTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaCyberGloveTranscoder
+    PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTACYBERGLOVETRANSCODER_EXPORTS>
+)
 
-# Driver Plugin
-
-add_library(VistaCyberGlovePlugin
-        VistaCyberGlovePlugin.cpp
+add_library(VistaCyberGlovePlugin SHARED
+    VistaCyberGlovePlugin.cpp
 )
 
 target_link_libraries(VistaCyberGlovePlugin
-        VistaCyberGloveDriver
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaCyberGloveDriver
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaCyberGlovePlugin)
-vista_install(VistaCyberGlovePlugin "VistaDeviceDrivers/VistaCyberGloveDriver" "DriverPlugins")
-set_target_properties(VistaCyberGlovePlugin PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaCyberGlovePlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaCyberGlovePlugin
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTACYBERGLOVEPLUGIN_EXPORTS>
+)
 
-# Actual Driver
+add_library(VistaCyberGloveDriver SHARED
+    VistaCyberGloveDriver.cpp
+)
 
-add_library(VistaCyberGloveDriver
-        VistaCyberGloveCommonShare.h
-        VistaCyberGloveDriver.h
-        VistaCyberGloveDriver.cpp
+target_sources(VistaCyberGloveDriver
+  PUBLIC
+    FILE_SET HEADERS
+    FILES
+      VistaCyberGloveCommonShare.h
+      VistaCyberGloveDriver.h
+)
+
+target_compile_definitions(VistaCyberGloveDriver
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTACYBERGLOVEDRIVER_EXPORTS>
 )
 
 target_link_libraries(VistaCyberGloveDriver
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
-        VistaMath
-        ${VISTA_USE_PACKAGE_LIBRARIES}
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
+    VistaMath
 )
 
-vista_configure_lib(VistaCyberGloveDriver)
-vista_install(VistaCyberGloveDriver "VistaDeviceDrivers/VistaCyberGloveDriver" "DriverPlugins")
-set_target_properties(VistaCyberGloveDriver PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaCyberGloveDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-set_property(TARGET VistaCyberGloveDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-
+install(
+    TARGETS VistaCyberGloveTranscoder VistaCyberGlovePlugin VistaCyberGloveDriver
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaCyberGloveDriver"
+)

@@ -36,9 +36,7 @@
 #include <cassert>
 #include <string.h>
 
-#include <opencv/cv.h>
-#include <opencv/cv.hpp>
-#include <opencv/highgui.h>
+#include <opencv4/opencv2/videoio.hpp>
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
 /*============================================================================*/
@@ -605,28 +603,28 @@ void VistaOpenCVCaptureDriver::OnReconnectCamera(bool bForce) {
     return;
   }
 
-  if (m_pCapture->set(CV_CAP_PROP_CONVERT_RGB, 1) == false)
+  if (m_pCapture->set(cv::CAP_PROP_CONVERT_RGB, 1) == false)
     p->SetDoesHW2RGB(false);
   else
     p->SetDoesHW2RGB(true);
 
   if (p->GetFormat() != 0) {
-    if ((*m_pCapture).set(CV_CAP_PROP_FORMAT, p->GetFormat()) == false)
-      p->SetFormat((*m_pCapture).get(CV_CAP_PROP_FORMAT));
+    if ((*m_pCapture).set(cv::CAP_PROP_FORMAT, p->GetFormat()) == false)
+      p->SetFormat((*m_pCapture).get(cv::CAP_PROP_FORMAT));
   } else
-    p->SetFormat((*m_pCapture).get(CV_CAP_PROP_FORMAT));
+    p->SetFormat((*m_pCapture).get(cv::CAP_PROP_FORMAT));
 
   if (p->GetFrameRate() != 0) {
-    if ((*m_pCapture).set(CV_CAP_PROP_FPS, p->GetFrameRate()) == false)
-      p->SetFrameRate((int)(*m_pCapture).get(CV_CAP_PROP_FPS));
+    if ((*m_pCapture).set(cv::CAP_PROP_FPS, p->GetFrameRate()) == false)
+      p->SetFrameRate((int)(*m_pCapture).get(cv::CAP_PROP_FPS));
   } else
-    p->SetFrameRate((int)(*m_pCapture).get(CV_CAP_PROP_FPS));
+    p->SetFrameRate((int)(*m_pCapture).get(cv::CAP_PROP_FPS));
 
-  (*m_pCapture).set(CV_CAP_PROP_FRAME_WIDTH, p->GetWidthRequested());
-  (*m_pCapture).set(CV_CAP_PROP_FRAME_HEIGHT, p->GetHeightRequested());
+  (*m_pCapture).set(cv::CAP_PROP_FRAME_WIDTH, p->GetWidthRequested());
+  (*m_pCapture).set(cv::CAP_PROP_FRAME_HEIGHT, p->GetHeightRequested());
 
-  p->SetWidth((int)(*m_pCapture).get(CV_CAP_PROP_FRAME_WIDTH));
-  p->SetHeight((int)(*m_pCapture).get(CV_CAP_PROP_FRAME_HEIGHT));
+  p->SetWidth((int)(*m_pCapture).get(cv::CAP_PROP_FRAME_WIDTH));
+  p->SetHeight((int)(*m_pCapture).get(cv::CAP_PROP_FRAME_HEIGHT));
 
   if (p->GetWidth() == 0 || p->GetHeight() == 0) {
     vstr::err() << "Could not set frame dimensions. OpenCV reported (" << p->GetWidth() << ", "

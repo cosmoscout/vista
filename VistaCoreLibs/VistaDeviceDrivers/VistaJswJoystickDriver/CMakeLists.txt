@@ -1,61 +1,82 @@
-		 
-# Transcoder
+add_library(VistaJswJoystickTranscoder SHARED
+    VistaJswJoystickTranscoder.cpp
+)
 
-add_library(VistaJswJoystickTranscoder
-        VistaJswJoystickTranscoder.cpp
-)
 target_link_libraries(VistaJswJoystickTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaJswJoystickTranscoder)
-vista_install(VistaJswJoystickTranscoder "VistaDeviceDrivers/VistaJswJoystickDriver" "DriverPlugins")
-set_target_properties(VistaJswJoystickTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaJswJoystickTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaJswJoystickTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAJSWJOYSTICKTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaJswJoystickTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaJswJoystickDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(jsw QUIET)
+find_package(JSW QUIET)
 
 if (NOT JSW_FOUND)
-    message(STATUS "VistaJswJoystickDriver requires jsw, which is not available - only transcoder will be built")
-else (NOT JSW_FOUND)
+  message(STATUS "VistaJswJoystickDriver requires JSW, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaJswJoystickPlugin SHARED
+      VistaJswJoystickPlugin.cpp
+  )
 
-    # Driver Plugin
+  target_link_libraries(VistaJswJoystickPlugin
+    PUBLIC
+      VistaJswJoystickDriver
+      VistaDeviceDriversBase
+  )
 
-    add_library(VistaJswJoystickPlugin
-            VistaJswJoystickPlugin.cpp
-    )
-    target_link_libraries(VistaJswJoystickPlugin
-            VistaJswJoystickDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaJswJoystickPlugin)
-    vista_install(VistaJswJoystickPlugin "VistaDeviceDrivers/VistaJswJoystickDriver" "DriverPlugins")
-    set_target_properties(VistaJswJoystickPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaJswJoystickPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_compile_definitions(VistaJswJoystickPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAJSWJOYSTICKPLUGIN_EXPORTS>
+  )
 
-    # Actual Driver
+  add_library(VistaJswJoystickDriver SHARED
+      VistaJswJoystickDriver.cpp
+  )
 
-    vista_use_package(jsw REQUIRED)
+  target_sources(VistaJswJoystickDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaJswJoystickDriver.h
+  )
 
-    add_library(VistaJswJoystickDriver
-            VistaJswJoystickDriver.h
-            VistaJswJoystickDriver.cpp
-    )
+  target_compile_definitions(VistaJswJoystickDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAJSWJOYSTICKDRIVER_EXPORTS>
+  )
 
-    target_link_libraries(VistaJswJoystickDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaJswJoystickDriver)
-    vista_install(VistaJswJoystickDriver "VistaDeviceDrivers/VistaJswJoystickDriver" "DriverPlugins")
-    set_target_properties(VistaJswJoystickDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaJswJoystickDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaJswJoystickDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT JSW_FOUND)
+  target_link_libraries(VistaJswJoystickDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      JSW::JSW
+  )
+
+  install(
+      TARGETS VistaJswJoystickPlugin VistaJswJoystickDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaJswJoystickDriver"
+  )
+endif ()

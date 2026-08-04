@@ -742,7 +742,7 @@ bool VistaWiimoteDriver::RecordMoteEvent(VistaType::microtime nTs) {
   s->m_buttons = m_pMote[0]->btns;
 
   MeasureStop(m_nWiimoteId);
-  pSensor->SetUpdateTimeStamp(nTs);
+  // pSensor->SetUpdateTimeStamp(nTs);
 
   return true;
 }
@@ -772,7 +772,7 @@ bool VistaWiimoteDriver::RecordStateEvent(VistaType::microtime nTs) {
   s->m_nExpansionState = m_nState;
 
   MeasureStop(m_nStatusId);
-  pSensor->SetUpdateTimeStamp(nTs);
+  // pSensor->SetUpdateTimeStamp(nTs);
   return true;
 }
 

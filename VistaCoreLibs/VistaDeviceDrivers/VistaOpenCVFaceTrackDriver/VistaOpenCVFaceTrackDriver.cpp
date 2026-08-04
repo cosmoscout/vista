@@ -40,13 +40,10 @@
 #include <cassert>
 #include <string.h>
 
-#include <cv.h>
-#include <cv.hpp>
-#include <highgui.h>
-
-#ifdef OPENCVFACETRACK_WITH_CLEYE
-#include <CLEyeMulticam.h>
-#endif
+#include <opencv4/opencv2/videoio.hpp>
+#include <opencv4/opencv2/objdetect.hpp>
+#include <opencv4/opencv2/highgui.hpp>
+#include <opencv4/opencv2/imgproc.hpp>
 
 /*============================================================================*/
 /* MACROS AND DEFINES, CONSTANTS AND STATICS, FUNCTION-PROTOTYPES             */
@@ -358,21 +355,13 @@ VistaOpenCVFaceTrackDriver::~VistaOpenCVFaceTrackDriver() {
   delete m_pCapture;
   delete m_pCascade;
 
-#ifdef OPENCVFACETRACK_WITH_CLEYE
-  if (m_pCLEyeCamera)
-    CLEyeDestroyCamera(m_pCLEyeCamera);
-
-  if (m_pImage)
-    cvReleaseImage(&m_pImage);
-#endif
-
   VistaDeviceSensor* pSensor = GetSensorByIndex(0);
   GetFactory()->GetTranscoderFactoryForSensor("FACE")->DestroyTranscoder(
       pSensor->GetMeasureTranscode());
   RemDeviceSensor(pSensor);
   delete pSensor;
 
-  cvDestroyWindow(S_sDebugWindowName.c_str());
+  cv::destroyWindow(S_sDebugWindowName.c_str());
 
   UnregisterAspect(m_pThread, IVistaDeviceDriver::DO_NOT_DELETE_ASPECT);
   delete m_pThread;
@@ -435,12 +424,6 @@ bool VistaOpenCVFaceTrackDriver::PhysicalEnable(bool bEnable) {
 
     if (m_pCapture && !m_pCapture->isOpened())
       m_pCapture->open(p->GetCaptureDevice());
-#ifdef OPENCVFACETRACK_WITH_CLEYE
-    else if (m_pCLEyeCamera) {
-      CLEyeCameraStart(m_pCLEyeCamera);
-      CLEyeCameraLED(m_pCLEyeCamera, true);
-    }
-#endif
 
     m_pThread->UnpauseProcessing();
   } else {
@@ -448,12 +431,6 @@ bool VistaOpenCVFaceTrackDriver::PhysicalEnable(bool bEnable) {
     m_pThread->PauseProcessing();
     if (m_pCapture && m_pCapture->isOpened())
       m_pCapture->release();
-#ifdef OPENCVFACETRACK_WITH_CLEYE
-    else if (m_pCLEyeCamera) {
-      CLEyeCameraStart(m_pCLEyeCamera);
-      CLEyeCameraLED(m_pCLEyeCamera, false);
-    }
-#endif
   }
   return bEnable;
 }
@@ -464,19 +441,7 @@ bool VistaOpenCVFaceTrackDriver::DoSensorUpdate(VistaType::microtime nTs) {
 
   cv::Mat oFrame;
 
-#ifdef OPENCVFACETRACK_WITH_CLEYE
-  if (m_pCLEyeCamera) {
-    PBYTE pCapBuffer = NULL;
-    cvGetImageRawData(m_pImage, &pCapBuffer);
-
-    CLEyeCameraGetFrame(m_pCLEyeCamera, pCapBuffer);
-    oFrame = cv::Mat(m_pImage);
-  } else {
-    (*m_pCapture) >> oFrame;
-  }
-#else
   (*m_pCapture) >> oFrame;
-#endif
 
   int nWidth  = oFrame.cols;
   int nHeight = oFrame.rows;
@@ -501,7 +466,7 @@ bool VistaOpenCVFaceTrackDriver::DoSensorUpdate(VistaType::microtime nTs) {
         (int)((float)m_nLastSizeY * m_fSizeTolerance));
 #if (CV_MAJOR_VERSION >= 2) && (CV_MINOR_VERSION >= 2)
     m_pCascade->detectMultiScale(oFrame, vecObjects, 1.1, 3,
-        CV_HAAR_SCALE_IMAGE
+        cv::CASCADE_SCALE_IMAGE
         // CV_HAAR_SCALE_IMAGE	//| CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH
         ,
         oSizeMin, oSizeMax);
@@ -568,8 +533,8 @@ bool VistaOpenCVFaceTrackDriver::DoSensorUpdate(VistaType::microtime nTs) {
   }
 
   if (m_bDebugWindow) {
-    cv::Scalar oColor     = CV_RGB(255, 0, 0);
-    cv::Scalar oTextColor = CV_RGB(255, 255, 0);
+    cv::Scalar oColor(255, 0, 0);
+    cv::Scalar oTextColor(255, 255, 0);
     if (pBestmatch) {
       cv::rectangle(oFrame, (*pBestmatch), oColor);
       cv::circle(oFrame, cv::Point((int)fImgPosX, (int)fImgPosY), 2, oColor, 2);
@@ -605,89 +570,6 @@ void VistaOpenCVFaceTrackDriver::ConnectToOpenCVDevice() {
   FaceTrackParameters* pParams = m_pParams->GetParameter<FaceTrackParameters>();
   int                  iID     = pParams->GetCaptureDevice();
 
-#ifdef OPENCVFACETRACK_WITH_CLEYE
-  if (m_pCLEyeCamera) {
-    CLEyeDestroyCamera(m_pCLEyeCamera);
-    m_pCLEyeCamera = NULL;
-  }
-
-  if (iID >= 0 && iID < CLEyeGetCameraCount()) {
-    GUID iUUID = CLEyeGetCameraUUID(iID);
-
-    CLEyeCameraResolution nResolution = CLEYE_VGA;
-    float                 nReqFPS(pParams->GetFrameRate());
-    int                   nWidth  = pParams->GetWidth();
-    int                   nHeight = pParams->GetHeight();
-    float                 nActualFPS;
-    if (nWidth > 0) {
-      if (nWidth == 640) {
-        nResolution = CLEYE_VGA;
-      } else if (nWidth == 320) {
-        nResolution = CLEYE_QVGA;
-      } else if (nWidth > 480) {
-        nResolution = CLEYE_VGA;
-        vstr::warnp() << "[OpenCVFaceTrackDriver]: Requested unsupported Resolution [ " << nWidth
-                      << "x" << nHeight << "] for SonyEye - using 640x480" << std::endl;
-      } else {
-        nResolution = CLEYE_QVGA;
-        vstr::warnp() << "[OpenCVFaceTrackDriver]: Requested unsupported Resolution [ " << nWidth
-                      << "x" << nHeight << "] for SonyEye - using 320x240" << std::endl;
-      }
-    }
-
-    if (nReqFPS <= 0) {
-      if (nResolution == CLEYE_QVGA)
-        nActualFPS = 100;
-      else
-        nActualFPS = 60;
-    } else {
-      if ((nResolution == CLEYE_QVGA && (nReqFPS == 125 || nReqFPS == 100)) ||
-          (nResolution == CLEYE_QVGA && (nReqFPS == 40)) || nReqFPS == 75 || nReqFPS == 60 ||
-          nReqFPS == 30 || nReqFPS == 25) {
-        nActualFPS = nReqFPS;
-      } else {
-        // using default
-        if (nResolution == CLEYE_QVGA)
-          nActualFPS = 100;
-        else
-          nActualFPS = 60;
-        vstr::warnp() << "[OpenCVFaceTrackDriver]: Requested unsupported Framerate [ "
-                      << pParams->GetCaptureDevice() << "] for SonyEye - defaulting to ["
-                      << nActualFPS << "]" << std::endl;
-      }
-    }
-
-    m_pCLEyeCamera = CLEyeCreateCamera(iUUID, CLEYE_COLOR_RAW, nResolution, nActualFPS);
-    if (m_pCLEyeCamera == NULL) {
-      vstr::outi() << "[OpenCVFaceTrackDriver]: Connecting to Sony Eye failed! - trying normal"
-                   << " OpenCV cameras" << std::endl;
-    } else {
-      CLEyeSetCameraParameter(m_pCLEyeCamera, CLEYE_AUTO_GAIN, 1);
-      CLEyeSetCameraParameter(m_pCLEyeCamera, CLEYE_AUTO_EXPOSURE, 1);
-      CLEyeSetCameraParameter(m_pCLEyeCamera, CLEYE_AUTO_WHITEBALANCE, 1);
-      if (m_pImage) {
-        cvReleaseImage(&m_pImage);
-        m_pImage = NULL;
-      }
-
-      if (nResolution == CLEYE_QVGA) {
-        m_pImage = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 4);
-        m_pInfo->GetInfoPropsWrite().SetValue<int>("WIDTH", 320);
-        m_pInfo->GetInfoPropsWrite().SetValue<int>("HEIGHT", 240);
-      } else {
-        m_pImage = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 4);
-        m_pInfo->GetInfoPropsWrite().SetValue<int>("WIDTH", 640);
-        m_pInfo->GetInfoPropsWrite().SetValue<int>("HEIGHT", 480);
-      }
-      m_pInfo->GetInfoPropsWrite().SetValue<float>("FPS", nActualFPS);
-      CLEyeCameraStart(m_pCLEyeCamera);
-      CLEyeCameraLED(m_pCLEyeCamera, true);
-      return;
-    }
-  }
-
-#endif
-
   m_pCapture = new cv::VideoCapture(iID);
 
   if (!m_pCapture->isOpened()) {
@@ -698,9 +580,9 @@ void VistaOpenCVFaceTrackDriver::ConnectToOpenCVDevice() {
     return;
   }
 
-  float nFPS    = (float)m_pCapture->get(CV_CAP_PROP_FPS);
-  int   nWidth  = (int)m_pCapture->get(CV_CAP_PROP_FRAME_WIDTH);
-  int   nHeight = (int)m_pCapture->get(CV_CAP_PROP_FRAME_HEIGHT);
+  float nFPS    = (float)m_pCapture->get(cv::CAP_PROP_FPS);
+  int   nWidth  = (int)m_pCapture->get(cv::CAP_PROP_FRAME_WIDTH);
+  int   nHeight = (int)m_pCapture->get(cv::CAP_PROP_FRAME_HEIGHT);
 
   pParams->SetFrameRate(nFPS);
   pParams->SetWidth(nWidth);
@@ -726,7 +608,7 @@ void VistaOpenCVFaceTrackDriver::ChangeShowDebugWindow() {
     return;
 
   // @todo namespace-variant? (might be an opencv 2.1 thing...)
-  cvDestroyWindow(S_sDebugWindowName.c_str());
+  cv::destroyWindow(S_sDebugWindowName.c_str());
 
   FaceTrackParameters* pParams = m_pParams->GetParameter<FaceTrackParameters>();
 

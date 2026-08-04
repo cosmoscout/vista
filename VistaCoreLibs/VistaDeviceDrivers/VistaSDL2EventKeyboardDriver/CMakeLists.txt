@@ -1,61 +1,82 @@
-		 
-# Transcoder
+add_library(VistaSDL2EventKeyboardTranscoder SHARED
+    VistaSDL2EventKeyboardTranscoder.cpp
+)
 
-add_library(VistaSDL2EventKeyboardTranscoder
-        VistaSDL2EventKeyboardTranscoder.cpp
-)
 target_link_libraries(VistaSDL2EventKeyboardTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaSDL2EventKeyboardTranscoder)
-vista_install(VistaSDL2EventKeyboardTranscoder "VistaDeviceDrivers/VistaSDL2EventKeyboardDriver" "DriverPlugins")
-set_target_properties(VistaSDL2EventKeyboardTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaSDL2EventKeyboardTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaSDL2EventKeyboardTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTASDL2EVENTKEYBOARDTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaSDL2EventKeyboardTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2EventKeyboardDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(SDL2 QUIET)
+find_package(SDL2 QUIET)
 
 if (NOT SDL2_FOUND)
-    message(STATUS "VistaSDL2EventKeyboardDriver requires SDL2, which is not available - only transcoder will be built")
-else (NOT SDL2_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaSDL2EventKeyboardDriver requires SDL2, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaSDL2EventKeyboardPlugin SHARED
+      VistaSDL2EventKeyboardPlugin.cpp
+  )
 
-    add_library(VistaSDL2EventKeyboardPlugin
-            VistaSDL2EventKeyboardPlugin.cpp
-    )
-    target_link_libraries(VistaSDL2EventKeyboardPlugin
-            VistaSDL2EventKeyboardDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaSDL2EventKeyboardPlugin)
-    vista_install(VistaSDL2EventKeyboardPlugin "VistaDeviceDrivers/VistaSDL2EventKeyboardDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2EventKeyboardPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2EventKeyboardPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_link_libraries(VistaSDL2EventKeyboardPlugin
+    PUBLIC
+      VistaSDL2EventKeyboardDriver
+      VistaDeviceDriversBase
+  )
 
-    # Actual Driver
+  target_compile_definitions(VistaSDL2EventKeyboardPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2EVENTKEYBOARDPLUGIN_EXPORTS>
+  )
 
-    vista_use_package(SDL2 REQUIRED)
+  add_library(VistaSDL2EventKeyboardDriver SHARED
+      VistaSDL2EventKeyboardDriver.cpp
+  )
 
-    add_library(VistaSDL2EventKeyboardDriver
-            VistaSDL2EventKeyboardDriver.h
-            VistaSDL2EventKeyboardDriver.cpp
-    )
+  target_sources(VistaSDL2EventKeyboardDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaSDL2EventKeyboardDriver.h
+  )
 
-    target_link_libraries(VistaSDL2EventKeyboardDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            VistaKernel
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaSDL2EventKeyboardDriver)
-    vista_install(VistaSDL2EventKeyboardDriver "VistaDeviceDrivers/VistaSDL2EventKeyboardDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2EventKeyboardDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2EventKeyboardDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaSDL2EventKeyboardDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT SDL2_FOUND)
+  target_compile_definitions(VistaSDL2EventKeyboardDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2EVENTKEYBOARDDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaSDL2EventKeyboardDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      SDL2::SDL2
+  )
+
+  install(
+      TARGETS VistaSDL2EventKeyboardPlugin VistaSDL2EventKeyboardDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2EventKeyboardDriver"
+  )
+endif ()

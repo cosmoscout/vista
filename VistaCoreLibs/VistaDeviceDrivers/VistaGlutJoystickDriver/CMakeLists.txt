@@ -1,65 +1,82 @@
-		 
-# Transcoder
-
-add_library(VistaGlutJoystickTranscoder
-        VistaGlutJoystickTranscoder.cpp
+add_library(VistaGlutJoystickTranscoder SHARED
+    VistaGlutJoystickTranscoder.cpp
 )
 
 target_link_libraries(VistaGlutJoystickTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaGlutJoystickTranscoder)
-vista_install(VistaGlutJoystickTranscoder "VistaDeviceDrivers/VistaGlutJoystickDriver" "DriverPlugins")
-set_target_properties(VistaGlutJoystickTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaGlutJoystickTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaGlutJoystickTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAGLUTJOYSTICKTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaGlutJoystickTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaGlutJoystickDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(GLUT QUIET)
+find_package(GLUT QUIET)
 
 if (NOT GLUT_FOUND)
-    message(STATUS "VistaGlutJoystickDriver requires GLUT, which is not available - only transcoder will be built")
-else (NOT GLUT_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaGlutJoystickDriver requires GLUT, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaGlutJoystickPlugin SHARED
+      VistaGlutJoystickPlugin.cpp
+  )
 
-    add_library(VistaGlutJoystickPlugin
-            VistaGlutJoystickPlugin.cpp
-    )
+  target_link_libraries(VistaGlutJoystickPlugin
+    PUBLIC
+      VistaGlutJoystickDriver
+      VistaDeviceDriversBase
+  )
 
-    target_link_libraries(VistaGlutJoystickPlugin
-            VistaGlutJoystickDriver
-            VistaDeviceDriversBase
-    )
+  target_compile_definitions(VistaGlutJoystickPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAGLUTJOYSTICKPLUGIN_EXPORTS>
+  )
 
-    vista_configure_lib(VistaGlutJoystickPlugin)
-    vista_install(VistaGlutJoystickPlugin "VistaDeviceDrivers/VistaGlutJoystickDriver" "DriverPlugins")
-    set_target_properties(VistaGlutJoystickPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaGlutJoystickPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  add_library(VistaGlutJoystickDriver SHARED
+      VistaGlutJoystickDriver.cpp
+  )
 
-    # Actual Driver
+  target_sources(VistaGlutJoystickDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaGlutJoystickDriver.h
+  )
 
-    vista_use_package(GLUT REQUIRED)
+  target_compile_definitions(VistaGlutJoystickDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAGLUTJOYSTICKDRIVER_EXPORTS>
+  )
 
-    add_library(VistaGlutJoystickDriver
-            VistaGlutJoystickDriver.h
-            VistaGlutJoystickDriver.cpp
-    )
+  target_link_libraries(VistaGlutJoystickDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      GLUT::GLUT
+  )
 
-    target_link_libraries(VistaGlutJoystickDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-
-    vista_configure_lib(VistaGlutJoystickDriver)
-    vista_install(VistaGlutJoystickDriver "VistaDeviceDrivers/VistaGlutJoystickDriver" "DriverPlugins")
-    set_target_properties(VistaGlutJoystickDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaGlutJoystickDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaGlutJoystickDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT GLUT_FOUND)
+  install(
+      TARGETS VistaGlutJoystickPlugin VistaGlutJoystickDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaGlutJoystickDriver"
+  )
+endif ()

@@ -1,17 +1,41 @@
+add_library(VistaAspects SHARED)
+add_library(Vista::Aspects ALIAS VistaAspects)
 
-file(GLOB_RECURSE ProjectSources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+set_target_properties(VistaAspects
+  PROPERTIES
+    EXPORT_NAME Aspects
 )
 
-add_library(VistaAspects ${ProjectSources})
+file(GLOB_RECURSE ProjectSources "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE ProjectHeaders "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+target_sources(VistaAspects
+  PRIVATE
+    ${ProjectSources}
+  PUBLIC
+    FILE_SET HEADERS
+    FILES ${ProjectHeaders}
+)
+
 target_link_libraries(VistaAspects
-        VistaBase
+  PUBLIC
+    VistaBase
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-    target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
+  target_precompile_headers(VistaAspects PRIVATE precompiled.pch)
 endif ()
 
-vista_configure_lib(VistaAspects)
-vista_install(VistaAspects VistaAspects)
+target_compile_definitions(VistaAspects
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAASPECTS_EXPORTS>
+)
+
+install(
+    TARGETS VistaAspects
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET HEADERS DESTINATION "include/VistaAspects"
+)

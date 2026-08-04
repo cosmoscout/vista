@@ -100,8 +100,8 @@
 #endif
 #if defined(VISTA_WITH_OPENVR) && defined(VISTA_WITH_SDL2)
 #include "VistaKernel/DisplayManager/OpenVRSDL2WindowImp/VistaOpenVRSDL2WindowingToolkit.h"
-#include <openvr/openvr.h>
-#include <openvr/openvr_capi.h>
+#include <openvr.h>
+#include <openvr_capi.h>
 #endif
 #include "VistaAspects/VistaObserver.h"
 

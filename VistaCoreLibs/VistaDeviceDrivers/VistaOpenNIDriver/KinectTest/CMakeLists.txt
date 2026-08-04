@@ -1,20 +1,13 @@
-
-
 cmake_minimum_required(VERSION 3.28)
 
 project(KinectDemo)
 
-list(APPEND CMAKE_MODULE_PATH "$ENV{VISTA_CMAKE_COMMON}")
-include(VistaCommon)
-
-vista_use_package(OpenNI REQUIRED)
-vista_use_package(VistaCoreLibs HEAD REQUIRED VistaKernel FIND_DEPENDENCIES)
+find_package(Vista REQUIRED COMPONENTS VistaKernel)
+find_package(OpenNI REQUIRED)
 
 add_executable(KinectDemo main.cpp KinectHandler.h KinectHandler.cpp configfiles/vista.ini configfiles/ucp_kinect.xml configfiles/spatial_kinect.xml)
-source_group("Source Files" FILES main.cpp KinectHandler.h KinectHandler.cpp)
+
 target_link_libraries(KinectDemo
-        ${VISTA_USE_PACKAGE_LIBRARIES} # contains all libraries from vista_use_package() calls
+    Vista::Kernel
+    Vista::OpenNIDriver
 )
-
-vista_configure_app(KinectDemo)
-

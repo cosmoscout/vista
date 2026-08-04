@@ -1,65 +1,82 @@
-		 
-# Transcoder
-
-add_library(VistaGlutMouseTranscoder
-        VistaGlutMouseTranscoder.cpp
+add_library(VistaGlutMouseTranscoder SHARED
+    VistaGlutMouseTranscoder.cpp
 )
 
 target_link_libraries(VistaGlutMouseTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaGlutMouseTranscoder)
-vista_install(VistaGlutMouseTranscoder "VistaDeviceDrivers/VistaGlutMouseDriver" "DriverPlugins")
-set_target_properties(VistaGlutMouseTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaGlutMouseTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaGlutMouseTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAGLUTMOUSETRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaGlutMouseTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaGlutMouseDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(GLUT QUIET)
+find_package(GLUT QUIET)
 
 if (NOT GLUT_FOUND)
-    message(STATUS "VistaGlutMouseDriver requires GLUT, which is not available - only transcoder will be built")
-else (NOT GLUT_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaGlutMouseDriver requires GLUT, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaGlutMousePlugin SHARED
+      VistaGlutMousePlugin.cpp
+  )
 
-    add_library(VistaGlutMousePlugin
-            VistaGlutMousePlugin.cpp
-    )
+  target_link_libraries(VistaGlutMousePlugin
+    PUBLIC
+      VistaGlutMouseDriver
+      VistaDeviceDriversBase
+  )
 
-    target_link_libraries(VistaGlutMousePlugin
-            VistaGlutMouseDriver
-            VistaDeviceDriversBase
-    )
+  target_compile_definitions(VistaGlutMousePlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAGLUTMOUSEPLUGIN_EXPORTS>
+  )
 
-    vista_configure_lib(VistaGlutMousePlugin)
-    vista_install(VistaGlutMousePlugin "VistaDeviceDrivers/VistaGlutMouseDriver" "DriverPlugins")
-    set_target_properties(VistaGlutMousePlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaGlutMousePlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  add_library(VistaGlutMouseDriver SHARED
+      VistaGlutMouseDriver.cpp
+  )
 
-    # Actual Driver
+  target_sources(VistaGlutMouseDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaGlutMouseDriver.h
+  )
 
-    vista_use_package(GLUT REQUIRED)
+  target_compile_definitions(VistaGlutMouseDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAGLUTMOUSEDRIVER_EXPORTS>
+  )
 
-    add_library(VistaGlutMouseDriver
-            VistaGlutMouseDriver.h
-            VistaGlutMouseDriver.cpp
-    )
+  target_link_libraries(VistaGlutMouseDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      GLUT::GLUT
+  )
 
-    target_link_libraries(VistaGlutMouseDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-
-    vista_configure_lib(VistaGlutMouseDriver)
-    vista_install(VistaGlutMouseDriver "VistaDeviceDrivers/VistaGlutMouseDriver" "DriverPlugins")
-    set_target_properties(VistaGlutMouseDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaGlutMouseDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaGlutMouseDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT GLUT_FOUND)
+  install(
+      TARGETS VistaGlutMousePlugin VistaGlutMouseDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaGlutMouseDriver"
+  )
+endif ()

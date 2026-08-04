@@ -1,63 +1,84 @@
-		 
-# Transcoder
+add_library(VistaSDL2ControllerTranscoder SHARED
+    VistaSDL2ControllerTranscoder.cpp
+)
 
-add_library(VistaSDL2ControllerTranscoder
-        VistaSDL2ControllerTranscoder.cpp
-        VistaSDL2ControllerState.h
-)
 target_link_libraries(VistaSDL2ControllerTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaSDL2ControllerTranscoder)
-vista_install(VistaSDL2ControllerTranscoder "VistaDeviceDrivers/VistaSDL2ControllerDriver" "DriverPlugins")
-set_target_properties(VistaSDL2ControllerTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaSDL2ControllerTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaSDL2ControllerTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTASDL2CONTROLLERTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaSDL2ControllerTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2ControllerDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(SDL2)
+find_package(SDL2 QUIET)
 
 if (NOT SDL2_FOUND)
-    message(STATUS "VistaSDL2ControllerTranscoder requires SDL2, which is not available - only transcoder will be built")
-else (NOT SDL2_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaSDL2ControllerDriver requires SDL2, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaSDL2ControllerPlugin SHARED
+      VistaSDL2ControllerPlugin.cpp
+  )
 
-    add_library(VistaSDL2ControllerPlugin
-            VistaSDL2ControllerPlugin.cpp
-    )
-    target_link_libraries(VistaSDL2ControllerPlugin
-            VistaSDL2ControllerDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaSDL2ControllerPlugin)
-    vista_install(VistaSDL2ControllerPlugin "VistaDeviceDrivers/VistaSDL2ControllerDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2ControllerPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2ControllerPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_link_libraries(VistaSDL2ControllerPlugin
+    PUBLIC
+      VistaSDL2ControllerDriver
+      VistaDeviceDriversBase
+  )
 
-    # Actual Driver
+  target_compile_definitions(VistaSDL2ControllerPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2CONTROLLERPLUGIN_EXPORTS>
+  )
 
-    vista_use_package(SDL2 REQUIRED)
+  add_library(VistaSDL2ControllerDriver SHARED
+      VistaSDL2ControllerDriver.cpp
+  )
 
-    add_library(VistaSDL2ControllerDriver
-            VistaSDL2ControllerDriver.h
-            VistaSDL2ControllerDriver.cpp
-            VistaSDL2ControllerState.h
-    )
+  target_sources(VistaSDL2ControllerDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaSDL2ControllerDriver.h
+        VistaSDL2ControllerState.h
+  )
 
-    target_link_libraries(VistaSDL2ControllerDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            VistaKernel
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaSDL2ControllerDriver)
-    vista_install(VistaSDL2ControllerDriver "VistaDeviceDrivers/VistaSDL2ControllerDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2ControllerDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2ControllerDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaSDL2ControllerDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT SDL2_FOUND)
+  target_compile_definitions(VistaSDL2ControllerDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2CONTROLLERDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaSDL2ControllerDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      SDL2::SDL2
+  )
+
+  install(
+      TARGETS VistaSDL2ControllerPlugin VistaSDL2ControllerDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2ControllerDriver"
+  )
+endif ()

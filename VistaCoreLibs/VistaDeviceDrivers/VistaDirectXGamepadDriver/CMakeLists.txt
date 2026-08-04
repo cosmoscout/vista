@@ -1,66 +1,88 @@
-		 
-# Transcoder
-
-add_library(VistaDirectXGamepadTranscoder
-        VistaDirectXGamepadTranscoder.cpp
-        VistaDirectXGamepadSensorMeasures.h
+add_library(VistaDirectXGamepadTranscoder SHARED
+    VistaDirectXGamepadTranscoder.cpp
+    VistaDirectXGamepadSensorMeasures.h
 )
 
 target_link_libraries(VistaDirectXGamepadTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaDirectXGamepadTranscoder)
-vista_install(VistaDirectXGamepadTranscoder "VistaDeviceDrivers/VistaDirectXGamepadDriver" "DriverPlugins")
-set_target_properties(VistaDirectXGamepadTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaDirectXGamepadTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaDirectXGamepadTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTADIRECTXGAMEPADTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaDirectXGamepadTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaDirectXGamepadDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(DirectX)
+find_package(directx-headers QUIET)
 
-if (NOT DIRECTX_FOUND)
-    message(STATUS "VistaDirectXGamepadTranscoder requires DirectX, which is not available - only transcoder will be built")
-else (NOT DIRECTX_FOUND)
-    # Driver Plugin
+if (NOT directx-headers_FOUND)
+  message(STATUS "VistaDirectXGamepadDriver requires directx-headers, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaDirectXGamepadPlugin SHARED
+      VistaDirectXGamepadPlugin.cpp
+  )
 
-    add_library(VistaDirectXGamepadPlugin
-            VistaDirectXGamepadPlugin.cpp
-    )
+  target_link_libraries(VistaDirectXGamepadPlugin
+    PUBLIC
+      VistaDirectXGamepadDriver
+      VistaDeviceDriversBase
+  )
 
-    target_link_libraries(VistaDirectXGamepadPlugin
-            VistaDirectXGamepadDriver
-            VistaDeviceDriversBase
-    )
+  target_compile_definitions(VistaDirectXGamepadPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTADIRECTXGAMEPADPLUGIN_EXPORTS>
+  )
 
-    vista_configure_lib(VistaDirectXGamepadPlugin)
-    vista_install(VistaDirectXGamepadPlugin "VistaDeviceDrivers/VistaDirectXGamepadDriver" "DriverPlugins")
-    set_target_properties(VistaDirectXGamepadPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaDirectXGamepadPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  add_library(VistaDirectXGamepadDriver SHARED
+      VistaDirectXGamepadDriver.cpp
+  )
 
-    # Actual Driver
+  target_sources(VistaDirectXGamepadDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaDirectXGamepadDriver.h
+        VistaDirectXGamepadSensorMeasures.h
+  )
 
-    vista_use_package(DirectX REQUIRED)
+  target_compile_definitions(VistaDirectXGamepadDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTADIRECTXGAMEPADDRIVER_EXPORTS>
+  )
 
-    add_library(VistaDirectXGamepadDriver
-            VistaDirectXGamepadDriver.h
-            VistaDirectXGamepadDriver.cpp
-            VistaDirectXGamepadSensorMeasures.h
-    )
+  target_link_libraries(VistaDirectXGamepadDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      Microsoft::DirectX-Headers
+      dinput8
+      dxguid
+      xinput
+  )
 
-    target_link_libraries(VistaDirectXGamepadDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaDirectXGamepadDriver)
-    vista_install(VistaDirectXGamepadDriver "VistaDeviceDrivers/VistaDirectXGamepadDriver" "DriverPlugins")
-    set_target_properties(VistaDirectXGamepadDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaDirectXGamepadDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaDirectXGamepadDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT DIRECTX_FOUND)
+  install(
+      TARGETS VistaDirectXGamepadPlugin VistaDirectXGamepadDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaDirectXGamepadDriver"
+  )
+endif ()
