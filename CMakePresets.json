@@ -10,13 +10,13 @@
       "name": "base",
       "hidden": true,
       "cacheVariables": {
-        "VISTA_DEMO": "OFF",
-        "VISTACORELIBS_USE_OPENVR": "ON",
+        "VISTA_DEMO": "ON",
+        "VISTA_CORELIBS_USE_INFINITE_REVERSE_PROJECTION": "ON",
+        "VISTA_CORELIBS_USE_SDL2_WINDOWIMP": "ON",
+        "VISTA_CORELIBS_USE_OPENVR": "ON",
         "VISTA_DRIVERS_OPENVR": "ON",
-        "VISTACORELIBS_USE_INFINITE_REVERSE_PROJECTION": "ON",
-        "VISTACORELIBS_USE_SDL2_WINDOWIMP": "ON",
-        "CMAKE_UNITY_BUILD": "ON",
         "VISTA_USE_PRECOMPILED_HEADERS": "ON",
+        "CMAKE_UNITY_BUILD": "ON",
         "CMAKE_INSTALL_MESSAGE": "LAZY"
       },
       "toolchainFile": "${sourceDir}/tools/vcpkg/scripts/buildsystems/vcpkg.cmake"

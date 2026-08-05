@@ -36,10 +36,4 @@ if (VRPN_FOUND)
 		set_target_properties(VRPN::Server PROPERTIES
 				IMPORTED_LOCATION "${VRPN_SERVER_LIBRARY}")
 	endif()
-
-	if(NOT TARGET VRPN::MathMT)
-		add_library(VRPN::MathMT UNKNOWN IMPORTED)
-		set_target_properties(VRPN::MathMT PROPERTIES
-				IMPORTED_LOCATION "${VRPN_MATH_MT_LIBRARY}")
-	endif()
 endif ()

@@ -1,29 +1,15 @@
-cmake_minimum_required(VERSION 3.28)
-
-if (NOT VISTADEMO_COMMON_BUILD)
-    project(16PhantomDemo)
-
-    list(APPEND CMAKE_MODULE_PATH "$ENV{VISTA_CMAKE_COMMON}")
-    include(VistaCommon)
-endif ()
-
-vista_use_package(VistaCoreLibs REQUIRED VistaKernel FIND_DEPENDENCIES)
-vista_use_package(OpenHaptics REQUIRED) # for dll's of phantom driver
+find_package(OpenHaptics REQUIRED)
 
 file(GLOB ProjectSources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 
 add_executable(16PhantomDemo ${ProjectSources})
 target_link_libraries(16PhantomDemo
-        ${VISTA_USE_PACKAGE_LIBRARIES} # contains all libraries from vista_use_package() calls
+  PRIVATE
+    Vista::Kernel
+    OpenHaptics::HD
+    OpenHaptics::HDU
 )
-
-vista_configure_app(16PhantomDemo)
-vista_install(16PhantomDemo)
-
-if (VISTA_COMMON_BUILD)
-    set_target_properties(16PhantomDemo PROPERTIES FOLDER "VistaDemo")
-    add_dependencies(16PhantomDemo VistaKernel)
-endif ()
+install(TARGETS 16PhantomDemo)

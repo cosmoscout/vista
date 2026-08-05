@@ -90,7 +90,7 @@
 
 #ifdef VISTA_WITH_OCULUSSDK
 #include "VistaKernel/DisplayManager/OculusGlutWindowImp/VistaOculusGlutWindowingToolkit.h"
-#include <OVR.h>
+#include <OVR_CAPI.h>
 #include <OVR_CAPI_GL.h>
 #endif
 #if defined(VISTA_WITH_OPENVR) && defined(VISTA_WITH_GLUT)

@@ -30,7 +30,7 @@
 /*============================================================================*/
 #include <VistaKernel/VistaKernelConfig.h>
 
-#include <OVR.h>
+#include <OVR_CAPI.h>
 #include <OVR_CAPI_GL.h>
 #include <VistaKernel/DisplayManager/GlutWindowImp/VistaGlutWindowingToolkit.h>
 

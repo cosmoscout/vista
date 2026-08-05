@@ -1,4 +1,4 @@
-option(VISTACORELIBS_IPC_USE_EXCEPTIONS "Specifies whether or not the IPC throws exceptions when errors occur" ON)
+option(VISTA_CORELIBS_IPC_USE_EXCEPTIONS "Specifies whether or not the IPC throws exceptions when errors occur" ON)
 
 add_library(VistaInterProcComm SHARED)
 add_library(Vista::InterProcComm ALIAS VistaInterProcComm)
@@ -35,7 +35,7 @@ target_compile_definitions(VistaInterProcComm
   PRIVATE
     $<$<PLATFORM_ID:Windows>:_USE_WIN32_MUTEX>
     $<$<PLATFORM_ID:Windows>:VISTAINTERPROCCOMM_EXPORTS>
-    $<$<BOOL:${VISTACORELIBS_IPC_USE_EXCEPTIONS}>:VISTA_IPC_USE_EXCEPTIONS>
+    $<$<BOOL:${VISTA_CORELIBS_IPC_USE_EXCEPTIONS}>:VISTA_IPC_USE_EXCEPTIONS>
 )
 
 install(

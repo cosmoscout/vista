@@ -1,22 +1,3 @@
-
-cmake_minimum_required(VERSION 3.28)
-if (NOT VISTADEMO_COMMON_BUILD)
-    project(04LoadDemo)
-
-    list(APPEND CMAKE_MODULE_PATH "$ENV{VISTA_CMAKE_COMMON}")
-    include(VistaCommon)
-endif ()
-
-vista_use_package(VistaCoreLibs REQUIRED VistaKernel FIND_DEPENDENCIES)
-
 add_executable(04LoadDemo main.cpp)
-target_link_libraries(04LoadDemo
-        ${VISTA_USE_PACKAGE_LIBRARIES} # contains all libraries from vista_use_package() calls
-)
-
-vista_configure_app(04LoadDemo)
-vista_install(04LoadDemo)
-
-set_target_properties(04LoadDemo PROPERTIES FOLDER "VistaDemo")
-add_dependencies(04LoadDemo VistaKernel)
-
+target_link_libraries(04LoadDemo PRIVATE Vista::Kernel)
+install(TARGETS 04LoadDemo)

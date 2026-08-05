@@ -1,16 +1,24 @@
 {
   "name": "vista",
-  "version": "1.0.0",
+  "version": "1.8.0",
   "description": "",
   "license": "LGPL-2.0-or-later",
   "supports": "(windows & x64) | (linux & x64)",
   "dependencies": [
     "opensg",
-    "glew"
+    "glew",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
   ],
   "default-features": [
     "window-sdl2",
-    "openvr"
+    "openvr",
   ],
   "features": {
     "window-sdl2": {
@@ -24,10 +32,6 @@
     "openvr": {
       "description": "OpenVR support",
       "dependencies": ["openvr"]
-    },
-    "networking-zmq": {
-      "description": "ZeroMQ networking support",
-      "dependencies": ["cppzmq"]
     },
     "driver-openal-record": {
       "description": "OpenAL record driver",
@@ -56,6 +60,10 @@
     "demo-vtk": {
       "description": "VTK demo",
       "dependencies": ["vtk"]
+    },
+    "networking-zmq": {
+      "description": "ZeroMQ networking support",
+      "dependencies": ["cppzmq"]
     },
     "tests": {
       "description": "Vista tests",

@@ -1,145 +1,155 @@
-include(VistaTestingUtils)
+find_package(GTest CONFIG REQUIRED)
+include(GoogleTest)
 
-vista_use_package(GTest REQUIRED SYSTEM_HEADERS)
+function(vista_add_gtest target)
+  add_executable(${target} ${ARGN})
 
-list(APPEND VISTA_ADDITIONAL_PATHENTRIES "${CMAKE_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/lib/DriverPlugins")
+  target_link_libraries(${target}
+    PRIVATE
+      GTest::gtest
+      GTest::gtest_main
+  )
 
-if (VISTACORELIBS_BUILD_BASE)
-    vista_configure_test(VistaMathBasicsTest VistaMathBasicsTest.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h)
-    target_link_libraries(VistaMathBasicsTest
-            VistaBase
-            ${VISTA_USE_PACKAGE_LIBRARIES}
+  # Windows: copy dependent runtime DLLs next to the test executable.
+  if (WIN32)
+    add_custom_command(TARGET ${target} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_RUNTIME_DLLS:${target}>
+        $<TARGET_FILE_DIR:${target}>
+      COMMAND_EXPAND_LISTS
     )
-    add_dependencies(VistaMathBasicsTest VistaBase)
+  endif ()
 
-    vista_configure_test(VistaVector3DTest VistaVector3DTest.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h)
-    target_link_libraries(VistaVector3DTest
-            VistaBase
-            ${VISTA_USE_PACKAGE_LIBRARIES}
+  # Linux/macOS: ensure loader can resolve shared libs from nearby folders.
+  if (UNIX)
+    set_target_properties(${target} PROPERTIES
+        BUILD_RPATH_USE_ORIGIN ON
+        BUILD_RPATH "$ORIGIN;$ORIGIN/..;$ORIGIN/../..;$ORIGIN/../../.."
+        INSTALL_RPATH "$ORIGIN;$ORIGIN/..;$ORIGIN/../..;$ORIGIN/../../.."
     )
-    add_dependencies(VistaVector3DTest VistaBase)
+  endif ()
 
-    #vista_configure_test( VistaQuaternionTest VistaQuaternionTest.cpp
-    #											../VistaTestingUtils/VistaTestingCompare.h
-    #											VistaTestRotations.h )
-    #target_link_libraries( VistaQuaternionTest
-    #	VistaBase
-    #	${VISTA_USE_PACKAGE_LIBRARIES}
-    #)
-    #
-    #vista_configure_test( VistaTransformMatrixTest VistaTransformMatrixTest.cpp
-    #											../VistaTestingUtils/VistaTestingCompare.h
-    #											VistaTestRotations.h )
-    #target_link_libraries( VistaTransformMatrixTest
-    #	VistaBase
-    #	${VISTA_USE_PACKAGE_LIBRARIES}
-    #)
+  # Discover tests at test time (not during build/link).
+  gtest_discover_tests(${target}
+      DISCOVERY_MODE PRE_TEST
+  )
+endfunction()
 
-    #vista_configure_test( VistaReferenceFrameTest VistaReferenceFrameTest.cpp
-    #											../VistaTestingUtils/VistaTestingCompare.h )
-    #target_link_libraries( VistaReferenceFrameTest
-    #	VistaBase
-    #	${VISTA_USE_PACKAGE_LIBRARIES}
-    #)
-endif ()
+vista_add_gtest(VistaMathBasicsTest
+    VistaMathBasicsTest.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+)
+target_link_libraries(VistaMathBasicsTest
+  PRIVATE
+    Vista::Base
+)
 
-if (VISTACORELIBS_BUILD_ASPECTS)
-    vista_configure_test(VistaGenericFactoryTest VistaGenericFactoryTest.cpp)
-    target_link_libraries(VistaGenericFactoryTest
-            VistaBase
-            VistaAspects
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-endif ()
+vista_add_gtest(VistaVector3DTest
+    VistaVector3DTest.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+)
+target_link_libraries(VistaVector3DTest
+  PRIVATE
+    Vista::Base
+)
 
-if (VISTACORELIBS_BUILD_DEVICEDRIVERSBASE)
-    vista_configure_test(VistaSensorMeasureTest
-            VistaSensorMeasureTest.cpp
-            VistaTestDriver.h
-            VistaTestDriver.cpp)
-    target_link_libraries(VistaSensorMeasureTest
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaTools
-            VistaDeviceDriversBase
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-endif ()
+vista_add_gtest(VistaGenericFactoryTest
+    VistaGenericFactoryTest.cpp
+)
+target_link_libraries(VistaGenericFactoryTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+)
 
-if (VISTACORELIBS_BUILD_DATAFLOWNET)
-    vista_configure_test(VistaHistoryProjectNodeTest
-            VistaHistoryProjectNodeTest.cpp
-            VistaTestDriver.h
-            VistaTestDriver.cpp)
-    target_link_libraries(VistaHistoryProjectNodeTest
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaTools
-            VistaDeviceDriversBase
-            VistaDataFlowNet
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-endif ()
+vista_add_gtest(VistaSensorMeasureTest
+    VistaSensorMeasureTest.cpp
+    VistaTestDriver.h
+    VistaTestDriver.cpp
+)
+target_link_libraries(VistaSensorMeasureTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+    Vista::InterProcComm
+    Vista::Tools
+    Vista::DeviceDriversBase
+)
 
-if (VISTACORELIBS_BUILD_TOOLS)
+vista_add_gtest(VistaHistoryProjectNodeTest
+    VistaHistoryProjectNodeTest.cpp
+    VistaTestDriver.h
+    VistaTestDriver.cpp
+)
+target_link_libraries(VistaHistoryProjectNodeTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+    Vista::InterProcComm
+    Vista::Tools
+    Vista::DeviceDriversBase
+    Vista::DataFlowNet
+)
 
-    vista_configure_test(VistaBase64Test VistaBase64Test.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h
-            ../VistaTestingUtils/VistaTestingRandom.h)
-    target_link_libraries(VistaBase64Test
-            VistaBase
-            VistaTools
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
+vista_add_gtest(VistaBase64Test
+    VistaBase64Test.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+    ../VistaTestingUtils/VistaTestingRandom.h
+)
+target_link_libraries(VistaBase64Test
+  PRIVATE
+    Vista::Base
+    Vista::Tools
+)
 
-    vista_configure_test(VistaReflectionableTest VistaReflectionableTest.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h
-            ../VistaTestingUtils/VistaTestingRandom.h
-            ../VistaTestingUtils/VistaTestingDummyStruct.h)
-    target_link_libraries(VistaReflectionableTest
-            VistaBase
-            VistaAspects
-            VistaTools
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
+vista_add_gtest(VistaReflectionableTest
+    VistaReflectionableTest.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+    ../VistaTestingUtils/VistaTestingRandom.h
+    ../VistaTestingUtils/VistaTestingDummyStruct.h
+)
+target_link_libraries(VistaReflectionableTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+    Vista::Tools
+)
 
-    vista_configure_test(VistaConversionTest VistaConversionTest.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h
-            ../VistaTestingUtils/VistaTestingRandom.h)
-    target_link_libraries(VistaConversionTest
-            VistaBase
-            VistaAspects
-            VistaTools
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
+vista_add_gtest(VistaConversionTest
+    VistaConversionTest.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+    ../VistaTestingUtils/VistaTestingRandom.h
+)
+target_link_libraries(VistaConversionTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+    Vista::Tools
+)
 
-    vista_configure_test(VistaSerializablesTest VistaSerializablesTest.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h
-            ../VistaTestingUtils/VistaTestingRandom.h)
-    target_link_libraries(VistaSerializablesTest
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaTools
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
+vista_add_gtest(VistaSerializablesTest
+    VistaSerializablesTest.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+    ../VistaTestingUtils/VistaTestingRandom.h
+)
+target_link_libraries(VistaSerializablesTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+    Vista::InterProcComm
+    Vista::Tools
+)
 
-    vista_configure_test(VistaTestingUtilsTest VistaTestingUtilsTest.cpp
-            ../VistaTestingUtils/VistaTestingCompare.h
-            ../VistaTestingUtils/VistaTestingRandom.h
-            ../VistaTestingUtils/VistaTestingDummyStruct.h)
-    target_link_libraries(VistaTestingUtilsTest
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaTools
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-
-endif ()
-
-
+vista_add_gtest(VistaTestingUtilsTest
+    VistaTestingUtilsTest.cpp
+    ../VistaTestingUtils/VistaTestingCompare.h
+    ../VistaTestingUtils/VistaTestingRandom.h
+    ../VistaTestingUtils/VistaTestingDummyStruct.h
+)
+target_link_libraries(VistaTestingUtilsTest
+  PRIVATE
+    Vista::Base
+    Vista::Aspects
+    Vista::InterProcComm
+    Vista::Tools
+)

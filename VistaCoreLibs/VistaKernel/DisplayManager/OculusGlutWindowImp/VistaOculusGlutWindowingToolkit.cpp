@@ -31,7 +31,7 @@
 #include "VistaBase/VistaStreamUtils.h"
 #include "VistaBase/VistaUtilityMacros.h"
 #include "VistaKernel/DisplayManager//VistaWindow.h"
-#include <OVR.h>
+#include <OVR_CAPI.h>
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -56,7 +56,7 @@ class VistaOculusGlutWindowingToolkit::Internal {
     WindowDataExt()
         : m_pHmd(NULL) {
     }
-    ovrHmd m_pHmd;
+    ovrHmdStruct m_pHmd;
   };
   std::map<const VistaWindow*, WindowDataExt> m_mapWindowData;
 };
@@ -167,7 +167,7 @@ void VistaOculusGlutWindowingToolkit::DisplayWindow(const VistaWindow* pWindow) 
   }
 }
 
-ovrHmd VistaOculusGlutWindowingToolkit::GetHmdForWindow(VistaWindow* pWindow) {
+ovrHmdStruct VistaOculusGlutWindowingToolkit::GetHmdForWindow(VistaWindow* pWindow) {
   std::map<const VistaWindow*, Internal::WindowDataExt>::iterator itEntry =
       m_pData->m_mapWindowData.find(pWindow);
   if (itEntry == m_pData->m_mapWindowData.end())
