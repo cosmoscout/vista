@@ -1,6 +1,6 @@
 {
   "name": "vista",
-  "version": "1.8.0",
+  "version": "1.0.0",
   "description": "",
   "license": "LGPL-2.0-or-later",
   "supports": "(windows & x64) | (linux & x64)",
@@ -18,7 +18,7 @@
   ],
   "default-features": [
     "window-sdl2",
-    "openvr",
+    "openvr"
   ],
   "features": {
     "window-sdl2": {
