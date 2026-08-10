@@ -24,6 +24,8 @@ endif ()
 target_compile_definitions(VistaBase
   PRIVATE
     $<$<PLATFORM_ID:Windows>:VISTABASE_EXPORTS>
+  PUBLIC
+    $<$<PLATFORM_ID:Linux>:LINUX>
 )
 
 install(

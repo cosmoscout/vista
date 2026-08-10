@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "vista",
   "version": "1.0.0",
   "description": "",
@@ -15,7 +16,15 @@
   "features": {
     "window-sdl2": {
       "description": "SDL2 windowing system",
-      "dependencies": ["sdl2", "sdl2-ttf"]
+      "dependencies": [
+        "sdl2",
+        "sdl2-ttf",
+        {
+          "name": "dbus",
+          "platform": "linux",
+          "default-features": false
+        }
+      ]
     },
     "window-glut": {
       "description": "GLUT windowing system",
