@@ -1,67 +1,84 @@
-		 
-# Transcoder
+add_library(VistaOpenCVFaceTrackTranscoder SHARED
+    VistaOpenCVFaceTrackTranscoder.cpp
+)
 
-add_library(VistaOpenCVFaceTrackTranscoder
-        VistaOpenCVFaceTrackTranscoder.cpp
-)
 target_link_libraries(VistaOpenCVFaceTrackTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaOpenCVFaceTrackTranscoder)
-vista_install(VistaOpenCVFaceTrackTranscoder "VistaDeviceDrivers/VistaOpenCVFaceTrackDriver" "DriverPlugins")
-set_target_properties(VistaOpenCVFaceTrackTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOpenCVFaceTrackTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaOpenCVFaceTrackTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOPENCVFACETRACKTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaOpenCVFaceTrackTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenCVFaceTrackDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(OpenCV 2.4+ QUIET)
+find_package(OpenCV QUIET)
 
 if (NOT OPENCV_FOUND)
-    message(STATUS "VistaOpenCVFaceTrackDriver requires OpenCV 2.4+, which is not available - only transcoder will be built")
-else (NOT OPENCV_FOUND)
+  message(STATUS "VistaOpenCVFaceTrackDriver requires OpenCV, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaOpenCVFaceTrackPlugin SHARED
+      VistaOpenCVFaceTrackPlugin.cpp
+  )
 
-    vista_use_package(CLEye QUIET)
-    if (CLEYE_FOUND)
-        message(STATUS "OpenCVDriver found CLEye API - enabling custom support")
-        add_definitions(-DOPENCVFACETRACK_WITH_CLEYE)
-    endif ()
+  target_link_libraries(VistaOpenCVFaceTrackPlugin
+    PUBLIC
+      VistaOpenCVFaceTrackDriver
+      VistaDeviceDriversBase
+  )
 
-    # Driver Plugin
+  target_compile_definitions(VistaOpenCVFaceTrackPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENCVFACETRACKPLUGIN_EXPORTS>
+  )
 
-    add_library(VistaOpenCVFaceTrackPlugin
-            VistaOpenCVFaceTrackPlugin.cpp
-    )
-    target_link_libraries(VistaOpenCVFaceTrackPlugin
-            VistaOpenCVFaceTrackDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaOpenCVFaceTrackPlugin)
-    vista_install(VistaOpenCVFaceTrackPlugin "VistaDeviceDrivers/VistaOpenCVFaceTrackDriver" "DriverPlugins")
-    set_target_properties(VistaOpenCVFaceTrackPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOpenCVFaceTrackPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  add_library(VistaOpenCVFaceTrackDriver SHARED
+      VistaOpenCVFaceTrackDriver.cpp
+  )
 
-    # Actual Driver
+  target_sources(VistaOpenCVFaceTrackDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaOpenCVFaceTrackDriver.h
+  )
 
-    vista_use_package(OpenCV REQUIRED)
+  target_compile_definitions(VistaOpenCVFaceTrackDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENCVFACETRACKDRIVER_EXPORTS>
+  )
 
-    add_library(VistaOpenCVFaceTrackDriver
-            VistaOpenCVFaceTrackDriver.h
-            VistaOpenCVFaceTrackDriver.cpp
-    )
+  target_link_libraries(VistaOpenCVFaceTrackDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      opencv_videoio
+      opencv_objdetect
+      opencv_highgui
+  )
 
-    target_link_libraries(VistaOpenCVFaceTrackDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaOpenCVFaceTrackDriver)
-    vista_install(VistaOpenCVFaceTrackDriver "VistaDeviceDrivers/VistaOpenCVFaceTrackDriver" "DriverPlugins")
-    set_target_properties(VistaOpenCVFaceTrackDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOpenCVFaceTrackDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaOpenCVFaceTrackDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT OPENCV_FOUND)
+  install(
+      TARGETS VistaOpenCVFaceTrackPlugin VistaOpenCVFaceTrackDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenCVFaceTrackDriver"
+  )
+endif ()

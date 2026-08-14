@@ -45,7 +45,7 @@ void AllocateEncodeBinary(T in, char*& out, int& size) {
   size      = sizeof(T);
   out       = new char[size];
   char* akt = (char*)&in;
-  for (register int i = 0; i < size; ++i)
+  for (int i = 0; i < size; ++i)
     out[i] = akt[i];
 }
 
@@ -59,7 +59,7 @@ template <class T>
 void EncodeBinary(T in, char* out, int& size) {
   size      = sizeof(T);
   char* akt = (char*)&in;
-  for (register int i = 0; i < size; ++i)
+  for (int i = 0; i < size; ++i)
     out[i] = akt[i];
 }
 
@@ -74,7 +74,7 @@ void DecodeBinary(char* in, int size, T& out) {
   if (size != sizeof(T))
     return;
   char* akt = (char*)&out;
-  for (register int i = 0; i < size; ++i)
+  for (int i = 0; i < size; ++i)
     akt[i] = in[i];
 }
 
@@ -90,7 +90,7 @@ void DecodeBinaryWithFlip(char* in, int size, T& out) {
   if (size != sizeof(T))
     return;
   char* akt = (char*)&out;
-  for (register int i = 0; i < size; ++i)
+  for (int i = 0; i < size; ++i)
     akt[i] = in[size - (i + 1)];
 }
 

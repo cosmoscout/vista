@@ -1,73 +1,87 @@
-vista_use_package(OpenVR REQUIRED 0.5)
-add_definitions(-DVISTA_WITH_OPENVR)
-
-#Transcoder
-
-ADD_LIBRARY(VistaOpenVRDriverTranscoder
-        VistaOpenVRDriverTranscoder.cpp
+add_library(VistaOpenVRTranscoder SHARED
+    VistaOpenVRDriverTranscoder.cpp
 )
-TARGET_LINK_LIBRARIES(VistaOpenVRDriverTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+
+target_link_libraries(VistaOpenVRTranscoder
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaOpenVRDriverTranscoder)
-vista_install(VistaOpenVRDriverTranscoder "VistaDeviceDrivers/VistaOpenVRDriver" "DriverPlugins")
-set_target_properties(VistaOpenVRDriverTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOpenVRDriverTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
+target_compile_definitions(VistaOpenVRTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOPENVRDRIVERTRANSCODER_EXPORTS>
+)
 
-# Actual Driver
+install(
+    TARGETS VistaOpenVRTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenVRDriver"
+)
 
-include_directories(${OPENVR_INCLUDE_DIRS})
+# since it has third-party dependencies, we only build the driver and plugin if the package is available
+find_package(OpenVR QUIET)
 
-add_library(VistaOpenVRDriver
+if (NOT OPENVR_FOUND)
+  message(STATUS "VistaOpenVRDriver requires OpenVR, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaOpenVRPlugin SHARED
+      VistaOpenVRDriverPlugin.h
+      VistaOpenVRDriverPlugin.cpp
+  )
+
+  target_link_libraries(VistaOpenVRPlugin
+    PUBLIC
+      VistaOpenVRDriver
+      VistaDeviceDriversBase
+  )
+
+  target_compile_definitions(VistaOpenVRPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENVRDRIVERPLUGINDLL_EXPORTS>
+    PUBLIC
+      $<$<PLATFORM_ID:Windows>:VISTAOPENVRDRIVERPLUGINDLL>
+  )
+
+  add_library(VistaOpenVRDriver SHARED
+      VistaOpenVRDriver.cpp
+  )
+
+  target_sources(VistaOpenVRDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
         VistaOpenVRDriver.h
-        VistaOpenVRDriver.cpp
-)
-
-target_link_libraries(VistaOpenVRDriver
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
-        VistaMath
-        ${VISTA_USE_PACKAGE_LIBRARIES}
-        ${OPENVR_LIBRARIES}
-)
-
-vista_configure_lib(VistaOpenVRDriver)
-vista_install(VistaOpenVRDriver "VistaDeviceDrivers/VistaOpenVRDriver" "DriverPlugins")
-set_target_properties(VistaOpenVRDriver PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOpenVRDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-set_property(TARGET VistaOpenVRDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-
-
-# Driver Plugin
-
-add_library(VistaOpenVRDriverPlugin
-        VistaOpenVRDriverPlugin.cpp
         VistaOpenVRDriverConfig.h
-)
-target_link_libraries(VistaOpenVRDriverPlugin
-        VistaOpenVRDriver
-        VistaDeviceDriversBase
-)
-vista_configure_lib(VistaOpenVRDriverPlugin)
-vista_install(VistaOpenVRDriverPlugin "VistaDeviceDrivers/VistaOpenVRDriver" "DriverPlugins")
-set_target_properties(VistaOpenVRDriverPlugin PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOpenVRDriverPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  )
 
+  target_compile_definitions(VistaOpenVRDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENVR_EXPORTS>
+  )
 
-#################
+  target_link_libraries(VistaOpenVRDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      OpenVR::API
+  )
 
-IF (WIN32)
-    SET_TARGET_PROPERTIES(VistaOpenVRDriver PROPERTIES COMPILE_DEFINITIONS "VISTAOPENVR_EXPORTS")
-    SET_TARGET_PROPERTIES(VistaOpenVRDriverTranscoder PROPERTIES COMPILE_DEFINITIONS "VISTAOPENVRDRIVERTRANSCODER_EXPORTS")
-    # SET_TARGET_PROPERTIES( VistaOpenVRDriverPlugin PROPERTIES COMPILE_DEFINITIONS "VISTAOPENVRDRIVERPLUGIN_EXPORTS" )
-    # SET_TARGET_PROPERTIES( VistaOpenVRDriverPlugin PROPERTIES COMPILE_DEFINITIONS "VISTAOPENVRDRIVERPLUGINDLL" )
-    # SET_TARGET_PROPERTIES( VistaOpenVRDriverPlugin PROPERTIES COMPILE_DEFINITIONS "VISTAOPENVRDRIVERPLUGINDLL_EXPORTS" )
-    target_compile_definitions(VistaOpenVRDriverPlugin PRIVATE VISTAOPENVRDRIVERPLUGINDLL_EXPORTS=1 VISTAOPENVRDRIVERPLUGINDLL=1)
-
-ENDIF (WIN32)
+  install(
+      TARGETS VistaOpenVRPlugin VistaOpenVRDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenVRDriver"
+  )
+endif ()

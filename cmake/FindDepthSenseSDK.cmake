@@ -1,0 +1,30 @@
+# Locate header.
+find_path(DEPTHSENSESDK_INCLUDE_DIR DepthSense.hxx
+		HINTS ${DEPTHSENSESDK_ROOT_DIR}/include)
+
+# Locate libraries.
+find_library(DEPTHSENSESDK_LIBRARY NAMES DepthSense
+		HINTS ${DEPTHSENSESDK_ROOT_DIR}/lib)
+
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(DepthSenseSDK DEFAULT_MSG DEPTHSENSESDK_INCLUDE_DIR DEPTHSENSESDK_LIBRARY)
+
+# Add imported target.
+if (DEPTHSENSESDK_FOUND)
+	set(DEPTHSENSESDK_INCLUDE_DIRS "${DEPTHSENSESDK_INCLUDE_DIR}")
+
+	if(NOT DEPTHSENSESDK_FIND_QUIETLY)
+		message(STATUS "DEPTHSENSESDK_INCLUDE_DIRS ...... ${DEPTHSENSESDK_INCLUDE_DIR}")
+		message(STATUS "DEPTHSENSESDK_LIBRARY ........... ${DEPTHSENSESDK_LIBRARY}")
+	endif()
+
+	if(NOT TARGET DepthSense::SDK)
+		add_library(DepthSense::SDK UNKNOWN IMPORTED)
+		set_target_properties(DepthSense::SDK PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES "${DEPTHSENSESDK_INCLUDE_DIRS}")
+
+		set_property(TARGET DepthSense::SDK APPEND PROPERTY
+				IMPORTED_LOCATION "${DEPTHSENSESDK_LIBRARY}")
+	endif()
+endif ()

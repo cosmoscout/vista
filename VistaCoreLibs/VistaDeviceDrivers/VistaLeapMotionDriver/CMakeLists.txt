@@ -1,63 +1,85 @@
-		 
-# Transcoder
+add_library(VistaLeapMotionTranscoder SHARED
+    VistaLeapMotionCommonShare.h
+    VistaLeapMotionTranscoder.cpp
+)
 
-add_library(VistaLeapMotionTranscoder
-        VistaLeapMotionTranscoder.cpp
-        VistaLeapMotionCommonShare.h
-)
 target_link_libraries(VistaLeapMotionTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaLeapMotionTranscoder)
-vista_install(VistaLeapMotionTranscoder "VistaDeviceDrivers/VistaLeapMotionDriver" "DriverPlugins")
-set_target_properties(VistaLeapMotionTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaLeapMotionTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaLeapMotionTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTALEAPMOTIONTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaLeapMotionTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaLeapMotionDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(LeapSDK 2.1+ QUIET)
+find_package(LEAPSDK QUIET)
 
 if (NOT LEAPSDK_FOUND)
-    message(STATUS "VistaLeapMotionDriver requires LeapSDK v2.1 or greater, which is not available - only transcoder will be built")
+  message(STATUS "VistaLeapMotionDriver requires LeapSDK, which is not available - only transcoder will be built")
 else ()
+  add_library(VistaLeapMotionPlugin SHARED
+      VistaLeapMotionPlugin.cpp
+  )
 
-    # Driver Plugin
+  target_link_libraries(VistaLeapMotionPlugin
+    PUBLIC
+      VistaLeapMotionDriver
+      VistaDeviceDriversBase
+  )
 
-    add_library(VistaLeapMotionPlugin
-            VistaLeapMotionPlugin.cpp
-    )
-    target_link_libraries(VistaLeapMotionPlugin
-            VistaLeapMotionDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaLeapMotionPlugin)
-    vista_install(VistaLeapMotionPlugin "VistaDeviceDrivers/VistaLeapMotionDriver" "DriverPlugins")
-    set_target_properties(VistaLeapMotionPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaLeapMotionPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_compile_definitions(VistaLeapMotionPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTALEAPMOTIONPLUGIN_EXPORTS>
+  )
 
-    # Actual Driver
+  add_library(VistaLeapMotionDriver SHARED
+      VistaLeapMotionDriver.cpp
+  )
 
-    vista_use_package(LeapSDK REQUIRED)
+  target_sources(VistaLeapMotionDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaLeapMotionDriver.h
+        VistaLeapMotionCommonShare.h
+  )
 
-    add_library(VistaLeapMotionDriver
-            VistaLeapMotionDriver.h
-            VistaLeapMotionDriver.cpp
-            VistaLeapMotionCommonShare.h
-    )
+  target_compile_definitions(VistaLeapMotionDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTALEAPMOTIONDRIVER_EXPORTS>
+  )
 
-    target_link_libraries(VistaLeapMotionDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaLeapMotionDriver)
-    vista_install(VistaLeapMotionDriver "VistaDeviceDrivers/VistaLeapMotionDriver" "DriverPlugins")
-    set_target_properties(VistaLeapMotionDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaLeapMotionDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaLeapMotionDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
+  target_link_libraries(VistaLeapMotionDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      Leap::SDK
+  )
+
+  install(
+      TARGETS VistaLeapMotionPlugin VistaLeapMotionDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaLeapMotionDriver"
+  )
 endif ()

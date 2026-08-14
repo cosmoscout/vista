@@ -1,60 +1,67 @@
-		 
-# Transcoder
-
-add_library(VistaFastrakTranscoder
-        VistaFastrakCommonShare.h
-        VistaFastrakTranscoder.cpp
+add_library(VistaFastrakTranscoder SHARED
+    VistaFastrakCommonShare.h
+    VistaFastrakTranscoder.cpp
 )
 
 target_link_libraries(VistaFastrakTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaFastrakTranscoder)
-vista_install(VistaFastrakTranscoder "VistaDeviceDrivers/VistaFastrakDriver" "DriverPlugins")
-set_target_properties(VistaFastrakTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaFastrakTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaFastrakTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAFASTRAKTRANSCODER_EXPORTS>
+)
 
-# Driver Plugin
-
-add_library(VistaFastrakPlugin
-        VistaFastrakCommonShare.h
-        VistaFastrakPlugin.cpp
+add_library(VistaFastrakPlugin SHARED
+    VistaFastrakPlugin.cpp
 )
 
 target_link_libraries(VistaFastrakPlugin
-        VistaFastrakDriver
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaFastrakDriver
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaFastrakPlugin)
-vista_install(VistaFastrakPlugin "VistaDeviceDrivers/VistaFastrakDriver" "DriverPlugins")
-set_target_properties(VistaFastrakPlugin PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaFastrakPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaFastrakPlugin
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAFASTRAKPLUGIN_EXPORTS>
+)
 
-# Actual Driver
+add_library(VistaFastrakDriver SHARED
+    VistaFastrakDriver.cpp
+)
 
-add_library(VistaFastrakDriver
-        VistaFastrakCommonShare.h
-        VistaFastrakDriver.h
-        VistaFastrakDriver.cpp
+target_sources(VistaFastrakDriver
+  PUBLIC
+    FILE_SET HEADERS
+    FILES
+      VistaFastrakCommonShare.h
+      VistaFastrakDriver.h
+)
+
+target_compile_definitions(VistaFastrakDriver
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAFASTRAKDRIVER_EXPORTS>
 )
 
 target_link_libraries(VistaFastrakDriver
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
-        VistaMath
-        ${VISTA_USE_PACKAGE_LIBRARIES}
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
+    VistaMath
 )
 
-vista_configure_lib(VistaFastrakDriver)
-vista_install(VistaFastrakDriver "VistaDeviceDrivers/VistaFastrakDriver" "DriverPlugins")
-set_target_properties(VistaFastrakDriver PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaFastrakDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-set_property(TARGET VistaFastrakDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-
+install(
+    TARGETS VistaFastrakTranscoder VistaFastrakPlugin VistaFastrakDriver
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaFastrakDriver"
+)

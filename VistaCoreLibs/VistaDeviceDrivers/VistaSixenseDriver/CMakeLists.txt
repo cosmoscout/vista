@@ -1,62 +1,86 @@
-		 
-# Transcoder
-
-add_library(VistaSixenseTranscoder
-        VistaSixenseCommonShare.h
-        VistaSixenseTranscoder.cpp
+add_library(VistaSixenseTranscoder SHARED
+    VistaSixenseTranscoder.cpp
+    VistaSixenseCommonShare.h
 )
+
 target_link_libraries(VistaSixenseTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaSixenseTranscoder)
-vista_install(VistaSixenseTranscoder "VistaDeviceDrivers/VistaSixenseDriver" "DriverPlugins")
-set_target_properties(VistaSixenseTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaSixenseTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
 
-# Driver Plugin
+target_compile_definitions(VistaSixenseTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTASIXENSETRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaSixenseTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSixenseDriver"
+)
+
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(SixenseSDK QUIET)
+find_package(SixenseSDK QUIET)
 
 if (NOT SIXENSESDK_FOUND)
-    message(STATUS "VistaOpenCVCaptureDriver requires OpenCV, which is not available - only transcoder will be built")
+  message(STATUS "VistaSixenseDriver requires SixenseSDK, which is not available - only transcoder will be built")
 else ()
+  add_library(VistaSixensePlugin SHARED
+      VistaSixensePlugin.cpp
+  )
 
-    add_library(VistaSixensePlugin
-            VistaSixensePlugin.cpp
-    )
-    target_link_libraries(VistaSixensePlugin
-            VistaSixenseDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaSixensePlugin)
-    vista_install(VistaSixensePlugin "VistaDeviceDrivers/VistaSixenseDriver" "DriverPlugins")
-    set_target_properties(VistaSixensePlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSixensePlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_link_libraries(VistaSixensePlugin
+    PUBLIC
+      VistaSixenseDriver
+      VistaDeviceDriversBase
+  )
 
-    # Actual Driver
-    vista_use_package(SixenseSDK REQUIRED)
+  target_compile_definitions(VistaSixensePlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASIXENSEPLUGIN_EXPORTS>
+  )
 
-    add_library(VistaSixenseDriver
-            VistaSixenseCommonShare.h
-            VistaSixenseDriver.h
-            VistaSixenseDriver.cpp
-    )
+  add_library(VistaSixenseDriver SHARED
+      VistaSixenseDriver.cpp
+  )
 
-    target_link_libraries(VistaSixenseDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaSixenseDriver)
-    vista_install(VistaSixenseDriver "VistaDeviceDrivers/VistaSixenseDriver" "DriverPlugins")
-    set_target_properties(VistaSixenseDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSixenseDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaSixenseDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
+  target_sources(VistaSixenseDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaSixenseDriver.h
+        VistaSixenseCommonShare.h
+  )
+
+  target_compile_definitions(VistaSixenseDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASIXENSEDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaSixenseDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      Sixense::SDK
+      Sixense::Utils
+  )
+
+  install(
+      TARGETS VistaSixensePlugin VistaSixenseDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSixenseDriver"
+  )
 endif ()
-

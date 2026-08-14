@@ -1,60 +1,81 @@
-		 
-# Transcoder
+add_library(VistaSDL2RawKeyboardTranscoder SHARED
+    VistaSDL2RawKeyboardTranscoder.cpp
+)
 
-add_library(VistaSDL2RawKeyboardTranscoder
-        VistaSDL2RawKeyboardTranscoder.cpp
-)
 target_link_libraries(VistaSDL2RawKeyboardTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaSDL2RawKeyboardTranscoder)
-vista_install(VistaSDL2RawKeyboardTranscoder "VistaDeviceDrivers/VistaSDL2RawKeyboardDriver" "DriverPlugins")
-set_target_properties(VistaSDL2RawKeyboardTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaSDL2RawKeyboardTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaSDL2RawKeyboardTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTASDL2RAWKEYBOARDTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaSDL2RawKeyboardTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2RawKeyboardDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(SDL2 QUIET)
+find_package(SDL2 QUIET)
 
 if (NOT SDL2_FOUND)
-    message(STATUS "VistaSDL2RawKeyboardDriver requires SDL2, which is not available - only transcoder will be built")
-else (NOT SDL2_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaSDL2RawKeyboardDriver requires SDL2, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaSDL2RawKeyboardPlugin SHARED
+      VistaSDL2RawKeyboardPlugin.cpp
+  )
 
-    add_library(VistaSDL2RawKeyboardPlugin
-            VistaSDL2RawKeyboardPlugin.cpp
-    )
-    target_link_libraries(VistaSDL2RawKeyboardPlugin
-            VistaSDL2RawKeyboardDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaSDL2RawKeyboardPlugin)
-    vista_install(VistaSDL2RawKeyboardPlugin "VistaDeviceDrivers/VistaSDL2RawKeyboardDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2RawKeyboardPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2RawKeyboardPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_link_libraries(VistaSDL2RawKeyboardPlugin
+    PUBLIC
+      VistaSDL2RawKeyboardDriver
+      VistaDeviceDriversBase
+  )
 
-    # Actual Driver
+  target_compile_definitions(VistaSDL2RawKeyboardPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2RAWKEYBOARDPLUGIN_EXPORTS>
+  )
 
-    vista_use_package(SDL2 REQUIRED)
+  add_library(VistaSDL2RawKeyboardDriver SHARED
+      VistaSDL2RawKeyboardDriver.cpp
+  )
 
-    add_library(VistaSDL2RawKeyboardDriver
-            VistaSDL2RawKeyboardDriver.h
-            VistaSDL2RawKeyboardDriver.cpp
-    )
+  target_sources(VistaSDL2RawKeyboardDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaSDL2RawKeyboardDriver.h
+  )
 
-    target_link_libraries(VistaSDL2RawKeyboardDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaSDL2RawKeyboardDriver)
-    vista_install(VistaSDL2RawKeyboardDriver "VistaDeviceDrivers/VistaSDL2RawKeyboardDriver" "DriverPlugins")
-    set_target_properties(VistaSDL2RawKeyboardDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaSDL2RawKeyboardDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaSDL2RawKeyboardDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT SDL2_FOUND)
+  target_compile_definitions(VistaSDL2RawKeyboardDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTASDL2RAWKEYBOARDDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaSDL2RawKeyboardDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      SDL2::SDL2
+  )
+
+  install(
+      TARGETS VistaSDL2RawKeyboardPlugin VistaSDL2RawKeyboardDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaSDL2RawKeyboardDriver"
+  )
+endif ()

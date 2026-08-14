@@ -806,7 +806,7 @@ bool VistaOpenSGGraphicsBridge::SetCoordinates(
 
   beginEditCP(pnts);
   {
-    for (register unsigned int i = idx; i < n; ++i) {
+    for (unsigned int i = idx; i < n; ++i) {
       // const VistaVector3D &v = coords[i-idx];
       // const float *f = &v[0];
 

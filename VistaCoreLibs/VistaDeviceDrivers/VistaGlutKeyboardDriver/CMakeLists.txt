@@ -1,65 +1,82 @@
-		 
-# Transcoder
-
-add_library(VistaGlutKeyboardTranscoder
-        VistaGlutKeyboardTranscoder.cpp
+add_library(VistaGlutKeyboardTranscoder SHARED
+    VistaGlutKeyboardTranscoder.cpp
 )
 
 target_link_libraries(VistaGlutKeyboardTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaGlutKeyboardTranscoder)
-vista_install(VistaGlutKeyboardTranscoder "VistaDeviceDrivers/VistaGlutKeyboardDriver" "DriverPlugins")
-set_target_properties(VistaGlutKeyboardTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaGlutKeyboardTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaGlutKeyboardTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAGLUTKEYBOARDTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaGlutKeyboardTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaGlutKeyboardDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(GLUT QUIET)
+find_package(GLUT QUIET)
 
 if (NOT GLUT_FOUND)
-    message(STATUS "VistaGlutKeyboardDriver requires GLUT, which is not available - only transcoder will be built")
-else (NOT GLUT_FOUND)
-    # Driver Plugin
+  message(STATUS "VistaGlutKeyboardDriver requires GLUT, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaGlutKeyboardPlugin SHARED
+      VistaGlutKeyboardPlugin.cpp
+  )
 
-    add_library(VistaGlutKeyboardPlugin
-            VistaGlutKeyboardPlugin.cpp
-    )
+  target_link_libraries(VistaGlutKeyboardPlugin
+    PUBLIC
+      VistaGlutKeyboardDriver
+      VistaDeviceDriversBase
+  )
 
-    target_link_libraries(VistaGlutKeyboardPlugin
-            VistaGlutKeyboardDriver
-            VistaDeviceDriversBase
-    )
+  target_compile_definitions(VistaGlutKeyboardPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAGLUTKEYBOARDPLUGIN_EXPORTS>
+  )
 
-    vista_configure_lib(VistaGlutKeyboardPlugin)
-    vista_install(VistaGlutKeyboardPlugin "VistaDeviceDrivers/VistaGlutKeyboardDriver" "DriverPlugins")
-    set_target_properties(VistaGlutKeyboardPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaGlutKeyboardPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  add_library(VistaGlutKeyboardDriver SHARED
+      VistaGlutKeyboardDriver.cpp
+  )
 
-    # Actual Driver
+  target_sources(VistaGlutKeyboardDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaGlutKeyboardDriver.h
+  )
 
-    vista_use_package(GLUT REQUIRED)
+  target_compile_definitions(VistaGlutKeyboardDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAGLUTKEYBOARDDRIVER_EXPORTS>
+  )
 
-    add_library(VistaGlutKeyboardDriver
-            VistaGlutKeyboardDriver.h
-            VistaGlutKeyboardDriver.cpp
-    )
+  target_link_libraries(VistaGlutKeyboardDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      GLUT::GLUT
+  )
 
-    target_link_libraries(VistaGlutKeyboardDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-
-    vista_configure_lib(VistaGlutKeyboardDriver)
-    vista_install(VistaGlutKeyboardDriver "VistaDeviceDrivers/VistaGlutKeyboardDriver" "DriverPlugins")
-    set_target_properties(VistaGlutKeyboardDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaGlutKeyboardDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaGlutKeyboardDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT GLUT_FOUND)
+  install(
+      TARGETS VistaGlutKeyboardPlugin VistaGlutKeyboardDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaGlutKeyboardDriver"
+  )
+endif ()

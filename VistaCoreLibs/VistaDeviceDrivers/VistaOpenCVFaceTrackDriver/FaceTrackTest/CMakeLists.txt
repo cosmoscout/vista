@@ -1,23 +1,13 @@
-
-
-
 cmake_minimum_required(VERSION 3.28)
 
 project(OpenCVFaceTrackDemo)
 
-list(APPEND CMAKE_MODULE_PATH "$ENV{VISTA_CMAKE_COMMON}")
-include(VistaCommon)
-
-
-vista_use_package(VistaCoreLibs "HEAD" REQUIRED VistaKernel FIND_DEPENDENCIES)
-vista_use_package(OpenCV REQUIRED) # so that we find the libs when loading the dlls
-vista_use_package(CLEye QUIET)
-
+find_package(Vista  REQUIRED COMPONENTS VistaKernel)
+find_package(OpenCV REQUIRED)
 
 add_executable(OpenCVFaceTrackDemo main.cpp configfiles/vista.ini configfiles/ucp_facetrack.xml configfiles/keyboard.xml)
 target_link_libraries(OpenCVFaceTrackDemo
-        ${VISTA_USE_PACKAGE_LIBRARIES} # contains all libraries from vista_use_package() calls
+  PRIVATE
+    Vista::Kernel
+    VistaOpenCVFaceTrackDriver
 )
-
-vista_configure_app(OpenCVFaceTrackDemo)
-

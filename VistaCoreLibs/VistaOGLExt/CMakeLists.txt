@@ -1,32 +1,57 @@
-vista_use_package(GLEW REQUIRED)
-vista_use_package(OpenGL REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(GLEW   REQUIRED)
 
-file(GLOB_RECURSE ProjectSources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+add_library(VistaOGLExt SHARED)
+add_library(Vista::OGLExt ALIAS VistaOGLExt)
+
+set_target_properties(VistaOGLExt
+  PROPERTIES
+    EXPORT_NAME OGLExt
 )
 
-add_library(VistaOGLExt ${ProjectSources})
+file(GLOB_RECURSE ProjectSources "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE ProjectHeaders "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+target_sources(VistaOGLExt
+  PRIVATE
+    ${ProjectSources}
+  PUBLIC
+    FILE_SET HEADERS
+    FILES ${ProjectHeaders}
+)
+
 target_link_libraries(VistaOGLExt
-        VistaBase
-        VistaAspects
-        VistaTools
-        VistaKernel
-        ${VISTA_USE_PACKAGE_LIBRARIES}
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaTools
+    VistaKernel
+    GLEW::GLEW
+    OpenGL::GL
 )
 
-target_compile_definitions(VistaOGLExt PRIVATE
-        $<$<PLATFORM_ID:Windows>:$<BOOL:${BUILD_SHARED_LIBS}>:VISTAOGLEXT_EXPORTS>
-        $<$<PLATFORM_ID:Windows>:$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:VISTAOGLEXT_STATIC>
+target_compile_definitions(VistaOGLExt
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOGLEXT_EXPORTS>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-    target_precompile_headers(VistaOGLExt PRIVATE precompiled.pch)
+  target_precompile_headers(VistaOGLExt PRIVATE precompiled.pch)
 endif ()
 
-vista_find_shader_dirs(VistaOGLExt)
+install(
+    TARGETS VistaOGLExt
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET HEADERS DESTINATION "include/VistaOGLExt"
+)
 
-set(VISTACORELIBS_SHADER_DIRS ${VISTAOGLEXT_SHADER_DIRS} PARENT_SCOPE)
-
-vista_configure_lib(VistaOGLExt)
-vista_install(VistaOGLExt VistaOGLExt)
+install(
+  DIRECTORY
+    shaders/
+    Rendering/shaders/
+  DESTINATION
+    ${CMAKE_INSTALL_PREFIX}/shaders
+)

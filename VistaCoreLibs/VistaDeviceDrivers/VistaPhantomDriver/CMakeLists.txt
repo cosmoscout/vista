@@ -1,69 +1,86 @@
-		 
-# Transcoder
+add_library(VistaOpenHapticsTranscoder SHARED
+    VistaOpenHapticsTranscoder.cpp
+    VistaPhantomCommonShare.h
+)
 
-add_library(VistaPhantomTranscoder
-        VistaPhantomTranscoder.cpp
-        VistaPhantomCommonShare.h
+target_link_libraries(VistaOpenHapticsTranscoder
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-target_link_libraries(VistaPhantomTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+
+target_compile_definitions(VistaOpenHapticsTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOPENHAPTICSTRANSCODER_EXPORTS>
 )
-vista_configure_lib(VistaPhantomTranscoder)
-vista_install(VistaPhantomTranscoder "VistaDeviceDrivers/VistaPhantomDriver" "DriverPlugins")
-set_target_properties(VistaPhantomTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaPhantomTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+install(
+    TARGETS VistaOpenHapticsTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenHapticsDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(OpenHaptics QUIET)
-
-set(VISTA_PHANTOMDRIVER_USES_VISTA_UNITS FALSE CACHE BOOL "if false, the delivered values are in millimeters, if true in meters")
-if (VISTA_PHANTOMDRIVER_USES_VISTA_UNITS)
-    add_definitions(-DPHANTOM_USES_VISTA_UNITS)
-endif ()
-
+find_package(OpenHaptics QUIET)
 
 if (NOT OPENHAPTICS_FOUND)
-    message(STATUS "VistaPhantomDriver requires OpenHaptics, which is not available - only transcoder will be built")
-else (NOT OPENHAPTICS_FOUND)
+  message(STATUS "VistaOpenHapticsDriver requires OpenHaptics, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaOpenHapticsPlugin SHARED
+      VistaOpenHapticsPlugin.cpp
+  )
 
-    # Driver Plugin
+  target_link_libraries(VistaOpenHapticsPlugin
+    PUBLIC
+      VistaOpenHapticsDriver
+      VistaDeviceDriversBase
+  )
 
-    add_library(VistaPhantomPlugin
-            VistaPhantomPlugin.cpp
-    )
-    target_link_libraries(VistaPhantomPlugin
-            VistaPhantomDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaPhantomPlugin)
-    vista_install(VistaPhantomPlugin "VistaDeviceDrivers/VistaPhantomDriver" "DriverPlugins")
-    set_target_properties(VistaPhantomPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaPhantomPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_compile_definitions(VistaOpenHapticsPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENHAPTICSPLUGIN_EXPORTS>
+  )
 
-    # Actual Driver
+  add_library(VistaOpenHapticsDriver SHARED
+      VistaOpenHapticsDriver.cpp
+  )
 
-    vista_use_package(OpenHaptics REQUIRED)
+  target_sources(VistaOpenHapticsDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaOpenHapticsDriver.h
+        VistaPhantomCommonShare.h
+  )
 
-    add_library(VistaPhantomDriver
-            VistaPhantomDriver.h
-            VistaPhantomDriver.cpp
-            VistaPhantomCommonShare.h
-    )
+  target_compile_definitions(VistaOpenHapticsDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENHAPTICSDRIVER_EXPORTS>
+  )
 
-    target_link_libraries(VistaPhantomDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaPhantomDriver)
-    vista_install(VistaPhantomDriver "VistaDeviceDrivers/VistaPhantomDriver" "DriverPlugins")
-    set_target_properties(VistaPhantomDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaPhantomDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaPhantomDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT OPENHAPTICS_FOUND)
+  target_link_libraries(VistaOpenHapticsDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      OpenHaptics::HD
+      OpenHaptics::HDU
+  )
+
+  install(
+      TARGETS VistaOpenHapticsPlugin VistaOpenHapticsDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenHapticsDriver"
+  )
+endif ()

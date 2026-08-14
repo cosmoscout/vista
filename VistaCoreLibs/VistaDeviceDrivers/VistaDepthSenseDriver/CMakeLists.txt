@@ -1,52 +1,82 @@
-# Transcoder
-
-add_library(VistaDepthSenseTranscoder
-        VistaDepthSenseTranscoder.cpp
+add_library(VistaDepthSenseTranscoder SHARED
+    VistaDepthSenseTranscoder.cpp
 )
 
 target_link_libraries(VistaDepthSenseTranscoder
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
 
-vista_configure_lib(VistaDepthSenseTranscoder)
-vista_install(VistaDepthSenseTranscoder "VistaDeviceDrivers/VistaDepthSenseDriver" "DriverPlugins")
-set_target_properties(VistaDepthSenseTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaDepthSenseTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+target_compile_definitions(VistaDepthSenseTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTADEPTHSENSETRANSCODER_EXPORTS>
+)
 
-vista_find_package(DepthSenseSDK QUIET)
+install(
+    TARGETS VistaDepthSenseTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaDepthSenseDriver"
+)
+
+# since it has third-party dependencies, we only build the driver and plugin if the package is available
+find_package(DepthSenseSDK QUIET)
 
 if (NOT DEPTHSENSESDK_FOUND)
-    message(STATUS "VistaDepthSenseDriver requires the DepthSenseSDK, which is not available - only transcoder will be built")
-else (NOT DEPTHSENSESDK_FOUND)
-    # Driver Plugin
-    add_library(VistaDepthSensePlugin
-            VistaDepthSensePlugin.cpp
-    )
-    target_link_libraries(VistaDepthSensePlugin
-            VistaDepthSenseDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaDepthSensePlugin)
-    vista_install(VistaDepthSensePlugin "VistaDeviceDrivers/VistaDepthSenseDriver" "DriverPlugins")
-    set_target_properties(VistaDepthSensePlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaDepthSensePlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  message(STATUS "VistaDepthSenseDriver requires DepthSenseSDK, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaDepthSensePlugin SHARED
+      VistaDepthSensePlugin.cpp
+  )
 
-    # Actual Driver
+  target_link_libraries(VistaDepthSensePlugin
+    PUBLIC
+      VistaDepthSenseDriver
+      VistaDeviceDriversBase
+  )
 
-    vista_use_package(DepthSenseSDK REQUIRED)
+  target_compile_definitions(VistaDepthSensePlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTADEPTHSENSEPLUGIN_EXPORTS>
+  )
 
-    add_library(VistaDepthSenseDriver
-            VistaDepthSenseDriver.h
-            VistaDepthSenseDriver.cpp
-    )
+  add_library(VistaDepthSenseDriver SHARED
+      VistaDepthSenseDriver.cpp
+  )
 
-    target_link_libraries(VistaDepthSenseDriver
-            VistaDeviceDriversBase
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaDepthSenseDriver)
-    vista_install(VistaDepthSenseDriver "VistaDeviceDrivers/VistaDepthSenseDriver" "DriverPlugins")
-    set_target_properties(VistaDepthSenseDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaDepthSenseDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaDepthSenseDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT DEPTHSENSESDK_FOUND)
+  target_sources(VistaDepthSenseDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaDepthSenseDriver.h
+  )
+
+  target_compile_definitions(VistaDepthSenseDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTADEPTHSENSEDRIVER_EXPORTS>
+  )
+
+  target_link_libraries(VistaDepthSenseDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      DepthSense::SDK
+  )
+
+  install(
+      TARGETS VistaDepthSensePlugin VistaDepthSenseDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaDepthSenseDriver"
+  )
+endif ()

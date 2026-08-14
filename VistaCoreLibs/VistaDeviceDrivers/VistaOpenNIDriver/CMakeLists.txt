@@ -1,61 +1,82 @@
-		 
-# Transcoder
+add_library(VistaOpenNITranscoder SHARED
+    VistaOpenNITranscoder.cpp
+)
 
-add_library(VistaOpenNITranscoder
-        VistaOpenNITranscoder.cpp
-)
 target_link_libraries(VistaOpenNITranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
 )
-vista_configure_lib(VistaOpenNITranscoder)
-vista_install(VistaOpenNITranscoder "VistaDeviceDrivers/VistaOpenNIDriver" "DriverPlugins")
-set_target_properties(VistaOpenNITranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOpenNITranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaOpenNITranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOPENNITRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaOpenNITranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenNIDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(OpenNI QUIET)
+find_package(OpenNI QUIET)
 
 if (NOT OPENNI_FOUND)
-    message(STATUS "VistaOpenNIDriver requires OpenNI, which is not available - only transcoder will be built")
-else (NOT OPENNI_FOUND)
+  message(STATUS "VistaOpenNIDriver requires OpenNI, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaOpenNIPlugin SHARED
+      VistaOpenNIPlugin.cpp
+  )
 
-    # Driver Plugin
+  target_link_libraries(VistaOpenNIPlugin
+    PUBLIC
+      VistaOpenNIDriver
+      VistaDeviceDriversBase
+  )
 
-    add_library(VistaOpenNIPlugin
-            VistaOpenNIPlugin.cpp
-    )
-    target_link_libraries(VistaOpenNIPlugin
-            VistaOpenNIDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaOpenNIPlugin)
-    vista_install(VistaOpenNIPlugin "VistaDeviceDrivers/VistaOpenNIDriver" "DriverPlugins")
-    set_target_properties(VistaOpenNIPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOpenNIPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_compile_definitions(VistaOpenNIPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENNIPLUGIN_EXPORTS>
+  )
 
-    # Actual Driver
+  add_library(VistaOpenNIDriver SHARED
+      VistaOpenNIDriver.cpp
+  )
 
-    vista_use_package(OpenNI REQUIRED)
+  target_sources(VistaOpenNIDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES VistaOpenNIDriver.h
+  )
 
-    add_library(VistaOpenNIDriver
-            VistaOpenNIDriver.h
-            VistaOpenNIDriver.cpp
-    )
+  target_compile_definitions(VistaOpenNIDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENNIDRIVER_EXPORTS>
+  )
 
-    target_link_libraries(VistaOpenNIDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaOpenNIDriver)
-    vista_install(VistaOpenNIDriver "VistaDeviceDrivers/VistaOpenNIDriver" "DriverPlugins")
-    set_target_properties(VistaOpenNIDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOpenNIDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaOpenNIDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT OPENNI_FOUND)
+  target_link_libraries(VistaOpenNIDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      VistaKernel
+      OpenNI::OpenNI
+  )
+
+  install(
+      TARGETS VistaOpenNIPlugin VistaOpenNIDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenNIDriver"
+  )
+endif ()

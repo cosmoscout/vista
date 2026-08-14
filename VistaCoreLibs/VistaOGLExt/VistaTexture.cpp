@@ -27,6 +27,8 @@
 #include "VistaTexture.h"
 #include "VistaOGLUtils.h"
 
+#include <GL/glu.h>
+
 #include <cassert>
 
 /*============================================================================*/

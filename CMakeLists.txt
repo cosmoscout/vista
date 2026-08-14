@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.28)
-project(Vista)
+project(Vista VERSION 1.0.0)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/VistaCMakeCommon")
-include(VistaCMakeCommon/VistaCommon.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 add_subdirectory(VistaCoreLibs)
 
-set(VISTADEMO_ENABLED TRUE CACHE BOOL "Enable building of VistaDemo")
-if (VISTADEMO_ENABLED)
+option(VISTA_DEMO "Enable building of VistaDemo" ON)
+if (VISTA_DEMO)
     add_subdirectory(VistaDemo)
 endif ()

@@ -1,92 +1,195 @@
-vista_use_package(OpenGL REQUIRED)
-vista_use_package(OpenSG 1.8 REQUIRED SYSTEM_HEADERS)
-vista_use_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(GLEW   REQUIRED)
+find_package(OpenSG REQUIRED)
 
-if (VISTACORELIBS_BUILD_WINDOWIMP_GLUT)
-    vista_use_package(GLUT REQUIRED)
-    add_definitions(-DVISTA_WITH_GLUT)
-
-    set(VISTACORELIBS_GLUT_WINDOW_NOTIFY_FRAME_EXCEPTIONS FALSE CACHE BOOL "If enabled, the whole vista frame processing will be surrounded by a try-catch to cacth any std::exception. If an exception is caught, an error is printed to the error stream, and the exception is re-thrown. This is useful for 64bit Windows version, where some kernel function calls (as the window callback used in glut) silently drop any unhandled exceptions")
-    if (VISTACORELIBS_GLUT_WINDOW_NOTIFY_FRAME_EXCEPTIONS)
-        add_definitions(-DVISTA_GLUT_NOTIFY_FRAME_EXCEPTIONS)
-    endif ()
-    set(VISTACORELIBS_GLUT_WINDOW_ABORT_ON_FRAME_EXCEPTIONS FALSE CACHE BOOL "If enabled, the whole vista frame processing will be surrounded by a try-catch to cacth any std::exception. If an exception is caught, and error is printed and VistaSytem::Quit() is called. This is useful for 64bit Windows version, where some kernel function calls (as the window callback used in glut) silently drop any unhandled exceptions")
-    if (VISTACORELIBS_GLUT_WINDOW_ABORT_ON_FRAME_EXCEPTIONS)
-        add_definitions(-DVISTA_GLUT_ABORT_ON_FRAME_EXCEPTIONS)
-    endif ()
+option(VISTA_CORELIBS_USE_SDL2_WINDOWIMP "Determines if the SDL2-based WindowToolkit Implementation will be prefered" On)
+if (VISTA_CORELIBS_USE_SDL2_WINDOWIMP)
+  find_package(SDL2     REQUIRED)
+  find_package(SDL2_ttf REQUIRED)
 endif ()
 
-if (VISTACORELIBS_BUILD_WINDOWIMP_OSG)
-    vista_use_package(OpenSceneGraph 3+ REQUIRED osgViewer osgGA)
-    vista_use_package(GLUT REQUIRED) # currently still needed for text
-    add_definitions(-DVISTA_WITH_OSG)
+option(VISTA_CORELIBS_USE_GLUT_WINDOWIMP "Determines if the GLUT-based WindowToolit Implementation will be prefered" Off)
+if (VISTA_CORELIBS_USE_GLUT_WINDOWIMP)
+  find_package(GLUT REQUIRED)
+
+  option(VISTA_CORELIBS_GLUT_WINDOW_NOTIFY_FRAME_EXCEPTIONS "If enabled, the whole vista frame processing will be surrounded by a try-catch to cacth any std::exception. If an exception is caught, an error is printed to the error stream, and the exception is re-thrown. This is useful for 64bit Windows version, where some kernel function calls (as the window callback used in glut) silently drop any unhandled exceptions" FALSE)
+  option(VISTA_CORELIBS_GLUT_WINDOW_ABORT_ON_FRAME_EXCEPTIONS "If enabled, the whole vista frame processing will be surrounded by a try-catch to cacth any std::exception. If an exception is caught, and error is printed and VistaSytem::Quit() is called. This is useful for 64bit Windows version, where some kernel function calls (as the window callback used in glut) silently drop any unhandled exceptions" FALSE)
 endif ()
 
-if (VISTACORELIBS_BUILD_WINDOWIMP_SDL2)
-    vista_use_package(SDL2 REQUIRED)
-    vista_use_package(SDL2_ttf REQUIRED)
-    add_definitions(-DVISTA_WITH_SDL2)
+option(VISTA_CORELIBS_USE_ZEROMQ "if activated, zeromq-specific stuff will be built" Off)
+if (VISTA_CORELIBS_USE_ZEROMQ)
+  find_package(cppzmq REQUIRED)
 endif ()
 
-vista_find_package(ZMQ COMPONENTS PGM QUIET)
-set(VISTACORELIBS_USE_ZEROMQ ${ZMQ_FOUND} CACHE BOOL "if activated, zeromq-specific stuff will be built")
-if (VISTACORELIBS_USE_ZEROMQ)
-    vista_use_package(ZMQ REQUIRED PGM)
-    add_definitions(-DVISTA_WITH_ZEROMQ)
+option(VISTA_CORELIBS_USE_OCULUSSDK "if activated, the OculusSDK viewport will be available" Off)
+if (VISTA_CORELIBS_USE_OCULUSSDK)
+  find_package(OVR REQUIRED)
 endif ()
 
-set(VISTACORELIBS_USE_OCULUSSDK OFF CACHE BOOL "if activated, the OculusSDK viewport will be available")
-if (VISTACORELIBS_USE_OCULUSSDK)
-    vista_use_package(OculusSDK REQUIRED 0.5)
-    add_definitions(-DVISTA_WITH_OCULUSSDK)
+option(VISTA_CORELIBS_USE_OPENVR "if activated, the OpenVR viewport will be available" Off)
+if (VISTA_CORELIBS_USE_OPENVR)
+  find_package(OpenVR REQUIRED)
 endif ()
 
-set(VISTACORELIBS_USE_OPENVR OFF CACHE BOOL "if activated, the OpenVR viewport will be available")
-if (VISTACORELIBS_USE_OPENVR)
-    vista_use_package(OpenVR REQUIRED 0.5)
-    add_definitions(-DVISTA_WITH_OPENVR)
+option(VISTA_CORELIBS_USE_INFINITE_REVERSE_PROJECTION "if activated, matrices will be modified to use infinite reverse projection" On)
+
+if (NOT VISTA_CORELIBS_USE_SDL2_WINDOWIMP AND NOT VISTA_CORELIBS_USE_GLUT_WINDOWIMP)
+  message(WARNING "No Windowing Toolkit will be built!")
 endif ()
 
-set(VISTACORELIBS_USE_INFINITE_REVERSE_PROJECTION OFF CACHE BOOL "if activated, matrices will be modified to use infinite reverse projection")
-if (VISTACORELIBS_USE_INFINITE_REVERSE_PROJECTION)
-    add_definitions(-DVISTA_OPENVR_INFINITE_REVERSE_PROJECTION)
-endif ()
+add_library(VistaKernel SHARED)
+add_library(Vista::Kernel ALIAS VistaKernel)
 
-if (NOT VISTACORELIBS_BUILD_WINDOWIMP_GLUT AND NOT VISTACORELIBS_BUILD_WINDOWIMP_OSG AND NOT VISTACORELIBS_BUILD_WINDOWIMP_SDL2)
-    message(WARNING "No Windowing Toolkit will be built!")
-endif ()
-
-add_definitions(-DVISTA_SYS_OPENSG -DVISTAKERNEL_USE_PROFILING)
-
-file(GLOB ProjectSources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+set_target_properties(VistaKernel
+  PROPERTIES
+    EXPORT_NAME Kernel
 )
 
-add_subdirectory(Cluster)
-add_subdirectory(DisplayManager)
-add_subdirectory(EventManager)
-add_subdirectory(GraphicsManager)
-add_subdirectory(InteractionManager)
-add_subdirectory(OpenSG)
-add_subdirectory(Stuff)
+file(GLOB ProjectSources
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Cluster/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Cluster/Utils/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/EventManager/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsManager/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/InteractionManager/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/InteractionManager/DfnNodes/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/OpenSG/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Stuff/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Stuff/ProximityWarning/*.cpp"
+)
 
-add_library(VistaKernel ${ProjectSources})
+if(VISTA_CORELIBS_USE_ZEROMQ)
+  file(GLOB _srcs "${CMAKE_CURRENT_SOURCE_DIR}/Cluster/ZeroMQExt/*.cpp")
+  list(APPEND ProjectSources ${_srcs})
+endif()
+
+if(VISTA_CORELIBS_USE_GLUT_WINDOWIMP)
+  file(GLOB _srcs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/GlutWindowImp/*.cpp")
+  list(APPEND ProjectSources ${_srcs})
+
+  if(VISTA_CORELIBS_USE_OCULUSSDK)
+    file(GLOB _srcs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/OculusGlutWindowImp/*.cpp")
+    list(APPEND ProjectSources ${_srcs})
+  endif()
+
+  if(VISTA_CORELIBS_USE_OPENVR)
+    file(GLOB _srcs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/OpenVRGlutWindowImp/*.cpp")
+    list(APPEND ProjectSources ${_srcs})
+  endif()
+endif()
+
+if(VISTA_CORELIBS_USE_SDL2_WINDOWIMP)
+  file(GLOB _srcs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/SDL2WindowImp/*.cpp")
+  list(APPEND ProjectSources ${_srcs})
+
+  if(VISTA_CORELIBS_USE_OPENVR)
+    file(GLOB _srcs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/OpenVRSDL2WindowImp/*.cpp")
+    list(APPEND ProjectSources ${_srcs})
+  endif()
+endif()
+
+file(GLOB ProjectHeaders
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Cluster/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Cluster/Utils/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/EventManager/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsManager/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/InteractionManager/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/InteractionManager/DfnNodes/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/OpenSG/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Stuff/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Stuff/ProximityWarning/*.h"
+)
+
+if(VISTA_CORELIBS_USE_ZEROMQ)
+  file(GLOB _hdrs "${CMAKE_CURRENT_SOURCE_DIR}/Cluster/ZeroMQExt/*.h")
+  list(APPEND ProjectHeaders ${_hdrs})
+endif()
+
+if(VISTA_CORELIBS_USE_GLUT_WINDOWIMP)
+  file(GLOB _hdrs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/GlutWindowImp/*.h")
+  list(APPEND ProjectHeaders ${_hdrs})
+
+  if(VISTA_CORELIBS_USE_OCULUSSDK)
+    file(GLOB _hdrs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/OculusGlutWindowImp/*.h")
+    list(APPEND ProjectHeaders ${_hdrs})
+  endif()
+
+  if(VISTA_CORELIBS_USE_OPENVR)
+    file(GLOB _hdrs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/OpenVRGlutWindowImp/*.h")
+    list(APPEND ProjectHeaders ${_hdrs})
+  endif()
+endif()
+
+if(VISTA_CORELIBS_USE_SDL2_WINDOWIMP)
+  file(GLOB _hdrs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/SDL2WindowImp/*.h")
+  list(APPEND ProjectHeaders ${_hdrs})
+
+  if(VISTA_CORELIBS_USE_OPENVR)
+    file(GLOB _hdrs "${CMAKE_CURRENT_SOURCE_DIR}/DisplayManager/OpenVRSDL2WindowImp/*.h")
+    list(APPEND ProjectHeaders ${_hdrs})
+  endif()
+endif()
+
+target_sources(VistaKernel
+  PRIVATE
+    ${ProjectSources}
+  PUBLIC
+    FILE_SET HEADERS
+    FILES ${ProjectHeaders}
+)
+
 target_link_libraries(VistaKernel
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaMath
-        VistaTools
-        VistaDeviceDriversBase
-        VistaDataFlowNet
-        ${VISTA_USE_PACKAGE_LIBRARIES}
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaMath
+    VistaTools
+    VistaDeviceDriversBase
+    VistaDataFlowNet
+    OpenGL::GL
+    OpenGL::GLU
+    GLEW::GLEW
+    OpenSG::Base
+    OpenSG::System
+    $<$<BOOL:${VISTA_CORELIBS_USE_SDL2_WINDOWIMP}>:$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>>
+    $<$<BOOL:${VISTA_CORELIBS_USE_SDL2_WINDOWIMP}>:$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>>
+    $<$<BOOL:${VISTA_CORELIBS_USE_GLUT_WINDOWIMP}>:GLUT::GLUT>
+    $<$<BOOL:${VISTA_CORELIBS_USE_OPENVR}>:OpenVR::API>
+    $<$<BOOL:${VISTA_CORELIBS_USE_OCULUSSDK}>:OVR::SDK>
+    $<$<BOOL:${VISTA_CORELIBS_USE_ZEROMQ}>:cppzmq>
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-    target_precompile_headers(VistaKernel PRIVATE precompiled.pch)
+  target_precompile_headers(VistaKernel PRIVATE precompiled.pch)
 endif ()
 
-vista_configure_lib(VistaKernel)
-vista_install(VistaKernel VistaKernel)
-set_property(TARGET VistaKernel PROPERTY LINK_INTERFACE_LIBRARIES "")
+target_compile_definitions(VistaKernel
+  PRIVATE
+    VISTA_SYS_OPENSG
+    $<$<PLATFORM_ID:Windows>:VISTAKERNEL_EXPORTS>
+  PUBLIC
+    VISTAKERNEL_USE_PROFILING
+    $<$<BOOL:${VISTA_CORELIBS_USE_SDL2_WINDOWIMP}>:VISTA_WITH_SDL2>
+
+    $<$<BOOL:${VISTA_CORELIBS_USE_GLUT_WINDOWIMP}>:VISTA_WITH_GLUT>
+    $<$<BOOL:${VISTA_CORELIBS_GLUT_WINDOW_NOTIFY_FRAME_EXCEPTIONS}>:VISTA_GLUT_NOTIFY_FRAME_EXCEPTIONS>
+    $<$<BOOL:${VISTA_CORELIBS_GLUT_WINDOW_ABORT_ON_FRAME_EXCEPTIONS}>:VISTA_GLUT_ABORT_ON_FRAME_EXCEPTIONS>
+
+    $<$<BOOL:${VISTA_CORELIBS_USE_ZEROMQ}>:VISTA_WITH_ZEROMQ>
+    $<$<BOOL:${VISTA_CORELIBS_USE_OCULUSSDK}>:VISTA_WITH_OCULUSSDK>
+    $<$<BOOL:${VISTA_CORELIBS_USE_OPENVR}>:VISTA_WITH_OPENVR>
+    $<$<BOOL:${VISTA_CORELIBS_USE_INFINITE_REVERSE_PROJECTION}>:VISTA_OPENVR_INFINITE_REVERSE_PROJECTION>
+)
+
+install(
+    TARGETS VistaKernel
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET HEADERS DESTINATION "include/VistaKernel"
+)

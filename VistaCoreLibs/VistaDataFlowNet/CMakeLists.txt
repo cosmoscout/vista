@@ -1,28 +1,49 @@
+option(VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES "experimental incremental history transmission" OFF)
 
-option(VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES "experimental incemental history transmission" OFF)
+add_library(VistaDataFlowNet SHARED)
+add_library(Vista::DataFlowNet ALIAS VistaDataFlowNet)
 
-file(GLOB_RECURSE ProjectSources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+set_target_properties(VistaDataFlowNet
+  PROPERTIES
+    EXPORT_NAME DataFlowNet
 )
 
-add_library(VistaDataFlowNet ${ProjectSources})
+file(GLOB_RECURSE ProjectSources "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE ProjectHeaders "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+target_sources(VistaDataFlowNet
+  PRIVATE
+    ${ProjectSources}
+  PUBLIC
+    FILE_SET HEADERS
+    FILES ${ProjectHeaders}
+)
+
 target_link_libraries(VistaDataFlowNet
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaTools
-        VistaMath
-        VistaDeviceDriversBase
-)
-
-target_compile_definitions(VistaDataFlowNet PRIVATE
-    $<$<BOOL:${VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES}>:VISTA_TRANSMIT_INCREMENTAL_HISTORIES>
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaTools
+    VistaMath
+    VistaDeviceDriversBase
 )
 
 if (VISTA_USE_PRECOMPILED_HEADERS)
-    target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
+  target_precompile_headers(VistaDataFlowNet PRIVATE precompiled.pch)
 endif ()
 
-vista_configure_lib(VistaDataFlowNet)
-vista_install(VistaDataFlowNet VistaDataFlowNet)
+target_compile_definitions(VistaDataFlowNet
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTADATAFLOWNET_EXPORTS>
+    $<$<BOOL:${VISTADATAFLOWNET_TRANSMIT_INCREMENTAL_HISTORIES}>:VISTA_TRANSMIT_INCREMENTAL_HISTORIES>
+)
+
+install(
+    TARGETS VistaDataFlowNet
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET HEADERS DESTINATION "include/VistaDataFlowNet"
+)

@@ -1,66 +1,89 @@
 # the transcoder curently requires OpenAL, too - we might change this
-vista_find_package(OpenAL REQUIRED)
+find_package(OpenAL REQUIRED)
 
-# Transcoder
-
-add_library(VistaOpenALRecordTranscoder
-        VistaOpenALRecordTranscoder.cpp
+add_library(VistaOpenALRecordTranscoder SHARED
+    VistaOpenALRecordTranscoder.cpp
 )
+
 target_link_libraries(VistaOpenALRecordTranscoder
-        VistaBase
-        VistaAspects
-        VistaInterProcComm
-        VistaDeviceDriversBase
+  PUBLIC
+    VistaBase
+    VistaAspects
+    VistaInterProcComm
+    VistaDeviceDriversBase
+    OpenAL::OpenAL
 )
-vista_configure_lib(VistaOpenALRecordTranscoder)
-vista_install(VistaOpenALRecordTranscoder "VistaDeviceDrivers/VistaOpenALRecordDriver" "DriverPlugins")
-set_target_properties(VistaOpenALRecordTranscoder PROPERTIES FOLDER "Drivers")
-vista_set_outdir(VistaOpenALRecordTranscoder "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+
+target_compile_definitions(VistaOpenALRecordTranscoder
+  PRIVATE
+    $<$<PLATFORM_ID:Windows>:VISTAOPENALRECORDTRANSCODER_EXPORTS>
+)
+
+install(
+    TARGETS VistaOpenALRecordTranscoder
+    EXPORT  VistaTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+    FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenALRecordDriver"
+)
 
 # since it has third-party dependencies, we only build the driver and plugin if the package is available
-vista_find_package(ALUT QUIET)
+find_package(FreeALUT QUIET)
 
-if (NOT OPENAL_FOUND OR NOT ALUT_FOUND)
-    message(STATUS "VistaOpenALRecordDriver requires OpenAL and ALUT, which is not available - only transcoder will be built")
-else (NOT OPENAL_FOUND OR NOT ALUT_FOUND)
+if (NOT OPENAL_FOUND OR NOT FREEALUT_FOUND)
+  message(STATUS "VistaOpenALRecordDriver requires OpenAL and ALUT, which is not available - only transcoder will be built")
+else ()
+  add_library(VistaOpenALRecordPlugin SHARED
+      VistaOpenALRecordPlugin.cpp
+  )
 
-    # Driver Plugin
+  target_link_libraries(VistaOpenALRecordPlugin
+    PUBLIC
+      VistaOpenALRecordDriver
+      VistaDeviceDriversBase
+  )
 
-    add_library(VistaOpenALRecordPlugin
-            VistaOpenALRecordPlugin.cpp
-    )
-    target_link_libraries(VistaOpenALRecordPlugin
-            VistaOpenALRecordDriver
-            VistaDeviceDriversBase
-    )
-    vista_configure_lib(VistaOpenALRecordPlugin)
-    vista_install(VistaOpenALRecordPlugin "VistaDeviceDrivers/VistaOpenALRecordDriver" "DriverPlugins")
-    set_target_properties(VistaOpenALRecordPlugin PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOpenALRecordPlugin "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
+  target_compile_definitions(VistaOpenALRecordPlugin
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENALRECORDPLUGIN_EXPORTS>
+  )
 
-    # Actual Driver
+  add_library(VistaOpenALRecordDriver SHARED
+      VistaOpenALRecordDriver.cpp
+      OpenALSoundContext.cpp
+  )
 
-    vista_use_package(OpenAL REQUIRED)
-    vista_use_package(ALUT REQUIRED)
+  target_sources(VistaOpenALRecordDriver
+    PUBLIC
+      FILE_SET HEADERS
+      FILES
+        VistaOpenALRecordDriver.h
+        OpenALSoundContext.h
+  )
 
-    add_library(VistaOpenALRecordDriver
-            VistaOpenALRecordDriver.h
-            VistaOpenALRecordDriver.cpp
-            OpenALSoundContext.h
-            OpenALSoundContext.cpp
-    )
+  target_compile_definitions(VistaOpenALRecordDriver
+    PRIVATE
+      $<$<PLATFORM_ID:Windows>:VISTAOPENALRECORDDRIVER_EXPORTS>
+  )
 
-    target_link_libraries(VistaOpenALRecordDriver
-            VistaBase
-            VistaAspects
-            VistaInterProcComm
-            VistaDeviceDriversBase
-            VistaMath
-            ${VISTA_USE_PACKAGE_LIBRARIES}
-    )
-    vista_configure_lib(VistaOpenALRecordDriver)
-    vista_install(VistaOpenALRecordDriver "VistaDeviceDrivers/VistaOpenALRecordDriver" "DriverPlugins")
-    set_target_properties(VistaOpenALRecordDriver PROPERTIES FOLDER "Drivers")
-    vista_set_outdir(VistaOpenALRecordDriver "${VISTADEVICEDRIVERSBASE_TARGET_OUTDIR}/DriverPlugins")
-    set_property(TARGET VistaOpenALRecordDriver PROPERTY LINK_INTERFACE_LIBRARIES "") # prevents auto-includion of linked libraries to other targets linking the driver
-endif (NOT OPENAL_FOUND OR NOT ALUT_FOUND)
+  target_link_libraries(VistaOpenALRecordDriver
+    PUBLIC
+      VistaBase
+      VistaAspects
+      VistaInterProcComm
+      VistaDeviceDriversBase
+      VistaMath
+      OpenAL::OpenAL
+      FreeALUT::alut
+  )
+
+  install(
+      TARGETS VistaOpenALRecordPlugin VistaOpenALRecordDriver
+      EXPORT  VistaTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/DriverPlugins
+      FILE_SET HEADERS DESTINATION "include/VistaDeviceDrivers/VistaOpenALRecordDriver"
+  )
+endif ()
